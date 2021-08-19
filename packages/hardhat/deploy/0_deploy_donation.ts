@@ -9,8 +9,14 @@ const deploy: DeployFunction = async ({ getNamedAccounts, deployments }: Hardhat
 		from: deployer,
 		log: true,
 	});
+
+	await deploy('FishFactory', {
+		from: deployer,
+		log: true,
+		args: ["www.test.com"]
+	});
 };
 
 export default deploy;
 
-export const tags = ['Donation'];
+export const tags = ['Donation', 'FishFactory'];

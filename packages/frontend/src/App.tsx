@@ -9,6 +9,7 @@ import InfoContract from './components/InfoContract';
 import Logo from './img/harmony_logo.svg';
 
 import 'react-toastify/dist/ReactToastify.css';
+import CreateFish from './components/CreateFish';
 
 const App = () => {
 	return (
@@ -22,7 +23,8 @@ const App = () => {
 					</Flex>
 				</Topbar>
 				<Content>
-					<InfoContract />
+					{/* <InfoContract /> */}
+					<CreateFish/>
 				</Content>
 			</Container>
 			<ToastContainer
