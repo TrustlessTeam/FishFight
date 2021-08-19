@@ -5,6 +5,7 @@ import styled from 'styled-components';
 import Account from './components/Account';
 import Balance from './components/Balance';
 import InfoContract from './components/InfoContract';
+import UnityWindow from './components/UnityWindow';
 
 import Logo from './img/harmony_logo.svg';
 
@@ -22,7 +23,9 @@ const App = () => {
 					</Flex>
 				</Topbar>
 				<Content>
-					<InfoContract />
+			<UnityWindow />
+
+					{/* <InfoContract /> */}
 				</Content>
 			</Container>
 			<ToastContainer
