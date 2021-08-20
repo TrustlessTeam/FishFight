@@ -26,6 +26,11 @@ contract FishFactory is ERC721Enumerable, Ownable {
         _baseTokenURI = baseURI;
     }
 
+	function getContractBalance() public view returns(uint256 _balance){
+		uint256 contractBalance = address(this).balance;
+		return contractBalance;
+	}
+
     function createFish(string memory name) public payable {
         uint mintIndex = totalSupply();
         uint256 timeOfMint = block.timestamp;

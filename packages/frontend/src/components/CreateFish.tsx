@@ -33,18 +33,6 @@ const CreateFish = () => {
 	const [contractBalance, setContractBalance] = useState("");
 
 	const { account, connector, library } = useWeb3React();
-
-	// const getDonationStored = async () => {
-	// 	if (contract) {
-	// 		try {
-	// 			const donations = await contract.methods.getDonationStored().call();
-	// 			const parsedDonations = fromWei(donations, Units.one);
-	// 			setDonationStored(parsedDonations);
-	// 		} catch (error) {
-	// 			console.error(error);
-	// 		}
-	// 	}
-	// };
 	
 	useEffect(() => {
 		if (!account) {
@@ -57,14 +45,13 @@ const CreateFish = () => {
 			(async () => {
 				const contract = await getFishFactoryContractFromConnector(connector, library);
 				setContract(contract);
-				// const balance = await contract.methods.getBalance(contract.address)
-				// setContractBalance(balance);
+				getContractBalance();
 				loadUsersFish(contract);
 			})();
 		}
 	}, [connector, setContract]);
 
-	async function loadUsersFish(contract : Contract) {
+	const loadUsersFish = async (contract : Contract) => {
 		console.log(account)
 		console.log(contract)
 		const fishUserOwns = await contract.methods.balanceOf(account).call();
@@ -86,13 +73,17 @@ const CreateFish = () => {
 		setMyFish(tempFish);
 	}
 
-	async function loadContractBalance(account: string) {
-		const address = isBech32Address(account) ? account : toBech32(account);
-		console.log(address)
-		const balance = await hmy.blockchain.getBalance({ address });
-		const parsedBalance = fromWei(hexToNumber(balance.result), Units.one);
-		setContractBalance(parsedBalance);
-	}
+	const getContractBalance = async () => {
+		if (contract) {
+			try {
+				const balance = await contract.methods.getContractBalance().call();
+				const parsedBalance = fromWei(balance, Units.one);
+				setContractBalance(parsedBalance);
+			} catch (error) {
+				console.error(error);
+			}
+		}
+	};
 
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setFishName(e.target.value);
@@ -124,7 +115,7 @@ const CreateFish = () => {
 				});
 				toast.success('Transaction done', {
 					onClose: async () => {
-						loadContractBalance(contract.address)
+						getContractBalance()
 						loadUsersFish(contract)
 					},
 				});

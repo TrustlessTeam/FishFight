@@ -28,7 +28,7 @@
       ]
     },
     "FishFactory": {
-      "address": "0x28c08e6D24CB2327410643a0629701837F03c337",
+      "address": "0xD1BB9E644223254943073379baEBB93fc266f716",
       "abi": [
         {
           "inputs": [
@@ -218,6 +218,19 @@
           "type": "function"
         },
         {
+          "inputs": [],
+          "name": "getContractBalance",
+          "outputs": [
+            {
+              "internalType": "uint256",
+              "name": "_balance",
+              "type": "uint256"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
           "inputs": [
             {
               "internalType": "uint256",
@@ -327,6 +340,19 @@
           "name": "renounceOwnership",
           "outputs": [],
           "stateMutability": "nonpayable",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "string",
+              "name": "name",
+              "type": "string"
+            }
+          ],
+          "name": "riskyCreateFish",
+          "outputs": [],
+          "stateMutability": "payable",
           "type": "function"
         },
         {
