@@ -11,7 +11,7 @@ contract FishFactory is ERC721Enumerable, Ownable {
 	
     struct Fish {
         string name;
-        uint fishAge;
+        uint birth;
         bytes32 traits;
     }
 
@@ -32,6 +32,18 @@ contract FishFactory is ERC721Enumerable, Ownable {
         _safeMint(msg.sender, mintIndex);
         m_FishDetails[mintIndex] = Fish(name, timeOfMint, vrf());
     }
+
+	function riskyCreateFish(string memory name) public payable {
+		uint mintIndex = totalSupply();
+        uint256 timeOfMint = block.timestamp;
+		bytes32 rollTheDice = vrf();
+		uint diceNum = uint(rollTheDice) % 2; // 50% chance
+		// unlucky, paid but no mint :(
+		if(diceNum == 0) {
+			_safeMint(msg.sender, mintIndex);
+        	m_FishDetails[mintIndex] = Fish(name, timeOfMint, vrf());
+		}
+	}
 
     function getFishInfo(uint256 tokenId) public view returns(Fish memory info) {
         require(_exists(tokenId), "That fish has not been minted yet.");

@@ -2,20 +2,35 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { toast } from 'react-toastify';
 import { useWeb3React } from '@web3-react/core';
-import { fromWei, Units, Unit } from '@harmony-js/utils';
+import { toBech32 } from '@harmony-js/crypto';
+import { isBech32Address, fromWei, hexToNumber, Units, Unit } from '@harmony-js/utils';
+
 import { Contract } from '@harmony-js/contract';
 
 import { useHarmony } from '../context/harmonyContext';
 
 import { createFishFactoryContract, getFishFactoryContractFromConnector } from '../helpers/contractHelper';
 
+interface Fish {
+	tokenId: number;
+  name: string;
+  birth: Date;
+	traits: Array<number>;
+}
+
+interface Traits {
+	fishType: number;
+	isGenisis: number;
+}
+
 const CreateFish = () => {
 	const [randomValue, setRandomValue] = useState('0');
 	const { hmy, fetchBalance } = useHarmony();
 	const [contract, setContract] = useState<Contract | null>(createFishFactoryContract(hmy));
-	const [myFish, setMyFish] = useState<any[]>([]);
+	const [myFish, setMyFish] = useState<Fish[]>([]);
 	const [myFishCount, setMyFishCount] = useState(0);
 	const [fishName, setFishName] = useState("Name Your Fish")
+	const [contractBalance, setContractBalance] = useState("");
 
 	const { account, connector, library } = useWeb3React();
 
@@ -42,6 +57,8 @@ const CreateFish = () => {
 			(async () => {
 				const contract = await getFishFactoryContractFromConnector(connector, library);
 				setContract(contract);
+				// const balance = await contract.methods.getBalance(contract.address)
+				// setContractBalance(balance);
 				loadUsersFish(contract);
 			})();
 		}
@@ -49,32 +66,66 @@ const CreateFish = () => {
 
 	async function loadUsersFish(contract : Contract) {
 		console.log(account)
+		console.log(contract)
 		const fishUserOwns = await contract.methods.balanceOf(account).call();
 		console.log(fishUserOwns)
 		setMyFishCount(fishUserOwns);
+		const tempFish = [];
 		for(let i = 0; i < fishUserOwns; i++) {
 			const tokenId = await contract.methods.tokenOfOwnerByIndex(account, i).call();
 			const fishInfo = await contract.methods.getFishInfo(tokenId).call();
-			console.log(tokenId + ' ' + fishInfo)
-			setMyFish(myFish => [...myFish, fishInfo])
-		}   
+			console.log(fishInfo.traits)
+			const fish = {
+				tokenId: tokenId,
+				name: fishInfo.name,
+				birth: fishInfo.birth,
+				traits: parseTraits(fishInfo.traits)
+			};
+			tempFish.push(fish);
+		}
+		setMyFish(tempFish);
+	}
+
+	async function loadContractBalance(account: string) {
+		const address = isBech32Address(account) ? account : toBech32(account);
+		console.log(address)
+		const balance = await hmy.blockchain.getBalance({ address });
+		const parsedBalance = fromWei(hexToNumber(balance.result), Units.one);
+		setContractBalance(parsedBalance);
 	}
 
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setFishName(e.target.value);
  	}
 
+	function parseTraits(traits : string) {
+		const hashPairs = [];
 
-	const handleClick = () => async () => {
+		for (let j = 0; j < 32; j++) {
+				hashPairs.push(traits.slice(2 + (j * 2), 4 + (j * 2)));
+		}
+		const decPairs = hashPairs.map(x => {
+				return parseInt(x, 16);
+		});
+
+
+		console.log(decPairs);
+		return decPairs;
+	}
+
+	const handleClick = (value: string, name: string) => async () => {
 		if (account && contract) {
 			try {
-				const rand = await contract.methods.vrf().call();
-				setRandomValue(rand);
-				console.log(rand)
+				await contract.methods.riskyCreateFish(name).send({
+					from: account,
+					gasPrice: 1000000000,
+					gasLimit: 210000,
+					value: new Unit(value).asOne().toWei(),
+				});
 				toast.success('Transaction done', {
 					onClose: async () => {
-						// await fetchBalance(account);
-						// getDonationStored();
+						loadContractBalance(contract.address)
+						loadUsersFish(contract)
 					},
 				});
 			} catch (error) {
@@ -111,11 +162,11 @@ const CreateFish = () => {
 	return (
 		<CreateFishComponent>
 			<Wrapper>
-				Value Return from Harmony VRF
-				<TotalStaked>{randomValue}</TotalStaked>
+				Contract Balance:
+				<TotalStaked>{contractBalance}</TotalStaked>
 			</Wrapper>
-			<RandomButton onClick={handleClick()}>
-					GetRandomValue
+			<RandomButton onClick={handleClick("1000", fishName)}>
+					Risky Mint for 1000 ONE
 			</RandomButton>
 			<form>
         <label>
@@ -125,13 +176,15 @@ const CreateFish = () => {
       </form>
 			<RandomButton onClick={handleClickMint(fishName)}>Mint Fish</RandomButton>
 			<h1>Fished Owned: {myFishCount}</h1>
-			<FlexList>
+			<FlexGrid>
 			{myFish.map((fish, index) => (
-					<li key={index}>
-						{fish}
-					</li>
+					<FishNFT key={index}>
+						<FishName>{fish.name}</FishName>
+						<FishData>{fish.birth}</FishData>
+						<FishData>{fish.traits}</FishData>
+					</FishNFT>
 				))}
-			</FlexList>
+			</FlexGrid>
 		</CreateFishComponent>
 	);
 };
@@ -157,24 +210,28 @@ const Wrapper = styled.div`
 	font-size: 1.5rem;
 `;
 
-const FlexList = styled.ul`
+const FlexGrid = styled.div`
 	display: flex;
-	flex-flow: column nowrap;
+	flex-flow: row wrap;
 	justify-content: center;
-	padding: 0;
-	list-style: none;
-	margin-top: 40px;
 	width: 100%;
-
-	& > li {
-		margin-right: 20px;
-	}
 `;
 
-const Subtitle = styled.h2`
-	font-size: 2rem;
-	color: white;
-	margin-bottom: 0;
+const FishNFT = styled.div`
+	flex: 1;
+	border-radius: 25px;
+	width: 100%;
+	padding: 15px;
+	background-color: white;
+	box-shadow: 2px 8px 10px 4px rgba(0, 0, 0, 0.3);
+`;
+
+const FishName = styled.h3`
+	color: ${"black"};
+`;
+
+const FishData = styled.p`
+	color: ${"black"};
 `;
 
 const RandomButton = styled.button`
