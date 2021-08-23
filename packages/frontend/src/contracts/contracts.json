@@ -193,8 +193,67 @@
               "type": "string"
             }
           ],
+          "name": "catchFish",
+          "outputs": [
+            {
+              "components": [
+                {
+                  "internalType": "string",
+                  "name": "name",
+                  "type": "string"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "birth",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "bytes32",
+                  "name": "traits",
+                  "type": "bytes32"
+                }
+              ],
+              "internalType": "struct FishFactory.Fish",
+              "name": "info",
+              "type": "tuple"
+            }
+          ],
+          "stateMutability": "payable",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "string",
+              "name": "name",
+              "type": "string"
+            }
+          ],
           "name": "createFish",
-          "outputs": [],
+          "outputs": [
+            {
+              "components": [
+                {
+                  "internalType": "string",
+                  "name": "name",
+                  "type": "string"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "birth",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "bytes32",
+                  "name": "traits",
+                  "type": "bytes32"
+                }
+              ],
+              "internalType": "struct FishFactory.Fish",
+              "name": "info",
+              "type": "tuple"
+            }
+          ],
           "stateMutability": "payable",
           "type": "function"
         },
@@ -340,19 +399,6 @@
           "name": "renounceOwnership",
           "outputs": [],
           "stateMutability": "nonpayable",
-          "type": "function"
-        },
-        {
-          "inputs": [
-            {
-              "internalType": "string",
-              "name": "name",
-              "type": "string"
-            }
-          ],
-          "name": "riskyCreateFish",
-          "outputs": [],
-          "stateMutability": "payable",
           "type": "function"
         },
         {

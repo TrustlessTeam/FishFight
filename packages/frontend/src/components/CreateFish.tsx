@@ -13,8 +13,8 @@ import { createFishFactoryContract, getFishFactoryContractFromConnector } from '
 
 interface Fish {
 	tokenId: number;
-  name: string;
-  birth: Date;
+	name: string;
+	birth: Date;
 	traits: Array<number>;
 }
 
@@ -22,6 +22,8 @@ interface Traits {
 	fishType: number;
 	isGenisis: number;
 }
+
+const catchRates = ["100", "75", "50", "25"];
 
 const CreateFish = () => {
 	const [randomValue, setRandomValue] = useState('0');
@@ -87,7 +89,7 @@ const CreateFish = () => {
 
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setFishName(e.target.value);
- 	}
+	}
 
 	function parseTraits(traits : string) {
 		const hashPairs = [];
@@ -104,41 +106,19 @@ const CreateFish = () => {
 		return decPairs;
 	}
 
-	const handleClick = (value: string, name: string) => async () => {
+	const handleClickCatch = (value: string, name: string) => async () => {
 		if (account && contract) {
 			try {
-				await contract.methods.riskyCreateFish(name).send({
+				const fish = await contract.methods.catchFish(name).send({
 					from: account,
 					gasPrice: 1000000000,
 					gasLimit: 210000,
 					value: new Unit(value).asOne().toWei(),
 				});
+				console.log(fish);
 				toast.success('Transaction done', {
 					onClose: async () => {
 						getContractBalance()
-						loadUsersFish(contract)
-					},
-				});
-			} catch (error) {
-				toast.error(error);
-			}
-		} else {
-			toast.error('Connect your wallet');
-		}
-	};
-
-	const handleClickMint = (value: string) => async () => {
-		if (account && contract) {
-			console.log("mint clicked")
-			try {
-				await contract.methods.createFish(value).send({
-					from: account,
-					gasPrice: 1000000000,
-					gasLimit: 210000,
-					value: new Unit(0).asOne().toWei(),
-				});
-				toast.success('Transaction done', {
-					onClose: async () => {
 						loadUsersFish(contract)
 					},
 				});
@@ -156,16 +136,19 @@ const CreateFish = () => {
 				Contract Balance:
 				<TotalStaked>{contractBalance}</TotalStaked>
 			</Wrapper>
-			<RandomButton onClick={handleClick("1000", fishName)}>
-					Risky Mint for 1000 ONE
-			</RandomButton>
+			<FlexGrid>
+			{catchRates.map((rate, index) => (
+				<CatchFishButton key={index} onClick={handleClickCatch(rate, fishName)}>
+					{rate}% Catch Rate for {rate} ONE
+				</CatchFishButton>
+			))}
+			</FlexGrid>
 			<form>
-        <label>
-          Fish Name:{fishName}
-          <input type="text" value={fishName} onChange={handleChange} />
+				<label>
+					Fish Name:
+					<input type="text" value={fishName} onChange={handleChange} />
 				</label>
-      </form>
-			<RandomButton onClick={handleClickMint(fishName)}>Mint Fish</RandomButton>
+			</form>
 			<h1>Fished Owned: {myFishCount}</h1>
 			<FlexGrid>
 			{myFish.map((fish, index) => (
@@ -225,7 +208,7 @@ const FishData = styled.p`
 	color: ${"black"};
 `;
 
-const RandomButton = styled.button`
+const CatchFishButton = styled.button`
 	display: flex;
 	justify-content: center;
 	align-items: center;
