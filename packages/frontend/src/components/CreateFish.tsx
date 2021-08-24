@@ -87,6 +87,17 @@ const CreateFish = () => {
 		}
 	};
 
+	const rollDice = async () => {
+		if (contract) {
+			try {
+				const diceRoll = await contract.methods.diceRoll().call();
+				console.log(diceRoll)
+			} catch (error) {
+				console.error(error);
+			}
+		}
+	};
+
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setFishName(e.target.value);
 	}
@@ -159,6 +170,9 @@ const CreateFish = () => {
 					</FishNFT>
 				))}
 			</FlexGrid>
+			<CatchFishButton onClick={rollDice}>
+					Roll Dice
+				</CatchFishButton>
 		</CreateFishComponent>
 	);
 };

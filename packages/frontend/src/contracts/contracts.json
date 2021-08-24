@@ -28,7 +28,7 @@
       ]
     },
     "FishFactory": {
-      "address": "0xD1BB9E644223254943073379baEBB93fc266f716",
+      "address": "0x746e9c034FC108EF8379680dCe0fBFb404Bb7bC2",
       "abi": [
         {
           "inputs": [
@@ -196,26 +196,9 @@
           "name": "catchFish",
           "outputs": [
             {
-              "components": [
-                {
-                  "internalType": "string",
-                  "name": "name",
-                  "type": "string"
-                },
-                {
-                  "internalType": "uint256",
-                  "name": "birth",
-                  "type": "uint256"
-                },
-                {
-                  "internalType": "bytes32",
-                  "name": "traits",
-                  "type": "bytes32"
-                }
-              ],
-              "internalType": "struct FishFactory.Fish",
-              "name": "info",
-              "type": "tuple"
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
             }
           ],
           "stateMutability": "payable",
@@ -232,29 +215,25 @@
           "name": "createFish",
           "outputs": [
             {
-              "components": [
-                {
-                  "internalType": "string",
-                  "name": "name",
-                  "type": "string"
-                },
-                {
-                  "internalType": "uint256",
-                  "name": "birth",
-                  "type": "uint256"
-                },
-                {
-                  "internalType": "bytes32",
-                  "name": "traits",
-                  "type": "bytes32"
-                }
-              ],
-              "internalType": "struct FishFactory.Fish",
-              "name": "info",
-              "type": "tuple"
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
             }
           ],
           "stateMutability": "payable",
+          "type": "function"
+        },
+        {
+          "inputs": [],
+          "name": "diceRoll",
+          "outputs": [
+            {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+            }
+          ],
+          "stateMutability": "view",
           "type": "function"
         },
         {

@@ -31,15 +31,21 @@ contract FishFactory is ERC721Enumerable, Ownable {
 		return contractBalance;
 	}
 
-	function createFish(string memory name) public payable returns(Fish memory info){
+	function createFish(string memory name) public payable returns(uint){
 		uint mintIndex = totalSupply();
 		uint256 timeOfMint = block.timestamp;
 		_safeMint(msg.sender, mintIndex);
 		m_FishDetails[mintIndex] = Fish(name, timeOfMint, vrf());
-		return m_FishDetails[mintIndex];
+		return mintIndex;
 	}
 
-	function catchFish(string memory name) public payable returns(Fish memory info){
+	function diceRoll() public view returns(uint) {
+		bytes32 rollTheDice = vrf();
+		uint diceNum = uint(rollTheDice) % 4; // random number 1-100
+		return diceNum;
+	}
+
+	function catchFish(string memory name) public payable returns(uint){
 		bytes32 rollTheDice = vrf();
 		uint diceNum = uint(rollTheDice) % 4; // random number 1-100
 		// mint chance based on amount spent to mint
@@ -52,7 +58,7 @@ contract FishFactory is ERC721Enumerable, Ownable {
 		} else if(msg.value >= 25 * 10**18 && diceNum > 2) { // 50 ONE, ~80% chance to mint
 			return createFish(name);
 		} else {
-			return Fish("", 0, 0);
+			return 0;
 		}
 	}
 
