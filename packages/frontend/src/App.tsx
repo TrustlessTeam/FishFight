@@ -4,12 +4,12 @@ import styled from 'styled-components';
 
 import Account from './components/Account';
 import Balance from './components/Balance';
-import InfoContract from './components/InfoContract';
 import UnityWindow from './components/UnityWindow';
 
 import Logo from './img/harmony_logo.svg';
 
 import 'react-toastify/dist/ReactToastify.css';
+import CreateFish from './components/CreateFish';
 
 const App = () => {
 	return (
@@ -23,9 +23,8 @@ const App = () => {
 					</Flex>
 				</Topbar>
 				<Content>
-			<UnityWindow />
-
-					{/* <InfoContract /> */}
+					<UnityWindow />
+					<CreateFish/>
 				</Content>
 			</Container>
 			<ToastContainer
