@@ -2,33 +2,8 @@
   "name": "localnet",
   "chainId": "1666700000",
   "contracts": {
-    "Donation": {
-      "address": "0xd2DF1D661AAeFaB2384E044750134802e4388857",
-      "abi": [
-        {
-          "inputs": [],
-          "name": "addDonation",
-          "outputs": [],
-          "stateMutability": "payable",
-          "type": "function"
-        },
-        {
-          "inputs": [],
-          "name": "getDonationStored",
-          "outputs": [
-            {
-              "internalType": "uint256",
-              "name": "",
-              "type": "uint256"
-            }
-          ],
-          "stateMutability": "view",
-          "type": "function"
-        }
-      ]
-    },
     "FishFactory": {
-      "address": "0x746e9c034FC108EF8379680dCe0fBFb404Bb7bC2",
+      "address": "0x64Ce9FA1B84B5685F7Dc003C7bAbf53EB102e286",
       "abi": [
         {
           "inputs": [

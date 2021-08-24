@@ -5,10 +5,6 @@ const deploy: DeployFunction = async ({ getNamedAccounts, deployments }: Hardhat
 	const { deploy } = deployments;
 	const { deployer } = await getNamedAccounts();
 	console.log(deployer);
-	await deploy('Donation', {
-		from: deployer,
-		log: true,
-	});
 
 	await deploy('FishFactory', {
 		from: deployer,
@@ -19,4 +15,4 @@ const deploy: DeployFunction = async ({ getNamedAccounts, deployments }: Hardhat
 
 export default deploy;
 
-export const tags = ['Donation', 'FishFactory'];
+export const tags = ['FishFactory'];
