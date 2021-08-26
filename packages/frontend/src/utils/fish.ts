@@ -1,5 +1,65 @@
-const NUM_BODY_TEXTURES = 2;
-const NUM_JAW_TEXTURES = 2;
+const fishType = [
+  {
+    name: "GenesisFish",
+    ranges: {
+      ColorPrimary: [0, 360],
+      ColorSecondary: [0, 360],
+      ColorTertiary: [0, 360],
+      ColorEyePrimary: [0, 360],
+      ColorEyeSecondary: [0, 360],
+      ColorEyeTertiary: [0, 360],
+
+      // Head options
+      HeadEdges: [0, 100], // need to know upper range index for each option, using 2 for now
+      HeadNose: [0, 100],
+      HeadFrills: [0, 100],
+      HeadFlat: [0, 100],
+      HeadSplit: [0, 100],
+      HeadFlatnose: [0, 100],
+      HeadFat: [0, 100], // refers to body
+
+      // Textures
+      TextureBodyPrimary: [0, 2], // need to know upper range index for each option, using 2 for now
+      TextureBodySecondary: [0, 2],
+      TextureFinPrimary: [0, 2],
+      TextureFinSecondary: [0, 2],
+      TextureTailPrimary: [0, 2],
+      TextureTailSecondary: [0, 2],
+      TextureJawPrimary: [0, 2],
+      TextureJawSecondary: [0, 2]
+    }
+  },
+  // {
+  //   name: "Location2Fish", //ex: location 2 fish could be favored to the blue color spectrum
+  //   ranges: {
+  //     ColorPrimary: [180, 260], // so to favor blue spectrum we set the hue range to be 180-260
+  //     ColorSecondary: [180, 260],
+  //     ColorTertiary: [180, 260],
+  //     ColorEyePrimary: [180, 260],
+  //     ColorEyeSecondary: [180, 260],
+  //     ColorEyeTertiary: [180, 260],
+
+  //     // Head options
+  //     HeadEdges: [3, 5], // Let's say we added more head options specifically for the location 2 fish,
+  //     HeadNose: [3, 5], // they get the range 3 - 5, in this case I did all ranges, but it could be just one property
+  //     HeadFrills: [3, 5],
+  //     HeadFlat: [3, 5],
+  //     HeadSplit: [3, 5],
+  //     HeadFlatnose: [3, 5],
+  //     HeadFat: [3, 5],
+
+  //     // Textures
+  //     TextureBodyPrimary: [0, 3], // similar as above, let's say location 2 fish have the chance have a new body texture type
+  //     TextureBodySecondary: [0, 2], // so we now have a TextureBodyPrimary [0, 3], so they still can get the original as well
+  //     TextureFinPrimary: [0, 2],
+  //     TextureFinSecondary: [0, 2],
+  //     TextureTailPrimary: [0, 2],
+  //     TextureTailSecondary: [0, 2],
+  //     TextureJawPrimary: [0, 2],
+  //     TextureJawSecondary: [0, 2]
+  //   }
+  // }
+];
 
 export class Fish {
   tokenId: number;
@@ -19,27 +79,44 @@ export class Fish {
   };
 
   parseTraits(traits: Array<number>): Traits {
-    const colorSaturation = traits[0];
-    const colorValue = traits[1];
+    const fishTypeIndex = traits[0];
+    const colorSaturation = traits[1];
+    const colorValue = traits[2];
 
     const fishTraits: Traits = {
-      BodyColor1: {h: this.mapToHue(traits[2]), s: colorSaturation, v: colorValue},
-      BodyColor2: {h: this.mapToHue(traits[3]), s: colorSaturation, v: colorValue},
-      BodyColor3: {h: this.mapToHue(traits[4]), s: colorSaturation, v: colorValue},
-      BodyTextures: traits[5] % NUM_BODY_TEXTURES,
+      // Color trait mapping
+      ColorPrimary: {h: this.mapToHue(traits[3]), s: colorSaturation, v: colorValue},
+      ColorSecondary: {h: this.mapToHue(traits[4]), s: colorSaturation, v: colorValue},
+      ColorTertiary: {h: this.mapToHue(traits[5]), s: colorSaturation, v: colorValue},
+      ColorEyePrimary: {h: this.mapToHue(traits[6]), s: colorSaturation, v: colorValue},
+      ColorEyeSecondary: {h: this.mapToHue(traits[7]), s: colorSaturation, v: colorValue},
+      ColorEyeTertiary: {h: this.mapToHue(traits[8]), s: colorSaturation, v: colorValue},
+      
+      // Head trait mapping
+      HeadEdges: this.mapTraitValueToRange(traits[9], fishType[fishTypeIndex].ranges.HeadEdges), // range (0 - ?)
+      HeadNose: this.mapTraitValueToRange(traits[10], fishType[fishTypeIndex].ranges.HeadNose),
+      HeadFrills: this.mapTraitValueToRange(traits[11], fishType[fishTypeIndex].ranges.HeadFrills),
+      HeadFlat: this.mapTraitValueToRange(traits[12], fishType[fishTypeIndex].ranges.HeadFlat),
+      HeadSplit: this.mapTraitValueToRange(traits[13], fishType[fishTypeIndex].ranges.HeadSplit),
+      HeadFlatnose: this.mapTraitValueToRange(traits[14], fishType[fishTypeIndex].ranges.HeadFlatnose),
+      HeadFat: this.mapTraitValueToRange(traits[15], fishType[fishTypeIndex].ranges.HeadFat),
 
-      JawColor1: {h: this.mapToHue(traits[6]), s: colorSaturation, v: colorValue},
-      JawColor2: {h: this.mapToHue(traits[7]), s: colorSaturation, v: colorValue},
-      JawColor3: {h: this.mapToHue(traits[8]), s: colorSaturation, v: colorValue},
-      JawTextures: traits[9] % NUM_JAW_TEXTURES,
-
-      EyeColor1: {h: this.mapToHue(traits[10]), s: colorSaturation, v: colorValue},
-      EyeColor2: {h: this.mapToHue(traits[11]), s: colorSaturation, v: colorValue},
-      EyeColor3: {h: this.mapToHue(traits[12]), s: colorSaturation, v: colorValue}
+      // Texture trait mapping
+      TextureBodyPrimary: this.mapTraitValueToRange(traits[9], fishType[fishTypeIndex].ranges.TextureBodyPrimary), // range (0 - ?)
+      TextureBodySecondary: this.mapTraitValueToRange(traits[9], fishType[fishTypeIndex].ranges.TextureBodySecondary),
+      TextureFinPrimary: this.mapTraitValueToRange(traits[9], fishType[fishTypeIndex].ranges.TextureFinPrimary),
+      TextureFinSecondary: this.mapTraitValueToRange(traits[9], fishType[fishTypeIndex].ranges.TextureFinSecondary),
+      TextureTailPrimary: this.mapTraitValueToRange(traits[9], fishType[fishTypeIndex].ranges.TextureTailPrimary),
+      TextureTailSecondary: this.mapTraitValueToRange(traits[9], fishType[fishTypeIndex].ranges.TextureTailSecondary),
+      TextureJawPrimary: this.mapTraitValueToRange(traits[9], fishType[fishTypeIndex].ranges.TextureJawPrimary),
+      TextureJawSecondary: this.mapTraitValueToRange(traits[9], fishType[fishTypeIndex].ranges.TextureJawSecondary),
     };
-    
 
     return fishTraits;
+  }
+
+  mapTraitValueToRange(value: number, range: Array<number>) {
+    return (value % range[1]) + range[0];
   }
 
   parseVrf(vrf : string) {
@@ -67,52 +144,37 @@ type Color = {
   v: number
 }
 
-
 type Traits = {
-  EyeColor1: Color,
-  EyeColor2: Color,
-  EyeColor3: Color,
+  // Colors
+  ColorPrimary: Color,
+  ColorSecondary: Color,
+  ColorTertiary: Color,
+  ColorEyePrimary: Color,
+  ColorEyeSecondary: Color,
+  ColorEyeTertiary: Color,
+
+  // Head options
+  HeadEdges: number, // range (0 - ?)
+  HeadNose: number,
+  HeadFrills: number,
+  HeadFlat: number,
+  HeadSplit: number,
+  HeadFlatnose: number,
+  HeadFat: number,
+
+  // Textures
+  TextureBodyPrimary: number, // range (0 - ?)
+  TextureBodySecondary: number,
+  TextureFinPrimary: number,
+  TextureFinSecondary: number,
+  TextureTailPrimary: number,
+  TextureTailSecondary: number,
+  TextureJawPrimary: number,
+  TextureJawSecondary: number,
+
+  // Sizes
+  // HeadSize: number,
   // EyeSize: number,
-
-  BodyTextures: number,
-  BodyColor1: Color,
-  BodyColor2: Color,
-  BodyColor3: Color,
-  // BodySize: number,
-
-  JawTextures: number,
-  JawColor1: Color,
-  JawColor2: Color,
-  JawColor3: Color,
+  // FinSize: number,
   // JawSize: number,
-
-  // TopFins: number,
-  // TopFinsTextures: number,
-  // TopFinsColor1: Color,
-  // TopFinsColor2: Color,
-  // TopFinsColor3: Color,
-  // TopFinsSize: number,
-
-  // BottomFin: number, // type of model, do we want this as a string?
-  // BottomFinsCount: number
-  // BottomFinsTextures: number,
-  // BottomFinsColor1: Color,
-  // BottomFinsColor2: Color,
-  // BottomFinsColor3: Color,
-  // BottomFinsSize: number,
-
-  // SideFin: number,
-  // SideFinCount: number //=2-4
-  // SideFinTextures: number,
-  // SideFinColor1: Color,
-  // SideFinColor2: Color,
-  // SideFinColor3: Color,
-  // SideFinSize: number,
-
-  // TailFin: number, //model*
-  // TailFinTextures: number,
-  // TailFinColor1: Color,
-  // TailFinColor2: Color,
-  // TailFinColor3: Color,
-  // TailFinSize: number
 }

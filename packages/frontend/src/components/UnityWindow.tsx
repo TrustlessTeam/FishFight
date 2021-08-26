@@ -5,6 +5,7 @@ import { useWeb3React } from '@web3-react/core';
 import { useHarmony } from '../context/harmonyContext';
 
 import Unity, { UnityContent } from 'react-unity-webgl';
+import { Fish } from '../utils/fish';
 
 const unityContent = new UnityContent('../Build/fishfight-one.json', '../Build/UnityLoader.js');
 
@@ -45,6 +46,10 @@ const UnityWindow = () => {
 
 	function stopRotation() {
 		unityContent.send('MeshCrate', 'StopRotation');
+	}
+
+	function fishCaught(fish: Fish) {
+		unityContent.send('CanvasUserInterface', 'FishCaught', fish);
 	}
 
 	function toggleIsUnityMounted() {
