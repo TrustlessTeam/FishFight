@@ -14,7 +14,7 @@ import CreateFish from './components/CreateFish';
 import { useWeb3React } from '@web3-react/core';
 
 import { useHarmony } from './context/harmonyContext';
-import { AppContext } from './context/appContext';
+import { ContractContext } from './context/contractContext';
 
 import { createFishFactoryContract, getFishFactoryContractFromConnector } from './helpers/contractHelper';
 
@@ -39,11 +39,13 @@ const App = () => {
 		}
 	}, [connector, setFishFactoryContract]);
 
+	const contractContext = {fishFactoryContract: fishFactoryContract!};
+
 	return (
 		<Wrapper>
 			<Container>
-				{account &&
-					<AppContext.Provider value={null}>
+				{account && fishFactoryContract != null &&
+					<ContractContext.Provider value={contractContext}>
 						<Topbar>
 							<img src={Logo} alt="Harmony logo" />
 							<Flex>
@@ -55,7 +57,7 @@ const App = () => {
 							{/* <UnityWindow /> */}
 							<CreateFish/>
 						</Content>
-					</AppContext.Provider>
+					</ContractContext.Provider>
 				}
 				{!account &&
 					<Account/>

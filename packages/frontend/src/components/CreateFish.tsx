@@ -2,99 +2,71 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { toast } from 'react-toastify';
 import { useWeb3React } from '@web3-react/core';
-import { toBech32 } from '@harmony-js/crypto';
 import { isBech32Address, fromWei, hexToNumber, Units, Unit } from '@harmony-js/utils';
+import { Fish } from '../utils/fish'
+import { useContract } from '../context/contractContext';
 
-import { Contract } from '@harmony-js/contract';
-
-import { useHarmony } from '../context/harmonyContext';
-
-import { createFishFactoryContract, getFishFactoryContractFromConnector } from '../helpers/contractHelper';
-
-interface Fish {
-	tokenId: number;
-	name: string;
-	birth: Date;
-	traits: Array<number>;
-}
-
-interface Traits {
-	fishType: number;
-	isGenisis: number;
-}
 
 const catchRates = ["100", "75", "50", "25"];
 
 const CreateFish = () => {
-	const [randomValue, setRandomValue] = useState('0');
-	const { hmy, fetchBalance } = useHarmony();
-	const [contract, setContract] = useState<Contract | null>(createFishFactoryContract(hmy));
 	const [myFish, setMyFish] = useState<Fish[]>([]);
 	const [myFishCount, setMyFishCount] = useState(0);
-	const [fishName, setFishName] = useState("Name Your Fish")
+	const [fishName, setFishName] = useState("Fishy")
 	const [contractBalance, setContractBalance] = useState("");
 
 	const { account, connector, library } = useWeb3React();
+	const { fishFactoryContract } = useContract();
 	
-	useEffect(() => {
-		if (!account) {
-			setContract(null);
-		}
-	}, [account]);
+	// useEffect(() => {
+	// 	if (!fishFactoryContract) {
+	// 		setContract(null);
+	// 	}
+	// }, [myFish]);
 
 	useEffect(() => {
 		if (connector) {
 			(async () => {
-				const contract = await getFishFactoryContractFromConnector(connector, library);
-				setContract(contract);
 				getContractBalance();
-				loadUsersFish(contract);
+				loadUsersFish();
 			})();
 		}
-	}, [connector, setContract]);
+	}, []);
 
-	const loadUsersFish = async (contract : Contract) => {
+	const loadUsersFish = async () => {
 		console.log(account)
-		console.log(contract)
-		const fishUserOwns = await contract.methods.balanceOf(account).call();
+		console.log(fishFactoryContract)
+		const fishUserOwns = await fishFactoryContract.methods.balanceOf(account).call();
 		console.log(fishUserOwns)
 		setMyFishCount(fishUserOwns);
 		const tempFish = [];
 		for(let i = 0; i < fishUserOwns; i++) {
-			const tokenId = await contract.methods.tokenOfOwnerByIndex(account, i).call();
-			const fishInfo = await contract.methods.getFishInfo(tokenId).call();
-			console.log(fishInfo.traits)
-			const fish = {
-				tokenId: tokenId,
-				name: fishInfo.name,
-				birth: fishInfo.birth,
-				traits: parseTraits(fishInfo.traits)
-			};
+			const tokenId = await fishFactoryContract.methods.tokenOfOwnerByIndex(account, i).call();
+			const fishInfo = await fishFactoryContract.methods.getFishInfo(tokenId).call();
+			console.log(fishInfo)
+			const fish = new Fish(tokenId, fishInfo.name, fishInfo.birth, fishInfo.traits);
 			tempFish.push(fish);
 		}
 		setMyFish(tempFish);
+		console.log(tempFish)
 	}
 
 	const getContractBalance = async () => {
-		if (contract) {
-			try {
-				const balance = await contract.methods.getContractBalance().call();
-				const parsedBalance = fromWei(balance, Units.one);
-				setContractBalance(parsedBalance);
-			} catch (error) {
-				console.error(error);
-			}
+		try {
+			const balance = await fishFactoryContract.methods.getContractBalance().call();
+			const parsedBalance = fromWei(balance, Units.one);
+			setContractBalance(parsedBalance);
+		} catch (error) {
+			console.error(error);
 		}
 	};
 
 	const rollDice = async () => {
-		if (contract) {
-			try {
-				const diceRoll = await contract.methods.diceRoll().call();
-				console.log(diceRoll)
-			} catch (error) {
-				console.error(error);
-			}
+		try {
+			const diceRoll = await fishFactoryContract.methods.diceRoll().call();
+			console.log(diceRoll)
+		} catch (error) {
+			console.error(error);
 		}
 	};
 
@@ -102,25 +74,12 @@ const CreateFish = () => {
 		setFishName(e.target.value);
 	}
 
-	function parseTraits(traits : string) {
-		const hashPairs = [];
-
-		for (let j = 0; j < 32; j++) {
-				hashPairs.push(traits.slice(2 + (j * 2), 4 + (j * 2)));
-		}
-		const decPairs = hashPairs.map(x => {
-				return parseInt(x, 16);
-		});
-
-
-		console.log(decPairs);
-		return decPairs;
-	}
+	
 
 	const handleClickCatch = (value: string, name: string) => async () => {
-		if (account && contract) {
+		if (account) {
 			try {
-				const fish = await contract.methods.catchFish(name).send({
+				const fish = await fishFactoryContract.methods.catchFish(name).send({
 					from: account,
 					gasPrice: 1000000000,
 					gasLimit: 210000,
@@ -130,7 +89,7 @@ const CreateFish = () => {
 				toast.success('Transaction done', {
 					onClose: async () => {
 						getContractBalance()
-						loadUsersFish(contract)
+						loadUsersFish()
 					},
 				});
 			} catch (error) {
@@ -166,7 +125,7 @@ const CreateFish = () => {
 					<FishNFT key={index}>
 						<FishName>{fish.name}</FishName>
 						<FishData>{fish.birth}</FishData>
-						<FishData>{fish.traits}</FishData>
+						<FishData>{fish.vrf}</FishData>
 					</FishNFT>
 				))}
 			</FlexGrid>
