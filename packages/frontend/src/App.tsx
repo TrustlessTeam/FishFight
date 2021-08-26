@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { ToastContainer } from 'react-toastify';
 import styled from 'styled-components';
 
@@ -7,25 +7,59 @@ import Balance from './components/Balance';
 import UnityWindow from './components/UnityWindow';
 
 import Logo from './img/harmony_logo.svg';
+import { Contract } from '@harmony-js/contract';
 
 import 'react-toastify/dist/ReactToastify.css';
 import CreateFish from './components/CreateFish';
+import { useWeb3React } from '@web3-react/core';
+
+import { useHarmony } from './context/harmonyContext';
+import { AppContext } from './context/appContext';
+
+import { createFishFactoryContract, getFishFactoryContractFromConnector } from './helpers/contractHelper';
 
 const App = () => {
+	const { hmy, } = useHarmony();
+	const { account, connector, library } = useWeb3React();
+
+	const [fishFactoryContract, setFishFactoryContract] = useState<Contract | null>(createFishFactoryContract(hmy));
+
+	useEffect(() => {
+		if (!account) {
+			setFishFactoryContract(null);
+		}
+	}, [account]);
+
+	useEffect(() => {
+		if (connector) {
+			(async () => {
+				const loadedContract = await getFishFactoryContractFromConnector(connector, library);
+				setFishFactoryContract(loadedContract);
+			})();
+		}
+	}, [connector, setFishFactoryContract]);
+
 	return (
 		<Wrapper>
 			<Container>
-				<Topbar>
-					<img src={Logo} alt="Harmony logo" />
-					<Flex>
-						<Balance />
-						<Account />
-					</Flex>
-				</Topbar>
-				<Content>
-					<UnityWindow />
-					<CreateFish/>
-				</Content>
+				{account &&
+					<AppContext.Provider value={null}>
+						<Topbar>
+							<img src={Logo} alt="Harmony logo" />
+							<Flex>
+								<Balance />
+								<Account />
+							</Flex>
+						</Topbar>
+						<Content>
+							{/* <UnityWindow /> */}
+							<CreateFish/>
+						</Content>
+					</AppContext.Provider>
+				}
+				{!account &&
+					<Account/>
+				}
 			</Container>
 			<ToastContainer
 				position="bottom-right"
