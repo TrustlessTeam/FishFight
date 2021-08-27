@@ -79,7 +79,7 @@ export class Fish {
   };
 
   parseTraits(traits: Array<number>): Traits {
-    const fishTypeIndex = traits[0];
+    const fishTypeIndex = 0;//traits[0];
     const colorSaturation = traits[1];
     const colorValue = traits[2];
 
@@ -102,14 +102,14 @@ export class Fish {
       HeadFat: this.mapTraitValueToRange(traits[15], fishType[fishTypeIndex].ranges.HeadFat),
 
       // Texture trait mapping
-      TextureBodyPrimary: this.mapTraitValueToRange(traits[9], fishType[fishTypeIndex].ranges.TextureBodyPrimary), // range (0 - ?)
-      TextureBodySecondary: this.mapTraitValueToRange(traits[9], fishType[fishTypeIndex].ranges.TextureBodySecondary),
-      TextureFinPrimary: this.mapTraitValueToRange(traits[9], fishType[fishTypeIndex].ranges.TextureFinPrimary),
-      TextureFinSecondary: this.mapTraitValueToRange(traits[9], fishType[fishTypeIndex].ranges.TextureFinSecondary),
-      TextureTailPrimary: this.mapTraitValueToRange(traits[9], fishType[fishTypeIndex].ranges.TextureTailPrimary),
-      TextureTailSecondary: this.mapTraitValueToRange(traits[9], fishType[fishTypeIndex].ranges.TextureTailSecondary),
-      TextureJawPrimary: this.mapTraitValueToRange(traits[9], fishType[fishTypeIndex].ranges.TextureJawPrimary),
-      TextureJawSecondary: this.mapTraitValueToRange(traits[9], fishType[fishTypeIndex].ranges.TextureJawSecondary),
+      TextureBodyPrimary: this.mapTraitValueToRange(traits[16], fishType[fishTypeIndex].ranges.TextureBodyPrimary), // range (0 - ?)
+      TextureBodySecondary: this.mapTraitValueToRange(traits[17], fishType[fishTypeIndex].ranges.TextureBodySecondary),
+      TextureFinPrimary: this.mapTraitValueToRange(traits[18], fishType[fishTypeIndex].ranges.TextureFinPrimary),
+      TextureFinSecondary: this.mapTraitValueToRange(traits[19], fishType[fishTypeIndex].ranges.TextureFinSecondary),
+      TextureTailPrimary: this.mapTraitValueToRange(traits[20], fishType[fishTypeIndex].ranges.TextureTailPrimary),
+      TextureTailSecondary: this.mapTraitValueToRange(traits[21], fishType[fishTypeIndex].ranges.TextureTailSecondary),
+      TextureJawPrimary: this.mapTraitValueToRange(traits[22], fishType[fishTypeIndex].ranges.TextureJawPrimary),
+      TextureJawSecondary: this.mapTraitValueToRange(traits[23], fishType[fishTypeIndex].ranges.TextureJawSecondary),
     };
 
     return fishTraits;
