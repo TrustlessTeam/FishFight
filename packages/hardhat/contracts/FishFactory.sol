@@ -12,7 +12,8 @@ contract FishFactory is ERC721Enumerable, Ownable {
 	struct Fish {
 		string name;
 		uint birth;
-		bytes32 traits;
+		bytes32 gameTraits;
+		bytes32 visualTraits;
 	}
 
 	// Private members
@@ -21,6 +22,7 @@ contract FishFactory is ERC721Enumerable, Ownable {
 
 	// Public members
 	string public _baseTokenURI;
+	uint public randCounter = 0;
 
 	constructor(string memory baseURI) ERC721("Fish", "FSH") {
 		_baseTokenURI = baseURI;
@@ -31,31 +33,32 @@ contract FishFactory is ERC721Enumerable, Ownable {
 		return contractBalance;
 	}
 
-	function createFish(string memory name) public payable returns(uint){
+	function createFish(string memory name) private returns(uint){
 		uint mintIndex = totalSupply();
 		uint256 timeOfMint = block.timestamp;
+		bytes32 gameTraits = perCallRandomGeneration();
+		bytes32 visualTraits = perCallRandomGeneration();
 		_safeMint(msg.sender, mintIndex);
-		m_FishDetails[mintIndex] = Fish(name, timeOfMint, vrf());
+		m_FishDetails[mintIndex] = Fish(name, timeOfMint, gameTraits, visualTraits);
 		return mintIndex;
 	}
 
-	function diceRoll() public view returns(uint) {
-		bytes32 rollTheDice = vrf();
-		uint diceNum = uint(rollTheDice) % 4; // random number 1-100
+	function diceRoll() public returns(uint) {
+		bytes32 rollTheDice = perCallRandomGeneration();
+		uint diceNum = uint(rollTheDice) % 16; // random number 1-16
 		return diceNum;
 	}
 
 	function catchFish(string memory name) public payable returns(uint){
-		bytes32 rollTheDice = vrf();
-		uint diceNum = uint(rollTheDice) % 4; // random number 1-100
+		uint randomNum = uint256(perCallRandomGeneration()) % 1000; // random number 1-1000
 		// mint chance based on amount spent to mint
 		if(msg.value >= 100 * 10**18) { // 100 ONE, guaranteed mint
 			return createFish(name);
-		} else if(msg.value >= 75 * 10**18 && diceNum > 0) { // 50 ONE, ~80% chance to mint
+		} else if(msg.value >= 50 * 10**18 && randomNum < 250 ) { // 50 ONE, ~25% chance to mint
 			return createFish(name);
-		} else if(msg.value >= 50 * 10**18 && diceNum > 1) { // 50 ONE, ~80% chance to mint
+		} else if(msg.value >= 25 * 10**18 && randomNum < 63) { // 25 ONE, ~6.25% chance to mint
 			return createFish(name);
-		} else if(msg.value >= 25 * 10**18 && diceNum > 2) { // 50 ONE, ~80% chance to mint
+		} else if(msg.value >= 5 * 10**18 && randomNum < 13) { // 5 ONE, ~1.25% chance to mint
 			return createFish(name);
 		} else {
 			return 0;
@@ -65,6 +68,12 @@ contract FishFactory is ERC721Enumerable, Ownable {
 	function getFishInfo(uint256 tokenId) public view returns(Fish memory info) {
 		require(_exists(tokenId), "That fish has not been minted yet.");
 		return m_FishDetails[tokenId];
+	}
+
+	function perCallRandomGeneration() public returns(bytes32) {
+		bytes32 random = vrf() & keccak256(abi.encodePacked(randCounter));
+		randCounter += 1;
+		return random;
 	}
 
 	function vrf() public view returns (bytes32 result) {

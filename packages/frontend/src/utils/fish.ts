@@ -65,25 +65,25 @@ export class Fish {
   tokenId: number;
 	name: string;
 	birth: number;
-  vrf: string;
-  rawValues: Array<number>;
-	traits: Traits;
+  rawVisualTraits: Array<number>;
+	rawGameTraits: Array<number>;
+	visualTraits: VisualTraits;
 
-  constructor(tokenId: number, name: string, birth: number, traits: string) {
+  constructor(tokenId: number, name: string, birth: number, gameTraits: string, visualTraits: string) {
     this.tokenId = tokenId;
     this.name = name;
     this.birth = birth;
-    this.vrf = traits;
-    this.rawValues = this.parseVrf(traits);
-    this.traits = this.parseTraits(this.rawValues);
+    this.rawVisualTraits = this.parseVrf(visualTraits);
+    this.rawGameTraits = this.parseVrf(gameTraits);
+    this.visualTraits = this.parseTraits(this.rawVisualTraits);
   };
 
-  parseTraits(traits: Array<number>): Traits {
+  parseTraits(traits: Array<number>): VisualTraits {
     const fishTypeIndex = 0;//traits[0];
     const colorSaturation = traits[1];
     const colorValue = traits[2];
 
-    const fishTraits: Traits = {
+    const fishTraits: VisualTraits = {
       // Color trait mapping
       ColorPrimary: {h: this.mapToHue(traits[3]), s: colorSaturation, v: colorValue},
       ColorSecondary: {h: this.mapToHue(traits[4]), s: colorSaturation, v: colorValue},
@@ -144,7 +144,7 @@ type Color = {
   v: number
 }
 
-type Traits = {
+type VisualTraits = {
   // Colors
   ColorPrimary: Color,
   ColorSecondary: Color,

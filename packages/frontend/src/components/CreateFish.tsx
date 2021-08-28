@@ -7,7 +7,7 @@ import { Fish } from '../utils/fish'
 import { useContract } from '../context/contractContext';
 
 
-const catchRates = ["100", "75", "50", "25"];
+const catchRates = ["100", "50", "25", "5"];
 
 const CreateFish = () => {
 	const [myFish, setMyFish] = useState<Fish[]>([]);
@@ -44,7 +44,7 @@ const CreateFish = () => {
 			const tokenId = await fishFactoryContract.methods.tokenOfOwnerByIndex(account, i).call();
 			const fishInfo = await fishFactoryContract.methods.getFishInfo(tokenId).call();
 			console.log(fishInfo)
-			const fish = new Fish(tokenId, fishInfo.name, fishInfo.birth, fishInfo.traits);
+			const fish = new Fish(tokenId, fishInfo.name, fishInfo.birth, fishInfo.gameTraits, fishInfo.visualTraits);
 			tempFish.push(fish);
 		}
 		setMyFish(tempFish);
@@ -63,7 +63,7 @@ const CreateFish = () => {
 
 	const rollDice = async () => {
 		try {
-			const diceRoll = await fishFactoryContract.methods.diceRoll().call();
+			const diceRoll = await fishFactoryContract.methods.perCallRandomGeneration().call();
 			console.log(diceRoll)
 		} catch (error) {
 			console.error(error);
@@ -125,7 +125,7 @@ const CreateFish = () => {
 					<FishNFT key={index}>
 						<FishName>{fish.name}</FishName>
 						<FishData>{fish.birth}</FishData>
-						<FishData>{fish.vrf}</FishData>
+						<FishData>{fish.visualTraits.ColorEyePrimary.h}</FishData>
 					</FishNFT>
 				))}
 			</FlexGrid>
