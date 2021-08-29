@@ -1,12 +1,26 @@
+// Ethers
 import { Web3Provider } from '@ethersproject/providers';
+
+// Harmony SDK
 import { ChainID, ChainType } from '@harmony-js/utils';
 import { Harmony } from '@harmony-js/core';
 
+// Types
 type Library = Web3Provider | Harmony;
 
+type Provider = {
+	chainId: ChainID, // ChainID
+	chainType: ChainType, // ChainType e.g Harmony or Ethereum
+	url: string, // web3 provider url
+	networkId: string // Why do we need this?
+}
+
+// Depending on this the provider will be chosen
 const envProvider: string = process.env.REACT_APP_FRONTEND_NETWORK || 'localnet';
 
-const configProviders: { [name: string]: any } = {
+
+// Provider list
+const configProviders: { [name: string]: Provider } = {
 	localnet: {
 		chainId: ChainID.HmyLocal,
 		chainType: ChainType.Harmony,
@@ -27,7 +41,8 @@ const configProviders: { [name: string]: any } = {
 	},
 };
 
-export const getProvider = () => configProviders[envProvider];
+// From provider list get the one we need
+export const getProvider = (): Provider => configProviders[envProvider];
 
 export const getLibraryProvider = (provider: any): Library => {
 	let library: Web3Provider | Harmony;
