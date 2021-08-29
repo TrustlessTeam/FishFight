@@ -1,9 +1,18 @@
+// Harmony SDK
 import { Harmony, HarmonyExtension } from '@harmony-js/core';
-import { HarmonyAbstractConnector } from '@harmony-react/abstract-connector';
 import { Contract as HarmonyContract } from '@harmony-js/contract';
+
+// Web3 React
+import { HarmonyAbstractConnector } from '@harmony-react/abstract-connector';
 import { AbstractConnector } from '@web3-react/abstract-connector';
+
+// Helpers
 import { getExtension } from './harmonyHelpers';
+
+// Web3
 import Web3 from 'web3';
+
+// Contracts
 import Contracts from '../contracts/contracts.json';
 
 // Load Fish Factory contract data for front end
