@@ -1,14 +1,23 @@
+// React
 import React, { useState } from 'react';
 import Modal from 'react-modal';
+
+// Styled Components
 import styled from 'styled-components';
 
+// Web3 React
 import { useWeb3React } from '@web3-react/core';
+
+// Harmony SDK
 import { toBech32 } from '@harmony-js/crypto';
 import { isBech32Address } from '@harmony-js/utils';
 
+// Components
 import SignOut from './SignOut';
 import Wallets from './Wallets';
 
+
+// ?
 if (process.env.NODE_ENV !== 'test') Modal.setAppElement('#root');
 
 const Account = () => {

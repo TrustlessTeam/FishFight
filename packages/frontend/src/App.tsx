@@ -1,18 +1,29 @@
+// React
 import React, { useState, useEffect, useContext } from 'react';
-import { ToastContainer } from 'react-toastify';
-import styled from 'styled-components';
 
-import Account from './components/Account';
-import Balance from './components/Balance';
-import UnityWindow from './components/UnityWindow';
-
-import Logo from './img/harmony_logo.svg';
-import { Contract } from '@harmony-js/contract';
-
-import 'react-toastify/dist/ReactToastify.css';
-import CreateFish from './components/CreateFish';
+// React web3
 import { useWeb3React } from '@web3-react/core';
 
+// React toastify
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
+// Styled Components
+import styled from 'styled-components';
+
+// Components
+import Account from './components/Account';
+import Balance from './components/Balance';
+import CreateFish from './components/CreateFish';
+import UnityWindow from './components/UnityWindow';
+
+// Logo
+import Logo from './img/harmony_logo.svg';
+
+// Harmony SDK
+import { Contract } from '@harmony-js/contract';
+
+// Context
 import { useHarmony } from './context/harmonyContext';
 import { ContractContext } from './context/contractContext';
 
