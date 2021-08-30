@@ -5,7 +5,7 @@ import { getProvider } from '../utils/provider';
 
 export const isHmyLibrary = (library: any): boolean => library?.messenger?.chainType === 'hmy';
 
-export const getExtension = (wallet: ExtensionInterface) => {
+export const getExtension = (wallet: ExtensionInterface): HarmonyExtension => {
 	const provider = getProvider();
 	return new HarmonyExtension(wallet, {
 		chainId: provider.chainId,
