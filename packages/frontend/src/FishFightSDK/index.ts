@@ -1,5 +1,5 @@
 // Harmony SDK
-import { Harmony } from "@harmony-js/core"
+import { Harmony, HarmonyExtension } from "@harmony-js/core"
 import { Contract } from "@harmony-js/contract"
 
 // Types
@@ -7,15 +7,29 @@ import { Provider } from "../utils/provider"
 
 // Contracts
 import Contracts from '../contracts/contracts.json'
+import Web3 from "web3"
 
 class FishFight {
-    hmy: Harmony
-    factory: Contract
+    provider: Harmony | HarmonyExtension | Web3
+    type: "web3" | "harmony" | "default"
+    factory: string
 
-    constructor(provider: Provider){
-        this.hmy = new Harmony(provider.url, {chainId: provider.chainId, chainType: provider.chainType});
+    constructor(provider: Harmony | HarmonyExtension | Web3, type: "web3" | "harmony" | "default"){
+        this.provider = provider
+        this.type = type
+        this.factory = this.setContract(this.provider, type)
+    }
 
-        this.factory = this.hmy.contracts.createContract(Contracts.contracts.FishFactory.abi, Contracts.contracts.FishFactory.address);
+    setContract = (provider: any, type: "web3" | "harmony" | "default") => {
+        if (type === "harmony" || type === "default" ) {
+            return provider.contracts.createContract(Contracts.contracts.FishFactory.abi, Contracts.contracts.FishFactory.address)
+        }
+
+        if (type === "web3") {
+            return new provider.eth.Contract(Contracts.contracts.FishFactory.abi, Contracts.contracts.FishFactory.address)
+        }
+
+        return 'def'
     }
 
 }
