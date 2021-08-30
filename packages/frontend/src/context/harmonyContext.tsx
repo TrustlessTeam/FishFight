@@ -22,7 +22,7 @@ interface HamonyProviderContext {
 // Get provider
 const provider = getProvider();
 
-// New harmony instance
+// New Harmony instance
 const hmy = new Harmony(provider.url, { chainId: provider.chainId, chainType: provider.chainType });
 
 // Harmony context provider

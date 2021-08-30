@@ -31,10 +31,12 @@ import { createFishFactoryContract, getFishFactoryContractFromConnector } from '
 
 const App = () => {
 	const { hmy, } = useHarmony();
-	const { account, connector, library } = useWeb3React();
-
+	const { account, connector, library} = useWeb3React();
+	
+	// Initiate contract with default harmony provider
 	const [fishFactoryContract, setFishFactoryContract] = useState<Contract | null>(createFishFactoryContract(hmy));
-
+	
+	// Set a connector for the contract
 	useEffect(() => {
 		if (!account) {
 			setFishFactoryContract(null);
@@ -66,7 +68,7 @@ const App = () => {
 						</Topbar>
 						<Content>
 							{/* <UnityWindow /> */}
-							<CreateFish/>
+							{ /* <CreateFish/> */}
 						</Content>
 					</ContractContext.Provider>
 				}

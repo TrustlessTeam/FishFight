@@ -1,8 +1,19 @@
+// React
 import React, { useState, useEffect } from 'react';
+
+// Styled Components
 import styled from 'styled-components';
+
+// Toast
 import { toast } from 'react-toastify';
+
+// Web3
 import { useWeb3React } from '@web3-react/core';
+
+// Harmony SDK
 import { isBech32Address, fromWei, hexToNumber, Units, Unit } from '@harmony-js/utils';
+
+// Utils
 import { Fish } from '../utils/fish'
 import { useContract } from '../context/contractContext';
 
@@ -10,13 +21,22 @@ import { useContract } from '../context/contractContext';
 const catchRates = ["100", "75", "50", "25"];
 
 const CreateFish = () => {
+
+	// All fish owned by user
 	const [myFish, setMyFish] = useState<Fish[]>([]);
 	const [myFishCount, setMyFishCount] = useState(0);
+
+	// Name of fish user's creating/minting
 	const [fishName, setFishName] = useState("Fishy")
+
+	// Contract balance
 	const [contractBalance, setContractBalance] = useState("");
 
+	// Context
 	const { account, connector, library } = useWeb3React();
 	const { fishFactoryContract } = useContract();
+
+
 	
 	// useEffect(() => {
 	// 	if (!fishFactoryContract) {
@@ -24,7 +44,7 @@ const CreateFish = () => {
 	// 	}
 	// }, [myFish]);
 
-	useEffect(() => {
+	useEffect(() => {	
 		if (connector) {
 			(async () => {
 				getContractBalance();
@@ -33,13 +53,15 @@ const CreateFish = () => {
 		}
 	}, []);
 
+	// Will query contract to get a list of all fish owned by user 
 	const loadUsersFish = async () => {
-		console.log(account)
-		console.log(fishFactoryContract)
-		const fishUserOwns = await fishFactoryContract.methods.balanceOf(account).call();
-		console.log(fishUserOwns)
+		const fishUserOwns: number = await fishFactoryContract.methods.balanceOf(account).call();
 		setMyFishCount(fishUserOwns);
-		const tempFish = [];
+
+		const tempFish: Fish[] = [];
+
+		// For every fish the user owns get token, then fish info, generate fish and push instance to tempFish 
+		// once its done, setMyFish to tempfish
 		for(let i = 0; i < fishUserOwns; i++) {
 			const tokenId = await fishFactoryContract.methods.tokenOfOwnerByIndex(account, i).call();
 			const fishInfo = await fishFactoryContract.methods.getFishInfo(tokenId).call();
@@ -48,9 +70,9 @@ const CreateFish = () => {
 			tempFish.push(fish);
 		}
 		setMyFish(tempFish);
-		console.log(tempFish)
 	}
 
+	// Get contract balance and parse it to One
 	const getContractBalance = async () => {
 		try {
 			const balance = await fishFactoryContract.methods.getContractBalance().call();
@@ -72,9 +94,7 @@ const CreateFish = () => {
 
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setFishName(e.target.value);
-	}
-
-	
+	}	
 
 	const handleClickCatch = (value: string, name: string) => async () => {
 		if (account) {
