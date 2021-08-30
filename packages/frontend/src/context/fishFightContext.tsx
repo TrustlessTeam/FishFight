@@ -2,31 +2,42 @@
 import FishFight from "../FishFightSDK";
 
 // React
-import { createContext, useContext } from "react"
+import { createContext, useContext, useEffect, useState } from "react"
 
 // Utils
 import { getProvider } from '../utils/provider'
 
+// Web3React
+import { useWeb3React } from "@web3-react/core";
+
+// Helpers
+import { getHarmonyProvider, getWalletProvider } from '../helpers/providerHelper'
+
 interface FishFightProviderContext {
     FishFight: FishFight;
     balance: string | undefined;
-    // fetchBalance: (account: string) => Promise<void>;
-    // resetBalance: () => void;
-    // isConnected: boolean;
-    // address: string;
 }
 
-type FishFightProviderProps = { children: React.ReactNode}
+type FishFightProviderProps = { children: React.ReactNode }
 
 
 const FishFightContext = createContext<FishFightProviderContext | undefined>(undefined);
 
 export const FishFightProvider = ({ children }: FishFightProviderProps ) => {
-  const FishFightInstance = new FishFight(getProvider())
-    
+  // FishFight instance initiates with default url provider upon visiting page
+  const [FishFightInstance, setFishFightInstance] = useState<FishFight>(new FishFight(getHarmonyProvider().provider, getHarmonyProvider().type))
+  const { active, connector, library} = useWeb3React();
+  
+  useEffect(() => {
+    // When user logs in, get wallet provider (harmonyExtension or web3provider)
+    if (active && connector && library) {
+      getWalletProvider(connector, library).then((wallet) => setFishFightInstance(new FishFight(wallet.provider, wallet.type)))
+    }
+  }, [connector, library])
+
   const value: FishFightProviderContext = {
     FishFight: FishFightInstance,
-    balance: undefined
+    balance: undefined,
   }
   return (
       <FishFightContext.Provider value={value}>{children}</FishFightContext.Provider>
