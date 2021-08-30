@@ -1,5 +1,5 @@
-// React
-import React, { useState, useEffect, useContext } from 'react';
+// FishFight
+import { useFishFight } from './context/fishFightContext';
 
 // React web3
 import { useWeb3React } from '@web3-react/core';
@@ -20,57 +20,32 @@ import UnityWindow from './components/UnityWindow';
 // Logo
 import Logo from './img/harmony_logo.svg';
 
-// Harmony SDK
-import { Contract } from '@harmony-js/contract';
-
-// Context
-import { useHarmony } from './context/harmonyContext';
-import { ContractContext } from './context/contractContext';
-
-import { createFishFactoryContract, getFishFactoryContractFromConnector } from './helpers/contractHelper';
 
 const App = () => {
-	const { hmy, } = useHarmony();
+	const { FishFight } = useFishFight();
+	
+	// Will all remain undefined until user logs in
+	// If user is using harmony wallet library will only contain messenger
+	// If user is using other wallet library will have a web3Provider
 	const { account, connector, library} = useWeb3React();
-	
-	// Initiate contract with default harmony provider
-	const [fishFactoryContract, setFishFactoryContract] = useState<Contract | null>(createFishFactoryContract(hmy));
-	
-	// Set a connector for the contract
-	useEffect(() => {
-		if (!account) {
-			setFishFactoryContract(null);
-		}
-	}, [account]);
-
-	useEffect(() => {
-		if (connector) {
-			(async () => {
-				const loadedContract = await getFishFactoryContractFromConnector(connector, library);
-				setFishFactoryContract(loadedContract);
-			})();
-		}
-	}, [connector, setFishFactoryContract]);
-
-	const contractContext = {fishFactoryContract: fishFactoryContract!};
 
 	return (
 		<Wrapper>
 			<Container>
-				{account && fishFactoryContract != null &&
-					<ContractContext.Provider value={contractContext}>
+				{account &&
+				<>
 						<Topbar>
 							<img src={Logo} alt="Harmony logo" />
 							<Flex>
-								<Balance />
-								<Account />
+								{/*<Balance /> */}
+								{/*<Account />*/}
 							</Flex>
 						</Topbar>
 						<Content>
 							{/* <UnityWindow /> */}
-							{ /* <CreateFish/> */}
+							{ <CreateFish/> }
 						</Content>
-					</ContractContext.Provider>
+				</>
 				}
 				{!account &&
 					<Account/>
