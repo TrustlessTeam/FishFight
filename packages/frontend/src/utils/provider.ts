@@ -3,10 +3,10 @@ import { Web3Provider } from '@ethersproject/providers';
 
 // Harmony SDK
 import { ChainID, ChainType } from '@harmony-js/utils';
-import { Harmony } from '@harmony-js/core';
+import { Blockchain, Harmony } from '@harmony-js/core';
 
 // Types
-type Library = Web3Provider | Harmony;
+type Library = Web3Provider | Blockchain;
 
 export type Provider = {
 	chainId: ChainID, // ChainID
@@ -44,13 +44,18 @@ const configProviders: { [name: string]: Provider } = {
 // From provider list get the one we need
 export const getProvider = (): Provider => configProviders[envProvider];
 
-export const getLibraryProvider = (provider: any): Library => {
-	let library: Web3Provider | Harmony;
+export const getLibraryProvider = (provider: Harmony | any): Library => {
+	let library: Library;
 
+	// If provider is a harmony instance (means user is using a harmony wallet)
+	// getProvider from our list and set url
 	if (provider?.chainType === 'hmy') {
 		provider.setProvider(getProvider().url);
 		library = provider.blockchain;
 	} else {
+
+	// If provider is not a harmony instance (user is using a wallet not primarily designed for harmony)
+	// return a web3Provider instance
 		library = new Web3Provider(provider);
 		library.pollingInterval = 12000;
 	}
