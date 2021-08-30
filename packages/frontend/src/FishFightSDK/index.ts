@@ -2,9 +2,6 @@
 import { Harmony, HarmonyExtension } from "@harmony-js/core"
 import { Contract } from "@harmony-js/contract"
 
-// Types
-import { Provider } from "../utils/provider"
-
 // Contracts
 import Contracts from '../contracts/contracts.json'
 import Web3 from "web3"
@@ -12,7 +9,7 @@ import Web3 from "web3"
 class FishFight {
     provider: Harmony | HarmonyExtension | Web3
     type: "web3" | "harmony" | "default"
-    factory: string
+    factory: Contract
 
     constructor(provider: Harmony | HarmonyExtension | Web3, type: "web3" | "harmony" | "default"){
         this.provider = provider
