@@ -8,7 +8,7 @@ import { Harmony } from '@harmony-js/core';
 // Types
 type Library = Web3Provider | Harmony;
 
-type Provider = {
+export type Provider = {
 	chainId: ChainID, // ChainID
 	chainType: ChainType, // ChainType e.g Harmony or Ethereum
 	url: string, // web3 provider url
