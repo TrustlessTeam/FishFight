@@ -22,12 +22,11 @@ import Logo from './img/harmony_logo.svg';
 
 
 const App = () => {
-	const { FishFight } = useFishFight();
-	
 	// Will all remain undefined until user logs in
-	// If user is using harmony wallet library will only contain messenger
-	// If user is using other wallet library will have a web3Provider
-	const { account, connector, library} = useWeb3React();
+	// If user is using harmony wallet, library will only contain blockchain
+	// If user is using other wallet, library will have a web3Provider
+	const { account } = useWeb3React();
+	
 
 	return (
 		<Wrapper>
@@ -37,13 +36,13 @@ const App = () => {
 						<Topbar>
 							<img src={Logo} alt="Harmony logo" />
 							<Flex>
-								{/*<Balance /> */}
+								<Balance />
 								{/*<Account />*/}
 							</Flex>
 						</Topbar>
 						<Content>
 							{/* <UnityWindow /> */}
-							{ <CreateFish/> }
+							{/* <CreateFish/> */}
 						</Content>
 				</>
 				}
