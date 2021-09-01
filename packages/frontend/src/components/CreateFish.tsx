@@ -44,7 +44,7 @@ const CreateFish = () => {
 			const tokenId = await fishFactoryContract.methods.tokenOfOwnerByIndex(account, i).call();
 			const fishInfo = await fishFactoryContract.methods.getFishInfo(tokenId).call();
 			console.log(fishInfo)
-			const fish = new Fish(tokenId, fishInfo.name, fishInfo.birth, fishInfo.gameTraits, fishInfo.visualTraits);
+			const fish = new Fish(tokenId, fishInfo.fishTypeIndex, fishInfo.name, fishInfo.birth, fishInfo.traitsA, fishInfo.traitsB, fishInfo.traitsC);
 			tempFish.push(fish);
 		}
 		setMyFish(tempFish);
@@ -82,7 +82,7 @@ const CreateFish = () => {
 				const fish = await fishFactoryContract.methods.catchFish(name).send({
 					from: account,
 					gasPrice: 1000000000,
-					gasLimit: 210000,
+					gasLimit: 500000,
 					value: new Unit(value).asOne().toWei(),
 				});
 				console.log(fish);
@@ -125,7 +125,7 @@ const CreateFish = () => {
 					<FishNFT key={index}>
 						<FishName>{fish.name}</FishName>
 						<FishData>{fish.birth}</FishData>
-						<FishData>{fish.visualTraits.ColorEyePrimary.h}</FishData>
+						<FishData>R: {fish.visualTraits.ColorBodyPrimary.r} G: {fish.visualTraits.ColorBodyPrimary.g} B: {fish.visualTraits.ColorBodyPrimary.b}</FishData>
 					</FishNFT>
 				))}
 			</FlexGrid>

@@ -237,6 +237,11 @@
             {
               "components": [
                 {
+                  "internalType": "uint8",
+                  "name": "fishTypeIndex",
+                  "type": "uint8"
+                },
+                {
                   "internalType": "string",
                   "name": "name",
                   "type": "string"
@@ -248,12 +253,17 @@
                 },
                 {
                   "internalType": "bytes32",
-                  "name": "gameTraits",
+                  "name": "traitsA",
                   "type": "bytes32"
                 },
                 {
                   "internalType": "bytes32",
-                  "name": "visualTraits",
+                  "name": "traitsB",
+                  "type": "bytes32"
+                },
+                {
+                  "internalType": "bytes32",
+                  "name": "traitsC",
                   "type": "bytes32"
                 }
               ],
@@ -329,32 +339,6 @@
               "internalType": "address",
               "name": "",
               "type": "address"
-            }
-          ],
-          "stateMutability": "view",
-          "type": "function"
-        },
-        {
-          "inputs": [],
-          "name": "perCallRandomGeneration",
-          "outputs": [
-            {
-              "internalType": "bytes32",
-              "name": "",
-              "type": "bytes32"
-            }
-          ],
-          "stateMutability": "nonpayable",
-          "type": "function"
-        },
-        {
-          "inputs": [],
-          "name": "randCounter",
-          "outputs": [
-            {
-              "internalType": "uint256",
-              "name": "",
-              "type": "uint256"
             }
           ],
           "stateMutability": "view",

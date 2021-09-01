@@ -10,10 +10,12 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 contract FishFactory is ERC721Enumerable, Ownable {
 	
 	struct Fish {
+		uint8 fishTypeIndex;
 		string name;
 		uint birth;
-		bytes32 gameTraits;
-		bytes32 visualTraits;
+		bytes32 traitsA;
+		bytes32 traitsB;
+		bytes32 traitsC;
 	}
 
 	// Private members
@@ -22,7 +24,8 @@ contract FishFactory is ERC721Enumerable, Ownable {
 
 	// Public members
 	string public _baseTokenURI;
-	uint public randCounter = 0;
+	uint private _randCounter = 0;
+	uint8 private _fishTypeIndex = 0;
 
 	constructor(string memory baseURI) ERC721("Fish", "FSH") {
 		_baseTokenURI = baseURI;
@@ -36,10 +39,11 @@ contract FishFactory is ERC721Enumerable, Ownable {
 	function createFish(string memory name) private returns(uint){
 		uint mintIndex = totalSupply();
 		uint256 timeOfMint = block.timestamp;
-		bytes32 gameTraits = perCallRandomGeneration();
-		bytes32 visualTraits = perCallRandomGeneration();
+		bytes32 traits1 = perCallRandomGeneration();
+		bytes32 traits2 = perCallRandomGeneration();
+		bytes32 traits3 = perCallRandomGeneration();
 		_safeMint(msg.sender, mintIndex);
-		m_FishDetails[mintIndex] = Fish(name, timeOfMint, gameTraits, visualTraits);
+		m_FishDetails[mintIndex] = Fish(_fishTypeIndex, name, timeOfMint, traits1, traits2, traits3);
 		return mintIndex;
 	}
 
@@ -70,10 +74,9 @@ contract FishFactory is ERC721Enumerable, Ownable {
 		return m_FishDetails[tokenId];
 	}
 
-	function perCallRandomGeneration() public returns(bytes32) {
-		bytes32 random = vrf() & keccak256(abi.encodePacked(randCounter));
-		randCounter += 1;
-		return random;
+	function perCallRandomGeneration() private returns(bytes32) {
+		_randCounter += 1;
+		return vrf() & keccak256(abi.encodePacked(_randCounter));
 	}
 
 	function vrf() public view returns (bytes32 result) {

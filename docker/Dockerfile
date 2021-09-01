@@ -31,5 +31,6 @@ COPY bootstrap bootstrap
 COPY scripts scripts
 
 RUN chmod +x $GOPATH/src/github.com/harmony-one/harmony-test/localnet/scripts/run-localnet.sh
+RUN sudo apt-get install -y vim
 WORKDIR $GOPATH/src/github.com/harmony-one/harmony
 ENTRYPOINT ["/go/src/github.com/harmony-one/harmony-test/localnet/scripts/run-localnet.sh"]
