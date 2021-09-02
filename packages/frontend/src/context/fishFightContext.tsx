@@ -21,7 +21,7 @@ import { Web3Provider } from "@ethersproject/providers";
 interface FishFightProviderContext {
     FishFight: FishFight
     balance: string | undefined
-    fetchBalance: (account: string, type: string, provider: Harmony | Web3Provider | any, library: any) => Promise<void>
+    refetchBalance: () => void
 	  resetBalance: () => void;
 }
 
@@ -50,8 +50,15 @@ export const FishFightProvider = ({ children }: FishFightProviderProps ) => {
     }
   }, [connector, library])
 
+  const refetchBalance = () => {
+    account ? getWalletProvider(connector, library).then((wallet) => {
+      contextBalance.fetchBalance(account, wallet.type, wallet.provider, library)
+    }) : null
+  }
+
   const value: FishFightProviderContext = {
     FishFight: FishFightInstance,
+    refetchBalance,
     ...contextBalance
   }
   return (

@@ -22,6 +22,8 @@ import Logo from './img/harmony_logo.svg';
 
 
 const App = () => {
+	const {FishFight} = useFishFight()
+	console.log(FishFight.factory)
 	// Will all remain undefined until user logs in
 	// If user is using harmony wallet, library will only contain blockchain
 	// If user is using other wallet, library will have a web3Provider
@@ -37,12 +39,12 @@ const App = () => {
 							<img src={Logo} alt="Harmony logo" />
 							<Flex>
 								<Balance />
-								{/*<Account />*/}
+								<Account />
 							</Flex>
 						</Topbar>
 						<Content>
 							{/* <UnityWindow /> */}
-							{/* <CreateFish/> */}
+							<CreateFish/>
 						</Content>
 				</>
 				}
