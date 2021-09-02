@@ -9,7 +9,7 @@ const deploy: DeployFunction = async ({ getNamedAccounts, deployments }: Hardhat
 	await deploy('FishFactory', {
 		from: deployer,
 		log: true,
-		args: ["www.test.com"]
+		args: ["https://fishfight.one/"]
 	});
 };
 

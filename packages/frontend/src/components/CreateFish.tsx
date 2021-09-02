@@ -44,7 +44,18 @@ const CreateFish = () => {
 			const tokenId = await fishFactoryContract.methods.tokenOfOwnerByIndex(account, i).call();
 			const fishInfo = await fishFactoryContract.methods.getFishInfo(tokenId).call();
 			console.log(fishInfo)
-			const fish = new Fish(tokenId, fishInfo.fishTypeIndex, fishInfo.name, fishInfo.birth, fishInfo.traitsA, fishInfo.traitsB, fishInfo.traitsC);
+			const fish = new Fish(
+				tokenId,
+				fishInfo.fishTypeIndex,
+				fishInfo.name,
+				fishInfo.birth,
+				fishInfo.strength,
+				fishInfo.intelligence,
+				fishInfo.agility,
+				fishInfo.traitsA,
+				fishInfo.traitsB,
+				fishInfo.traitsC
+			);
 			tempFish.push(fish);
 		}
 		setMyFish(tempFish);
@@ -56,15 +67,7 @@ const CreateFish = () => {
 			const balance = await fishFactoryContract.methods.getContractBalance().call();
 			const parsedBalance = fromWei(balance, Units.one);
 			setContractBalance(parsedBalance);
-		} catch (error) {
-			console.error(error);
-		}
-	};
-
-	const rollDice = async () => {
-		try {
-			const diceRoll = await fishFactoryContract.methods.perCallRandomGeneration().call();
-			console.log(diceRoll)
+			console.log(contractBalance)
 		} catch (error) {
 			console.error(error);
 		}
@@ -73,8 +76,6 @@ const CreateFish = () => {
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setFishName(e.target.value);
 	}
-
-	
 
 	const handleClickCatch = (value: string, name: string) => async () => {
 		if (account) {
@@ -100,12 +101,13 @@ const CreateFish = () => {
 		}
 	};
 
+	const handleFishClick = (tokenId: number) => async () => {
+		const tokenUri = await fishFactoryContract.methods.tokenURI(tokenId).call();
+		console.log(tokenUri)
+	}
+
 	return (
 		<CreateFishComponent>
-			<Wrapper>
-				Contract Balance:
-				<TotalStaked>{contractBalance}</TotalStaked>
-			</Wrapper>
 			<FlexGrid>
 			{catchRates.map((rate, index) => (
 				<CatchFishButton key={index} onClick={handleClickCatch(rate, fishName)}>
@@ -122,16 +124,13 @@ const CreateFish = () => {
 			<h1>Fished Owned: {myFishCount}</h1>
 			<FlexGrid>
 			{myFish.map((fish, index) => (
-					<FishNFT key={index}>
+					<FishNFT onClick={handleFishClick(fish.tokenId)} key={index}>
 						<FishName>{fish.name}</FishName>
 						<FishData>{fish.birth}</FishData>
-						<FishData>R: {fish.visualTraits.ColorBodyPrimary.r} G: {fish.visualTraits.ColorBodyPrimary.g} B: {fish.visualTraits.ColorBodyPrimary.b}</FishData>
+						<FishData>Strength: {fish.strength} Intelligence: {fish.intelligence} Agility: {fish.agility}</FishData>
 					</FishNFT>
 				))}
 			</FlexGrid>
-			<CatchFishButton onClick={rollDice}>
-					Roll Dice
-				</CatchFishButton>
 		</CreateFishComponent>
 	);
 };

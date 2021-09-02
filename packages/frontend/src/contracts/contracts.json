@@ -3,7 +3,7 @@
   "chainId": "1666700000",
   "contracts": {
     "FishFactory": {
-      "address": "0xd2DF1D661AAeFaB2384E044750134802e4388857",
+      "address": "0x7c305f02ed22d7627AF81cdA68b87f6f772C851f",
       "abi": [
         {
           "inputs": [
@@ -180,19 +180,6 @@
           "type": "function"
         },
         {
-          "inputs": [],
-          "name": "diceRoll",
-          "outputs": [
-            {
-              "internalType": "uint256",
-              "name": "",
-              "type": "uint256"
-            }
-          ],
-          "stateMutability": "nonpayable",
-          "type": "function"
-        },
-        {
           "inputs": [
             {
               "internalType": "uint256",
@@ -250,6 +237,21 @@
                   "internalType": "uint256",
                   "name": "birth",
                   "type": "uint256"
+                },
+                {
+                  "internalType": "uint8",
+                  "name": "strength",
+                  "type": "uint8"
+                },
+                {
+                  "internalType": "uint8",
+                  "name": "intelligence",
+                  "type": "uint8"
+                },
+                {
+                  "internalType": "uint8",
+                  "name": "agility",
+                  "type": "uint8"
                 },
                 {
                   "internalType": "bytes32",

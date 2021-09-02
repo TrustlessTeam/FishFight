@@ -88,16 +88,24 @@ export class Fish {
   fishTypeIndex: number;
 	name: string;
 	birth: number;
+  strength: number;
+  intelligence: number;
+  agility: number;
   traitsA: Array<number>;
 	traitsB: Array<number>;
 	traitsC: Array<number>;
 	visualTraits: VisualTraits;
 
-  constructor(tokenId: number, fishTypeIndex: number, name: string, birth: number, traitsA: string, traitsB: string, traitsC: string) {
+  constructor(tokenId: number, fishTypeIndex: number, name: string,
+              birth: number, strength: number, intelligence: number, agility: number,
+              traitsA: string, traitsB: string, traitsC: string) {
     this.tokenId = tokenId;
     this.fishTypeIndex = fishTypeIndex;
     this.name = name;
     this.birth = birth;
+    this.strength = strength;
+    this.intelligence = intelligence;
+    this.agility = agility;
     this.traitsA = this.parseVrf(traitsA);
     this.traitsB = this.parseVrf(traitsB);
     this.traitsC = this.parseVrf(traitsC);
@@ -109,9 +117,9 @@ export class Fish {
     const traitsB = this.traitsB;
     const traitsC = this.traitsC;
     const fishTypeIndex = this.fishTypeIndex;
-    const strength = traitsA[0];
-    const intelligence = traitsA[1]
-    const agility = traitsA[2]
+    const reservedTrait0 = traitsA[0];
+    const reservedTrait1 = traitsA[1]
+    const reservedTrait2 = traitsA[2]
     // const colorSaturation = traitsA[3];
     // const colorValue = traitsA[4];
 
