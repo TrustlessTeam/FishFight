@@ -7,12 +7,15 @@ import reportWebVitals from './reportWebVitals';
 import { HarmonyProvider } from './context/harmonyContext';
 import { Web3ReactProvider } from '@web3-react/core';
 import { getLibraryProvider } from './utils/provider';
+import { FishFightProvider } from './context/fishFightContext';
 
 ReactDOM.render(
 	<React.StrictMode>
 		<Web3ReactProvider getLibrary={getLibraryProvider}>
 			<HarmonyProvider>
-				<App />
+				<FishFightProvider>
+					<App />
+				</FishFightProvider>
 			</HarmonyProvider>
 		</Web3ReactProvider>
 	</React.StrictMode>,

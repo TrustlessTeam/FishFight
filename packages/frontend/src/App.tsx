@@ -1,51 +1,40 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { ToastContainer } from 'react-toastify';
-import styled from 'styled-components';
+// FishFight
+import { useFishFight } from './context/fishFightContext';
 
-import Account from './components/Account';
-import Balance from './components/Balance';
-import UnityWindow from './components/UnityWindow';
-
-import Logo from './img/harmony_logo.svg';
-import { Contract } from '@harmony-js/contract';
-
-import 'react-toastify/dist/ReactToastify.css';
-import CreateFish from './components/CreateFish';
+// React web3
 import { useWeb3React } from '@web3-react/core';
 
-import { useHarmony } from './context/harmonyContext';
-import { ContractContext } from './context/contractContext';
+// React toastify
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
-import { createFishFactoryContract, getFishFactoryContractFromConnector } from './helpers/contractHelper';
+// Styled Components
+import styled from 'styled-components';
+
+// Components
+import Account from './components/Account';
+import Balance from './components/Balance';
+import CreateFish from './components/CreateFish';
+import UnityWindow from './components/UnityWindow';
+
+// Logo
+import Logo from './img/harmony_logo.svg';
+
 
 const App = () => {
-	const { hmy, } = useHarmony();
-	const { account, connector, library } = useWeb3React();
-
-	const [fishFactoryContract, setFishFactoryContract] = useState<Contract | null>(createFishFactoryContract(hmy));
-
-	useEffect(() => {
-		if (!account) {
-			setFishFactoryContract(null);
-		}
-	}, [account]);
-
-	useEffect(() => {
-		if (connector) {
-			(async () => {
-				const loadedContract = await getFishFactoryContractFromConnector(connector, library);
-				setFishFactoryContract(loadedContract);
-			})();
-		}
-	}, [connector, setFishFactoryContract]);
-
-	const contractContext = {fishFactoryContract: fishFactoryContract!};
+	const {FishFight} = useFishFight()
+	console.log(FishFight.factory)
+	// Will all remain undefined until user logs in
+	// If user is using harmony wallet, library will only contain blockchain
+	// If user is using other wallet, library will have a web3Provider
+	const { account } = useWeb3React();
+	
 
 	return (
 		<Wrapper>
 			<Container>
-				{account && fishFactoryContract != null &&
-					<ContractContext.Provider value={contractContext}>
+				{account &&
+				<>
 						<Topbar>
 							<img src={Logo} alt="Harmony logo" />
 							<Flex>
@@ -57,7 +46,7 @@ const App = () => {
 							{/* <UnityWindow /> */}
 							<CreateFish/>
 						</Content>
-					</ContractContext.Provider>
+				</>
 				}
 				{!account &&
 					<Account/>

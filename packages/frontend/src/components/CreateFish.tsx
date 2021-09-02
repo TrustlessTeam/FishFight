@@ -1,48 +1,59 @@
+// React
 import React, { useState, useEffect } from 'react';
+
+// Styled Components
 import styled from 'styled-components';
+
+// Toast
 import { toast } from 'react-toastify';
+
+// Web3
 import { useWeb3React } from '@web3-react/core';
+
+// Harmony SDK
 import { isBech32Address, fromWei, hexToNumber, Units, Unit } from '@harmony-js/utils';
+
+// Utils
 import { Fish } from '../utils/fish'
-import { useContract } from '../context/contractContext';
+import { useFishFight } from '../context/fishFightContext';
 
 
 const catchRates = ["100", "50", "25", "5"];
 
 const CreateFish = () => {
+	const { FishFight, refetchBalance} = useFishFight()
+
+	// All fish owned by user
 	const [myFish, setMyFish] = useState<Fish[]>([]);
 	const [myFishCount, setMyFishCount] = useState(0);
+
+	// Name of the fish that the user is creating/minting
 	const [fishName, setFishName] = useState("Fishy")
+
+	// Contract balance
 	const [contractBalance, setContractBalance] = useState("");
+	console.log(contractBalance)
 
-	const { account, connector, library } = useWeb3React();
-	const { fishFactoryContract } = useContract();
-	
-	// useEffect(() => {
-	// 	if (!fishFactoryContract) {
-	// 		setContract(null);
-	// 	}
-	// }, [myFish]);
+	// Context
+	const { account } = useWeb3React();
 
-	useEffect(() => {
-		if (connector) {
-			(async () => {
+	useEffect(() => {	
 				getContractBalance();
-				loadUsersFish();
-			})();
-		}
+				// loadUsersFish();
 	}, []);
 
+	// Will query contract to get a list of all fish owned by user 
 	const loadUsersFish = async () => {
-		console.log(account)
-		console.log(fishFactoryContract)
-		const fishUserOwns = await fishFactoryContract.methods.balanceOf(account).call();
-		console.log(fishUserOwns)
+		const fishUserOwns: number = await FishFight.factory.methods.balanceOf(account).call();
 		setMyFishCount(fishUserOwns);
-		const tempFish = [];
+
+		const tempFish: Fish[] = [];
+
+		// For every fish the user owns get token, then fish info, generate fish and push instance to tempFish 
+		// once its done, setMyFish to tempfish
 		for(let i = 0; i < fishUserOwns; i++) {
-			const tokenId = await fishFactoryContract.methods.tokenOfOwnerByIndex(account, i).call();
-			const fishInfo = await fishFactoryContract.methods.getFishInfo(tokenId).call();
+			const tokenId = await FishFight.factory.methods.tokenOfOwnerByIndex(account, i).call();
+			const fishInfo = await FishFight.factory.methods.getFishInfo(tokenId).call();
 			console.log(fishInfo)
 			const fish = new Fish(
 				tokenId,
@@ -59,18 +70,19 @@ const CreateFish = () => {
 			tempFish.push(fish);
 		}
 		setMyFish(tempFish);
-		console.log(tempFish)
 	}
 
+	// Get contract balance and parse it to One
 	const getContractBalance = async () => {
 		try {
-			const balance = await fishFactoryContract.methods.getContractBalance().call();
+			const balance = await FishFight.factory.methods.getContractBalance().call();
 			const parsedBalance = fromWei(balance, Units.one);
 			setContractBalance(parsedBalance);
 			console.log(contractBalance)
 		} catch (error) {
 			console.error(error);
 		}
+		return null
 	};
 
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -80,7 +92,7 @@ const CreateFish = () => {
 	const handleClickCatch = (value: string, name: string) => async () => {
 		if (account) {
 			try {
-				const fish = await fishFactoryContract.methods.catchFish(name).send({
+				const fish = await FishFight.factory.methods.catchFish(name).send({
 					from: account,
 					gasPrice: 1000000000,
 					gasLimit: 500000,
@@ -91,6 +103,7 @@ const CreateFish = () => {
 					onClose: async () => {
 						getContractBalance()
 						loadUsersFish()
+						refetchBalance()
 					},
 				});
 			} catch (error) {
@@ -99,10 +112,11 @@ const CreateFish = () => {
 		} else {
 			toast.error('Connect your wallet');
 		}
+		return null
 	};
 
 	const handleFishClick = (tokenId: number) => async () => {
-		const tokenUri = await fishFactoryContract.methods.tokenURI(tokenId).call();
+		const tokenUri = await FishFight.factory.methods.tokenURI(tokenId).call();
 		console.log(tokenUri)
 	}
 
