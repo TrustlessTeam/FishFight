@@ -10,8 +10,11 @@ import { toast } from 'react-toastify';
 // Web3
 import { useWeb3React } from '@web3-react/core';
 
+// Big Number
+import BN from 'bn.js';
+
 // Harmony SDK
-import { isBech32Address, fromWei, hexToNumber, Units, Unit } from '@harmony-js/utils';
+import { numberToString, fromWei, hexToNumber, Units, Unit } from '@harmony-js/utils';
 
 // Utils
 import { Fish } from '../utils/fish'
@@ -25,7 +28,7 @@ const CreateFish = () => {
 
 	// All fish owned by user
 	const [myFish, setMyFish] = useState<Fish[]>([]);
-	const [myFishCount, setMyFishCount] = useState(0);
+	const [myFishCount, setMyFishCount] = useState<number>(0);
 
 	// Name of the fish that the user is creating/minting
 	const [fishName, setFishName] = useState("Fishy")
@@ -37,24 +40,25 @@ const CreateFish = () => {
 	// Context
 	const { account } = useWeb3React();
 
-	useEffect(() => {	
-				getContractBalance();
-				// loadUsersFish();
-	}, []);
+	useEffect(() => {
+		getContractBalance();
+		loadUsersFish();
+	}, [myFishCount]);
 
 	// Will query contract to get a list of all fish owned by user 
 	const loadUsersFish = async () => {
-		const fishUserOwns: number = await FishFight.factory.methods.balanceOf(account).call();
-		setMyFishCount(fishUserOwns);
+		const fishUserOwns: BN = await FishFight.factory.methods.balanceOf(account).call();
+		const totalFish = new BN(fishUserOwns).toNumber()
+		setMyFishCount(totalFish);
+		console.log(myFishCount)
 
 		const tempFish: Fish[] = [];
 
 		// For every fish the user owns get token, then fish info, generate fish and push instance to tempFish 
 		// once its done, setMyFish to tempfish
-		for(let i = 0; i < fishUserOwns; i++) {
+		for(let i = 0; i < myFishCount; i++) {
 			const tokenId = await FishFight.factory.methods.tokenOfOwnerByIndex(account, i).call();
 			const fishInfo = await FishFight.factory.methods.getFishInfo(tokenId).call();
-			console.log(fishInfo)
 			const fish = new Fish(
 				tokenId,
 				fishInfo.fishTypeIndex,
@@ -77,6 +81,7 @@ const CreateFish = () => {
 		try {
 			const balance = await FishFight.factory.methods.getContractBalance().call();
 			const parsedBalance = fromWei(balance, Units.one);
+
 			setContractBalance(parsedBalance);
 			console.log(contractBalance)
 		} catch (error) {
