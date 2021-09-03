@@ -21,98 +21,81 @@ import { Fish } from '../utils/fish'
 import { useFishFight } from '../context/fishFightContext';
 
 
-const catchRates = ["100", "50", "25", "5"];
+const catchRates = [
+	{value: 100, chance: "100%"},
+	{value: 50, chance: "~25%"},
+	{value: 25, chance: "~6.25%"},
+	{value: 5, chance: "~1.25%"}
+];
 
-const CreateFish = () => {
-	const { FishFight, refetchBalance} = useFishFight()
-
-	// All fish owned by user
-	const [myFish, setMyFish] = useState<Fish[]>([]);
-	const [myFishCount, setMyFishCount] = useState<number>(0);
+const CatchFish = () => {
+	const { FishFight, refetchBalance, refetchUserFish} = useFishFight()
+	const [caughtFish, setCaughtFish] = useState<Fish | null>(null);
 
 	// Name of the fish that the user is creating/minting
 	const [fishName, setFishName] = useState("Fishy")
 
 	// Contract balance
 	const [contractBalance, setContractBalance] = useState("");
-	console.log(contractBalance)
+	console.log("Contract Balance: " + contractBalance)
 
 	// Context
 	const { account } = useWeb3React();
-
-	useEffect(() => {
-		getContractBalance();
-		loadUsersFish();
-	}, [myFishCount]);
-
-	// Will query contract to get a list of all fish owned by user 
-	const loadUsersFish = async () => {
-		const fishUserOwns: BN = await FishFight.factory.methods.balanceOf(account).call();
-		const totalFish = new BN(fishUserOwns).toNumber()
-		setMyFishCount(totalFish);
-		console.log(myFishCount)
-
-		const tempFish: Fish[] = [];
-
-		// For every fish the user owns get token, then fish info, generate fish and push instance to tempFish 
-		// once its done, setMyFish to tempfish
-		for(let i = 0; i < myFishCount; i++) {
-			const tokenId = await FishFight.factory.methods.tokenOfOwnerByIndex(account, i).call();
-			const fishInfo = await FishFight.factory.methods.getFishInfo(tokenId).call();
-			const fish = new Fish(
-				tokenId,
-				fishInfo.fishTypeIndex,
-				fishInfo.name,
-				fishInfo.birth,
-				fishInfo.strength,
-				fishInfo.intelligence,
-				fishInfo.agility,
-				fishInfo.traitsA,
-				fishInfo.traitsB,
-				fishInfo.traitsC
-			);
-			tempFish.push(fish);
-		}
-		setMyFish(tempFish);
-	}
 
 	// Get contract balance and parse it to One
 	const getContractBalance = async () => {
 		try {
 			const balance = await FishFight.factory.methods.getContractBalance().call();
 			const parsedBalance = fromWei(balance, Units.one);
-
 			setContractBalance(parsedBalance);
-			console.log(contractBalance)
 		} catch (error) {
 			console.error(error);
 		}
 		return null
 	};
 
+	const getUserFish = async (tokenId: number) => {
+		const fishInfo = await FishFight.factory.methods.getFishInfo(tokenId).call();
+		const newFish = new Fish(
+			tokenId,
+			new BN(fishInfo.fishTypeIndex).toNumber(),
+			fishInfo.name,
+			new BN(fishInfo.birth).toNumber(),
+			new BN(fishInfo.strength).toNumber(),
+			new BN(fishInfo.intelligence).toNumber(),
+			new BN(fishInfo.agility).toNumber(),
+			new BN(fishInfo.wins).toNumber(),
+			fishInfo.traitsA,
+			fishInfo.traitsB,
+			fishInfo.traitsC
+		);
+		setCaughtFish(newFish)
+	}
+
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setFishName(e.target.value);
 	}
 
-	const handleClickCatch = (value: string, name: string) => async () => {
+	const handleClickCatch = (value: number) => async () => {
 		if (account) {
 			try {
-				const fish = await FishFight.factory.methods.catchFish(name).send({
+				const fish = await FishFight.factory.methods.catchFish().send({
 					from: account,
 					gasPrice: 1000000000,
 					gasLimit: 500000,
 					value: new Unit(value).asOne().toWei(),
 				});
-				console.log(fish);
+				const returnedTokenId = new BN(fish.events.Transfer.returnValues.tokenId).toNumber()
+				getUserFish(returnedTokenId);
 				toast.success('Transaction done', {
 					onClose: async () => {
 						getContractBalance()
-						loadUsersFish()
 						refetchBalance()
+						refetchUserFish()
 					},
 				});
 			} catch (error) {
-				toast.error(error);
+				// toast.error(error);
 			}
 		} else {
 			toast.error('Connect your wallet');
@@ -125,34 +108,43 @@ const CreateFish = () => {
 		console.log(tokenUri)
 	}
 
+	const FishingOptions = () => {
+		if(caughtFish) {
+			return (
+				<div>
+					<FishNFT onClick={handleFishClick(caughtFish.tokenId)}>
+						<FishData>{caughtFish.birth}</FishData>
+						<FishData>Strength: {caughtFish.strength} Intelligence: {caughtFish.intelligence} Agility: {caughtFish.agility}</FishData>
+					</FishNFT>
+
+					<CatchFishButton onClick={() => {setCaughtFish(null)}}>
+						Catch another fish!
+					</CatchFishButton>
+				</div>
+			)
+		}
+
+		return (
+			<div>
+				<h2>Cast a Line!</h2>
+				<p>What type of bait do you want?</p>
+				{catchRates.map((rate, index) => (
+					<CatchFishButton key={index} onClick={handleClickCatch(rate.value)}>
+						{rate.chance} Cast  {rate.value} ONE
+					</CatchFishButton>
+				))}
+			</div>
+		)
+	}
+
 	return (
 		<CreateFishComponent>
-			<FlexGrid>
-			{catchRates.map((rate, index) => (
-				<CatchFishButton key={index} onClick={handleClickCatch(rate, fishName)}>
-					{rate}% Catch Rate for {rate} ONE
-				</CatchFishButton>
-			))}
-			</FlexGrid>
-			<form>
-				<label>
-					Fish Name:
-					<input type="text" value={fishName} onChange={handleChange} />
-				</label>
-			</form>
-			<h1>Fished Owned: {myFishCount}</h1>
-			<FlexGrid>
-			{myFish.map((fish, index) => (
-					<FishNFT onClick={handleFishClick(fish.tokenId)} key={index}>
-						<FishName>{fish.name}</FishName>
-						<FishData>{fish.birth}</FishData>
-						<FishData>Strength: {fish.strength} Intelligence: {fish.intelligence} Agility: {fish.agility}</FishData>
-					</FishNFT>
-				))}
-			</FlexGrid>
+			<FishingOptions />
 		</CreateFishComponent>
 	);
 };
+
+
 
 const CreateFishComponent = styled.div`
 	display: flex;
@@ -229,4 +221,4 @@ const TotalStaked = styled.div`
 	color: black;
 `;
 
-export default CreateFish;
+export default CatchFish;

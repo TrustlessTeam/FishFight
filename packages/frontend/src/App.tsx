@@ -1,6 +1,14 @@
 // FishFight
 import { useFishFight } from './context/fishFightContext';
 
+// React
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  Link
+} from "react-router-dom";
+
 // React web3
 import { useWeb3React } from '@web3-react/core';
 
@@ -14,11 +22,13 @@ import styled from 'styled-components';
 // Components
 import Account from './components/Account';
 import Balance from './components/Balance';
-import CreateFish from './components/CreateFish';
+import CatchFish from './components/CatchFish';
 import UnityWindow from './components/UnityWindow';
 
 // Logo
 import Logo from './img/harmony_logo.svg';
+import FightFish from './components/FightFish';
+import ViewFish from './components/ViewFish';
 
 
 const App = () => {
@@ -33,7 +43,7 @@ const App = () => {
 	return (
 		<Wrapper>
 			<Container>
-				{account &&
+				{account ?
 				<>
 						<Topbar>
 							<img src={Logo} alt="Harmony logo" />
@@ -43,14 +53,45 @@ const App = () => {
 							</Flex>
 						</Topbar>
 						<Content>
+							<Router>
+								<div>
+									<nav>
+										<ul>
+											<li>
+												<Link to="/">View Fish</Link>
+											</li>
+											<li>
+												<Link to="/catch">Catch A Fish!</Link>
+											</li>
+											<li>
+												<Link to="/fight">Fight A Fish!</Link>
+											</li>
+										</ul>
+									</nav>
+
+									{/* A <Switch> looks through its children <Route>s and
+											renders the first one that matches the current URL. */}
+									<Switch>
+										<Route path="/fight">
+											<FightFish />
+										</Route>
+										<Route path="/catch">
+											<CatchFish/>
+										</Route>
+										<Route path="/">
+											<ViewFish />
+										</Route>
+									</Switch>
+								</div>
+							</Router>					
 							{/* <UnityWindow /> */}
-							<CreateFish/>
 						</Content>
-				</>
-				}
-				{!account &&
+				</> :
+				<>
 					<Account/>
-				}
+					<ViewFish />
+				</>
+			}
 			</Container>
 			<ToastContainer
 				position="bottom-right"

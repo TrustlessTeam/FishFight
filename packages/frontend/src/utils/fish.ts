@@ -91,6 +91,7 @@ export class Fish {
   strength: number;
   intelligence: number;
   agility: number;
+  wins: number;
   traitsA: Array<number>;
 	traitsB: Array<number>;
 	traitsC: Array<number>;
@@ -98,7 +99,7 @@ export class Fish {
 
   constructor(tokenId: number, fishTypeIndex: number, name: string,
               birth: number, strength: number, intelligence: number, agility: number,
-              traitsA: string, traitsB: string, traitsC: string) {
+              wins: number, traitsA: string, traitsB: string, traitsC: string) {
     this.tokenId = tokenId;
     this.fishTypeIndex = fishTypeIndex;
     this.name = name;
@@ -106,6 +107,7 @@ export class Fish {
     this.strength = strength;
     this.intelligence = intelligence;
     this.agility = agility;
+    this.wins = wins;
     this.traitsA = this.parseVrf(traitsA);
     this.traitsB = this.parseVrf(traitsB);
     this.traitsC = this.parseVrf(traitsC);
@@ -180,7 +182,6 @@ export class Fish {
 				return parseInt(x, 16);
 		});
 
-		console.log(decPairs);
 		return decPairs;
 	}
 

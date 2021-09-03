@@ -10,20 +10,34 @@ class FishFight {
     provider: Harmony | HarmonyExtension | Web3
     type: "web3" | "harmony" | "default"
     factory: Contract
+    fight: Contract
 
     constructor(provider: Harmony | HarmonyExtension | Web3, type: "web3" | "harmony" | "default"){
         this.provider = provider
         this.type = type
-        this.factory = this.setContract(this.provider, type)
+        this.factory = this.setFactoryContract(this.provider, type)
+        this.fight = this.setFightContract(this.provider, type)
     }
 
-    setContract = (provider: any, type: "web3" | "harmony" | "default") => {
+    setFactoryContract = (provider: any, type: "web3" | "harmony" | "default") => {
         if (type === "harmony" || type === "default" ) {
             return provider.contracts.createContract(Contracts.contracts.FishFactory.abi, Contracts.contracts.FishFactory.address)
         }
 
         if (type === "web3") {
             return new provider.eth.Contract(Contracts.contracts.FishFactory.abi, Contracts.contracts.FishFactory.address)
+        }
+
+        return 'def'
+    }
+
+    setFightContract = (provider: any, type: "web3" | "harmony" | "default") => {
+        if (type === "harmony" || type === "default" ) {
+            return provider.contracts.createContract(Contracts.contracts.FishFight.abi, Contracts.contracts.FishFight.address)
+        }
+
+        if (type === "web3") {
+            return new provider.eth.Contract(Contracts.contracts.FishFight.abi, Contracts.contracts.FishFight.address)
         }
 
         return 'def'
