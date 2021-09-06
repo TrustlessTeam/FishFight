@@ -1,4 +1,5 @@
 //SPDX-License-Identifier: MIT
+// import "hardhat/console.sol";
 pragma solidity ^0.8.4;
 
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
@@ -39,7 +40,7 @@ contract FishFight is Ownable {
 		return contractBalance;
 	}
 
-	function fight(uint fishChallengerTokenId, uint fishChallengedTokenId, uint8 fightType) public returns(uint fightIndex) {
+	function fight(uint fishChallengerTokenId, uint fishChallengedTokenId, uint8 fightType) public returns(uint) {
 		verifyChallengerOwnsFish(fishChallengerTokenId, fishChallengedTokenId);
 		uint256 timeOfFight = block.timestamp;
 		bytes32 round1 = perCallRandomGeneration();
@@ -55,13 +56,16 @@ contract FishFight is Ownable {
 
 	function verifyChallengerOwnsFish(uint fishChallengerTokenId, uint fishChallengedTokenId) private view {
 		address tokenOwner = _factory.ownerOf(fishChallengerTokenId);
+		// console.log(tokenOwner);
 		require(tokenOwner == msg.sender, "Must be owner of Token to create a challenge.");
-		require(fishChallengedTokenId != fishChallengedTokenId, "Tokens can't be the same");
+		require(fishChallengerTokenId != fishChallengedTokenId, "Tokens can't be the same");
 	}
 
 	function getOutcome(uint fishChallengerTokenId, uint fishChallengedTokenId, uint8 fightType, bytes32 round1, bytes32 round2, bytes32 round3) private view returns(int winner) {
+		// console.log(fishChallengerTokenId);
 		FishFactory.Fish memory challenger = _factory.getFishInfo(fishChallengerTokenId);
 		FishFactory.Fish memory challenged = _factory.getFishInfo(fishChallengedTokenId);
+		// console.log(challenger.strength);
 		uint8 challengerWins = 0;
 		uint8 challengedWins = 0;
 		// Battle on 3 rounds of head to head comparison of fish traits (randomly picked)
@@ -95,6 +99,9 @@ contract FishFight is Ownable {
 	function perCallRandomGeneration() private returns(bytes32) {
 		_randCounter.increment();
 		return vrf() & keccak256(abi.encodePacked(_randCounter.current()));
+
+		// _randCounter.increment();
+		// return keccak256(abi.encodePacked(_randCounter.current()));
 	}
 
 	function vrf() public view returns (bytes32 result) {

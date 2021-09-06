@@ -28,7 +28,7 @@ contract FishFactory is ERC721Enumerable, Ownable {
 	mapping(uint256 => Fish) private _fishData;
 	Counters.Counter private _randCounter;
 	uint8 private _fishTypeIndex = 0;
-	address private _fightContractAddress;
+	address public _fightContractAddress;
 
 	// Public members
 	string public _baseTokenURI;
@@ -96,8 +96,11 @@ contract FishFactory is ERC721Enumerable, Ownable {
 	}
 
 	function perCallRandomGeneration() private returns(bytes32) {
+		// _randCounter.increment();
+		// return vrf() & keccak256(abi.encodePacked(_randCounter.current()));
+
 		_randCounter.increment();
-		return vrf() & keccak256(abi.encodePacked(_randCounter.current()));
+		return keccak256(abi.encodePacked(_randCounter.current()));
 	}
 
 	function vrf() public view returns (bytes32 result) {

@@ -19,8 +19,45 @@ const deploy: DeployFunction = async ({ getNamedAccounts, deployments }: Hardhat
 		args: [Factory.address]
 	});
 
+	console.log(Fight.address)
+
+	const fishFight = await ethers.getContract("FishFight", deployer)
+
+
 	const fishFactory = await ethers.getContract("FishFactory", deployer)
-	fishFactory.updateFishFightContractAddress(Fight.address);
+	await fishFactory.updateFishFightContractAddress(Fight.address)
+
+	const addressInFactory = await fishFactory._fightContractAddress();
+	console.log(addressInFactory)
+
+	// Testing of contract interactions
+
+	// Mint fish for owner account
+	const oneToSend = ethers.utils.parseEther('100');
+	const catchFishTx = await fishFactory.catchFish({
+		value: oneToSend,
+	});
+	await catchFishTx.wait();
+
+	// Mint fish for another account
+	const catchFishTx2 = await fishFactory.catchFish({
+		value: oneToSend,
+	});
+	await catchFishTx2.wait();
+
+	// Get owners first fish
+	const fish0 = await fishFactory.getFishInfo(0)
+	const fish1 = await fishFactory.getFishInfo(1)
+	console.log(fish0)
+	console.log(fish1)
+	
+	const fight = await fishFight.fight(0, 1, 0);
+	await fight.wait()
+	const fightInfo = await fishFight.getFightInfo(0)
+
+	console.log(fightInfo)
+	console.log(await fishFactory.getFishInfo(0))
+	console.log(await fishFactory.getFishInfo(1))
 };
 
 export default deploy;

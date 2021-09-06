@@ -49,10 +49,12 @@ const FightFish = () => {
 	}
 
 	const setOpponent = (tokenId : number) => {
+		console.log("Opponent Fish: " + tokenId)
 		setopponentFish(tokenId);
 	}
 
 	const setUserFish = (tokenId : number) => {
+		console.log("UserSelected Fish: " + tokenId)
 		setMySelectedFish(tokenId);
 	}
 
@@ -108,11 +110,11 @@ const FightFish = () => {
 			<FlexGrid>
 			{userFish?.map((fish, index) => (
 					<FishNFT  key={index} onClick={() => {setUserFish(fish.tokenId)}}>
-						<FishName>{fish.name}</FishName>
+						<FishName>{fish.tokenId}</FishName>
 						<FishData>{fish.birth}</FishData>
 						<FishData>Strength: {fish.strength} Intelligence: {fish.intelligence} Agility: {fish.agility}</FishData>
 						<FishData>Wins: {fish.wins}</FishData>
-						<p>{fish?.tokenId == mySelectedFish ? "Selected Fish" : ""}</p>
+						<p>{fish.tokenId == mySelectedFish ? "Selected Fish": ""}</p>
 					</FishNFT>
 				))}
 			</FlexGrid>

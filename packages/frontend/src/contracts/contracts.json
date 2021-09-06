@@ -3,7 +3,7 @@
   "chainId": "1666700000",
   "contracts": {
     "FishFactory": {
-      "address": "0x28c08e6D24CB2327410643a0629701837F03c337",
+      "address": "0x67bc0F063C08bf34f5d80400e9f15c3Bb7448C6f",
       "abi": [
         {
           "inputs": [
@@ -118,6 +118,19 @@
               "internalType": "string",
               "name": "",
               "type": "string"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [],
+          "name": "_fightContractAddress",
+          "outputs": [
+            {
+              "internalType": "address",
+              "name": "",
+              "type": "address"
             }
           ],
           "stateMutability": "view",
@@ -606,7 +619,7 @@
       ]
     },
     "FishFight": {
-      "address": "0xDF2b9Cf11408C4B59E0fA24abeEea68Fdfc2fb9A",
+      "address": "0xD65b5A4FeE0aAAc1f2D4a763d7ce648d3b03Aa8F",
       "abi": [
         {
           "inputs": [
@@ -659,6 +672,38 @@
           "name": "fight",
           "outputs": [
             {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        },
+        {
+          "inputs": [],
+          "name": "getContractBalance",
+          "outputs": [
+            {
+              "internalType": "uint256",
+              "name": "_balance",
+              "type": "uint256"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "uint256",
+              "name": "tokenId",
+              "type": "uint256"
+            }
+          ],
+          "name": "getFightInfo",
+          "outputs": [
+            {
               "components": [
                 {
                   "internalType": "uint8",
@@ -702,21 +747,8 @@
                 }
               ],
               "internalType": "struct FishFight.Fight",
-              "name": "fight",
+              "name": "info",
               "type": "tuple"
-            }
-          ],
-          "stateMutability": "nonpayable",
-          "type": "function"
-        },
-        {
-          "inputs": [],
-          "name": "getContractBalance",
-          "outputs": [
-            {
-              "internalType": "uint256",
-              "name": "_balance",
-              "type": "uint256"
             }
           ],
           "stateMutability": "view",

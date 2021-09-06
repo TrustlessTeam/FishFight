@@ -40,6 +40,7 @@
   "scripts": {
     "compile": "hardhat compile",
     "deploy": "hardhat deploy --export ../frontend/src/contracts/contracts.json",
+    "deploy:hardhat": "hardhat deploy --network localhost --export ../frontend/src/contracts/contracts.json",
     "deploy:testnet": "hardhat deploy --network testnet --export ../frontend/src/contracts/contracts.json",
     "deploy:mainnet": "hardhat deploy --network mainnet --export ../frontend/src/contracts/contracts.json",
     "deploy:live": "hardhat deploy --export ../frontend/src/contracts/contracts.json --watch",
