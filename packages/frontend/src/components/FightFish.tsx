@@ -18,7 +18,7 @@ import { numberToString, fromWei, hexToNumber, Units, Unit } from '@harmony-js/u
 
 // Utils
 import { Fish } from '../utils/fish'
-import { Fight } from '../utils/fight'
+import { Fight, RoundMapping } from '../utils/fight'
 import { useFishFight } from '../context/fishFightContext';
 
 
@@ -26,9 +26,9 @@ const FightFish = () => {
 	const { FishFight, refetchBalance, userFish, publicFish, refetchUserFish, refetchPublicFish} = useFishFight()
 
 	// Fish selected for fight
-	const [mySelectedFish, setMySelectedFish] = useState<number | null>(null);
-	const [opponentFish, setopponentFish] = useState<number | null>(null);
-	const [fightResult, setFightResult] = useState<Fight>();
+	const [mySelectedFish, setMySelectedFish] = useState<Fish | null>(null);
+	const [opponentFish, setopponentFish] = useState<Fish | null>(null);
+	const [fightResult, setFightResult] = useState<Fight | null>();
 
 	// Context
 	const { account } = useWeb3React();
@@ -48,26 +48,27 @@ const FightFish = () => {
 		setFightResult(newFight)
 	}
 
-	const setOpponent = (tokenId : number) => {
-		console.log("Opponent Fish: " + tokenId)
-		setopponentFish(tokenId);
+	const setOpponent = (fish : Fish) => {
+		console.log("Opponent Fish: " + fish.tokenId)
+		setopponentFish(fish);
 	}
 
-	const setUserFish = (tokenId : number) => {
-		console.log("UserSelected Fish: " + tokenId)
-		setMySelectedFish(tokenId);
+	const setUserFish = (fish : Fish) => {
+		console.log("UserSelected Fish: " + fish.tokenId)
+		setMySelectedFish(fish);
 	}
 
 	const fightFish = () => async () => {
 		if (account && mySelectedFish != null && opponentFish != null) {
 			try {
-				const result = await FishFight.fight.methods.fight(mySelectedFish, opponentFish, 0).send({
+				const result = await FishFight.fight.methods.fight(mySelectedFish.tokenId, opponentFish.tokenId, 0).send({
 					from: account,
 					gasPrice: 1000000000,
 					gasLimit: 500000,
 				});
+				console.log(result)
 				console.log(result.events.Transfer.returnValues.fight);
-				const returnedIndex= new BN(result.events.Transfer.returnValues.fightIndex).toNumber()
+				const returnedIndex = new BN(result.events.Transfer.returnValues.fightIndex).toNumber()
 				getUserFight(returnedIndex);
 				toast.success('Transaction done', {
 					onClose: async () => {
@@ -85,45 +86,69 @@ const FightFish = () => {
 	};
 
 
+const FightUiOptions = () => {
+		if(fightResult) {
+			return (
+				<div>
+					<FishNFT>
+						<FishData>Challenger: {fightResult.fishChallenger} Vs. Challenged: {fightResult.fishChallenger}</FishData>
+						<FishData>Round 1: {fightResult.round1.description}</FishData>
+						<FishData>Round 2: {fightResult.round2.description}</FishData>
+						<FishData>Round 3: {fightResult.round3.description}</FishData>
+						<FishData>Winner: {fightResult.winner}</FishData>
+					</FishNFT>
 
+					<CatchFishButton onClick={() => {setFightResult(null)}}>
+						Fight Another Fish!
+					</CatchFishButton>
+				</div>
+			)
+		}
 
-	return (
-		<div>
-			<h1>Let's Fight!</h1>
-			<CreateFishComponent>
-				<h1>Fish to Fight: {publicFish?.length}</h1>
+		return (
+			<div>
+				<h1>Let's Fight!</h1>
+				<CreateFishComponent>
+					<h1>Fish to Fight: {publicFish?.length}</h1>
+					<FlexGrid>
+					{publicFish?.map((fish, index) => (
+							<FishNFT  key={index} onClick={() => {setOpponent(fish)}}>
+								<FishName>{fish.name}</FishName>
+								<FishData>{fish.birth}</FishData>
+								<FishData>Strength: {fish.strength} Intelligence: {fish.intelligence} Agility: {fish.agility}</FishData>
+								<FishData>Wins: {fish.wins}</FishData>
+								<FishData>{fish.tokenId == opponentFish?.tokenId ? "Selected Fish" : ""}</FishData>
+							</FishNFT>
+						))}
+					</FlexGrid>
+				</CreateFishComponent>
+				
+				<CreateFishComponent>
+				<h1>My Fish: {userFish?.length}</h1>
 				<FlexGrid>
-				{publicFish?.map((fish, index) => (
-						<FishNFT  key={index} onClick={() => {setOpponent(fish.tokenId)}}>
-							<FishName>{fish.name}</FishName>
+				{userFish?.map((fish, index) => (
+						<FishNFT  key={index} onClick={() => {setUserFish(fish)}}>
+							<FishName>{fish.tokenId}</FishName>
 							<FishData>{fish.birth}</FishData>
 							<FishData>Strength: {fish.strength} Intelligence: {fish.intelligence} Agility: {fish.agility}</FishData>
 							<FishData>Wins: {fish.wins}</FishData>
-							<p>{fish.tokenId == opponentFish ? "Selected Fish" : ""}</p>
+							<FishData>{fish.tokenId == mySelectedFish?.tokenId ? "Selected Fish": ""}</FishData>
 						</FishNFT>
 					))}
 				</FlexGrid>
 			</CreateFishComponent>
-			
-			<CreateFishComponent>
-			<h1>My Fish: {userFish?.length}</h1>
-			<FlexGrid>
-			{userFish?.map((fish, index) => (
-					<FishNFT  key={index} onClick={() => {setUserFish(fish.tokenId)}}>
-						<FishName>{fish.tokenId}</FishName>
-						<FishData>{fish.birth}</FishData>
-						<FishData>Strength: {fish.strength} Intelligence: {fish.intelligence} Agility: {fish.agility}</FishData>
-						<FishData>Wins: {fish.wins}</FishData>
-						<p>{fish.tokenId == mySelectedFish ? "Selected Fish": ""}</p>
-					</FishNFT>
-				))}
-			</FlexGrid>
-		</CreateFishComponent>
 
-		<CatchFishButton onClick={fightFish()}>
-			Fight Fish
-		</CatchFishButton>
-		</div>
+			<CatchFishButton onClick={fightFish()}>
+				Fight Fish
+			</CatchFishButton>
+			</div>
+		)
+	}
+
+
+
+	return (
+		<FightUiOptions />
 	);
 };
 

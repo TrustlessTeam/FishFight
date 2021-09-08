@@ -3,7 +3,7 @@
   "chainId": "1666700000",
   "contracts": {
     "FishFactory": {
-      "address": "0x67bc0F063C08bf34f5d80400e9f15c3Bb7448C6f",
+      "address": "0x68cE4F1c8a51215aB888E579c0d39559BE13E896",
       "abi": [
         {
           "inputs": [
@@ -134,19 +134,6 @@
             }
           ],
           "stateMutability": "view",
-          "type": "function"
-        },
-        {
-          "inputs": [
-            {
-              "internalType": "uint256",
-              "name": "tokenId",
-              "type": "uint256"
-            }
-          ],
-          "name": "addWin",
-          "outputs": [],
-          "stateMutability": "nonpayable",
           "type": "function"
         },
         {
@@ -291,6 +278,16 @@
                 {
                   "internalType": "uint256",
                   "name": "wins",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "challenger",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "challenged",
                   "type": "uint256"
                 }
               ],
@@ -604,6 +601,29 @@
           "type": "function"
         },
         {
+          "inputs": [
+            {
+              "internalType": "uint256",
+              "name": "tokenId",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bool",
+              "name": "isChallenger",
+              "type": "bool"
+            },
+            {
+              "internalType": "bool",
+              "name": "isWinner",
+              "type": "bool"
+            }
+          ],
+          "name": "updateFishFightInfo",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        },
+        {
           "inputs": [],
           "name": "vrf",
           "outputs": [
@@ -619,7 +639,7 @@
       ]
     },
     "FishFight": {
-      "address": "0xD65b5A4FeE0aAAc1f2D4a763d7ce648d3b03Aa8F",
+      "address": "0x14B3e44f74CBAD1588FE387213fAd03e1dA263eC",
       "abi": [
         {
           "inputs": [

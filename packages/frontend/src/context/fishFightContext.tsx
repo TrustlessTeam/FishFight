@@ -170,6 +170,8 @@ const useUserFish = () => {
           new BN(fishInfo.intelligence).toNumber(),
           new BN(fishInfo.agility).toNumber(),
           new BN(fishInfo.wins).toNumber(),
+          new BN(fishInfo.challenger).toNumber(),
+          new BN(fishInfo.challenged).toNumber(),
           fishInfo.traitsA,
           fishInfo.traitsB,
           fishInfo.traitsC
@@ -228,6 +230,8 @@ const usePublicFish = () => {
             new BN(fishInfo.intelligence).toNumber(),
             new BN(fishInfo.agility).toNumber(),
             new BN(fishInfo.wins).toNumber(),
+            new BN(fishInfo.challenger).toNumber(),
+            new BN(fishInfo.challenged).toNumber(),
             fishInfo.traitsA,
             fishInfo.traitsB,
             fishInfo.traitsC

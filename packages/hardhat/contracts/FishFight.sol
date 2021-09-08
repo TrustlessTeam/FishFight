@@ -50,7 +50,16 @@ contract FishFight is Ownable {
 		uint fightIndex = _fightCounter.current();
 		_fights[fightIndex] = Fight(fightType, fishChallengerTokenId, fishChallengedTokenId, timeOfFight, round1, round2, round3, winner);
 		_fightCounter.increment();
-		if(winner != -1) _factory.addWin(uint(winner)); // add win to the winning tokenId
+		// Handle the win (-1 is a tie)
+		if(winner != -1) {
+			if(uint(winner) == fishChallengerTokenId) {
+				_factory.updateFishFightInfo(fishChallengerTokenId, true, true); // increase challenger fish wins and challenger count
+				_factory.updateFishFightInfo(fishChallengedTokenId, false, false); // increase challenged fish challenged count
+			} else if(uint(winner) == fishChallengedTokenId) { // challenged fish wins
+				_factory.updateFishFightInfo(fishChallengedTokenId, false, true); // increase challenged fish wins and challenged count
+				_factory.updateFishFightInfo(fishChallengerTokenId, true, false); // increase challenger fish challenger count
+			}
+		}
 		return fightIndex;
 	}
 

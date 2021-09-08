@@ -22,6 +22,8 @@ contract FishFactory is ERC721Enumerable, Ownable {
 		bytes32 traitsB;
 		bytes32 traitsC;
 		uint wins;
+		uint challenger;
+		uint challenged;
 	}
 
 	// Private members
@@ -56,7 +58,7 @@ contract FishFactory is ERC721Enumerable, Ownable {
 		uint8 intelligence = uint8(uint(traits2) % 256);
 		uint8 agility = uint8(uint(traits3) % 256);
 		_safeMint(msg.sender, mintIndex);
-		_fishData[mintIndex] = Fish(_fishTypeIndex, "", timeOfMint, strength, intelligence, agility, traits1, traits2, traits3, 0);
+		_fishData[mintIndex] = Fish(_fishTypeIndex, "", timeOfMint, strength, intelligence, agility, traits1, traits2, traits3, 0, 0, 0);
 		return mintIndex;
 	}
 
@@ -85,10 +87,19 @@ contract FishFactory is ERC721Enumerable, Ownable {
 		return _fishData[tokenId];
 	}
 
-	function addWin(uint256 tokenId) public {
+	function updateFishFightInfo(uint256 tokenId, bool isChallenger, bool isWinner) public {
 		require(msg.sender == _fightContractAddress, "Only the FightContract can update a Fish's wins");
 		require(_exists(tokenId), "That fish has not been minted yet.");
-		_fishData[tokenId].wins += 1;
+		// handle challenger/challenged counts
+		if(isChallenger) {
+			_fishData[tokenId].challenger += 1;
+		} else {
+			_fishData[tokenId].challenged += 1;
+		}
+		
+		if(isWinner) {
+			_fishData[tokenId].wins += 1;
+		}
 	}
 
 	function updateFishFightContractAddress(address newAddress) public onlyOwner {
