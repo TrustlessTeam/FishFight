@@ -26,6 +26,10 @@ contract FishFight is Ownable {
 	// Private members
 	address private _fishFactoryAddress;
 	mapping(uint256 => Fight) private _fights;
+	mapping(uint256 => uint[]) private _fightsForFish;
+
+	event FightCompleted(address indexed _from, uint _fightIndex);
+
 	Counters.Counter private _randCounter;
 	Counters.Counter private _fightCounter;
 	FishFactory private _factory;
@@ -40,7 +44,7 @@ contract FishFight is Ownable {
 		return contractBalance;
 	}
 
-	function fight(uint fishChallengerTokenId, uint fishChallengedTokenId, uint8 fightType) public returns(uint) {
+	function fight(uint fishChallengerTokenId, uint fishChallengedTokenId, uint8 fightType) public {
 		verifyChallengerOwnsFish(fishChallengerTokenId, fishChallengedTokenId);
 		uint256 timeOfFight = block.timestamp;
 		bytes32 round1 = perCallRandomGeneration();
@@ -48,7 +52,11 @@ contract FishFight is Ownable {
 		bytes32 round3 = perCallRandomGeneration();
 		int winner = getOutcome(fishChallengerTokenId, fishChallengedTokenId, fightType, round1, round2, round3);
 		uint fightIndex = _fightCounter.current();
+		// add fight result to all fights
 		_fights[fightIndex] = Fight(fightType, fishChallengerTokenId, fishChallengedTokenId, timeOfFight, round1, round2, round3, winner);
+		// add fight to each fish's fight array
+		_fightsForFish[fishChallengerTokenId].push(fightIndex);
+		_fightsForFish[fishChallengedTokenId].push(fightIndex);
 		_fightCounter.increment();
 		// Handle the win (-1 is a tie)
 		if(winner != -1) {
@@ -60,7 +68,7 @@ contract FishFight is Ownable {
 				_factory.updateFishFightInfo(fishChallengerTokenId, true, false); // increase challenger fish challenger count
 			}
 		}
-		return fightIndex;
+		emit FightCompleted(msg.sender, fightIndex);
 	}
 
 	function verifyChallengerOwnsFish(uint fishChallengerTokenId, uint fishChallengedTokenId) private view {
@@ -100,9 +108,13 @@ contract FishFight is Ownable {
 		}
 	}
 
-	function getFightInfo(uint256 tokenId) public view returns(Fight memory info) {
-		require(tokenId < _fightCounter.current(), "That fight has not happened yet");
-		return _fights[tokenId];
+	function getFightInfo(uint256 fightIndex) public view returns(Fight memory info) {
+		require(fightIndex < _fightCounter.current(), "That fight has not happened yet");
+		return _fights[fightIndex];
+	}
+
+	function getFightsForFish(uint256 tokenId) public view returns(uint[] memory){
+		return _fightsForFish[tokenId];
 	}
 
 	function perCallRandomGeneration() private returns(bytes32) {

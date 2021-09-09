@@ -3,7 +3,7 @@
   "chainId": "1666700000",
   "contracts": {
     "FishFactory": {
-      "address": "0x68cE4F1c8a51215aB888E579c0d39559BE13E896",
+      "address": "0xd2DF1D661AAeFaB2384E044750134802e4388857",
       "abi": [
         {
           "inputs": [
@@ -639,7 +639,7 @@
       ]
     },
     "FishFight": {
-      "address": "0x14B3e44f74CBAD1588FE387213fAd03e1dA263eC",
+      "address": "0xEE2E6fDAfB79a4B2E06779c2424eE37BFba9cd6E",
       "abi": [
         {
           "inputs": [
@@ -651,6 +651,25 @@
           ],
           "stateMutability": "nonpayable",
           "type": "constructor"
+        },
+        {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "_from",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "_fightIndex",
+              "type": "uint256"
+            }
+          ],
+          "name": "FightCompleted",
+          "type": "event"
         },
         {
           "anonymous": false,
@@ -690,13 +709,7 @@
             }
           ],
           "name": "fight",
-          "outputs": [
-            {
-              "internalType": "uint256",
-              "name": "",
-              "type": "uint256"
-            }
-          ],
+          "outputs": [],
           "stateMutability": "nonpayable",
           "type": "function"
         },
@@ -717,7 +730,7 @@
           "inputs": [
             {
               "internalType": "uint256",
-              "name": "tokenId",
+              "name": "fightIndex",
               "type": "uint256"
             }
           ],
@@ -769,6 +782,25 @@
               "internalType": "struct FishFight.Fight",
               "name": "info",
               "type": "tuple"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "uint256",
+              "name": "tokenId",
+              "type": "uint256"
+            }
+          ],
+          "name": "getFightsForFish",
+          "outputs": [
+            {
+              "internalType": "uint256[]",
+              "name": "",
+              "type": "uint256[]"
             }
           ],
           "stateMutability": "view",

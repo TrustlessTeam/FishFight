@@ -44,6 +44,7 @@ const deploy: DeployFunction = async ({ getNamedAccounts, deployments }: Hardhat
 		value: oneToSend,
 	});
 	await catchFishTx2.wait();
+	console.log(catchFishTx2)
 
 	// Get owners first fish
 	const fish0 = await fishFactory.getFishInfo(0)
@@ -53,6 +54,10 @@ const deploy: DeployFunction = async ({ getNamedAccounts, deployments }: Hardhat
 	
 	const fight = await fishFight.fight(0, 1, 0);
 	await fight.wait()
+	console.log(fight)
+	console.log(await fishFight.getFightsForFish(0))
+	console.log(await fishFight.getFightsForFish(10))
+
 	const fightInfo = await fishFight.getFightInfo(0)
 
 	console.log(fightInfo)

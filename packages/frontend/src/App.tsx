@@ -41,72 +41,75 @@ const App = () => {
 	
 
 	return (
-		<Wrapper>
-			<Container>
-				{account ?
-				<>
+		<Router>
+			<Wrapper>
+				<Container>
+					{account ?
+					<>
 						<Topbar>
-							<img src={Logo} alt="Harmony logo" />
+							<Nav>
+								<ul>
+									<li>
+										<Link to="/">View Fish</Link>
+									</li>
+									<li>
+										<Link to="/catch">Catch A Fish!</Link>
+									</li>
+									<li>
+										<Link to="/fight">Fight A Fish!</Link>
+									</li>
+								</ul>
+							</Nav>
+							
 							<Flex>
 								<Balance />
 								<Account />
 							</Flex>
 						</Topbar>
-						<Content>
-							<Router>
-								<div>
-									<nav>
-										<ul>
-											<li>
-												<Link to="/">View Fish</Link>
-											</li>
-											<li>
-												<Link to="/catch">Catch A Fish!</Link>
-											</li>
-											<li>
-												<Link to="/fight">Fight A Fish!</Link>
-											</li>
-										</ul>
-									</nav>
 
-									{/* A <Switch> looks through its children <Route>s and
-											renders the first one that matches the current URL. */}
-									<Switch>
-										<Route path="/fight">
-											<FightFish />
-										</Route>
-										<Route path="/catch">
-											<CatchFish/>
-										</Route>
-										<Route path="/">
-											<ViewFish />
-										</Route>
-									</Switch>
-								</div>
-							</Router>					
+						<Content>				
 							{/* <UnityWindow /> */}
+							
+								<Switch>
+									<Route path="/fight">
+										<FightFish />
+									</Route>
+									<Route path="/catch">
+										<CatchFish/>
+									</Route>
+									<Route path="/">
+										<ViewFish />
+									</Route>
+								</Switch>
+							
 						</Content>
-				</> :
-				<>
-					<Account/>
-					<ViewFish />
-				</>
-			}
-			</Container>
-			<ToastContainer
-				position="bottom-right"
-				newestOnTop={false}
-				pauseOnFocusLoss={false}
-				pauseOnHover={false}
-				rtl={false}
-			/>
-		</Wrapper>
+					</> :
+					<>
+						<Account/>
+						<ViewFish />
+					</>
+				}
+				</Container>
+				<ToastContainer
+					position="bottom-right"
+					newestOnTop={false}
+					pauseOnFocusLoss={false}
+					pauseOnHover={false}
+					rtl={false}
+				/>
+			</Wrapper>
+		</Router>	
 	);
 };
 
 const Flex = styled.div`
 	display: flex;
 	align-items: center;
+`;
+
+const Nav = styled.nav`
+	display: flex;
+	width: 100%;
 `;
 
 const Topbar = styled.div`
