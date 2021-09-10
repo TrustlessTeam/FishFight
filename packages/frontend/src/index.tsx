@@ -8,14 +8,18 @@ import { HarmonyProvider } from './context/harmonyContext';
 import { Web3ReactProvider } from '@web3-react/core';
 import { getLibraryProvider } from './utils/provider';
 import { FishFightProvider } from './context/fishFightContext';
+import { UnityProvider } from './context/unityContext';
+
 
 ReactDOM.render(
 	<React.StrictMode>
 		<Web3ReactProvider getLibrary={getLibraryProvider}>
 			<HarmonyProvider>
-				<FishFightProvider>
-					<App />
-				</FishFightProvider>
+				<UnityProvider>
+					<FishFightProvider>
+						<App />
+					</FishFightProvider>
+				</UnityProvider>
 			</HarmonyProvider>
 		</Web3ReactProvider>
 	</React.StrictMode>,

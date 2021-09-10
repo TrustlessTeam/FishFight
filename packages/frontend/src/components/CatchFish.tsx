@@ -1,5 +1,5 @@
 // React
-import React, { useState, useEffect } from 'react';
+import React, { Fragment, useState, useEffect } from 'react';
 
 // Styled Components
 import styled from 'styled-components';
@@ -15,10 +15,12 @@ import BN from 'bn.js';
 
 // Harmony SDK
 import { numberToString, fromWei, hexToNumber, Units, Unit } from '@harmony-js/utils';
-
+import Unity from 'react-unity-webgl';
 // Utils
 import { Fish } from '../utils/fish'
 import { useFishFight } from '../context/fishFightContext';
+import { useUnity } from '../context/unityContext';
+
 
 
 const catchRates = [
@@ -29,6 +31,7 @@ const catchRates = [
 ];
 
 const CatchFish = () => {
+	const unityContext = useUnity()
 	const { FishFight, refetchBalance, refetchUserFish} = useFishFight()
 	const [caughtFish, setCaughtFish] = useState<Fish | null>(null);
 
@@ -72,6 +75,8 @@ const CatchFish = () => {
 			fishInfo.traitsC
 		);
 		setCaughtFish(newFish)
+		unityContext.fishCaught(newFish);
+		unityContext.stopRotation();
 	}
 
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -140,12 +145,13 @@ const CatchFish = () => {
 	}
 
 	return (
-		<CreateFishComponent>
-			<FishingOptions />
-		</CreateFishComponent>
+		<>
+			<CreateFishComponent>
+				<FishingOptions />
+			</CreateFishComponent>
+		</>
 	);
 };
-
 
 
 const CreateFishComponent = styled.div`
