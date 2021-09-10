@@ -1,46 +1,115 @@
-import React from 'react';
+// FishFight
+import { useFishFight } from './context/fishFightContext';
+
+// React
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  Link
+} from "react-router-dom";
+
+// React web3
+import { useWeb3React } from '@web3-react/core';
+
+// React toastify
 import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
+// Styled Components
 import styled from 'styled-components';
 
+// Components
 import Account from './components/Account';
 import Balance from './components/Balance';
+import CatchFish from './components/CatchFish';
 import UnityWindow from './components/UnityWindow';
 
+// Logo
 import Logo from './img/harmony_logo.svg';
+import FightFish from './components/FightFish';
+import ViewFish from './components/ViewFish';
 
-import 'react-toastify/dist/ReactToastify.css';
-import CreateFish from './components/CreateFish';
 
 const App = () => {
+	const {FishFight} = useFishFight()
+	console.log(FishFight.factory)
+	// Will all remain undefined until user logs in
+	// If user is using harmony wallet, library will only contain blockchain
+	// If user is using other wallet, library will have a web3Provider
+	const { account } = useWeb3React();
+	
+
 	return (
-		<Wrapper>
-			<Container>
-				<Topbar>
-					<img src={Logo} alt="Harmony logo" />
-					<Flex>
-						<Balance />
-						<Account />
-					</Flex>
-				</Topbar>
-				<Content>
-					<UnityWindow />
-					<CreateFish/>
-				</Content>
-			</Container>
-			<ToastContainer
-				position="bottom-right"
-				newestOnTop={false}
-				pauseOnFocusLoss={false}
-				pauseOnHover={false}
-				rtl={false}
-			/>
-		</Wrapper>
+		<Router>
+			<Wrapper>
+				<Container>
+					{account ?
+					<>
+						<Topbar>
+							<Nav>
+								<ul>
+									<li>
+										<Link to="/">View Fish</Link>
+									</li>
+									<li>
+										<Link to="/catch">Catch A Fish!</Link>
+									</li>
+									<li>
+										<Link to="/fight">Fight A Fish!</Link>
+									</li>
+								</ul>
+							</Nav>
+							
+							<Flex>
+								<Balance />
+								<Account />
+							</Flex>
+						</Topbar>
+
+						<Content>				
+							{/* <UnityWindow /> */}
+							
+								<Switch>
+									<Route path="/fight">
+										<FightFish />
+									</Route>
+									<Route path="/catch">
+										<CatchFish/>
+									</Route>
+									<Route path="/">
+										<ViewFish />
+									</Route>
+								</Switch>
+							
+						</Content>
+					</> :
+					<>
+						<Account/>
+						<ViewFish />
+					</>
+				}
+				</Container>
+				<ToastContainer
+					position="bottom-right"
+					newestOnTop={false}
+					pauseOnFocusLoss={false}
+					pauseOnHover={false}
+					rtl={false}
+				/>
+			</Wrapper>
+		</Router>	
 	);
 };
 
 const Flex = styled.div`
 	display: flex;
 	align-items: center;
+`;
+
+const Nav = styled.nav`
+	display: flex;
+	width: 100%;
 `;
 
 const Topbar = styled.div`

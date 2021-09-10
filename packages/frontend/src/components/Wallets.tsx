@@ -1,9 +1,17 @@
+// React
 import React from 'react';
+
+// Styled Components
 import styled from 'styled-components';
+
+// Web3 React
 import { useWeb3React } from '@web3-react/core';
 import { AbstractConnector } from '@web3-react/abstract-connector';
 
+// Utils
 import { connectorsByName } from '../utils/connectors';
+
+// Helpers
 import { mapWallets } from '../helpers/walletHelpers';
 
 export interface Props {
@@ -14,13 +22,19 @@ const Wallets = ({ closeModal }: Props) => {
 	const { activate } = useWeb3React();
 
 	const handleClick = (connector: AbstractConnector) => () => {
+		// Activate will take connector as an argument
+		// And then initialize web3React context with a provider.
+		// Provider depends on the connector (i.e wallet) that has been chosen
 		activate(connector);
 		closeModal();
-	};
+	}; 
 
 	return (
 		<WalletsComponent>
-			{Object.keys(connectorsByName).map(name => (
+			{
+				// From the wallets that we support
+			
+			Object.keys(connectorsByName).map(name => (
 				<WalletItem key={name} onClick={handleClick(connectorsByName[name])}>
 					<WalletImg src={mapWallets[name].image} />
 					{mapWallets[name].name}

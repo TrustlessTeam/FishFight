@@ -3,18 +3,10 @@ import styled from 'styled-components';
 import { useWeb3React } from '@web3-react/core';
 
 import { useHarmony } from '../context/harmonyContext';
+import { useFishFight } from '../context/fishFightContext';
 
 const Balance = () => {
-	const { account, chainId } = useWeb3React();
-	const { balance, fetchBalance, resetBalance } = useHarmony();
-
-	useEffect(() => {
-		if (account) {
-			fetchBalance(account);
-		} else {
-			resetBalance();
-		}
-	}, [account, chainId, fetchBalance]);
+	const { balance  } = useFishFight();
 
 	if (!balance) return null;
 

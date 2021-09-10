@@ -1,5 +1,8 @@
+// Harmony Wallets
 import { OneWalletConnector } from '@harmony-react/onewallet-connector';
 import { MathWalletConnector } from '@harmony-react/mathwallet-connector';
+
+// Web3 React Wallets
 import { InjectedConnector } from '@web3-react/injected-connector';
 
 import { AbstractConnector } from '@web3-react/abstract-connector';

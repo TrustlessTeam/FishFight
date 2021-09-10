@@ -3,7 +3,7 @@
   "chainId": "1666700000",
   "contracts": {
     "FishFactory": {
-      "address": "0x64Ce9FA1B84B5685F7Dc003C7bAbf53EB102e286",
+      "address": "0xd2DF1D661AAeFaB2384E044750134802e4388857",
       "abi": [
         {
           "inputs": [
@@ -124,6 +124,19 @@
           "type": "function"
         },
         {
+          "inputs": [],
+          "name": "_fightContractAddress",
+          "outputs": [
+            {
+              "internalType": "address",
+              "name": "",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
           "inputs": [
             {
               "internalType": "address",
@@ -161,13 +174,7 @@
           "type": "function"
         },
         {
-          "inputs": [
-            {
-              "internalType": "string",
-              "name": "name",
-              "type": "string"
-            }
-          ],
+          "inputs": [],
           "name": "catchFish",
           "outputs": [
             {
@@ -177,38 +184,6 @@
             }
           ],
           "stateMutability": "payable",
-          "type": "function"
-        },
-        {
-          "inputs": [
-            {
-              "internalType": "string",
-              "name": "name",
-              "type": "string"
-            }
-          ],
-          "name": "createFish",
-          "outputs": [
-            {
-              "internalType": "uint256",
-              "name": "",
-              "type": "uint256"
-            }
-          ],
-          "stateMutability": "payable",
-          "type": "function"
-        },
-        {
-          "inputs": [],
-          "name": "diceRoll",
-          "outputs": [
-            {
-              "internalType": "uint256",
-              "name": "",
-              "type": "uint256"
-            }
-          ],
-          "stateMutability": "view",
           "type": "function"
         },
         {
@@ -256,6 +231,11 @@
             {
               "components": [
                 {
+                  "internalType": "uint8",
+                  "name": "fishTypeIndex",
+                  "type": "uint8"
+                },
+                {
                   "internalType": "string",
                   "name": "name",
                   "type": "string"
@@ -266,9 +246,49 @@
                   "type": "uint256"
                 },
                 {
+                  "internalType": "uint8",
+                  "name": "strength",
+                  "type": "uint8"
+                },
+                {
+                  "internalType": "uint8",
+                  "name": "intelligence",
+                  "type": "uint8"
+                },
+                {
+                  "internalType": "uint8",
+                  "name": "agility",
+                  "type": "uint8"
+                },
+                {
                   "internalType": "bytes32",
-                  "name": "traits",
+                  "name": "traitsA",
                   "type": "bytes32"
+                },
+                {
+                  "internalType": "bytes32",
+                  "name": "traitsB",
+                  "type": "bytes32"
+                },
+                {
+                  "internalType": "bytes32",
+                  "name": "traitsC",
+                  "type": "bytes32"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "wins",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "challenger",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "challenged",
+                  "type": "uint256"
                 }
               ],
               "internalType": "struct FishFactory.Fish",
@@ -550,6 +570,258 @@
             }
           ],
           "name": "transferFrom",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "newOwner",
+              "type": "address"
+            }
+          ],
+          "name": "transferOwnership",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "newAddress",
+              "type": "address"
+            }
+          ],
+          "name": "updateFishFightContractAddress",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "uint256",
+              "name": "tokenId",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bool",
+              "name": "isChallenger",
+              "type": "bool"
+            },
+            {
+              "internalType": "bool",
+              "name": "isWinner",
+              "type": "bool"
+            }
+          ],
+          "name": "updateFishFightInfo",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        },
+        {
+          "inputs": [],
+          "name": "vrf",
+          "outputs": [
+            {
+              "internalType": "bytes32",
+              "name": "result",
+              "type": "bytes32"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        }
+      ]
+    },
+    "FishFight": {
+      "address": "0xEE2E6fDAfB79a4B2E06779c2424eE37BFba9cd6E",
+      "abi": [
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "fishFactoryAddress",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "constructor"
+        },
+        {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "_from",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "_fightIndex",
+              "type": "uint256"
+            }
+          ],
+          "name": "FightCompleted",
+          "type": "event"
+        },
+        {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "previousOwner",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "newOwner",
+              "type": "address"
+            }
+          ],
+          "name": "OwnershipTransferred",
+          "type": "event"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "uint256",
+              "name": "fishChallengerTokenId",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "fishChallengedTokenId",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint8",
+              "name": "fightType",
+              "type": "uint8"
+            }
+          ],
+          "name": "fight",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        },
+        {
+          "inputs": [],
+          "name": "getContractBalance",
+          "outputs": [
+            {
+              "internalType": "uint256",
+              "name": "_balance",
+              "type": "uint256"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "uint256",
+              "name": "fightIndex",
+              "type": "uint256"
+            }
+          ],
+          "name": "getFightInfo",
+          "outputs": [
+            {
+              "components": [
+                {
+                  "internalType": "uint8",
+                  "name": "typeOfFight",
+                  "type": "uint8"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "fishChallenger",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "fishChallenged",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "timeOfFight",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "bytes32",
+                  "name": "round1",
+                  "type": "bytes32"
+                },
+                {
+                  "internalType": "bytes32",
+                  "name": "round2",
+                  "type": "bytes32"
+                },
+                {
+                  "internalType": "bytes32",
+                  "name": "round3",
+                  "type": "bytes32"
+                },
+                {
+                  "internalType": "int256",
+                  "name": "winner",
+                  "type": "int256"
+                }
+              ],
+              "internalType": "struct FishFight.Fight",
+              "name": "info",
+              "type": "tuple"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "uint256",
+              "name": "tokenId",
+              "type": "uint256"
+            }
+          ],
+          "name": "getFightsForFish",
+          "outputs": [
+            {
+              "internalType": "uint256[]",
+              "name": "",
+              "type": "uint256[]"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [],
+          "name": "owner",
+          "outputs": [
+            {
+              "internalType": "address",
+              "name": "",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [],
+          "name": "renounceOwnership",
           "outputs": [],
           "stateMutability": "nonpayable",
           "type": "function"

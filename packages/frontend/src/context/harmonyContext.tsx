@@ -1,10 +1,15 @@
+// React
 import React, { createContext, useContext, useState, useCallback } from 'react';
+
+// Harmony SDK
 import { Harmony } from '@harmony-js/core';
 import { toBech32 } from '@harmony-js/crypto';
 import { isBech32Address, fromWei, hexToNumber, Units } from '@harmony-js/utils';
 
+// Utils
 import { getProvider } from '../utils/provider';
 
+// Types
 type HarmonyProviderProps = { children: React.ReactNode };
 
 interface HamonyProviderContext {
@@ -14,9 +19,13 @@ interface HamonyProviderContext {
 	resetBalance: () => void;
 }
 
+// Get provider
 const provider = getProvider();
+
+// New Harmony instance
 const hmy = new Harmony(provider.url, { chainId: provider.chainId, chainType: provider.chainType });
 
+// Harmony context provider
 const HarmonyContext = createContext<HamonyProviderContext | undefined>(undefined);
 
 export const HarmonyProvider = ({ children }: HarmonyProviderProps) => {
@@ -30,6 +39,7 @@ export const HarmonyProvider = ({ children }: HarmonyProviderProps) => {
 	return <HarmonyContext.Provider value={value}>{children}</HarmonyContext.Provider>;
 };
 
+// Account balance utilities that will be included in HarmonyContext
 const useBalance = () => {
 	const [balance, setBalance] = useState<string>();
 
@@ -54,6 +64,7 @@ const useBalance = () => {
 	};
 };
 
+// useContext 
 export const useHarmony = () => {
 	const context = useContext(HarmonyContext);
 	if (!context) {
