@@ -24,7 +24,7 @@ const UnityContext = createContext<UnityProviderContext | undefined>(undefined);
 // Defining context provider
 export const UnityProvider = ({ children }: UnityProviderProps ) => {
   // FishFight instance initiates with default url provider upon visiting page
-  const [UnityInstance, setUnityInstance] = useState<UnityContent>(new UnityContent('../Build/fishfight-one.json', '../Build/UnityLoader.js'))
+  const [UnityInstance, setUnityInstance] = useState<UnityContent>(new UnityContent('../fishfight-one.json', '../UnityLoader.js'))
   const [isUnityMounted, setIsUnityMounted] = useState(true);
 	const [isLoaded, setIsLoaded] = useState(false);
 	const [progression, setProgression] = useState(0);
@@ -33,6 +33,7 @@ export const UnityProvider = ({ children }: UnityProviderProps ) => {
 	const [clickedPosition, setClickedPosition] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
+    console.log(UnityInstance)
     UnityInstance.on('progress', setProgression);
 		UnityInstance.on('loaded', function () {
 			setIsLoaded(true);
@@ -55,7 +56,7 @@ export const UnityProvider = ({ children }: UnityProviderProps ) => {
 		});
     UnityInstance.on('FishCaughtReceived', function() {
       console.log("AIOFHASIOFHI{ASHFI*{ASHFI){ASHFIO{ASHFIO{ASFHIO{HF{IASHFIO{ASIFHIIHFASIFHIh")
-    })
+    });
     
   }, [])
   
@@ -69,6 +70,7 @@ export const UnityProvider = ({ children }: UnityProviderProps ) => {
 	}
 
 	const fishCaught = (fish: Fish) => {
+    console.log(JSON.stringify(fish))
 		UnityInstance.send('CanvasUserInterface', 'FishCaught', JSON.stringify(fish));
 	}
 
