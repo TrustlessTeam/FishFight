@@ -1,5 +1,5 @@
 // React
-import React, { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 // Styled Components
 import styled from 'styled-components';
@@ -13,12 +13,9 @@ import { useWeb3React } from '@web3-react/core';
 // Big Number
 import BN from 'bn.js';
 
-// Harmony SDK
-import { numberToString, fromWei, hexToNumber, Units, Unit } from '@harmony-js/utils';
-
 // Utils
 import { Fish } from '../utils/fish'
-import { Fight, RoundMapping } from '../utils/fight'
+import { Fight} from '../utils/fight'
 import { useFishFight } from '../context/fishFightContext';
 
 
@@ -75,10 +72,14 @@ const FightFish = () => {
 					onClose: async () => {
 						refetchBalance()
 						refetchUserFish()
+						refetchPublicFish()
 					},
 				});
 			} catch (error) {
-				// toast.error(error);
+				toast.error(error);
+				setIsFighting(false)
+				setMySelectedFish(null)
+				setopponentFish(null)
 			}
 		} else {
 			toast.error('Connect your wallet');
@@ -89,6 +90,29 @@ const FightFish = () => {
 	const fightAgain = () => {
 		setFightResult(null)
 		setIsFighting(false)
+		setMySelectedFish(null)
+		setopponentFish(null)
+	}
+
+	const FightResults = () => {
+		if(fightResult) {
+			return (
+				<ResultContainer>
+					<FishNFT>
+						<FishData>Challenger: {fightResult.fishChallenger} Vs. Challenged: {fightResult.fishChallenged}</FishData>
+						<FishData>Round 1: {fightResult.round1.description}</FishData>
+						<FishData>Round 2: {fightResult.round2.description}</FishData>
+						<FishData>Round 3: {fightResult.round3.description}</FishData>
+						<FishData>Winner: {fightResult.winner}</FishData>
+					</FishNFT>
+
+					<FightButton onClick={() => fightAgain()}>
+						Fight Another Fish!
+					</FightButton>
+				</ResultContainer>
+			)
+		}
+		return(<></>)
 	}
 
 	const Fighting = () => {
@@ -103,7 +127,7 @@ const FightFish = () => {
 							<FishData>Agility: {mySelectedFish.agility}</FishData>
 							<FishData>Wins: {mySelectedFish.wins}</FishData>
 						</FishNFT>
-						<FishNFT><h2>VS.</h2></FishNFT>
+						<h2>VS.</h2>
 						<FishNFT>
 							<FishName>{opponentFish.tokenId}</FishName>
 							<FishData>Strength: {opponentFish.strength}</FishData>
@@ -112,6 +136,7 @@ const FightFish = () => {
 							<FishData>Wins: {opponentFish.wins}</FishData>
 						</FishNFT>
 					</FightingContainer>
+					<FightResults />
 				</FightContainer>
 			)
 		}
@@ -164,31 +189,9 @@ const FightFish = () => {
 		return(<></>)
 	}
 
-	const FightResults = () => {
-		if(fightResult) {
-			return (
-				<div>
-					<FishNFT>
-						<FishData>Challenger: {fightResult.fishChallenger} Vs. Challenged: {fightResult.fishChallenged}</FishData>
-						<FishData>Round 1: {fightResult.round1.description}</FishData>
-						<FishData>Round 2: {fightResult.round2.description}</FishData>
-						<FishData>Round 3: {fightResult.round3.description}</FishData>
-						<FishData>Winner: {fightResult.winner}</FishData>
-					</FishNFT>
-
-					<FightButton onClick={() => fightAgain()}>
-						Fight Another Fish!
-					</FightButton>
-				</div>
-			)
-		}
-		return(<></>)
-	}
-
 	return (
 		<>
 			<Fighting />
-			<FightResults />
 			<SelectFighters />
 		</>
 		
@@ -196,12 +199,20 @@ const FightFish = () => {
 };
 
 
+const ResultContainer = styled.div`
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	width: 100%;
+`;
+
 const FightContainer = styled.div`
 	display: flex;
 	flex-direction: column;
 	align-items: center;
 	width: 100%;
 `;
+
 const FightingContainer = styled.div`
 	display: flex;
 	flex-direction: row nowrap;
@@ -238,17 +249,6 @@ const FishNFT = styled.div`
 	box-shadow: 2px 8px 10px 4px rgba(0, 0, 0, 0.3);
 `;
 
-FishNFT.defaultProps = {
-  theme: {
-    backgroundColor: "white"
-  }
-}
-
-// Define what props.theme will look like
-const theme = {
-  backgroundColor: "gray"
-};
-
 const FishName = styled.h3`
 	color: ${"black"};
 `;
@@ -283,10 +283,5 @@ const FightButton = styled.button`
 	}
 `;
 
-const TotalStaked = styled.div`
-	font-size: 3.5rem;
-	margin-top: 16px;
-	color: black;
-`;
 
 export default FightFish;
