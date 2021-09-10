@@ -7,7 +7,7 @@ import { useHarmony } from '../context/harmonyContext';
 import Unity, { UnityContent } from 'react-unity-webgl';
 import { Fish } from '../utils/fish';
 
-const unityContent = new UnityContent('../Build/fishfight-one.json', '../Build/UnityLoader.js');
+const unityContent = new UnityContent('../fishfight-one.json', '../UnityLoader.js');
 
 const UnityWindow = () => {
 
@@ -35,6 +35,9 @@ const UnityWindow = () => {
 		});
 		unityContent.on('RotationDidUpdate', setRotation);
 		unityContent.on('Say', setMessage);
+		unityContent.on('FishCaughtReceived', function ( ) {
+            console.log('FishCaughtReceived!');
+        });
 		unityContent.on('ClickedPosition', function (x: any, y: any ) {
 			setClickedPosition({ x, y });
 		});
