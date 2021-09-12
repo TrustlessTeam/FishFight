@@ -75,8 +75,8 @@ const CatchFish = () => {
 			fishInfo.traitsC
 		);
 		setCaughtFish(newFish)
-		unityContext.fishCaught(newFish);
-		unityContext.stopRotation();
+		//unityContext.fishCaught(newFish);
+		//unityContext.stopRotation();
 	}
 
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
