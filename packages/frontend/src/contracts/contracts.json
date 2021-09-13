@@ -3,7 +3,7 @@
   "chainId": "1666700000",
   "contracts": {
     "FishFactory": {
-      "address": "0xCe01fc1aeF3EEbb2264e1f680Ca6d70DDa14D970",
+      "address": "0xd2DF1D661AAeFaB2384E044750134802e4388857",
       "abi": [
         {
           "inputs": [
@@ -639,7 +639,7 @@
       ]
     },
     "FishFight": {
-      "address": "0x68cE4F1c8a51215aB888E579c0d39559BE13E896",
+      "address": "0xEE2E6fDAfB79a4B2E06779c2424eE37BFba9cd6E",
       "abi": [
         {
           "inputs": [

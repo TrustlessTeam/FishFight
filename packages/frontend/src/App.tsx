@@ -17,7 +17,8 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 // Styled Components
-import styled from 'styled-components';
+import styled, { ThemeProvider } from 'styled-components';
+import { BaseTheme } from './default-theme';
 
 // Components
 import Account from './components/Account';
@@ -41,47 +42,50 @@ const App = () => {
 	
 
 	return (
-		<Router>
-			<Wrapper>
-				<Container>
-					{account ?
-					<>
-						<Topbar>
-							<Flex>
-								<Balance />
-								<Account />
-							</Flex>
-						</Topbar>
-					</> :
-					<>
-						<Account/>
-					</>
-				}
-					<UnityWindow/>
-					<Content>
-						<Switch>
-							<Route path="/fight">
-								<FightFish />
-							</Route>
-							<Route path="/catch">
-								<CatchFish/>
-							</Route>
-							<Route path="/">
-								<ViewFish />
-							</Route>
-						</Switch>		
-					</Content>
-					
-				</Container>
-				<ToastContainer
-					position="bottom-right"
-					newestOnTop={false}
-					pauseOnFocusLoss={false}
-					pauseOnHover={false}
-					rtl={false}
-				/>
-			</Wrapper>
-		</Router>	
+		<ThemeProvider theme={BaseTheme}>
+			<Router>
+				<Wrapper>
+					<Container>
+						{account ?
+						<>
+							<Topbar>
+								<Flex>
+									<Balance />
+									<Account />
+								</Flex>
+							</Topbar>
+						</> :
+						<>
+							<Account/>
+						</>
+					}
+						<UnityWindow/>
+						<Content>
+							<Switch>
+								<Route path="/fight">
+									<FightFish />
+								</Route>
+								<Route path="/catch">
+									<CatchFish/>
+								</Route>
+								<Route path="/">
+									<ViewFish />
+								</Route>
+							</Switch>		
+						</Content>
+						
+					</Container>
+					<ToastContainer
+						position="bottom-right"
+						newestOnTop={false}
+						pauseOnFocusLoss={false}
+						pauseOnHover={false}
+						rtl={false}
+					/>
+				</Wrapper>
+			</Router>
+		</ThemeProvider>
+			
 	);
 };
 
@@ -146,8 +150,8 @@ const Container = styled.div`
 `;
 
 const Wrapper = styled.div`
-	background-color: #0093e9;
-	background-image: linear-gradient(160deg, #0093e9 0%, #80d0c7 100%);
+	background-color: ${props => props.theme.colors.color1};
+	background-image: ${props => props.theme.colors.gradientTop};
 	font-size: 1rem;
 	color: white;
 `;
