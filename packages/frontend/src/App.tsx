@@ -47,48 +47,31 @@ const App = () => {
 					{account ?
 					<>
 						<Topbar>
-							<Nav>
-								<ul>
-									<li>
-										<Link to="/">View Fish</Link>
-									</li>
-									<li>
-										<Link to="/catch">Catch A Fish!</Link>
-									</li>
-									<li>
-										<Link to="/fight">Fight A Fish!</Link>
-									</li>
-								</ul>
-							</Nav>
-							
 							<Flex>
 								<Balance />
 								<Account />
 							</Flex>
 						</Topbar>
-
-						<Content>				
-							{/* <UnityWindow /> */}
-							
-								<Switch>
-									<Route path="/fight">
-										<FightFish />
-									</Route>
-									<Route path="/catch">
-										<CatchFish/>
-									</Route>
-									<Route path="/">
-										<ViewFish />
-									</Route>
-								</Switch>
-						</Content>
 					</> :
 					<>
 						<Account/>
-						<ViewFish />
 					</>
 				}
 					<UnityWindow/>
+					<Content>
+						<Switch>
+							<Route path="/fight">
+								<FightFish />
+							</Route>
+							<Route path="/catch">
+								<CatchFish/>
+							</Route>
+							<Route path="/">
+								<ViewFish />
+							</Route>
+						</Switch>		
+					</Content>
+					
 				</Container>
 				<ToastContainer
 					position="bottom-right"
@@ -102,22 +85,45 @@ const App = () => {
 	);
 };
 
+const LinkButton = styled(Link)`
+	padding: 50px 50px;
+	border-radius: 50%;
+	font-weight: bold;
+	text-decoration: none;
+	text-transform: uppercase;
+	background-color: darkblue;
+	box-shadow: 1px 2px 4px 4px rgba(0, 0, 0, 0.25);
+	color: white;
+	transition: opacity 0.3s ease, box-shadow 0.25s ease-in-out;
+
+	&:hover {
+		opacity: 1;
+		box-shadow: 1px 2px 2px 2px rgba(0, 0, 0, 0.2);
+		cursor: pointer;
+	}
+`;
+
 const Flex = styled.div`
 	display: flex;
 	align-items: center;
 `;
 
 const Nav = styled.nav`
+	postion: absolute;
 	display: flex;
+	flex-flow: row nowrap;
+	justify-content: space-evenly;
 	width: 100%;
+	margin: 20px;
 `;
 
 const Topbar = styled.div`
 	display: flex;
 	justify-content: space-between;
-	align-items: center;
+	align-items: flex-end;
 	height: 74px;
 	width: 100%;
+	z-index: 5;
 `;
 
 const Content = styled.div`
