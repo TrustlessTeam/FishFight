@@ -19,10 +19,6 @@ const UnityWindow = () => {
 				<h1>React Unity WebGL Test</h1>
 				<p>Loading {unityContext.progression * 100} percent...</p>
 				{unityContext.isLoaded === true && <p>Loaded!</p>}
-				<p>Message {unityContext.message}</p>
-				<p>
-					Clicked Position {unityContext.clickedPosition.x}, {unityContext.clickedPosition.y}
-				</p>
 				{/* <button children={'Start Rotation'} onClick={unityContext.startRotation} />
 				<button children={'Stop Rotation'} onClick={unityContext.stopRotation} />
 				<button children={'(Un)mount'} onClick={unityContext.toggleIsUnityMounted} /> */}
