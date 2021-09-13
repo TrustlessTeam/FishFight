@@ -107,11 +107,11 @@ contract FishFactory is ERC721Enumerable, Ownable {
 	}
 
 	function perCallRandomGeneration() private returns(bytes32) {
-		// _randCounter.increment();
-		// return vrf() & keccak256(abi.encodePacked(_randCounter.current()));
-
 		_randCounter.increment();
-		return keccak256(abi.encodePacked(_randCounter.current()));
+		return vrf() & keccak256(abi.encodePacked(_randCounter.current()));
+
+		// _randCounter.increment();
+		// return keccak256(abi.encodePacked(_randCounter.current()));
 	}
 
 	function vrf() public view returns (bytes32 result) {
