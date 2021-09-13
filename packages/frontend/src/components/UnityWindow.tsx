@@ -14,15 +14,9 @@ const UnityWindow = () => {
 
 	return (
 		<UnityWindowComponent>
-			<Unity unityContent={unityContext.UnityInstance} />
+			{!unityContext.isLoaded && <p>Loading {unityContext.progression * 100} percent...</p>}
+			{/* <Unity unityContent={unityContext.UnityInstance} /> */}
 			<Fragment>
-				<h1>React Unity WebGL Test</h1>
-				<p>Loading {unityContext.progression * 100} percent...</p>
-				{unityContext.isLoaded === true && <p>Loaded!</p>}
-				{/* <button children={'Start Rotation'} onClick={unityContext.startRotation} />
-				<button children={'Stop Rotation'} onClick={unityContext.stopRotation} />
-				<button children={'(Un)mount'} onClick={unityContext.toggleIsUnityMounted} /> */}
-				<br />
 				{unityContext.isUnityMounted === true && <Unity unityContent={unityContext.UnityInstance} />}
 			</Fragment>
 		</UnityWindowComponent>
@@ -31,8 +25,9 @@ const UnityWindow = () => {
 
 const UnityWindowComponent = styled.div`
 	position: relative;
-	padding: 10px 20px;
-	border-radius: 25px;
+	padding: 100px;
+	border-radius: 50%;
+	width: 100%;
 	background-color: white;
 	color: black;
 

@@ -45,6 +45,10 @@ const CatchFish = () => {
 	// Context
 	const { account } = useWeb3React();
 
+	useEffect(() => {
+		unityContext.showFishing();
+	}, []);
+
 	// Get contract balance and parse it to One
 	const getContractBalance = async () => {
 		try {
@@ -75,7 +79,7 @@ const CatchFish = () => {
 			fishInfo.traitsC
 		);
 		setCaughtFish(newFish)
-		//unityContext.fishCaught(newFish);
+		unityContext.fishCaught(newFish);
 		//unityContext.stopRotation();
 	}
 

@@ -56,7 +56,7 @@ const deploy: DeployFunction = async ({ getNamedAccounts, deployments }: Hardhat
 	await fight.wait()
 	console.log(fight)
 	console.log(await fishFight.getFightsForFish(0))
-	console.log(await fishFight.getFightsForFish(10))
+	console.log(await fishFight.getFightsForFish(1))
 
 	const fightInfo = await fishFight.getFightInfo(0)
 
