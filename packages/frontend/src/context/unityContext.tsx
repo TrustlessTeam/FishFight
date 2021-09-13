@@ -9,6 +9,9 @@ interface UnityProviderContext {
 	progression: number;
 	toggleIsUnityMounted: () => void;
 	fishCaught: (fish: Fish) => void;
+	showFishing: () => void;
+	showOcean: () => void;
+	showFight: () => void;
 }
 
 type UnityProviderProps = { children: React.ReactNode };
@@ -25,7 +28,7 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
 	const [isUnityMounted, setIsUnityMounted] = useState(true);
 	const [isLoaded, setIsLoaded] = useState(false);
 	const [progression, setProgression] = useState(0);
-	const [loadedFish, setLoadedFish] = useState('');
+
 	useEffect(() => {
 		console.log(UnityInstance);
 		UnityInstance.on('progress', setProgression);
@@ -42,10 +45,10 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
 			// console.log('Canvas', element);
 		});
 
-		UnityInstance.on('CameraStartConfirmed', function () {
+		UnityInstance.on('CameraStartConfirm', function () {
 			console.log('CameraStartConfirmed!');
 		});
-		UnityInstance.on('FishPoolStartConfirmed', function () {
+		UnityInstance.on('FishPoolStartConfirm', function () {
 			console.log('FishPoolStartConfirmed!');
 		});
 		UnityInstance.on('SetAnimStateConfirm', function () {
@@ -64,21 +67,21 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
 			console.log('SetFightStateConfirm!');
 		});
 		UnityInstance.on('FishCaughtReceived', function () {
-			console.log('AIOFHASIOFHI{ASHFI*{ASHFI){ASHFIO{ASHFIO{ASFHIO{HF{IASHFIO{ASIFHIIHFASIFHIh');
+			console.log('Received from ');
 		});
 	}, []);
 
 	const fishCaught = (fish: Fish) => {
 		console.log(JSON.stringify(fish))
-		setLoadedFish(JSON.stringify(fish));
+    UnityInstance.send('CanvasUserInterface', 'FishCaught', JSON.stringify(fish));
 	};
-	const ShowFishing = () => {
+	const showFishing = () => {
 		UnityInstance.send('Camera', 'SetAnimState', 'ShowFishing');
 	};
-	const ShowFight = () => {
+	const showFight = () => {
 		UnityInstance.send('Camera', 'SetAnimState', 'ShowFight');
 	};
-	const ShowOcean = () => {
+	const showOcean = () => {
 		UnityInstance.send('Camera', 'SetAnimState', 'ShowOcean');
 	};
 
@@ -93,6 +96,9 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
 		progression: progression,
 		toggleIsUnityMounted: toggleIsUnityMounted,
 		fishCaught: fishCaught,
+    showFishing: showFishing,
+    showOcean: showOcean,
+    showFight: showFight,
 	};
 	return <UnityContext.Provider value={value}>{children}</UnityContext.Provider>;
 };

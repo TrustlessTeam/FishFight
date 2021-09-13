@@ -19,9 +19,17 @@ import { numberToString, fromWei, hexToNumber, Units, Unit } from '@harmony-js/u
 // Utils
 import { Fish } from '../utils/fish'
 import { useFishFight } from '../context/fishFightContext';
+import { useUnity } from '../context/unityContext';
+
 
 const ViewFish = () => {
 	const { FishFight, userFish, refetchUserFish, publicFish, refetchPublicFish } = useFishFight()
+
+	const unityContext = useUnity();
+
+	useEffect(() => {
+		unityContext.showOcean();
+	}, []);
 
 	if(!userFish) {
 		return(

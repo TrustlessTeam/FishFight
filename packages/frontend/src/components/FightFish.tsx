@@ -1,5 +1,5 @@
 // React
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 // Styled Components
 import styled from 'styled-components';
@@ -17,6 +17,7 @@ import BN from 'bn.js';
 import { Fish } from '../utils/fish'
 import { Fight} from '../utils/fight'
 import { useFishFight } from '../context/fishFightContext';
+import { useUnity } from '../context/unityContext';
 
 
 const FightFish = () => {
@@ -30,6 +31,11 @@ const FightFish = () => {
 
 	// Context
 	const { account } = useWeb3React();
+	const unityContext = useUnity();
+
+	useEffect(() => {
+		unityContext.showFight();
+	}, []);
 
 	const getUserFight = async (fightIndex: number) => {
 		const fightInfo = await FishFight.fight.methods.getFightInfo(fightIndex).call();
