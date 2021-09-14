@@ -49,7 +49,6 @@ const ViewFish = ({ children }: Props) => {
 				:
 				<Account />
 				}
-				
 			</FishListContainer>
 			{children}
 			<FishListContainer>
