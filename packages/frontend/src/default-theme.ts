@@ -20,9 +20,10 @@ const gradientTopLeft = `linear-gradient(225deg, ${navyBlue}, ${darkCornflowerBl
 const gradientBottomLeft = `linear-gradient(315deg, ${navyBlue}, ${darkCornflowerBlue}, ${starCommandBlue}, ${blueGreen}, ${ceruleanCrayola}, ${skyBlueCrayola}, ${skyBlueCrayola2}, ${blizzardBlue}, ${powderBlue});`;
 const gradientRadial = `radial-gradient(${navyBlue}, ${darkCornflowerBlue}, ${starCommandBlue}, ${blueGreen}, ${ceruleanCrayola}, ${skyBlueCrayola}, ${skyBlueCrayola2}, ${blizzardBlue}, ${powderBlue});`;
 
-const gap = 10;
-const gapMedium = gap * 2;
-const gapLarge = gap * 3
+const spacingBase = 10;
+const gap = spacingBase + `px`;
+const gapMedium = spacingBase * 2 + `px`;
+const gapLarge = spacingBase * 3 + `px`
 
 const BaseTheme: DefaultTheme = {
   borderRadius: '5px',

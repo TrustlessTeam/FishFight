@@ -46,30 +46,31 @@ const App = () => {
 			<Router>
 				<Wrapper>
 					<Container>
-						{account ?
-						<>
-							<Topbar>
-								<Flex>
-									<Balance />
-									<Account />
-								</Flex>
-							</Topbar>
-						</> :
-						<>
+						<Topbar>
+							<Nav>
+								<LinkButton to="/">View Fish</LinkButton>
+								<LinkButton to="/catch">Catch Fish</LinkButton>
+								<LinkButton to="/fight">Fight Fish</LinkButton>
+							</Nav>
+							{account &&
+								<Balance />
+							}
 							<Account/>
-						</>
-					}
-						<UnityWindow/>
+						</Topbar>
 						<Content>
 							<Switch>
 								<Route path="/fight">
 									<FightFish />
+									<UnityWindow />
 								</Route>
 								<Route path="/catch">
 									<CatchFish/>
+									<UnityWindow />
 								</Route>
 								<Route path="/">
-									<ViewFish />
+									<ViewFish>
+										<UnityWindow />
+									</ViewFish>
 								</Route>
 							</Switch>		
 						</Content>
@@ -89,9 +90,45 @@ const App = () => {
 	);
 };
 
+const Wrapper = styled.div`
+	display: flex;
+	flex-flow: row wrap;
+	width: 100vw;
+	max-height: 100vh;
+	background-color: ${props => props.theme.colors.color1};
+	background-image: ${props => props.theme.colors.gradientTop};
+	font-size: 1rem;
+`;
+
+const Container = styled.div`
+	display: flex;
+	width: 100vw;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	min-height: 100vh;
+	margin: 0 auto;
+`;
+
+const Topbar = styled.div`
+	display: flex;
+	flex-flow: row nowrap;
+	justify-content: center;
+	background-color: white;
+	align-items: flex-end;
+	width: 100%;
+`;
+
+const Content = styled.div`
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex: 1;
+`;
+
 const LinkButton = styled(Link)`
-	padding: 50px 50px;
-	border-radius: 50%;
+	padding: ${props => props.theme.spacing.gap};;
+	border-radius: 5%;
 	font-weight: bold;
 	text-decoration: none;
 	text-transform: uppercase;
@@ -107,53 +144,12 @@ const LinkButton = styled(Link)`
 	}
 `;
 
-const Flex = styled.div`
-	display: flex;
-	align-items: center;
-`;
-
 const Nav = styled.nav`
-	postion: absolute;
 	display: flex;
 	flex-flow: row nowrap;
 	justify-content: space-evenly;
 	width: 100%;
 	margin: 20px;
-`;
-
-const Topbar = styled.div`
-	display: flex;
-	justify-content: space-between;
-	align-items: flex-end;
-	height: 74px;
-	width: 100%;
-	z-index: 5;
-`;
-
-const Content = styled.div`
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	flex: 1;
-	width: 100%;
-`;
-
-const Container = styled.div`
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	justify-content: center;
-	min-height: 100vh;
-	padding: 0px 24px;
-	max-width: 1200px;
-	margin: 0 auto;
-`;
-
-const Wrapper = styled.div`
-	background-color: ${props => props.theme.colors.color1};
-	background-image: ${props => props.theme.colors.gradientTop};
-	font-size: 1rem;
-	color: white;
 `;
 
 export default App;

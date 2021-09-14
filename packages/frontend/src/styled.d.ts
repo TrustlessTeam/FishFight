@@ -4,11 +4,11 @@ import 'styled-components';
 declare module 'styled-components' {
   export interface DefaultTheme {
     borderRadius: string;
-    
+
     spacing: {
-      gap: number;
-      gapMedium: number;
-      gapLarge: number;
+      gap: string;
+      gapMedium: string;
+      gapLarge: string;
     }
 
     colors: {
