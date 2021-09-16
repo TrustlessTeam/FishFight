@@ -3,7 +3,7 @@
   "chainId": "1666700000",
   "contracts": {
     "FishFactory": {
-      "address": "0xCe01fc1aeF3EEbb2264e1f680Ca6d70DDa14D970",
+      "address": "0xdf9bC3b428EB36C41708F6241F5642d81B950fC6",
       "abi": [
         {
           "inputs": [
@@ -64,6 +64,19 @@
             }
           ],
           "name": "ApprovalForAll",
+          "type": "event"
+        },
+        {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "tokenId",
+              "type": "uint256"
+            }
+          ],
+          "name": "FishMinted",
           "type": "event"
         },
         {
@@ -246,19 +259,19 @@
                   "type": "uint256"
                 },
                 {
-                  "internalType": "uint8",
+                  "internalType": "bytes1",
                   "name": "strength",
-                  "type": "uint8"
+                  "type": "bytes1"
                 },
                 {
-                  "internalType": "uint8",
+                  "internalType": "bytes1",
                   "name": "intelligence",
-                  "type": "uint8"
+                  "type": "bytes1"
                 },
                 {
-                  "internalType": "uint8",
+                  "internalType": "bytes1",
                   "name": "agility",
-                  "type": "uint8"
+                  "type": "bytes1"
                 },
                 {
                   "internalType": "bytes32",
@@ -639,7 +652,7 @@
       ]
     },
     "FishFight": {
-      "address": "0x68cE4F1c8a51215aB888E579c0d39559BE13E896",
+      "address": "0xC2721A72A3Cb0A7259bAA5612a9f6E321f0F5A5A",
       "abi": [
         {
           "inputs": [

@@ -1,4 +1,4 @@
-import React, { Fragment, useState, useEffect } from 'react';
+import React, { Fragment } from 'react';
 import styled from 'styled-components';
 
 
@@ -7,32 +7,42 @@ import { Fish } from '../utils/fish';
 
 import { useUnity } from '../context/unityContext';
 
-const UnityWindow = () => {
+type Props = {
+  children?: React.ReactNode;
+};
 
-	const unityContext = useUnity()
+const UnityWindow = ({ children }: Props) => {
+
+	const unityContext = useUnity();
 	
-
 	return (
 		<UnityWindowComponent>
 			{!unityContext.isLoaded && <p>Loading {unityContext.progression * 100} percent...</p>}
-			{/* <Unity unityContent={unityContext.UnityInstance} /> */}
 			<Fragment>
 				{unityContext.isUnityMounted === true && <Unity unityContent={unityContext.UnityInstance} />}
 			</Fragment>
+			{children}
 		</UnityWindowComponent>
 	);
 };
 
 const UnityWindowComponent = styled.div`
+	/* margin-top: -280px;
+	padding: 200px; */
+	order: 0;
 	position: relative;
-	padding: 100px;
 	border-radius: 50%;
-	width: 100%;
-	background-color: white;
+	width: 50vw;
+	height: 50vw;
+	max-height: 50vh;
 	color: black;
 
-	& > span {
-		margin-left: 4px;
+	& > div {
+		background: none !important;
+	}
+
+	& canvas {
+		border-radius: 10%10%;
 	}
 `;
 

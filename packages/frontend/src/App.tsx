@@ -17,7 +17,8 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 // Styled Components
-import styled from 'styled-components';
+import styled, { ThemeProvider } from 'styled-components';
+import { BaseTheme } from './default-theme';
 
 // Components
 import Account from './components/Account';
@@ -26,7 +27,6 @@ import CatchFish from './components/CatchFish';
 import UnityWindow from './components/UnityWindow';
 
 // Logo
-import Logo from './img/harmony_logo.svg';
 import FightFish from './components/FightFish';
 import ViewFish from './components/ViewFish';
 
@@ -41,109 +41,114 @@ const App = () => {
 	
 
 	return (
-		<Router>
-			<Wrapper>
-				<Container>
-					{account ?
-					<>
+		<ThemeProvider theme={BaseTheme}>
+			<Router>
+				<Wrapper>
+					<Container>
 						<Topbar>
 							<Nav>
-								<ul>
-									<li>
-										<Link to="/">View Fish</Link>
-									</li>
-									<li>
-										<Link to="/catch">Catch A Fish!</Link>
-									</li>
-									<li>
-										<Link to="/fight">Fight A Fish!</Link>
-									</li>
-								</ul>
+								<LinkButton to="/">View Fish</LinkButton>
+								<LinkButton to="/catch">Catch Fish</LinkButton>
+								<LinkButton to="/fight">Fight Fish</LinkButton>
 							</Nav>
-							
-							<Flex>
+							{account &&
 								<Balance />
-								<Account />
-							</Flex>
+							}
+							<Account/>
 						</Topbar>
-
-						<Content>				
-							{/* <UnityWindow /> */}
-							
-								<Switch>
-									<Route path="/fight">
-										<FightFish />
-									</Route>
-									<Route path="/catch">
-										<CatchFish/>
-									</Route>
-									<Route path="/">
-										<ViewFish />
-									</Route>
-								</Switch>
+						<Content>
+							<UnityWindow />
+							<Switch>
+								<Route path="/fight">
+									<FightFish />
+								</Route>
+								<Route path="/catch">
+									<CatchFish/>
+								</Route>
+								<Route path="/">
+									<ViewFish />
+								</Route>
+							</Switch>		
 						</Content>
-					</> :
-					<>
-						<Account/>
-						<ViewFish />
-					</>
-				}
-					<UnityWindow/>
-				</Container>
-				<ToastContainer
-					position="bottom-right"
-					newestOnTop={false}
-					pauseOnFocusLoss={false}
-					pauseOnHover={false}
-					rtl={false}
-				/>
-			</Wrapper>
-		</Router>	
+						
+					</Container>
+					<ToastContainer
+						position="bottom-right"
+						newestOnTop={false}
+						pauseOnFocusLoss={false}
+						pauseOnHover={false}
+						rtl={false}
+					/>
+				</Wrapper>
+			</Router>
+		</ThemeProvider>
+			
 	);
 };
 
-const Flex = styled.div`
+const Wrapper = styled.div`
 	display: flex;
-	align-items: center;
+	flex-flow: row wrap;
+	width: 100vw;
+	max-height: 100vh;
+	background-color: ${props => props.theme.colors.color1};
+	background-image: ${props => props.theme.colors.gradientTop};
+	font-size: 1rem;
 `;
 
-const Nav = styled.nav`
+const Container = styled.div`
 	display: flex;
-	width: 100%;
+	width: 100vw;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	min-height: 100vh;
+	margin: 0 auto;
 `;
 
 const Topbar = styled.div`
 	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	height: 74px;
+	flex-flow: row nowrap;
+	justify-content: center;
+	background-color: white;
+	align-items: flex-end;
 	width: 100%;
 `;
 
 const Content = styled.div`
 	display: flex;
-	align-items: center;
-	justify-content: center;
-	flex: 1;
+	flex-flow: row wrap;
+	margin-top: ${props => props.theme.spacing.gapMedium};
+	align-items: flex-start;
+	justify-content: space-evenly;
 	width: 100%;
+	flex: 1;
 `;
 
-const Container = styled.div`
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	justify-content: center;
-	min-height: 100vh;
-	padding: 0px 24px;
-	max-width: 1200px;
-	margin: 0 auto;
-`;
-
-const Wrapper = styled.div`
-	background-color: #0093e9;
-	background-image: linear-gradient(160deg, #0093e9 0%, #80d0c7 100%);
-	font-size: 1rem;
+const LinkButton = styled(Link)`
+	padding: ${props => props.theme.spacing.gap};
+	border-radius: 5%;
+	font-weight: bold;
+	text-decoration: none;
+	text-transform: uppercase;
+	background-color: darkblue;
+	box-shadow: 1px 2px 4px 4px rgba(0, 0, 0, 0.25);
 	color: white;
+	transition: opacity 0.3s ease, box-shadow 0.25s ease-in-out;
+
+	&:hover {
+		opacity: 1;
+		box-shadow: 1px 2px 2px 2px rgba(0, 0, 0, 0.2);
+		cursor: pointer;
+	}
+`;
+
+const Nav = styled.nav`
+	display: flex;
+	flex-flow: row nowrap;
+	justify-content: space-evenly;
+	width: 100%;
+	margin: 20px;
 `;
 
 export default App;

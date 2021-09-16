@@ -12,6 +12,7 @@ interface UnityProviderContext {
 	showFishing: () => void;
 	showOcean: () => void;
 	showFight: () => void;
+	addFish: (fish: Fish) => void;
 }
 
 type UnityProviderProps = { children: React.ReactNode };
@@ -27,6 +28,7 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
 	);
 	const [isUnityMounted, setIsUnityMounted] = useState(true);
 	const [isLoaded, setIsLoaded] = useState(false);
+  const [fishPoolReady, setFishPoolReady] = useState(false);
 	const [progression, setProgression] = useState(0);
 
 	useEffect(() => {
@@ -39,7 +41,7 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
 			// console.log('An error!', message);
 		});
 		UnityInstance.on('log', function (message: any) {
-			// console.log('A message!', message);
+			console.log('A message!', message);
 		});
 		UnityInstance.on('canvas', function (element: any) {
 			// console.log('Canvas', element);
@@ -49,6 +51,7 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
 			console.log('CameraStartConfirmed!');
 		});
 		UnityInstance.on('FishPoolStartConfirm', function () {
+      setFishPoolReady(true);
 			console.log('FishPoolStartConfirmed!');
 		});
 		UnityInstance.on('SetAnimStateConfirm', function () {
@@ -84,6 +87,12 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
 	const showOcean = () => {
 		UnityInstance.send('Camera', 'SetAnimState', 'ShowOcean');
 	};
+  const addFish = (fish: Fish) => {
+    if(isLoaded && fishPoolReady) {
+      console.log(fish)
+		  UnityInstance.send('FishPool', 'AddFish', JSON.stringify(fish));
+    }
+	};
 
 	const toggleIsUnityMounted = () => {
 		setIsUnityMounted(!isUnityMounted);
@@ -99,6 +108,7 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
     showFishing: showFishing,
     showOcean: showOcean,
     showFight: showFight,
+    addFish: addFish,
 	};
 	return <UnityContext.Provider value={value}>{children}</UnityContext.Provider>;
 };

@@ -15,9 +15,9 @@ contract FishFactory is ERC721Enumerable, Ownable {
 		uint8 fishTypeIndex;
 		string name; // Defaults to empty string, can be updated by owner later
 		uint birth;
-		uint8 strength;
-		uint8 intelligence;
-		uint8 agility;
+		bytes1 strength;
+		bytes1 intelligence;
+		bytes1 agility;
 		bytes32 traitsA;
 		bytes32 traitsB;
 		bytes32 traitsC;
@@ -25,6 +25,8 @@ contract FishFactory is ERC721Enumerable, Ownable {
 		uint challenger;
 		uint challenged;
 	}
+
+	event FishMinted(uint tokenId);
 
 	// Private members
 	mapping(uint256 => Fish) private _fishData;
@@ -54,11 +56,12 @@ contract FishFactory is ERC721Enumerable, Ownable {
 		bytes32 traits1 = perCallRandomGeneration();
 		bytes32 traits2 = perCallRandomGeneration();
 		bytes32 traits3 = perCallRandomGeneration();
-		uint8 strength = uint8(uint(traits1) % 256);
-		uint8 intelligence = uint8(uint(traits2) % 256);
-		uint8 agility = uint8(uint(traits3) % 256);
+		bytes1 strength = traits1[31];
+		bytes1 intelligence = traits2[31];
+		bytes1 agility = traits3[31];
 		_safeMint(msg.sender, mintIndex);
 		_fishData[mintIndex] = Fish(_fishTypeIndex, "", timeOfMint, strength, intelligence, agility, traits1, traits2, traits3, 0, 0, 0);
+		emit FishMinted(mintIndex);
 		return mintIndex;
 	}
 

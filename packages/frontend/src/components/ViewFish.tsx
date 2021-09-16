@@ -4,23 +4,11 @@ import React, { useState, useEffect } from 'react';
 // Styled Components
 import styled from 'styled-components';
 
-// Toast
-import { toast } from 'react-toastify';
-
-// Web3
-import { useWeb3React } from '@web3-react/core';
-
-// Big Number
-import BN from 'bn.js';
-
-// Harmony SDK
-import { numberToString, fromWei, hexToNumber, Units, Unit } from '@harmony-js/utils';
-
 // Utils
 import { Fish } from '../utils/fish'
 import { useFishFight } from '../context/fishFightContext';
 import { useUnity } from '../context/unityContext';
-
+import Account from '../components/Account';
 
 const ViewFish = () => {
 	const { FishFight, userFish, refetchUserFish, publicFish, refetchPublicFish } = useFishFight()
@@ -29,76 +17,90 @@ const ViewFish = () => {
 
 	useEffect(() => {
 		unityContext.showOcean();
-	}, []);
+	}, [userFish, publicFish]);
 
-	if(!userFish) {
-		return(
-			<CreateFishComponent>
-				<h1>Public Fish: {publicFish?.length}</h1>
-				<FlexGrid>
-				{publicFish?.map((fish, index) => (
+	useEffect(() => {
+		if(publicFish) {
+			unityContext.addFish(publicFish[0]);
+		}
+	}, [publicFish]);
+
+	return (
+		<>
+			<FishListContainer>
+				<h2>Your Fish</h2>
+				{userFish ? 
+				<FishList>
+				{userFish?.map((fish, index) => (
 						<FishNFT  key={index}>
-							<FishName>{fish.name}</FishName>
-							<FishData>{fish.birth}</FishData>
-							<FishData>Strength: {fish.strength} Intelligence: {fish.intelligence} Agility: {fish.agility}</FishData>
+							<FishName>Token Id: {fish.tokenId}</FishName>
+								<FishData>Strength: {fish.strength}</FishData>
+								<FishData>Intelligence: {fish.intelligence}</FishData>
+								<FishData>Agility: {fish.agility}</FishData>
+								<FishData>Wins: {fish.wins}</FishData>
 						</FishNFT>
 					))}
-				</FlexGrid>
-			</CreateFishComponent>
-		)
+				</FishList>
+				:
+				<Account />
+				}
+			</FishListContainer>
+			<PublicFishListContainer>
+				<h2>Public Fish</h2>
+				<FishList>
+				{publicFish?.map((fish, index) => (
+						<FishNFT  key={index}>
+							<FishData>Strength: {fish.strength}</FishData>
+							<FishData>Intelligence: {fish.intelligence}</FishData>
+							<FishData>Agility: {fish.agility}</FishData>
+							<FishData>Wins: {fish.wins}</FishData>
+						</FishNFT>
+					))}
+				</FishList>
+			</PublicFishListContainer>
+		</>
 		
-	}
-	return (
-		<CreateFishComponent>
-			<h1>Fished Owned: {userFish?.length}</h1>
-			<FlexGrid>
-			{userFish?.map((fish, index) => (
-					<FishNFT  key={index}>
-						<FishName>{fish.name}</FishName>
-						<FishData>{fish.birth}</FishData>
-						<FishData>Strength: {fish.strength} Intelligence: {fish.intelligence} Agility: {fish.agility}</FishData>
-					</FishNFT>
-				))}
-			</FlexGrid>
-		</CreateFishComponent>
 	);
 };
 
-
-
-const CreateFishComponent = styled.div`
+const Container = styled.div`
 	display: flex;
-	flex-direction: column;
-	align-items: center;
-	width: 50%;
+	width: 100vw;
+	flex-direction: row nowrap;
+	justify-content: space-evenly;
+	padding-top: 5vh;
 `;
 
-const Wrapper = styled.div`
+const FishListContainer = styled.div`
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	margin-top: -10vh;
-	padding: 40px 60px;
-	border-radius: 25px;
 	width: 100%;
-	background-color: white;
-	box-shadow: 2px 8px 10px 4px rgba(0, 0, 0, 0.3);
-	color: #a70000;
-	font-size: 1.5rem;
+	max-width: 20vw;
+	order: -1;
+	max-height: 80vh;
+	overflow: auto;
 `;
 
-const FlexGrid = styled.div`
+const PublicFishListContainer = styled(FishListContainer)`
+	order: 1;
+`;
+
+const FishList = styled.div`
 	display: flex;
-	flex-flow: row wrap;
-	justify-content: center;
+	flex-flow: column;
+	justify-content: space-evenly;
 	width: 100%;
 `;
 
 const FishNFT = styled.div`
-	flex: 1;
+	display: flex;
+	flex-flow: column;
+	justify-content: center;
+	align-items: center;
 	border-radius: 25px;
 	width: 100%;
-	padding: 15px;
+	/* padding: 15px; */
 	background-color: white;
 	box-shadow: 2px 8px 10px 4px rgba(0, 0, 0, 0.3);
 `;
@@ -111,34 +113,5 @@ const FishData = styled.p`
 	color: ${"black"};
 `;
 
-const CatchFishButton = styled.button`
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	background-color: rgba(255, 255, 255, 0.7);
-	color: black;
-	padding: 20px 20px;
-	border-radius: 10px;
-	box-shadow: 1px 2px 4px 4px rgba(0, 0, 0, 0.2);
-	font-size: 1.5rem;
-	transition: background-color 0.3s ease;
-
-	&:hover {
-		background-color: rgba(255, 255, 255, 1);
-		cursor: pointer;
-	}
-
-	span {
-		font-size: 1rem;
-		margin-left: 8px;
-		align-self: flex-end;
-	}
-`;
-
-const TotalStaked = styled.div`
-	font-size: 3.5rem;
-	margin-top: 16px;
-	color: black;
-`;
 
 export default ViewFish;

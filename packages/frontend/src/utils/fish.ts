@@ -100,16 +100,16 @@ export class Fish {
 	visualTraits: VisualTraits;
 
   constructor(tokenId: number, fishTypeIndex: number, name: string,
-              birth: number, strength: number, intelligence: number, agility: number,
+              birth: number, strength: string, intelligence: string, agility: string,
               wins: number, challenger: number, challenged: number,
               traitsA: string, traitsB: string, traitsC: string) {
     this.tokenId = tokenId;
     this.fishTypeIndex = fishTypeIndex;
     this.name = name;
     this.birth = birth;
-    this.strength = strength;
-    this.intelligence = intelligence;
-    this.agility = agility;
+    this.strength = parseInt(strength);
+    this.intelligence = parseInt(intelligence);
+    this.agility = parseInt(agility);
     this.wins = wins;
     this.challenger = challenger;
     this.challenged = challenged;

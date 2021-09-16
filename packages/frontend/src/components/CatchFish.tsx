@@ -21,6 +21,10 @@ import { Fish } from '../utils/fish'
 import { useFishFight } from '../context/fishFightContext';
 import { useUnity } from '../context/unityContext';
 
+type Props = {
+  children?: React.ReactNode;
+};
+
 
 
 const catchRates = [
@@ -30,7 +34,7 @@ const catchRates = [
 	{value: 5, chance: "~1.25%"}
 ];
 
-const CatchFish = () => {
+const CatchFish = ({ children }: Props) => {
 	const unityContext = useUnity()
 	const { FishFight, refetchBalance, refetchUserFish} = useFishFight()
 	const [caughtFish, setCaughtFish] = useState<Fish | null>(null);
@@ -46,6 +50,7 @@ const CatchFish = () => {
 	const { account } = useWeb3React();
 
 	useEffect(() => {
+		// FishFight.factory.events.FishMinted(function(error: any, event: any){ console.log("THE EVENT ", event); })
 		unityContext.showFishing();
 	}, []);
 
@@ -63,14 +68,15 @@ const CatchFish = () => {
 
 	const getUserFish = async (tokenId: number) => {
 		const fishInfo = await FishFight.factory.methods.getFishInfo(tokenId).call();
+		console.log(fishInfo)
 		const newFish = new Fish(
 			tokenId,
 			new BN(fishInfo.fishTypeIndex).toNumber(),
 			fishInfo.name,
 			new BN(fishInfo.birth).toNumber(),
-			new BN(fishInfo.strength).toNumber(),
-			new BN(fishInfo.intelligence).toNumber(),
-			new BN(fishInfo.agility).toNumber(),
+			hexToNumber(fishInfo.strength),
+			hexToNumber(fishInfo.intelligence),
+			hexToNumber(fishInfo.agility),
 			new BN(fishInfo.wins).toNumber(),
 			new BN(fishInfo.challenger).toNumber(),
 			new BN(fishInfo.challenged).toNumber(),
@@ -78,8 +84,10 @@ const CatchFish = () => {
 			fishInfo.traitsB,
 			fishInfo.traitsC
 		);
+		console.log(newFish)
 		setCaughtFish(newFish)
-		unityContext.fishCaught(newFish);
+		unityContext.addFish(newFish);
+		unityContext.showOcean();
 		//unityContext.stopRotation();
 	}
 
@@ -152,6 +160,7 @@ const CatchFish = () => {
 		<>
 			<CreateFishComponent>
 				<FishingOptions />
+				{children}
 			</CreateFishComponent>
 		</>
 	);
