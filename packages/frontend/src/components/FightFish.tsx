@@ -81,7 +81,7 @@ const FightFish = () => {
 						refetchPublicFish()
 					},
 				});
-			} catch (error) {
+			} catch (error: any) {
 				toast.error(error);
 				setIsFighting(false)
 				setMySelectedFish(null)

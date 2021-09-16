@@ -29,6 +29,7 @@ const UnityWindow = ({ children }: Props) => {
 const UnityWindowComponent = styled.div`
 	/* margin-top: -280px;
 	padding: 200px; */
+	order: 0;
 	position: relative;
 	border-radius: 50%;
 	width: 50vw;

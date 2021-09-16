@@ -27,7 +27,6 @@ import CatchFish from './components/CatchFish';
 import UnityWindow from './components/UnityWindow';
 
 // Logo
-import Logo from './img/harmony_logo.svg';
 import FightFish from './components/FightFish';
 import ViewFish from './components/ViewFish';
 
@@ -58,19 +57,16 @@ const App = () => {
 							<Account/>
 						</Topbar>
 						<Content>
+							<UnityWindow />
 							<Switch>
 								<Route path="/fight">
 									<FightFish />
-									<UnityWindow />
 								</Route>
 								<Route path="/catch">
 									<CatchFish/>
-									<UnityWindow />
 								</Route>
 								<Route path="/">
-									<ViewFish>
-										<UnityWindow />
-									</ViewFish>
+									<ViewFish />
 								</Route>
 							</Switch>		
 						</Content>
@@ -121,13 +117,16 @@ const Topbar = styled.div`
 
 const Content = styled.div`
 	display: flex;
-	align-items: center;
-	justify-content: center;
+	flex-flow: row wrap;
+	margin-top: ${props => props.theme.spacing.gapMedium};
+	align-items: flex-start;
+	justify-content: space-evenly;
+	width: 100%;
 	flex: 1;
 `;
 
 const LinkButton = styled(Link)`
-	padding: ${props => props.theme.spacing.gap};;
+	padding: ${props => props.theme.spacing.gap};
 	border-radius: 5%;
 	font-weight: bold;
 	text-decoration: none;

@@ -10,12 +10,7 @@ import { useFishFight } from '../context/fishFightContext';
 import { useUnity } from '../context/unityContext';
 import Account from '../components/Account';
 
-type Props = {
-  children?: React.ReactNode;
-};
-
-
-const ViewFish = ({ children }: Props) => {
+const ViewFish = () => {
 	const { FishFight, userFish, refetchUserFish, publicFish, refetchPublicFish } = useFishFight()
 
 	const unityContext = useUnity();
@@ -31,7 +26,7 @@ const ViewFish = ({ children }: Props) => {
 	}, [publicFish]);
 
 	return (
-		<Container>
+		<>
 			<FishListContainer>
 				<h2>Your Fish</h2>
 				{userFish ? 
@@ -50,8 +45,7 @@ const ViewFish = ({ children }: Props) => {
 				<Account />
 				}
 			</FishListContainer>
-			{children}
-			<FishListContainer>
+			<PublicFishListContainer>
 				<h2>Public Fish</h2>
 				<FishList>
 				{publicFish?.map((fish, index) => (
@@ -63,8 +57,8 @@ const ViewFish = ({ children }: Props) => {
 						</FishNFT>
 					))}
 				</FishList>
-			</FishListContainer>
-		</Container>
+			</PublicFishListContainer>
+		</>
 		
 	);
 };
@@ -83,6 +77,13 @@ const FishListContainer = styled.div`
 	align-items: center;
 	width: 100%;
 	max-width: 20vw;
+	order: -1;
+	max-height: 80vh;
+	overflow: auto;
+`;
+
+const PublicFishListContainer = styled(FishListContainer)`
+	order: 1;
 `;
 
 const FishList = styled.div`
