@@ -8,25 +8,29 @@ const fishType = [
       ModelsPectoralFin: [0, 3],
 
       // Colors
-      ColorBodyPrimary: [0, 360],
-      ColorBodySecondary: [0, 360],
-      ColorBodyTertiary: [0, 360],
+      ColorBodyPrimary: [0, 255],
+      ColorBodySecondary: [0, 255],
+      ColorBodyTertiary: [0, 255],
 
-      ColorTailPrimary: [0, 360],
-      ColorTailSecondary: [0, 360],
-      ColorTailTertiary: [0, 360],
+      ColorTailPrimary: [0, 255],
+      ColorTailSecondary: [0, 255],
+      ColorTailTertiary: [0, 255],
 
-      ColorPectoralPrimary: [0, 360],
-      ColorPectoralSecondary: [0, 360],
-      ColorPectoralTertiary: [0, 360],
+      ColorPectoralPrimary: [0, 255],
+      ColorPectoralSecondary: [0, 255],
+      ColorPectoralTertiary: [0, 255],
 
-      ColorDorsalPrimary: [0, 360],
-      ColorDorsalSecondary: [0, 360],
-      ColorDorsalTertiary: [0, 360],
+      ColorDorsalPrimary: [0, 255],
+      ColorDorsalSecondary: [0, 255],
+      ColorDorsalTertiary: [0, 255],
+
+      ColorJawPrimary: [0, 255],
+      ColorJawSecondary: [0, 255],
+      ColorJawTertiary: [0, 255],
       
-      ColorEyePrimary: [0, 360],
-      ColorEyeSecondary: [0, 360],
-      ColorEyeTertiary: [0, 360],
+      ColorEyePrimary: [0, 255],
+      ColorEyeSecondary: [0, 255],
+      ColorEyeTertiary: [0, 255],
 
       // Head options
       HeadEdges: [0, 100], // need to know upper range index for each option, using 2 for now
@@ -35,17 +39,37 @@ const fishType = [
       HeadFlat: [0, 80],
       HeadSplit: [0, 70], // map to intelligence
       HeadFlatnose: [0, 100], // map to agility
-      HeadFat: [0, 100], // map to strength
+      BodyFat: [0, 100], // map to strength
 
       // Textures
-      TextureBodyPrimary: [0, 9], // need to know upper range index for each option, using 2 for now
-      TextureBodySecondary: [0, 4],
-      TextureFinPrimary: [0, 9],
-      TextureFinSecondary: [0, 4],
-      TextureTailPrimary: [0, 9],
-      TextureTailSecondary: [0, 4],
-      TextureJawPrimary: [0, 9],
-      TextureJawSecondary: [0, 4],
+      TextureBodyPrimary: [0, 8], // need to know upper range index for each option, using 2 for now
+      TextureBodySecondary: [0, 1],
+
+      TextureHeadPrimary: [0, 8],
+      TextureHeadSecondary: [0, 1],
+      
+      TextureFinPrimary: [0, 8],
+      TextureFinSecondary: [0, 1],
+
+      TexturePectoralPrimary: [0, 8],
+      TexturePectoralSecondary: [0, 1],
+
+      TextureDorsalPrimary: [0, 8],
+      TextureDorralSecondary: [0, 1],
+
+      TextureTailPrimary: [0, 8],
+      TextureTailSecondary: [0, 1],
+
+      TextureJawPrimary: [0, 8],
+      TextureJawSecondary: [0, 1],
+
+      MeshBodyIndex: [0, 0],
+      MeshJawIndex: [0, 0],
+      MeshEyeIndex: [0, 0],
+      MeshDorsalIndex: [0, 4],
+      MeshPectoralIndex: [0, 2],
+      MeshTailIndex: [0, 3],
+
 
       // Glimmer strength
       GlimmerStrength: [0, 4]
@@ -135,15 +159,19 @@ export class Fish {
       ColorBodyPrimary: {r: traitsA[3], g: traitsA[4], b: traitsA[5]},
       ColorBodySecondary: {r: traitsA[6], g: traitsA[7], b: traitsA[8]},
       ColorBodyTertiary: {r: traitsA[9], g: traitsA[10], b: traitsA[11]},
+
       ColorTailPrimary: {r: traitsA[12], g: traitsA[13], b: traitsA[14]},
       ColorTailSecondary: {r: traitsA[15], g: traitsA[16], b: traitsA[17]},
       ColorTailTertiary: {r: traitsA[18], g: traitsA[19], b: traitsA[20]},
+
       ColorPectoralPrimary: {r: traitsA[21], g: traitsA[22], b: traitsA[23]},
       ColorPectoralSecondary: {r: traitsA[24], g: traitsA[25], b: traitsA[26]},
       ColorPectoralTertiary: {r: traitsA[27], g: traitsA[28], b: traitsA[29]},
+
       ColorDorsalPrimary: {r: traitsA[30], g: traitsA[31], b: traitsB[0]},
       ColorDorsalSecondary: {r: traitsB[1], g: traitsB[2], b: traitsB[3]},
       ColorDorsalTertiary: {r: traitsB[4], g: traitsB[5], b: traitsB[6]},
+
       ColorEyePrimary: {r: traitsB[7], g: traitsB[8], b: traitsB[9]},
       ColorEyeSecondary: {r: traitsB[10], g: traitsB[11], b: traitsB[12]},
       ColorEyeTertiary: {r: traitsB[13], g: traitsB[14], b: traitsB[15]},
@@ -155,7 +183,7 @@ export class Fish {
       HeadFlat: this.mapTraitValueToRange(traitsB[19], fishType[fishTypeIndex].ranges.HeadFlat),
       HeadSplit: this.mapTraitValueToRange(traitsB[20], fishType[fishTypeIndex].ranges.HeadSplit),
       HeadFlatnose: this.mapTraitValueToRange(traitsB[21], fishType[fishTypeIndex].ranges.HeadFlatnose),
-      HeadFat: this.mapTraitValueToRange(traitsB[22], fishType[fishTypeIndex].ranges.HeadFat),
+      BodyFat: this.mapTraitValueToRange(traitsB[22], fishType[fishTypeIndex].ranges.BodyFat),
 
       // Texture trait mapping
       TextureBodyPrimary: this.mapTraitValueToRange(traitsB[23], fishType[fishTypeIndex].ranges.TextureBodyPrimary), // range (0 - ?)
@@ -211,6 +239,11 @@ type VisualTraits = {
   ColorTailSecondary: Color,
   ColorTailTertiary: Color,
 
+  ColorHeadPrimary: Color,
+  ColorHeadSeconday: Color,
+  ColorHeadTertiary: Color,
+
+
   ColorPectoralPrimary: Color,
   ColorPectoralSecondary: Color,
   ColorPectoralTertiary: Color,
@@ -218,6 +251,10 @@ type VisualTraits = {
   ColorDorsalPrimary: Color,
   ColorDorsalSecondary: Color,
   ColorDorsalTertiary: Color,
+
+  ColorJawPrimary: Color,
+  ColorJawSecondary: Color,
+  ColorJawTertiary: Color,
 
   ColorEyePrimary: Color,
   ColorEyeSecondary: Color,
@@ -230,17 +267,37 @@ type VisualTraits = {
   HeadFlat: number,
   HeadSplit: number,
   HeadFlatnose: number,
-  HeadFat: number,
+  BodyFat: number,
 
   // Textures
   TextureBodyPrimary: number,
   TextureBodySecondary: number,
+
+  TextureHeadPrimary: number,
+  TextureHeadSecondary: number,
+
   TextureFinPrimary: number,
   TextureFinSecondary: number,
+
+  TexturePectoralPrimary: number,
+  TexturePectoralSecondary: number,
+
+  TextureDorsalPrimary: number,
+  TextureDorralSecondary: number,
+
   TextureTailPrimary: number,
   TextureTailSecondary: number,
+
   TextureJawPrimary: number,
   TextureJawSecondary: number,
+
+  // Mesh Body
+  MeshBodyIndex: number,
+  MeshJawIndex: number,
+  MeshEyeIndex: number,
+  MeshDorsalIndex: number,
+  MeshPectoralIndex: number,
+  MeshTailIndex: number,
 
   // Glimmer strength
   GlimmerStrength: number
