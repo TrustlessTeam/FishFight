@@ -24,7 +24,7 @@ const UnityContext = createContext<UnityProviderContext | undefined>(undefined);
 export const UnityProvider = ({ children }: UnityProviderProps) => {
 	// FishFight instance initiates with default url provider upon visiting page
 	const [UnityInstance, setUnityInstance] = useState<UnityContent>(
-		new UnityContent('../fishfight-one.json', '../UnityLoader.js'),
+		new UnityContent('./Build/fishfight-one.json', './Build/UnityLoader.js'),
 	);
 	const [isUnityMounted, setIsUnityMounted] = useState(true);
 	const [isLoaded, setIsLoaded] = useState(false);

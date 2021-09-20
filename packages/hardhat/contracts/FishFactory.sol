@@ -56,9 +56,9 @@ contract FishFactory is ERC721Enumerable, Ownable {
 		bytes32 traits1 = perCallRandomGeneration();
 		bytes32 traits2 = perCallRandomGeneration();
 		bytes32 traits3 = perCallRandomGeneration();
-		bytes1 strength = traits1[31];
-		bytes1 intelligence = traits2[31];
-		bytes1 agility = traits3[31];
+		bytes1 strength = traits1[0];
+		bytes1 intelligence = traits2[0];
+		bytes1 agility = traits3[0];
 		_safeMint(msg.sender, mintIndex);
 		_fishData[mintIndex] = Fish(_fishTypeIndex, "", timeOfMint, strength, intelligence, agility, traits1, traits2, traits3, 0, 0, 0);
 		emit FishMinted(mintIndex);
