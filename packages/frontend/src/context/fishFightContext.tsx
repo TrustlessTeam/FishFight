@@ -18,6 +18,7 @@ import { toBech32 } from '@harmony-js/crypto';
 import { isBech32Address, fromWei, hexToNumber, Units } from '@harmony-js/utils';
 import { Harmony } from "@harmony-js/core";
 import { Web3Provider } from "@ethersproject/providers";
+import axios from 'axios';
 
 
 // Typescript
@@ -158,6 +159,16 @@ const useUserFish = () => {
       for(let i = 0; i < numFish; i++) {
         const tokenId: BN = await fishFightInstance.factory.methods.tokenOfOwnerByIndex(account, i).call();
         const parsedTokenId = new BN(tokenId).toNumber();
+        const tokenURI = await fishFightInstance.factory.methods.tokenURI(parsedTokenId).call();
+        axios
+          .get(tokenURI)
+          .then(({ data })=> {
+            console.log(data)
+          })
+          .catch((err)=> {
+            console.log(err)
+          })
+        console.log(tokenURI)
         console.log(parsedTokenId)
         const fishInfo = await fishFightInstance.factory.methods.getFishInfo(parsedTokenId).call();
         console.log(fishInfo)
