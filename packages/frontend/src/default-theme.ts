@@ -21,6 +21,7 @@ const gradientBottomLeft = `linear-gradient(315deg, ${navyBlue}, ${darkCornflowe
 const gradientRadial = `radial-gradient(${navyBlue}, ${darkCornflowerBlue}, ${starCommandBlue}, ${blueGreen}, ${ceruleanCrayola}, ${skyBlueCrayola}, ${skyBlueCrayola2}, ${blizzardBlue}, ${powderBlue});`;
 
 const spacingBase = 10;
+const gapSmall = spacingBase / 2 + `px`;
 const gap = spacingBase + `px`;
 const gapMedium = spacingBase * 2 + `px`;
 const gapLarge = spacingBase * 3 + `px`
@@ -28,6 +29,7 @@ const gapLarge = spacingBase * 3 + `px`
 const BaseTheme: DefaultTheme = {
   borderRadius: '5px',
   spacing: {
+    gapSmall: gapSmall,
     gap: gap,
     gapMedium: gapMedium,
     gapLarge: gapLarge

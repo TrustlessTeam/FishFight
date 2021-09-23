@@ -19,6 +19,8 @@ import { Fight} from '../utils/fight'
 import { useFishFight } from '../context/fishFightContext';
 import { useUnity } from '../context/unityContext';
 
+import FishNFT from './FishNFT';
+
 
 const FightFish = () => {
 	const { FishFight, refetchBalance, userFish, publicFish, refetchUserFish, refetchPublicFish} = useFishFight()
@@ -104,13 +106,13 @@ const FightFish = () => {
 		if(fightResult) {
 			return (
 				<ResultContainer>
-					<FishNFT>
+					<div>
 						<FishData>Challenger: {fightResult.fishChallenger} Vs. Challenged: {fightResult.fishChallenged}</FishData>
 						<FishData>Round 1: {fightResult.round1.description}</FishData>
 						<FishData>Round 2: {fightResult.round2.description}</FishData>
 						<FishData>Round 3: {fightResult.round3.description}</FishData>
 						<FishData>Winner: {fightResult.winner}</FishData>
-					</FishNFT>
+					</div>
 
 					<FightButton onClick={() => fightAgain()}>
 						Fight Another Fish!
@@ -126,21 +128,9 @@ const FightFish = () => {
 			return (
 				<FightContainer>
 					<FightingContainer>
-						<FishNFT>
-							<FishName>{mySelectedFish.tokenId}</FishName>
-							<FishData>Strength: {mySelectedFish.strength}</FishData>
-							<FishData>Intelligence: {mySelectedFish.intelligence}</FishData>
-							<FishData>Agility: {mySelectedFish.agility}</FishData>
-							<FishData>Wins: {mySelectedFish.wins}</FishData>
-						</FishNFT>
+						<FishNFT fish={mySelectedFish}></FishNFT>
 						<h2>VS.</h2>
-						<FishNFT>
-							<FishName>{opponentFish.tokenId}</FishName>
-							<FishData>Strength: {opponentFish.strength}</FishData>
-							<FishData>Intelligence: {opponentFish.intelligence}</FishData>
-							<FishData>Agility: {opponentFish.agility}</FishData>
-							<FishData>Wins: {opponentFish.wins}</FishData>
-						</FishNFT>
+						<FishNFT fish={opponentFish}></FishNFT>
 					</FightingContainer>
 					<FightResults />
 				</FightContainer>
@@ -153,19 +143,11 @@ const FightFish = () => {
 		if(!fightResult && !isFighting) {
 			return(
 				<FightContainer>
-					<h1>Let's Fight!</h1>
 					<FishSelector>
 						<h2>Select Opponent!</h2>
 						<FishGrid>
 						{publicFish?.map((fish, index) => (
-								<FishNFT  key={index} onClick={() => {setOpponent(fish)}}>
-									<FishName>{fish.tokenId}</FishName>
-									<FishData>Strength: {fish.strength}</FishData>
-									<FishData>Intelligence: {fish.intelligence}</FishData>
-									<FishData>Agility: {fish.agility}</FishData>
-									<FishData>Wins: {fish.wins}</FishData>
-									<FishData>{fish.tokenId == opponentFish?.tokenId ? "Selected Fish" : ""}</FishData>
-								</FishNFT>
+								<FishNFT fish={fish} key={index} onClick={() => {setOpponent(fish)}}></FishNFT>
 							))}
 						</FishGrid>
 					</FishSelector>
@@ -174,15 +156,8 @@ const FightFish = () => {
 						<h2>Select your Fish!</h2>
 						<FishGrid>
 						{userFish?.map((fish, index) => (
-								<FishNFT key={index} onClick={() => {setUserFish(fish)}}>
-									<FishName>{fish.tokenId}</FishName>
-									<FishData>Strength: {fish.strength}</FishData>
-									<FishData>Intelligence: {fish.intelligence}</FishData>
-									<FishData>Agility: {fish.agility}</FishData>
-									<FishData>Wins: {fish.wins}</FishData>
-									<FishData>{fish.tokenId == mySelectedFish?.tokenId ? "Selected Fish": ""}</FishData>
-								</FishNFT>
-							))}
+							<FishNFT fish={fish} key={index} onClick={() => {setUserFish(fish)}}></FishNFT>
+						))}
 						</FishGrid>
 					</FishSelector>
 
@@ -207,14 +182,14 @@ const FightFish = () => {
 
 const ResultContainer = styled.div`
 	display: flex;
-	flex-direction: column;
+	flex-direction: row nowrap;
 	align-items: center;
 	width: 100%;
 `;
 
 const FightContainer = styled.div`
 	display: flex;
-	flex-direction: column;
+	flex-direction: row nowrap;
 	align-items: center;
 	width: 100%;
 `;
@@ -231,9 +206,6 @@ const FishGrid = styled.div`
 	flex-direction: row wrap;
 	width: 100%;
 	margin: 15px;
-	border: 8px solid blue;
-	border-radius: 5px;
-	color: #a70000;
 `;
 
 const FishSelector = styled.div`
@@ -241,19 +213,19 @@ const FishSelector = styled.div`
 	flex-flow: column;
 	align-items: center;
 	justify-content: space-evenly;
-	width: 100%;
+	width: 50%;
 `;
 
-const FishNFT = styled.div`
-	display: flex;
-	flex-flow: column;
-	align-items: center;
-	border-radius: 25px;
-	padding: 30px;
-	margin: 15px;
-	background-color: white;
-	box-shadow: 2px 8px 10px 4px rgba(0, 0, 0, 0.3);
-`;
+// const FishNFT = styled.div`
+// 	display: flex;
+// 	flex-flow: column;
+// 	align-items: center;
+// 	border-radius: 25px;
+// 	padding: 30px;
+// 	margin: 15px;
+// 	background-color: white;
+// 	box-shadow: 2px 8px 10px 4px rgba(0, 0, 0, 0.3);
+// `;
 
 const FishName = styled.h3`
 	color: ${"black"};

@@ -54,6 +54,12 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
 		UnityInstance.on('UISelectionConfirm', function (data: any) {
 			console.log('UI changed');
 			console.log(data)
+			switch (data) {
+				case 'mint_fish_75p':
+					return ;
+				default:
+					return;
+			}
 		});
 		UnityInstance.on('FishPoolStartConfirm', function () {
       setFishPoolReady(true);

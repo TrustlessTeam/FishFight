@@ -29,6 +29,8 @@ import UnityWindow from './components/UnityWindow';
 // Logo
 import FightFish from './components/FightFish';
 import ViewFish from './components/ViewFish';
+import Game from './components/Game';
+import logo from '../src/img/harmony_logo.svg'
 
 
 const App = () => {
@@ -46,6 +48,10 @@ const App = () => {
 				<Wrapper>
 					<Container>
 						<Topbar>
+							<Logo>
+								<LogoImg src={logo}></LogoImg>
+							</Logo>
+							
 							<Nav>
 								<LinkButton to="/">View Fish</LinkButton>
 								<LinkButton to="/catch">Catch Fish</LinkButton>
@@ -57,7 +63,6 @@ const App = () => {
 							<Account/>
 						</Topbar>
 						<Content>
-							<UnityWindow />
 							<Switch>
 								<Route path="/fight">
 									<FightFish />
@@ -66,7 +71,7 @@ const App = () => {
 									<CatchFish/>
 								</Route>
 								<Route path="/">
-									<ViewFish />
+									<Game />
 								</Route>
 							</Switch>		
 						</Content>
@@ -112,16 +117,18 @@ const Topbar = styled.div`
 	justify-content: center;
 	background-color: white;
 	align-items: flex-end;
+	margin: 0 ${props => props.theme.spacing.gap};
 	width: 100%;
+	height: 5%;
 `;
 
 const Content = styled.div`
 	display: flex;
 	flex-flow: row wrap;
-	margin-top: ${props => props.theme.spacing.gapMedium};
 	align-items: flex-start;
 	justify-content: space-evenly;
 	width: 100%;
+	height: 95%;
 	flex: 1;
 `;
 
@@ -143,12 +150,28 @@ const LinkButton = styled(Link)`
 	}
 `;
 
+const Logo = styled.div`
+	display: flex;
+	flex-flow: row nowrap;
+	justify-content: center;
+	align-items: center;
+	width: 10%;
+	height: 100%;
+`;
+
+const LogoImg = styled.img`
+	width: 50px;
+	height: 100%;
+`;
+
+
+
 const Nav = styled.nav`
 	display: flex;
 	flex-flow: row nowrap;
 	justify-content: space-evenly;
+	align-items: center;
 	width: 100%;
-	margin: 20px;
 `;
 
 export default App;

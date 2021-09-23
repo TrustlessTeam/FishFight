@@ -6,6 +6,7 @@ declare module 'styled-components' {
     borderRadius: string;
 
     spacing: {
+      gapSmall: string;
       gap: string;
       gapMedium: string;
       gapLarge: string;

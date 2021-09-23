@@ -61,15 +61,16 @@ const Account = () => {
 const AccountComponent = styled.div`
 	/* position: absolute; */
 	display: flex;
-	justify-content: flex-end;
+	justify-content: center;
 	padding: 10px 20px;
 	border-radius: 25px;
 	background-color: white;
 	opacity: 0.7;
 	box-shadow: 1px 2px 4px 4px rgba(0, 0, 0, 0.25);
 	color: black;
-	margin-left: 10px;
+	/* margin-left: 10px; */
 	transition: opacity 0.3s ease, box-shadow 0.25s ease-in-out;
+	width: 10%;
 
 	&:hover {
 		opacity: 1;
