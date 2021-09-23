@@ -1,16 +1,17 @@
 //SPDX-License-Identifier: MIT
 pragma solidity ^0.8.4;
 
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
+import "@openzeppelin/contracts/utils/Strings.sol";
 
 
-contract FishFactory is ERC721Enumerable, Ownable {
+contract FishFactory is ERC721Enumerable, ERC721URIStorage, Ownable {
 	using Counters for Counters.Counter;
+	using Strings for uint256;
 	struct Fish {
 		uint8 fishTypeIndex;
 		string name; // Defaults to empty string, can be updated by owner later
@@ -33,17 +34,16 @@ contract FishFactory is ERC721Enumerable, Ownable {
 	Counters.Counter private _randCounter;
 	uint8 private _fishTypeIndex = 0;
 	address public _fightContractAddress;
+	address public _serverAddress = 0x61544AB146A815e6088d49c40d285C2a1F2fe84F;
+	address public constant _teamAddress0 = 0xCc54A768677A6B8689eB92907F964d11a1F1B77E;
+	address public constant _teamAddress1 = 0x33C533D80F0490E24C01AFEf25C0a057c74AfD87;
 
 	// Public members
-	string public _baseTokenURI;
+	string public _baseTokenURI = 'https://gateway.pinata.cloud/ipfs/';
 
-	constructor(string memory baseURI) ERC721("Fish", "FSH") {
-		_baseTokenURI = baseURI;
-	}
+	constructor() ERC721("Fish", "FSH") {}
 
-	function _baseURI() internal view override returns (string memory) {
-		return _baseTokenURI;
-	}
+	
 
 	function getContractBalance() public view returns(uint256 _balance){
 		uint256 contractBalance = address(this).balance;
@@ -51,7 +51,6 @@ contract FishFactory is ERC721Enumerable, Ownable {
 	}
 
 	function createFish() private returns(uint){
-		uint mintIndex = totalSupply();
 		uint256 timeOfMint = block.timestamp;
 		bytes32 traits1 = perCallRandomGeneration();
 		bytes32 traits2 = perCallRandomGeneration();
@@ -59,6 +58,7 @@ contract FishFactory is ERC721Enumerable, Ownable {
 		bytes1 strength = traits1[0];
 		bytes1 intelligence = traits2[0];
 		bytes1 agility = traits3[0];
+		uint mintIndex = totalSupply();
 		_safeMint(msg.sender, mintIndex);
 		_fishData[mintIndex] = Fish(_fishTypeIndex, "", timeOfMint, strength, intelligence, agility, traits1, traits2, traits3, 0, 0, 0);
 		emit FishMinted(mintIndex);
@@ -109,6 +109,10 @@ contract FishFactory is ERC721Enumerable, Ownable {
 		_fightContractAddress = newAddress;
 	}
 
+	function updateServerAddress(address newAddress) public onlyOwner {
+		_serverAddress = newAddress;
+	}
+
 	function perCallRandomGeneration() private returns(bytes32) {
 		_randCounter.increment();
 		return vrf() & keccak256(abi.encodePacked(_randCounter.current()));
@@ -126,5 +130,60 @@ contract FishFactory is ERC721Enumerable, Ownable {
 			}
 			result := mload(memPtr)
 		}
+	}
+
+	// Owner functions
+	function setBaseURI(string memory baseURI) public onlyOwner {
+		_baseTokenURI = baseURI;
+	}
+
+	function withdraw() external onlyOwner {
+    uint balance = address(this).balance;
+    payable(_teamAddress0).transfer(balance * 50 / 100);
+    payable(owner()).transfer(address(this).balance);
+  }
+
+	function setTokenURI(uint256 tokenId, string memory newTokenURI) external {
+		require(msg.sender == _serverAddress, "Only the FightContract can update a Fish's wins");
+		_setTokenURI(tokenId, newTokenURI);
+	}
+
+	function _baseURI() internal view override returns (string memory) {
+		return _baseTokenURI;
+	}
+  
+
+	// The following functions are overrides required by Solidity.
+	function _beforeTokenTransfer(address from, address to, uint256 tokenId)
+		internal
+		override(ERC721, ERC721Enumerable)
+	{
+		super._beforeTokenTransfer(from, to, tokenId);
+	}
+
+	function _burn(uint256 tokenId) internal override(ERC721, ERC721URIStorage) {
+		super._burn(tokenId);
+	}
+
+	function tokenURI(uint256 tokenId)
+		public
+		view
+		override(ERC721, ERC721URIStorage)
+		returns (string memory)
+	{
+		string memory tokenUri = super.tokenURI(tokenId);
+		if(bytes(tokenUri).length == bytes(string(abi.encodePacked(_baseURI(), tokenId.toString()))).length) {
+			return "";
+		}
+		return tokenUri;
+	}
+
+	function supportsInterface(bytes4 interfaceId)
+		public
+		view
+		override(ERC721, ERC721Enumerable)
+		returns (bool)
+	{
+		return super.supportsInterface(interfaceId);
 	}
 }

@@ -13,11 +13,12 @@ export class Fish {
 	traitsB: Array<number>;
 	traitsC: Array<number>;
 	visualTraits: VisualTraits;
+  imgSrc: string | null;
 
   constructor(tokenId: number, fishTypeIndex: number, name: string,
               birth: number, strength: string, intelligence: string, agility: string,
               wins: number, challenger: number, challenged: number,
-              traitsA: string, traitsB: string, traitsC: string) {
+              traitsA: string, traitsB: string, traitsC: string, imgSrc?: string | null) {
     this.tokenId = tokenId;
     this.fishTypeIndex = fishTypeIndex;
     this.name = name;
@@ -32,6 +33,7 @@ export class Fish {
     this.traitsB = this.parseVrf(traitsB);
     this.traitsC = this.parseVrf(traitsC);
     this.visualTraits = this.parseTraits();
+    this.imgSrc = imgSrc ? imgSrc : null;
   };
 
   parseTraits(): VisualTraits {
