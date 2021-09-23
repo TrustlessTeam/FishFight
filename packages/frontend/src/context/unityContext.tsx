@@ -7,6 +7,7 @@ interface UnityProviderContext {
 	isUnityMounted: boolean;
 	isLoaded: boolean;
 	progression: number;
+	isFishPoolReady: boolean,
 	toggleIsUnityMounted: () => void;
 	fishCaught: (fish: Fish) => void;
 	showFishing: () => void;
@@ -50,8 +51,15 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
 		UnityInstance.on('CameraStartConfirm', function () {
 			console.log('CameraStartConfirmed!');
 		});
+		UnityInstance.on('UISelectionConfirm', function (data: any) {
+			console.log('UI changed');
+			console.log(data)
+		});
 		UnityInstance.on('FishPoolStartConfirm', function () {
       setFishPoolReady(true);
+			console.log('FishPoolStartConfirmed!');
+			console.log('FishPoolStartConfirmed!');
+			console.log('FishPoolStartConfirmed!');
 			console.log('FishPoolStartConfirmed!');
 		});
 		UnityInstance.on('SetAnimStateConfirm', function () {
@@ -75,24 +83,39 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
 	}, []);
 
 	const fishCaught = (fish: Fish) => {
+		console.log("FishCaught Called")
+    if(!isLoaded || !fishPoolReady) return;
 		console.log(JSON.stringify(fish))
     UnityInstance.send('CanvasUserInterface', 'FishCaught', JSON.stringify(fish));
+		console.log("FishCaught Completed")
 	};
 	const showFishing = () => {
+		console.log("ShowFishing Called")
+    if(!isLoaded || !fishPoolReady) return;
 		UnityInstance.send('Camera', 'SetAnimState', 'ShowFishing');
+		console.log("ShowFishing Completed")
 	};
 	const showFight = () => {
+		console.log("ShowFight Called")
+    if(!isLoaded || !fishPoolReady) return;
 		UnityInstance.send('Camera', 'SetAnimState', 'ShowFight');
+		console.log("ShowFight Completed")
 	};
 	const showOcean = () => {
+		console.log("ShowOcean Called")
+    if(!isLoaded || !fishPoolReady) return;
 		UnityInstance.send('Camera', 'SetAnimState', 'ShowOcean');
+		console.log("ShowOcean Completed")
 	};
   const addFish = (fish: Fish) => {
-    if(isLoaded && fishPoolReady) {
-      console.log(fish)
-		  UnityInstance.send('FishPool', 'AddFish', JSON.stringify(fish));
-    }
+		console.log("AddFish Called")
+    if(!isLoaded || !fishPoolReady) return;
+		console.log(fish)
+		UnityInstance.send('FishPool', 'AddFish', JSON.stringify(fish));
+		console.log("AddFish Completed")
 	};
+
+
 
 	const toggleIsUnityMounted = () => {
 		setIsUnityMounted(!isUnityMounted);
@@ -103,6 +126,7 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
 		isUnityMounted: isUnityMounted,
 		isLoaded: isLoaded,
 		progression: progression,
+		isFishPoolReady: fishPoolReady,
 		toggleIsUnityMounted: toggleIsUnityMounted,
 		fishCaught: fishCaught,
     showFishing: showFishing,

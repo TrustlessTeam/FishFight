@@ -52,7 +52,7 @@ const CatchFish = ({ children }: Props) => {
 	useEffect(() => {
 		// FishFight.factory.events.FishMinted(function(error: any, event: any){ console.log("THE EVENT ", event); })
 		unityContext.showFishing();
-	}, []);
+	}, [unityContext.isFishPoolReady]);
 
 	// Get contract balance and parse it to One
 	const getContractBalance = async () => {

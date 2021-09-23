@@ -162,11 +162,16 @@ const useUserFish = () => {
         const tokenURI = await fishFightInstance.factory.methods.tokenURI(parsedTokenId).call();
         let imgSrc = null;
         if(tokenURI != "") {
-          const metadataResponse = await axios.get(tokenURI);
-          console.log(metadataResponse)
-          imgSrc = metadataResponse.data.image;
-          console.log(tokenURI)
-          console.log(metadataResponse.data.image)
+          try {
+            const metadataResponse = await axios.get(tokenURI);
+            console.log(metadataResponse)
+            imgSrc = metadataResponse.data.image;
+            console.log(tokenURI)
+            console.log(metadataResponse.data.image)
+          } catch (error) {
+            console.log("Error in Axios call: ");
+            console.log(error)
+          }
         }
         
         console.log(parsedTokenId)
@@ -237,11 +242,16 @@ const usePublicFish = () => {
           const tokenURI = await fishFightInstance.factory.methods.tokenURI(i).call();
           let imgSrc = null;
           if(tokenURI != "") {
-            const metadataResponse = await axios.get(tokenURI);
-            console.log(metadataResponse)
-            imgSrc = metadataResponse.data.image;
-            console.log(tokenURI)
-            console.log(metadataResponse.data.image)
+            try {
+              const metadataResponse = await axios.get(tokenURI);
+              console.log(metadataResponse)
+              imgSrc = metadataResponse.data.image;
+              console.log(tokenURI)
+              console.log(metadataResponse.data.image)
+            } catch (error) {
+              console.log("Error in Axios call: ");
+              console.log(error)
+            }
           }
           const fishInfo = await fishFightInstance.factory.methods.getFishInfo(i).call();
           const fish = new Fish(

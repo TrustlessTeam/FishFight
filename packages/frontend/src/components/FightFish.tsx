@@ -35,7 +35,7 @@ const FightFish = () => {
 
 	useEffect(() => {
 		unityContext.showFight();
-	}, []);
+	}, [unityContext.isFishPoolReady]);
 
 	const getUserFight = async (fightIndex: number) => {
 		const fightInfo = await FishFight.fight.methods.getFightInfo(fightIndex).call();

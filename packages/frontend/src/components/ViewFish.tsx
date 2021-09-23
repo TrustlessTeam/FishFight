@@ -17,13 +17,13 @@ const ViewFish = () => {
 
 	useEffect(() => {
 		unityContext.showOcean();
-	}, [userFish, publicFish]);
+	}, [userFish, publicFish, unityContext.isFishPoolReady]);
 
 	useEffect(() => {
 		if(publicFish) {
 			unityContext.addFish(publicFish[0]);
 		}
-	}, [publicFish]);
+	}, [publicFish, unityContext.isFishPoolReady]);
 
 	return (
 		<>
