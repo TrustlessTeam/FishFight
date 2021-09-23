@@ -3,16 +3,10 @@
   "chainId": "1666700000",
   "contracts": {
     "FishFactory": {
-      "address": "0xdf9bC3b428EB36C41708F6241F5642d81B950fC6",
+      "address": "0x729108b154CeA96e967fEC00Eecd80BF82633fea",
       "abi": [
         {
-          "inputs": [
-            {
-              "internalType": "string",
-              "name": "baseURI",
-              "type": "string"
-            }
-          ],
+          "inputs": [],
           "stateMutability": "nonpayable",
           "type": "constructor"
         },
@@ -139,6 +133,45 @@
         {
           "inputs": [],
           "name": "_fightContractAddress",
+          "outputs": [
+            {
+              "internalType": "address",
+              "name": "",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [],
+          "name": "_serverAddress",
+          "outputs": [
+            {
+              "internalType": "address",
+              "name": "",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [],
+          "name": "_teamAddress0",
+          "outputs": [
+            {
+              "internalType": "address",
+              "name": "",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [],
+          "name": "_teamAddress1",
           "outputs": [
             {
               "internalType": "address",
@@ -460,6 +493,37 @@
         {
           "inputs": [
             {
+              "internalType": "string",
+              "name": "baseURI",
+              "type": "string"
+            }
+          ],
+          "name": "setBaseURI",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "uint256",
+              "name": "tokenId",
+              "type": "uint256"
+            },
+            {
+              "internalType": "string",
+              "name": "newTokenURI",
+              "type": "string"
+            }
+          ],
+          "name": "setTokenURI",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
               "internalType": "bytes4",
               "name": "interfaceId",
               "type": "bytes4"
@@ -637,6 +701,19 @@
           "type": "function"
         },
         {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "newAddress",
+              "type": "address"
+            }
+          ],
+          "name": "updateServerAddress",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        },
+        {
           "inputs": [],
           "name": "vrf",
           "outputs": [
@@ -648,11 +725,18 @@
           ],
           "stateMutability": "view",
           "type": "function"
+        },
+        {
+          "inputs": [],
+          "name": "withdraw",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
         }
       ]
     },
     "FishFight": {
-      "address": "0xC2721A72A3Cb0A7259bAA5612a9f6E321f0F5A5A",
+      "address": "0xCbB639B93358cDcBde137A8E38517E2EC0Da6B98",
       "abi": [
         {
           "inputs": [

@@ -18,6 +18,7 @@ import { toBech32 } from '@harmony-js/crypto';
 import { isBech32Address, fromWei, hexToNumber, Units } from '@harmony-js/utils';
 import { Harmony } from "@harmony-js/core";
 import { Web3Provider } from "@ethersproject/providers";
+import axios from 'axios';
 
 
 // Typescript
@@ -158,6 +159,21 @@ const useUserFish = () => {
       for(let i = 0; i < numFish; i++) {
         const tokenId: BN = await fishFightInstance.factory.methods.tokenOfOwnerByIndex(account, i).call();
         const parsedTokenId = new BN(tokenId).toNumber();
+        const tokenURI = await fishFightInstance.factory.methods.tokenURI(parsedTokenId).call();
+        let imgSrc = null;
+        if(tokenURI != "") {
+          try {
+            const metadataResponse = await axios.get(tokenURI);
+            console.log(metadataResponse)
+            imgSrc = metadataResponse.data.image;
+            console.log(tokenURI)
+            console.log(metadataResponse.data.image)
+          } catch (error) {
+            console.log("Error in Axios call: ");
+            console.log(error)
+          }
+        }
+        
         console.log(parsedTokenId)
         const fishInfo = await fishFightInstance.factory.methods.getFishInfo(parsedTokenId).call();
         console.log(fishInfo)
@@ -174,8 +190,10 @@ const useUserFish = () => {
           new BN(fishInfo.challenged).toNumber(),
           fishInfo.traitsA,
           fishInfo.traitsB,
-          fishInfo.traitsC
+          fishInfo.traitsC,
+          imgSrc
         );
+        console.log(fish)
         tempFish.push(fish);
       }
       setUserFish(tempFish);
@@ -220,6 +238,21 @@ const usePublicFish = () => {
       // once its done, setMyFish to tempfish
       for(let i = 0; i < totalFishSupply; i++) {
         if(!userFish.includes(i)) { // don't include the current accounts fish
+          // load image url from metadata
+          const tokenURI = await fishFightInstance.factory.methods.tokenURI(i).call();
+          let imgSrc = null;
+          if(tokenURI != "") {
+            try {
+              const metadataResponse = await axios.get(tokenURI);
+              console.log(metadataResponse)
+              imgSrc = metadataResponse.data.image;
+              console.log(tokenURI)
+              console.log(metadataResponse.data.image)
+            } catch (error) {
+              console.log("Error in Axios call: ");
+              console.log(error)
+            }
+          }
           const fishInfo = await fishFightInstance.factory.methods.getFishInfo(i).call();
           const fish = new Fish(
             i,
@@ -234,7 +267,8 @@ const usePublicFish = () => {
             new BN(fishInfo.challenged).toNumber(),
             fishInfo.traitsA,
             fishInfo.traitsB,
-            fishInfo.traitsC
+            fishInfo.traitsC,
+            imgSrc
           );
           tempFish.push(fish);
         }

@@ -1,0 +1,27 @@
+Array of open ended 
+FightsOpen {
+  FightId
+  Fight Type: open, or selected
+  CreatedChallenge: tokenId, address
+  Bounty:
+  ExprirationTS:
+  CompletedTS
+  AcceptedChallenge: null, then => tokenId, address
+  winner: empty -> tokenId
+  loser: empty -> tokenId
+  round: vrf
+}
+
+GetOpenFights() returns only FightType open
+GetSelectedFights(tokenId) returns Fights that include tokenId
+GetFight(fightId) returns a specific fight
+
+CreateOpenFight(tokenId Creator...)
+CreateSelectedFight(tokenId Creator, tokenId challengedFish)
+AcceptSelectedFight(fightId) msg.sender== owner of challengedFish tokenId
+AcceptOpenFight(fightId, tokenId of your fish that will fight)
+
+CompleteFight() run internally private
+randomly generated rounds, computes the winner, updates stats,
+burns the loser token
+

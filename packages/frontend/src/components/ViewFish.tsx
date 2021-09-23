@@ -17,13 +17,13 @@ const ViewFish = () => {
 
 	useEffect(() => {
 		unityContext.showOcean();
-	}, [userFish, publicFish]);
+	}, [userFish, publicFish, unityContext.isFishPoolReady]);
 
 	useEffect(() => {
 		if(publicFish) {
 			unityContext.addFish(publicFish[0]);
 		}
-	}, [publicFish]);
+	}, [publicFish, unityContext.isFishPoolReady]);
 
 	return (
 		<>
@@ -33,6 +33,9 @@ const ViewFish = () => {
 				<FishList>
 				{userFish?.map((fish, index) => (
 						<FishNFT  key={index}>
+							{fish.imgSrc && 
+								<FishImg src={fish.imgSrc}></FishImg>
+							}
 							<FishName>Token Id: {fish.tokenId}</FishName>
 								<FishData>Strength: {fish.strength}</FishData>
 								<FishData>Intelligence: {fish.intelligence}</FishData>
@@ -50,6 +53,9 @@ const ViewFish = () => {
 				<FishList>
 				{publicFish?.map((fish, index) => (
 						<FishNFT  key={index}>
+							{fish.imgSrc && 
+								<FishImg src={fish.imgSrc}></FishImg>
+							}
 							<FishData>Strength: {fish.strength}</FishData>
 							<FishData>Intelligence: {fish.intelligence}</FishData>
 							<FishData>Agility: {fish.agility}</FishData>
@@ -91,6 +97,12 @@ const FishList = styled.div`
 	flex-flow: column;
 	justify-content: space-evenly;
 	width: 100%;
+`;
+
+const FishImg = styled.img`
+	width: 100%;
+	height: 100%;
+	border-radius: 50%50%;
 `;
 
 const FishNFT = styled.div`
