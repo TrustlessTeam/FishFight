@@ -50,6 +50,7 @@ const CatchFish = ({ children }: Props) => {
 	const { account } = useWeb3React();
 
 	useEffect(() => {
+		console.log("Calling Show Fishing")
 		// FishFight.factory.events.FishMinted(function(error: any, event: any){ console.log("THE EVENT ", event); })
 		unityContext.showFishing();
 	}, [unityContext.isFishPoolReady]);
@@ -87,8 +88,6 @@ const CatchFish = ({ children }: Props) => {
 		console.log(newFish)
 		setCaughtFish(newFish)
 		unityContext.addFish(newFish);
-		unityContext.showOcean();
-		//unityContext.stopRotation();
 	}
 
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {

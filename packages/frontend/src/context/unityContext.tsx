@@ -56,6 +56,7 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
 			console.log(data)
 			switch (data) {
 				case 'mint_fish_75p':
+
 					return ;
 				default:
 					return;
@@ -63,9 +64,6 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
 		});
 		UnityInstance.on('FishPoolStartConfirm', function () {
       setFishPoolReady(true);
-			console.log('FishPoolStartConfirmed!');
-			console.log('FishPoolStartConfirmed!');
-			console.log('FishPoolStartConfirmed!');
 			console.log('FishPoolStartConfirmed!');
 		});
 		UnityInstance.on('SetAnimStateConfirm', function () {

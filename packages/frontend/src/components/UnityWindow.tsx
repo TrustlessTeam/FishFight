@@ -30,8 +30,7 @@ const UnityWindow = ({ children }: Props) => {
 const UnityWindowComponent = styled.div`
 	position: relative;
 	width: 100%;
-	height: 100%;
-	max-height: 1080px;
+	height: calc(99% - 1px);
 	& > div {
 		background: none !important;
 	}

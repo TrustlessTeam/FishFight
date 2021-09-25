@@ -26,6 +26,28 @@ const gap = spacingBase + `px`;
 const gapMedium = spacingBase * 2 + `px`;
 const gapLarge = spacingBase * 3 + `px`
 
+const size = {
+  mobileS: '320px',
+  mobileM: '375px',
+  mobileL: '425px',
+  tablet: '768px',
+  laptop: '1024px',
+  laptopL: '1440px',
+  desktop: '2560px'
+}
+
+const device = {
+  mobileS: `(min-width: ${size.mobileS})`,
+  mobileM: `(min-width: ${size.mobileM})`,
+  mobileL: `(min-width: ${size.mobileL})`,
+  tablet: `(min-width: ${size.tablet})`,
+  laptop: `(min-width: ${size.laptop})`,
+  laptopL: `(min-width: ${size.laptopL})`,
+  desktop: `(min-width: ${size.desktop})`,
+  desktopL: `(min-width: ${size.desktop})`
+};
+
+
 const BaseTheme: DefaultTheme = {
   borderRadius: '5px',
   spacing: {
@@ -54,8 +76,17 @@ const BaseTheme: DefaultTheme = {
     gradientTopLeft: gradientTopLeft,
     gradientBottomLeft: gradientBottomLeft,
     gradientRadial: gradientRadial,
+  },
+  device: {
+    mobileS: device.mobileS,
+    mobileM: device.mobileM,
+    mobileL: device.mobileL,
+    tablet: device.tablet,
+    laptop: device.laptop,
+    laptopL: device.laptopL,
+    desktop: device.desktop,
+    desktopL: device.desktopL
   }
-  
 };
 
 export { BaseTheme };

@@ -16,14 +16,21 @@ const ViewFish = () => {
 	const unityContext = useUnity();
 
 	useEffect(() => {
+		// add function to clear fish pool
+		if(publicFish && !userFish) {
+			console.log("adding fish from public Fish")
+			publicFish.forEach(fish => {
+				unityContext.addFish(fish);
+			});
+		}
+		if(publicFish && userFish) {
+			console.log("adding fish from user Fish")
+			userFish.forEach(fish => {
+				unityContext.addFish(fish);
+			});
+		}
 		unityContext.showOcean();
 	}, [userFish, publicFish, unityContext.isFishPoolReady]);
-
-	useEffect(() => {
-		if(publicFish) {
-			unityContext.addFish(publicFish[0]);
-		}
-	}, [publicFish, unityContext.isFishPoolReady]);
 
 	return (
 		<>
