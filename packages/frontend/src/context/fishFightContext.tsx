@@ -21,20 +21,22 @@ import { Web3Provider } from "@ethersproject/providers";
 import axios from 'axios';
 import { useLocation } from "react-router-dom";
 
+const MAX_FISH = 42;
 
 // Typescript
 interface FishFightProviderContext {
     FishFight: FishFight
     balance: string | undefined
-    // publicFish: Fish[] | null // once we have a default provider we can query the blockchain not logged in
     refetchBalance: () => void
 	  resetBalance: () => void
-    userFish: Fish[] | null
-    refetchUserFish: () => void
-    resetUserFish: () => void
-    publicFish: Fish[] | null
-    refetchPublicFish: () => void
+    userFish: Fish[]
+    publicFish: Fish[]
+    fetchPublicFish: (publicTokenIds: number[]) => void
+		fetchUserFish: (tokenIds: number[]) => void
 		resetPublicFish: () => void
+    seedPublicPoolTokenIds: (userTokenIds: number[]) => void
+    seedUserPoolTokenIds: (account: string) => void
+    addUserPoolTokenId: (tokenId: number) => void
 }
 
 type FishFightProviderProps = { children: React.ReactNode }
@@ -50,16 +52,19 @@ export const FishFightProvider = ({ children }: FishFightProviderProps ) => {
   const { account, connector, library} = useWeb3React();
 
   const contextBalance = useBalance();
-  const contextUserFish = useUserFish();
-  const contextPublicFish = usePublicFish();
+  // const contextUserFish = useUserFish();
+  const contextFishPool = useFishPool(FishFightInstance);
 
-  // useEffect(() => {
-  //   // When not logged in
-  //   console.log("no logged in")
-  //   console.log("calling public fish")
-  //   contextPublicFish.fetchPublicFish(null, FishFightInstance, null)
-    
-  // }, [])
+  useEffect(() => {
+    // App start -- user not logged in
+    console.log("not logged in")
+    console.log("calling public fish")
+    const startPublicFishPool = async () => {
+      const publicTokenIds = await contextFishPool.seedPublicPoolTokenIds([]);
+      contextFishPool.fetchPublicFish(publicTokenIds);
+    }
+    startPublicFishPool();
+  }, [])
   
   useEffect(() => {
     // When user logs in, get wallet provider (harmonyExtension or web3provider)
@@ -68,8 +73,11 @@ export const FishFightProvider = ({ children }: FishFightProviderProps ) => {
       {
         setFishFightInstance(new FishFight(wallet.provider, wallet.type))
         contextBalance.fetchBalance(account, wallet.type, wallet.provider, library)
-        await contextUserFish.fetchUserFish(account, FishFightInstance)
-        await contextPublicFish.fetchPublicFish(account, FishFightInstance, contextUserFish.userFish)
+        contextFishPool.resetPublicFish();
+        const userTokens = await contextFishPool.seedUserPoolTokenIds(account)
+        contextFishPool.fetchUserFish(userTokens);
+        const publicTokens = await contextFishPool.seedPublicPoolTokenIds(userTokens);
+        contextFishPool.fetchPublicFish(publicTokens);
       })
     }
   }, [connector, library])
@@ -81,37 +89,35 @@ export const FishFightProvider = ({ children }: FishFightProviderProps ) => {
     }) : null
   }
 
-  const refetchUserFish = async () => {
-    if(!connector || !library) return;
-    account ? getWalletProvider(connector, library).then(async () => {
-      await contextUserFish.fetchUserFish(account, FishFightInstance)
-    }) : null
-  }
+  // const addUserFish = async (tokenId: number) => {
+  //   if(!connector || !library) return;
+  //   account ? getWalletProvider(connector, library).then(async () => {
+  //     await contextFishPool.addUserPoolTokenId(tokenId);
+  //     await contextFishPool.fetchUserFish()
+  //   }) : null
+  // }
 
-  const refetchPublicFish = () => {
-    console.log("in refetch public fish")
-    console.log(connector)
-    console.log(library)
-    if(!connector || !library) {
-      console.log("no connector or library")
-      contextPublicFish.fetchPublicFish(null, FishFightInstance, null);
-      return;
-    };
-    account ? getWalletProvider(connector, library).then(() => {
-      contextPublicFish.fetchPublicFish(account, FishFightInstance, contextUserFish.userFish)
-    }) : getWalletProvider(connector, library).then(() => {
-      contextPublicFish.fetchPublicFish(null, FishFightInstance, null)
-    })
-  }
+  // const refetchPublicFish = () => {
+  //   console.log("in refetch public fish")
+  //   console.log(connector)
+  //   console.log(library)
+  //   if(!connector || !library) {
+  //     console.log("no connector or library")
+  //     contextPublicFish.fetchPublicFish(null, FishFightInstance, []);
+  //     return;
+  //   };
+  //   account ? getWalletProvider(connector, library).then(() => {
+  //     contextPublicFish.fetchPublicFish(account, FishFightInstance, contextUserFish.userFish)
+  //   }) : getWalletProvider(connector, library).then(() => {
+  //     contextPublicFish.fetchPublicFish(null, FishFightInstance, [])
+  //   })
+  // }
 
   const value: FishFightProviderContext = {
     FishFight: FishFightInstance,
     refetchBalance,
     ...contextBalance,
-    refetchUserFish,
-    ...contextUserFish,
-    refetchPublicFish,
-    ...contextPublicFish
+    ...contextFishPool
   }
   return (
       <FishFightContext.Provider value={value}>{children}</FishFightContext.Provider>
@@ -189,68 +195,126 @@ const useSelectedFish = () => {
 };
 
 // User Fish functions
-const useUserFish = () => {
-	const [userFish, setUserFish] = useState<Fish[] | null>(null);
-  const [userFishTokenIds, setUserFishTokenIds] = useState<Array<number>>([]);
+// const useUserFish = () => {
+// 	const [userFish, setUserFish] = useState<Fish[]>([]);
+//   const [userFishTokenIds, setUserFishTokenIds] = useState<Array<number>>([]);
 
-  // Get Fish owned by the connected account
-	const fetchUserFish = async (account: string, fishFightInstance: FishFight) => {
-    const tempFish: Fish[] = [];
-    console.log("FETCH USER FISH")
-    try {
-      const userFishTokenIds = await getAccountFishTokenIds(fishFightInstance, account);
-      userFishTokenIds.forEach(async tokenId => {
-        if(userFish?.some(x => x.tokenId == tokenId && x.imgSrc != null)) return;
-        console.log("Getting token id: ")
-        console.log(tokenId)
-        const fish = await getFish(fishFightInstance, tokenId)
-        if(fish != null) tempFish.push(fish)
-      });
-    } catch (error) {
-      console.log("Error fetching userFish: ");
-      console.log(error);
-    }
-    setUserFish(tempFish);
-  };
+//   // Get Fish owned by the connected account
+// 	const fetchUserFish = async (account: string, fishFightInstance: FishFight) => {
+//     const tempFish: Fish[] = [];
+//     console.log("FETCH USER FISH")
+//     try {
+//       const userFishTokenIds = await getAccountFishTokenIds(fishFightInstance, account);
+//       userFishTokenIds.forEach(async tokenId => {
+//         if(userFish?.some(x => x.tokenId == tokenId && x.imgSrc != null)) return;
+//         console.log("Getting token id: ")
+//         console.log(tokenId)
+//         const fish = await getFish(fishFightInstance, tokenId)
+//         if(fish != null) tempFish.push(fish)
+//       });
+//     } catch (error) {
+//       console.log("Error fetching userFish: ");
+//       console.log(error);
+//     }
+//     setUserFish(tempFish);
+//   };
 
-	const resetUserFish = () => {
-		setUserFish(null);
-	};
+// 	const resetUserFish = () => {
+// 		setUserFish([]);
+// 	};
 
-	return {
-		userFish,
-		fetchUserFish,
-		resetUserFish,
-	};
-};
+// 	return {
+// 		userFish,
+// 		fetchUserFish,
+// 		resetUserFish,
+// 	};
+// };
 
 // Public Fish functions
-const usePublicFish = () => {
-	const [publicFish, setPublicFish] = useState<Fish[] | null>(null);
+const useFishPool = (fishFightInstance: FishFight) => {
+  const [publicPoolTokenIds, setPublicPoolTokenIds] = useState<number[]>([]);
+  const [userPoolTokenIds, setUserPoolTokenIds] = useState<number[]>([]);
+	const [publicFish, setPublicFish] = useState<Fish[]>([]);
+	const [userFish, setUserFish] = useState<Fish[]>([]);
+
+  // const startPublicFishPool = async (userTokenIds: number[]) => {
+  //   const tokenIds = await seedPublicPoolTokenIds(userTokenIds);
+  //   fetchPublicFish(tokenIds);
+  // }
+
+  // const startUserFishPool = async (account: string) => {
+  //   const tokenIds = await seedUserPoolTokenIds(account);
+  //   fetchUserFish(tokenIds);
+  // }
+
+  useEffect(() => {
+    // App start -- user not logged in
+    console.log("RELOADING USER FISH")
+    fetchUserFish(userPoolTokenIds)
+  }, [userPoolTokenIds])
+  
+  const seedPublicPoolTokenIds = async (userTokenIds: number[]) => {
+    const fishSupply: BN = await fishFightInstance.factory.methods.totalSupply().call();
+    const totalFishSupply = new BN(fishSupply).toNumber();
+    if(totalFishSupply > MAX_FISH) {
+      // getRandomTokenIds()
+    }
+    const tokenIds = []
+    for(let i = 0; i < totalFishSupply; i++) {
+      if(userTokenIds.includes(i)) continue;
+      tokenIds.push(i)
+    }
+    console.log(tokenIds);
+    setPublicPoolTokenIds(tokenIds);
+    return tokenIds;
+  }
+
+  const seedUserPoolTokenIds = async (account: string) => {
+    const userFish: number[] = [];
+    try {
+      const fishUserOwns: BN = await fishFightInstance.factory.methods.balanceOf(account).call();
+      const numUserFish = new BN(fishUserOwns).toNumber();
+      for(let i = 0; i < numUserFish; i++) {
+        const tokenId: BN = await fishFightInstance.factory.methods.tokenOfOwnerByIndex(account, i).call();
+        const parsedTokenId = new BN(tokenId).toNumber();
+        userFish.push(parsedTokenId);
+      }
+    } catch (error) {
+      console.log("Error loading Fish tokens owned by account: ")
+      console.log(error)
+    }
+    setUserPoolTokenIds(userFish);
+    return userFish;
+  }
+
+  const addUserPoolTokenId = (tokenId: number) => {
+    setUserPoolTokenIds(prevTokens => [...prevTokens, tokenId])
+  };
 
   // Get a selection from all minted fish, excluding the connected accounts fish
-	const fetchPublicFish = async (account: string | null, fishFightInstance: FishFight, userFish: Array<Fish> | null) => {
+	const fetchPublicFish = async (publicTokenIds: number[]) => {
     // Get public fish
     // TODO: limit fish loaded (some kind of random selection of fish)
     console.log("FETCH PUBLIC FISH")
+    console.log(publicTokenIds)
+    // const tempPublicFish = publicFish;
     try {
-      const fishSupply: BN = await fishFightInstance.factory.methods.totalSupply().call();
-      const totalFishSupply = new BN(fishSupply).toNumber();
-      const tempFish: Fish[] = [];
-      // For every fish the user owns get token, then fish info, generate fish and push instance to tempFish 
-      // once its done, setMyFish to tempfish
-      console.log(userFish)
-      console.log(publicFish)
-      for(let i = 0; i < totalFishSupply; i++) {
-        // only getFish that aren't in the userFish array
-        if(userFish?.some(j => j.tokenId == i)) return;
-        // don't re get fish that we already have
-        if(publicFish?.some(x => x.tokenId == i && x.imgSrc != null)) return;
-        
+      for(let i = 0; i < publicTokenIds.length; i++) {       
+        // don't re add a fish that we already have
+        // if(publicFish.some(x => x.tokenId == i)) {
+        //   console.log("fish already exists")
+        //   continue;
+        // }
+
+        // fish doesn't exist in the fish pool yet so add it
         const fish = await getFish(fishFightInstance, i);
-        if(fish != null) tempFish.push(fish);
+        if(fish != null) {
+          // tempPublicFish.push(fish);
+          setPublicFish(prevFish => [...prevFish, fish])
+        }
       }
-      setPublicFish(tempFish);
+      // console.log(tempPublicFish)
+      // setPublicFish(tempPublicFish);
     } catch (error) {
       console.log("Failed to load total supply and public fish: ")
       console.log(error)
@@ -258,14 +322,42 @@ const usePublicFish = () => {
       
   }
 
+  // Get Fish owned by the connected account
+	const fetchUserFish = async (tokenIds: number[]) => {
+    console.log("FETCH USER FISH")
+    try {
+      tokenIds.forEach(async tokenId => {
+        if(userFish.some(x => x.tokenId == tokenId)) {
+          console.log("User token already exists, skipping")
+          return;
+        }
+        console.log("Getting token id: ")
+        console.log(tokenId)
+        const fish = await getFish(fishFightInstance, tokenId)
+        if(fish != null) {
+          setUserFish(prevFish => ([...prevFish, fish]))
+        }
+      });
+    } catch (error) {
+      console.log("Error fetching userFish: ");
+      console.log(error);
+    }
+  };
+
 	const resetPublicFish = () => {
-		setPublicFish(null);
+    setPublicPoolTokenIds([]);
+		setPublicFish([]);
 	};
 
 	return {
 		publicFish,
-		fetchPublicFish,
+    userFish,
+		fetchUserFish,
+    fetchPublicFish,
 		resetPublicFish,
+    seedPublicPoolTokenIds,
+    seedUserPoolTokenIds,
+    addUserPoolTokenId
 	};
 };
 
@@ -281,22 +373,7 @@ export const useFishFight = () => {
 
 
 // Utility Functions
-const getAccountFishTokenIds = async (fishFightInstance: FishFight, account: string) : Promise<Array<number>> => {
-  const userFish: number[] = [];
-  try {
-    const fishUserOwns: BN = await fishFightInstance.factory.methods.balanceOf(account).call();
-    const numUserFish = new BN(fishUserOwns).toNumber();
-    for(let i = 0; i < numUserFish; i++) {
-      const tokenId: BN = await fishFightInstance.factory.methods.tokenOfOwnerByIndex(account, i).call();
-      const parsedTokenId = new BN(tokenId).toNumber();
-      userFish.push(parsedTokenId);
-    }
-  } catch (error) {
-    console.log("Error loading Fish tokens owned by account: ")
-    console.log(error)
-  }
-  return userFish;
-}
+
 
 // Gets fish data from smart contract and builds Fish object
 const getFish = async (fishFightInstance: FishFight, tokenId: number) : Promise<Fish | null> => {
@@ -355,3 +432,18 @@ const getFishMetaData = async (fishFightInstance: FishFight, tokenId: number) : 
   }
   return imgSrc;
 }
+
+// const getRandomTokenIds = (startIndex: number, endIndex: number, excludedIndexes: number[]) => {
+
+// }
+
+// function getRandomInt(min: number, max: number) {
+//   return Math.random() * (max - min) + min;
+// }
+
+// function shuffle(o: number[]) {
+//   for(var j, x, i = o.length; i; j = parseInt(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
+//   return o;
+// };
+
+// var random = shuffle(numbers);

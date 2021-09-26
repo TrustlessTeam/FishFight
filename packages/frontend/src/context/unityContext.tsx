@@ -14,6 +14,7 @@ interface UnityProviderContext {
 	showOcean: () => void;
 	showFight: () => void;
 	addFish: (fish: Fish) => void;
+	clearFishPool: () => void;
 }
 
 type UnityProviderProps = { children: React.ReactNode };
@@ -111,6 +112,12 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
 		UnityInstance.send('Camera', 'SetAnimState', 'ShowOcean');
 		console.log("ShowOcean Completed")
 	};
+	const clearFishPool = () => {
+		console.log("ClearFishPool Called")
+    if(!isLoaded || !fishPoolReady) return;
+		UnityInstance.send('FishPool', 'ClearFishPool');
+		console.log("ClearFishPool Completed")
+	};
   const addFish = (fish: Fish) => {
 		console.log("AddFish Called")
     if(!isLoaded || !fishPoolReady) return;
@@ -137,6 +144,7 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
     showOcean: showOcean,
     showFight: showFight,
     addFish: addFish,
+		clearFishPool: clearFishPool
 	};
 	return <UnityContext.Provider value={value}>{children}</UnityContext.Provider>;
 };

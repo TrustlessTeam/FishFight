@@ -1,6 +1,12 @@
 // React
 import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  Link,
+  useLocation
+} from "react-router-dom";
 
 // Styled Components
 import styled from 'styled-components';
@@ -21,47 +27,38 @@ enum Views {
   Fish
 }
 
+// Try react-router dom here and switch for the different views? Can it still be linked to buttons?
+// On View/Fight/Catch render we refetchUser and publicUser and can pass pararmeters to the functions
+
 const Game = ({ children }: Props) => {
   const location = useLocation();
-	const { FishFight, userFish, refetchUserFish, publicFish, refetchPublicFish } = useFishFight();
+	// const { FishFight, userFish, refetchUserFish, publicFish, refetchPublicFish } = useFishFight();
   const [currentView, setCurrentView] = useState<Views>(Views.Ocean);
 
-  useEffect(() => {
-		// Set page components based on location
-    console.log(location.pathname)
-    const pathname = location.pathname.toString();
-    switch (pathname) {
-      case '/fish':
-        setCurrentView(Views.Fishing)
-        break;
-      case '/fight':
-        setCurrentView(Views.Fight)
-        break;
-      default:
-        setCurrentView(Views.Ocean)
-        break;
-    }
-		async function updateFishLists() {
-			await refetchUserFish();
-			await refetchPublicFish();
-		}
-		updateFishLists();
-    console.log(currentView)
+  // useEffect(() => {
+	// 	async function updateFishLists() {
+	// 		await refetchUserFish();
+	// 		await refetchPublicFish();
+	// 	}
+	// 	updateFishLists();
+  //   console.log(currentView)
 		
-	}, [location]);
+	// }, [location]);
 
 	return (
     <UnityWindow>
       <Viewer>
-        {currentView == Views.Ocean &&
-          <ViewFish></ViewFish>
-        }
-        {currentView == Views.Fight &&
-          <FightFish></FightFish>
-        }
-        {currentView == Views.Fishing &&
-          <CatchFish></CatchFish>
-        }
+        <Switch>
+          <Route path="/catch">
+            <CatchFish/>
+          </Route>
+          <Route path="/fight">
+            <FightFish />
+          </Route>
+          <Route path="/">
+            <ViewFish />
+          </Route>
+        </Switch>	
       </Viewer>
     </UnityWindow>
 	);

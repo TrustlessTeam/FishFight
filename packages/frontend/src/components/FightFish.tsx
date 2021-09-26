@@ -21,13 +21,19 @@ import { useUnity } from '../context/unityContext';
 
 import FishNFT from './FishNFT';
 
+enum FishToShow {
+  Public,
+  User
+}
+
 
 const FightFish = () => {
-	const { FishFight, refetchBalance, userFish, publicFish, refetchUserFish, refetchPublicFish} = useFishFight()
+	const { FishFight, refetchBalance, userFish, publicFish} = useFishFight()
 
 	// Fish selected for fight
 	const [mySelectedFish, setMySelectedFish] = useState<Fish | null>(null);
 	const [opponentFish, setopponentFish] = useState<Fish | null>(null);
+	const [fishToShow, setFishToShow] = useState<FishToShow>(FishToShow.Public);
 	const [fightResult, setFightResult] = useState<Fight | null>();
 	const [isFighting, setIsFighting] = useState<boolean>(false);
 
@@ -79,8 +85,6 @@ const FightFish = () => {
 				toast.success('Transaction done', {
 					onClose: async () => {
 						refetchBalance()
-						refetchUserFish()
-						refetchPublicFish()
 					},
 				});
 			} catch (error: any) {
@@ -100,6 +104,15 @@ const FightFish = () => {
 		setIsFighting(false)
 		setMySelectedFish(null)
 		setopponentFish(null)
+	}
+
+	const setFishToView = () => {
+		if(fishToShow == FishToShow.Public) {
+			setFishToShow(FishToShow.User)
+		}
+		else {
+			setFishToShow(FishToShow.Public)
+		}
 	}
 
 	const FightResults = () => {
@@ -123,48 +136,58 @@ const FightFish = () => {
 		return(<></>)
 	}
 
-	const Fighting = () => {
-		if(isFighting && mySelectedFish && opponentFish) {
-			return (
-				<FightContainer>
-					<FightingContainer>
-						<FishNFT fish={mySelectedFish}></FishNFT>
-						<h2>VS.</h2>
-						<FishNFT fish={opponentFish}></FishNFT>
-					</FightingContainer>
-					<FightResults />
-				</FightContainer>
-			)
-		}
-		return(<></>)
-	}
+	// const Fighting = () => {
+	// 	if(isFighting && mySelectedFish && opponentFish) {
+	// 		return (
+	// 			<FightContainer>
+	// 				<FightingContainer>
+	// 					<FishNFT fish={mySelectedFish}></FishNFT>
+	// 					<h2>VS.</h2>
+	// 					<FishNFT fish={opponentFish}></FishNFT>
+	// 				</FightingContainer>
+	// 				<FightResults />
+	// 			</FightContainer>
+	// 		)
+	// 	}
+	// 	return(<></>)
+	// }
 
 	const SelectFighters = () => {
 		if(!fightResult && !isFighting) {
 			return(
-				<FightContainer>
-					<FishSelector>
-						<h2>Select Opponent!</h2>
+				<FishViewerContainer>
+					<FishViewerButtons>
+						<GameButton onClick={() => setFishToView()}>{fishToShow == FishToShow.Public ? "Show my Fish" : "Show public Fish"}</GameButton>
+						<GameButton onClick={fightFish()}>
+							Fight Fish
+						</GameButton>
+					</FishViewerButtons>
+
 						<FishGrid>
-						{publicFish?.map((fish, index) => (
+						{fishToShow == FishToShow.Public &&
+							publicFish?.map((fish, index) => (
 								<FishNFT fish={fish} key={index} onClick={() => {setOpponent(fish)}}></FishNFT>
-							))}
+							))
+						}
+						{fishToShow == FishToShow.User &&
+							userFish?.map((fish, index) => (
+								<FishNFT fish={fish} key={index} onClick={() => {setUserFish(fish)}}></FishNFT>
+							))
+						}
 						</FishGrid>
-					</FishSelector>
+
 					
-					<FishSelector>
+					{/* <FishSelector>
 						<h2>Select your Fish!</h2>
 						<FishGrid>
 						{userFish?.map((fish, index) => (
 							<FishNFT fish={fish} key={index} onClick={() => {setUserFish(fish)}}></FishNFT>
 						))}
 						</FishGrid>
-					</FishSelector>
+					</FishSelector> */}
 
-					<FightButton onClick={fightFish()}>
-						Fight Fish
-					</FightButton>
-				</FightContainer>
+					
+				</FishViewerContainer>
 			)
 		}
 		return(<></>)
@@ -172,7 +195,7 @@ const FightFish = () => {
 
 	return (
 		<>
-			<Fighting />
+			{/* <Fighting /> */}
 			<SelectFighters />
 		</>
 		
@@ -187,34 +210,51 @@ const ResultContainer = styled.div`
 	width: 100%;
 `;
 
-const FightContainer = styled.div`
-	display: flex;
-	flex-direction: row nowrap;
-	align-items: center;
-	width: 100%;
+const GameButton = styled.button`
+	text-align: center;
+	padding: 2.2vmin;
+	border-radius: 10%;
+	background-color: white;
+	opacity: 0.7;
+	box-shadow: 1px 2px 4px 4px rgba(0, 0, 0, 0.25);
+	color: black;
+	margin-left: ${props => props.theme.spacing.gapSmall};
+	transition: opacity 0.3s ease, box-shadow 0.25s ease-in-out;
+	text-transform: uppercase;
+	font-weight: bolder;
+	text-decoration: none;
+	font-size: ${props => props.theme.font.medium}vmin;
+
+	&:hover {
+		opacity: 1;
+		box-shadow: 1px 2px 2px 2px rgba(0, 0, 0, 0.2);
+		cursor: pointer;
+	}
 `;
 
-const FightingContainer = styled.div`
+const FishViewerContainer = styled.div`
 	display: flex;
-	flex-direction: row nowrap;
+	flex-direction: column;
 	justify-content: space-evenly;
 	width: 100%;
+	height: 100%;
+`;
+
+const FishViewerButtons = styled.div`
+	display: flex;
+	flex-flow: row nowrap;
+	height: 15%;
 `;
 
 const FishGrid = styled.div`
 	display: flex;
-	flex-direction: row wrap;
-	width: 100%;
-	margin: 15px;
+	flex-direction: row nowrap;
+	justify-content: space-between;
+	height: 85%;
+	overflow-y: hidden;
+	overflow-x: auto;
 `;
 
-const FishSelector = styled.div`
-	display: flex;
-	flex-flow: column;
-	align-items: center;
-	justify-content: space-evenly;
-	width: 50%;
-`;
 
 // const FishNFT = styled.div`
 // 	display: flex;

@@ -44,5 +44,11 @@ declare module 'styled-components' {
       desktop: string;
       desktopL: string;
     };
+
+    font: {
+      small: number;
+      medium: number;
+      large: number;
+    }
   }
 }

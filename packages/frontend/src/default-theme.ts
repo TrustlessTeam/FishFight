@@ -20,11 +20,15 @@ const gradientTopLeft = `linear-gradient(225deg, ${navyBlue}, ${darkCornflowerBl
 const gradientBottomLeft = `linear-gradient(315deg, ${navyBlue}, ${darkCornflowerBlue}, ${starCommandBlue}, ${blueGreen}, ${ceruleanCrayola}, ${skyBlueCrayola}, ${skyBlueCrayola2}, ${blizzardBlue}, ${powderBlue});`;
 const gradientRadial = `radial-gradient(${navyBlue}, ${darkCornflowerBlue}, ${starCommandBlue}, ${blueGreen}, ${ceruleanCrayola}, ${skyBlueCrayola}, ${skyBlueCrayola2}, ${blizzardBlue}, ${powderBlue});`;
 
-const spacingBase = 10;
-const gapSmall = spacingBase / 2 + `px`;
-const gap = spacingBase + `px`;
-const gapMedium = spacingBase * 2 + `px`;
-const gapLarge = spacingBase * 3 + `px`
+const spacingBase = 2;
+const gapSmall = spacingBase / 2 + `vmin`;
+const gap = spacingBase + `vmin`;
+const gapMedium = spacingBase * 2 + `vmin`;
+const gapLarge = spacingBase * 3 + `vmin`
+
+const fontSmall = 1;
+const fontMedium = 1.5;
+const fontLarge = 1.8;
 
 const size = {
   mobileS: '320px',
@@ -86,6 +90,11 @@ const BaseTheme: DefaultTheme = {
     laptopL: device.laptopL,
     desktop: device.desktop,
     desktopL: device.desktopL
+  },
+  font: {
+    small: fontSmall,
+    medium: fontMedium,
+    large: fontLarge
   }
 };
 

@@ -61,7 +61,8 @@ const Account = () => {
 const AccountComponent = styled.div`
 	display: flex;
 	justify-content: center;
-	padding: 10px 20px;
+	font-size: ${props => props.theme.font.medium}vmin;
+	padding: ${props => props.theme.spacing.gapSmall} ${props => props.theme.spacing.gapSmall};
 	border-radius: 25px;
 	background-color: white;
 	opacity: 0.7;

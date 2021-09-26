@@ -36,7 +36,7 @@ const catchRates = [
 
 const CatchFish = ({ children }: Props) => {
 	const unityContext = useUnity()
-	const { FishFight, refetchBalance, refetchUserFish} = useFishFight()
+	const { FishFight, refetchBalance, addUserPoolTokenId} = useFishFight()
 	const [caughtFish, setCaughtFish] = useState<Fish | null>(null);
 
 	// Name of the fish that the user is creating/minting
@@ -86,7 +86,8 @@ const CatchFish = ({ children }: Props) => {
 			fishInfo.traitsC
 		);
 		console.log(newFish)
-		setCaughtFish(newFish)
+		addUserPoolTokenId(newFish.tokenId)
+		// unityContext.showFishing();
 		unityContext.addFish(newFish);
 	}
 
@@ -109,7 +110,6 @@ const CatchFish = ({ children }: Props) => {
 					onClose: async () => {
 						getContractBalance()
 						refetchBalance()
-						refetchUserFish()
 					},
 				});
 			} catch (error) {

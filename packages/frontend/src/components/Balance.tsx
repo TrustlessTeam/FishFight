@@ -21,8 +21,9 @@ const BalanceComponent = styled.div`
 	display: flex;
 	flex-flow: row;
 	justify-content: center;
+	font-size: ${props => props.theme.font.medium}vmin;
 	margin-left: ${props => props.theme.spacing.gapSmall};
-	padding: 10px 20px;
+	padding: ${props => props.theme.spacing.gapSmall} ${props => props.theme.spacing.gapSmall};
 	border-radius: 25px;
 	background-color: white;
 	color: black;
