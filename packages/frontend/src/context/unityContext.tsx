@@ -26,7 +26,7 @@ const UnityContext = createContext<UnityProviderContext | undefined>(undefined);
 export const UnityProvider = ({ children }: UnityProviderProps) => {
 	// FishFight instance initiates with default url provider upon visiting page
 	const [UnityInstance, setUnityInstance] = useState<UnityContent>(
-		new UnityContent('./Build/fishfight-one.json', './Build/UnityLoader.js'),
+		new UnityContent('./Build/fishfight-one-frontend.json', './Build/UnityLoader.js'),
 	);
 	const [isUnityMounted, setIsUnityMounted] = useState(true);
 	const [isLoaded, setIsLoaded] = useState(false);
@@ -115,7 +115,7 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
 	const clearFishPool = () => {
 		console.log("ClearFishPool Called")
     if(!isLoaded || !fishPoolReady) return;
-		UnityInstance.send('FishPool', 'ClearFishPool');
+		UnityInstance.send('FishPool', 'ClearPool');
 		console.log("ClearFishPool Completed")
 	};
   const addFish = (fish: Fish) => {
@@ -124,6 +124,12 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
 		console.log(fish)
 		UnityInstance.send('FishPool', 'AddFish', JSON.stringify(fish));
 		console.log("AddFish Completed")
+	};
+	const showFish = () => {
+		console.log("ShowFish Called")
+    if(!isLoaded || !fishPoolReady) return;
+		UnityInstance.send('Camera', 'SetAnimState', 'ShowFish');
+		console.log("ShowFish Completed")
 	};
 
 

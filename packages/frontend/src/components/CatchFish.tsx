@@ -87,7 +87,6 @@ const CatchFish = ({ children }: Props) => {
 		);
 		console.log(newFish)
 		addUserPoolTokenId(newFish.tokenId)
-		// unityContext.showFishing();
 		unityContext.addFish(newFish);
 	}
 
@@ -143,48 +142,73 @@ const CatchFish = ({ children }: Props) => {
 		}
 
 		return (
-			<div>
-				<h2>Cast a Line!</h2>
-				<p>What type of bait do you want?</p>
-				{catchRates.map((rate, index) => (
-					<CatchFishButton key={index} onClick={handleClickCatch(rate.value)}>
-						{rate.chance} Cast  {rate.value} ONE
-					</CatchFishButton>
-				))}
-			</div>
+			<FishingContainer>
+				<Text>Catch a fish! Select the amount of ONE to use as bait!</Text>
+				<OptionsContainer>
+					{catchRates.map((rate, index) => (
+						<GameButton key={index} onClick={handleClickCatch(rate.value)}>
+							Bait with {rate.value} ONE<br></br>{rate.chance} catch rate
+						</GameButton>
+					))}
+				</OptionsContainer>
+			</FishingContainer>
+			
 		)
 	}
 
 	return (
-		<>
-			<CreateFishComponent>
-				<FishingOptions />
-				{children}
-			</CreateFishComponent>
-		</>
+		<FishingOptions />
 	);
 };
 
 
-const CreateFishComponent = styled.div`
+const FishingContainer = styled.div`
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	width: 50%;
+	justify-content: flex-end;
+	width: 100%;
 `;
 
-const Wrapper = styled.div`
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	margin-top: -10vh;
-	padding: 40px 60px;
-	border-radius: 25px;
-	width: 100%;
+const Text = styled.p`
+	padding: ${props => props.theme.spacing.gap};
+	margin: 0;
 	background-color: white;
-	box-shadow: 2px 8px 10px 4px rgba(0, 0, 0, 0.3);
-	color: #a70000;
-	font-size: 1.5rem;
+	opacity: 0.7;
+	font-size: ${props => props.theme.font.large}vmin;
+	border-radius: 25px;
+	margin: ${props => props.theme.spacing.gap} 0;
+`;
+
+const OptionsContainer = styled.div`
+	display: flex;
+	flex-direction: row nowrap;
+	align-items: center;
+	justify-content: space-evenly;
+	width: 100%;
+`;
+
+const GameButton = styled.button`
+	text-align: center;
+	padding: ${props => props.theme.spacing.gap};
+	border-radius: 25px;
+	background-color: white;
+	opacity: 0.7;
+	border: none;
+	box-shadow: 1px 2px 4px 4px rgba(0, 0, 0, 0.25);
+	color: black;
+	margin-left: ${props => props.theme.spacing.gapSmall};
+	transition: opacity 0.3s ease, box-shadow 0.25s ease-in-out;
+	text-transform: uppercase;
+	font-weight: bolder;
+	text-decoration: none;
+	font-size: ${props => props.theme.font.large}vmin;
+
+	&:hover {
+		opacity: 1;
+		box-shadow: 1px 2px 2px 2px rgba(0, 0, 0, 0.2);
+		cursor: pointer;
+	}
 `;
 
 const FlexGrid = styled.div`
@@ -235,10 +259,5 @@ const CatchFishButton = styled.button`
 	}
 `;
 
-const TotalStaked = styled.div`
-	font-size: 3.5rem;
-	margin-top: 16px;
-	color: black;
-`;
 
 export default CatchFish;
