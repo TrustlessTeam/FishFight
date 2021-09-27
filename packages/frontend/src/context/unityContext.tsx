@@ -8,12 +8,14 @@ interface UnityProviderContext {
 	isLoaded: boolean;
 	progression: number;
 	isFishPoolReady: boolean,
+	mintFish: number,
 	toggleIsUnityMounted: () => void;
 	fishCaught: (fish: Fish) => void;
 	showFishing: () => void;
 	showOcean: () => void;
 	showFight: () => void;
 	addFish: (fish: Fish) => void;
+	showFish: (fish: Fish) => void;
 	clearFishPool: () => void;
 }
 
@@ -32,6 +34,7 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
 	const [isLoaded, setIsLoaded] = useState(false);
   const [fishPoolReady, setFishPoolReady] = useState(false);
 	const [progression, setProgression] = useState(0);
+	const [mintFish, setMintFish] = useState(0);
 
 	useEffect(() => {
 		console.log(UnityInstance);
@@ -56,10 +59,20 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
 			console.log('UI changed');
 			console.log(data)
 			switch (data) {
+				case 'mint_fish_5p':
+					setMintFish(4);
+					return;
+				case 'mint_fish_25p':
+					setMintFish(3);
+					return;
+				case 'mint_fish_50p':
+					setMintFish(2);
+					return;
 				case 'mint_fish_75p':
-
-					return ;
+					setMintFish(1);
+					return;
 				default:
+					setMintFish(0)
 					return;
 			}
 		});
@@ -125,10 +138,11 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
 		UnityInstance.send('FishPool', 'AddFish', JSON.stringify(fish));
 		console.log("AddFish Completed")
 	};
-	const showFish = () => {
+	const showFish = (fish: Fish) => {
 		console.log("ShowFish Called")
     if(!isLoaded || !fishPoolReady) return;
 		UnityInstance.send('Camera', 'SetAnimState', 'ShowFish');
+		UnityInstance.send('FishPool', 'AddFish', JSON.stringify(fish));
 		console.log("ShowFish Completed")
 	};
 
@@ -144,12 +158,14 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
 		isLoaded: isLoaded,
 		progression: progression,
 		isFishPoolReady: fishPoolReady,
+		mintFish: mintFish,
 		toggleIsUnityMounted: toggleIsUnityMounted,
 		fishCaught: fishCaught,
     showFishing: showFishing,
     showOcean: showOcean,
     showFight: showFight,
     addFish: addFish,
+		showFish: showFish,
 		clearFishPool: clearFishPool
 	};
 	return <UnityContext.Provider value={value}>{children}</UnityContext.Provider>;

@@ -25,7 +25,7 @@ const ViewFish = () => {
 	useEffect(() => {
 		// add function to clear fish pool
 		unityContext.clearFishPool();
-		// unityContext.showOcean();
+		unityContext.showOcean();
 		console.log("adding fish from public Fish")
 		publicFish.forEach(fish => {
 			unityContext.addFish(fish);
@@ -60,12 +60,12 @@ const ViewFish = () => {
 				<FishGrid>
 				{fishToShow == FishToShow.Public &&
 					publicFish?.map((fish, index) => (
-						<FishNFT fish={fish} key={index}></FishNFT>
+						<FishNFT onClick={() => unityContext.showFish(fish)} fish={fish} key={index}></FishNFT>
 					))
 				}
 				{fishToShow == FishToShow.User &&
 					userFish?.map((fish, index) => (
-						<FishNFT fish={fish} key={index}></FishNFT>
+						<FishNFT onClick={() => unityContext.showFish(fish)} fish={fish} key={index}></FishNFT>
 					))
 				}
 				</FishGrid>

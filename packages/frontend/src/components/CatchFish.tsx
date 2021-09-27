@@ -1,5 +1,5 @@
 // React
-import React, { Fragment, useState, useEffect } from 'react';
+import React, { Fragment, useState, useEffect, useCallback } from 'react';
 
 // Styled Components
 import styled from 'styled-components';
@@ -24,7 +24,6 @@ import { useUnity } from '../context/unityContext';
 type Props = {
   children?: React.ReactNode;
 };
-
 
 
 const catchRates = [
@@ -53,6 +52,29 @@ const CatchFish = ({ children }: Props) => {
 		console.log("Calling Show Fishing")
 		// FishFight.factory.events.FishMinted(function(error: any, event: any){ console.log("THE EVENT ", event); })
 		unityContext.showFishing();
+	}, [unityContext.isFishPoolReady]);
+
+	useEffect(() => {
+		unityContext.UnityInstance.on('UISelectionConfirm', function (data: any) {
+			console.log('UI changed catch fish');
+			console.log(data)
+			switch (data) {
+				case 'mint_fish_5p':
+					mintFish(5, account);
+					return;
+				case 'mint_fish_25p':
+					mintFish(25, account);
+					return;
+				case 'mint_fish_50p':
+					mintFish(50, account);
+					return;
+				case 'mint_fish_75p':
+					mintFish(100, account);
+					return;
+				default:
+					return;
+			}
+		});
 	}, [unityContext.isFishPoolReady]);
 
 	// Get contract balance and parse it to One
@@ -94,7 +116,34 @@ const CatchFish = ({ children }: Props) => {
 		setFishName(e.target.value);
 	}
 
+	const mintFish = useCallback(async (value: number, account: string | null | undefined)=>{
+		if (account) {
+			console.log("catch fish")
+			try {
+				const fish = await FishFight.factory.methods.catchFish().send({
+					from: account,
+					gasPrice: 1000000000,
+					gasLimit: 500000,
+					value: new Unit(value).asOne().toWei(),
+				});
+				const returnedTokenId = new BN(fish.events.Transfer.returnValues.tokenId).toNumber()
+				getUserFish(returnedTokenId);
+				toast.success('Transaction done', {
+					onClose: async () => {
+						getContractBalance()
+						refetchBalance()
+					},
+				});
+			} catch (error) {
+				toast.error(error);
+			}
+		} else {
+			toast.error('Connect your wallet');
+		}
+	}, []);
+
 	const handleClickCatch = (value: number) => async () => {
+		console.log("in caught")
 		if (account) {
 			try {
 				const fish = await FishFight.factory.methods.catchFish().send({
@@ -157,7 +206,8 @@ const CatchFish = ({ children }: Props) => {
 	}
 
 	return (
-		<FishingOptions />
+		// <FishingOptions />
+		<></>
 	);
 };
 
@@ -209,13 +259,6 @@ const GameButton = styled.button`
 		box-shadow: 1px 2px 2px 2px rgba(0, 0, 0, 0.2);
 		cursor: pointer;
 	}
-`;
-
-const FlexGrid = styled.div`
-	display: flex;
-	flex-flow: row wrap;
-	justify-content: center;
-	width: 100%;
 `;
 
 const FishNFT = styled.div`
