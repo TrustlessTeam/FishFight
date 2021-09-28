@@ -287,7 +287,7 @@ const fishType = [
 
 
       // Glimmer strength
-      GlimmerStrength: [0, 4]
+      GlimmerStrength: [1, 5]
     }
   },
   // {

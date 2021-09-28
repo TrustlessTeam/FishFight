@@ -117,6 +117,7 @@ const CatchFish = ({ children }: Props) => {
 	}
 
 	const mintFish = useCallback(async (value: number, account: string | null | undefined)=>{
+		console.log(account)
 		if (account) {
 			console.log("catch fish")
 			try {
