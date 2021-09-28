@@ -134,7 +134,7 @@ const CatchFish = ({ children }: Props) => {
 						refetchBalance()
 					},
 				});
-			} catch (error) {
+			} catch (error: any) {
 				toast.error(error);
 			}
 		} else {
@@ -224,7 +224,6 @@ const Text = styled.p`
 	padding: ${props => props.theme.spacing.gap};
 	margin: 0;
 	background-color: white;
-	opacity: 0.7;
 	font-size: ${props => props.theme.font.large}vmin;
 	border-radius: 25px;
 	margin: ${props => props.theme.spacing.gap} 0;

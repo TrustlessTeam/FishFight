@@ -6,20 +6,30 @@ import { useState } from 'react';
 type Props = {
   fish: Fish;
 	onClick?: () => void;
+	selectedUser?: boolean;
+	selectedOpponent?: boolean;
 };
 
-const FishNFT = ({ fish, onClick }: Props) => {
+interface ImgProps {
+	selectedOpponent?: boolean;
+	selectedUser?: boolean;
+}
+
+const FishNFT = ({ fish, onClick, selectedOpponent, selectedUser }: Props) => {
 	const [showStats, setShowStats] = useState<boolean>(false);
 
 	const toggleStats = () => {
 		setShowStats(prevShowStats => (!prevShowStats));
 	}
+	console.log(selectedOpponent)
+	console.log(selectedUser)
+
 	return (
-		<FishContainer onClick={onClick}>
+		<FishContainer>
 			{fish.imgSrc ?
-				<FishImg src={fish.imgSrc}></FishImg>
+				<FishImg selectedOpponent={selectedOpponent} selectedUser={selectedUser} onClick={onClick} src={fish.imgSrc}></FishImg>
 				:
-				<FishImg src={defaultImage}></FishImg>
+				<FishImg selectedOpponent={selectedOpponent} selectedUser={selectedUser} onClick={onClick} src={defaultImage}></FishImg>
 			}
 			<FishStats>
 				<FishData>ID: {fish.tokenId}</FishData>
@@ -40,29 +50,23 @@ const FishNFT = ({ fish, onClick }: Props) => {
 
 const ToggleButton = styled.button`
 	padding: ${props => props.theme.spacing.gapSmall};
+	border: none;
 	border-radius: 50%;
 	font-size: ${props => props.theme.font.small}vmin;
 	font-weight: bold;
 	color: black;
 	background-color: rgba(255, 255, 255, 0.7);
+	cursor: pointer; 
 `;
 
 const FishContainer = styled.div`
 	position: relative;
 	display: flex;
 	flex-flow: column;
+	justify-content: flex-end;
 	align-items: center;
-	margin: ${props => props.theme.spacing.gapSmall};
-	width: 50vw;
-	@media ${props => props.theme.device.tablet} {
-		width: 20vw;
-  }
-	/* @media ${props => props.theme.device.laptop} {
-		width: 10vw;
-  } */
-	@media ${props => props.theme.device.laptopL} {
-		width: 10vw;
-  }
+	margin: 0 ${props => props.theme.spacing.gapSmall};
+	
 	/* border-radius: 50%;
 	padding: ${props => props.theme.spacing.gap};
 	
@@ -72,32 +76,29 @@ const FishContainer = styled.div`
 	height: 100%; */
 `;
 
-const FishImg = styled.img`
+const FishImg = styled.img<ImgProps>`
 	/* width: 200px; */
-	height: 100%;
-	width: auto;
-	border: ${props => props.theme.spacing.gap} solid rgba(255, 255, 255, 0.5);
+	height: 18vh;
+	/* width: auto; */
 	border-radius: 50%;
-
-	/* @media ${props => props.theme.device.tablet} {
-		width: 15vw;
-  }
-	@media ${props => props.theme.device.laptop} {
-		width: 10vw;
-  }
-	@media ${props => props.theme.device.desktop} {
-		width: 10vw;
-  } */
+	border: 1vh solid rgba(255, 255, 255, 0.5);
+	cursor: pointer; 
+	${({ selectedUser }) => selectedUser && `
+    border-color: rgba(0, 128, 0, 0.5)
+  `}
+	${({ selectedOpponent }) => selectedOpponent && `
+    border-color: rgba(154, 3, 30, 0.5)
+  `}
 `;
 
 const FishStats = styled.div`
 	position: absolute;
 	display: flex;
 	flex-flow: row wrap;
-	justify-content: center;
+	justify-content: space-between;
 	width: 100%;
-	bottom: 3%;
-	padding: ${props => props.theme.spacing.gap};
+	bottom: 0;
+	padding: ${props => props.theme.spacing.gapSmall};
 `;
 
 const FishStatsOverlay = styled.div`
@@ -105,27 +106,28 @@ const FishStatsOverlay = styled.div`
 	display: flex;
 	flex-flow: row wrap;
 	justify-content: center;
-	height: 50%;
-	width: 100%;
-	top: 0;
+	align-items: flex-start;
+	height: 18vh;
+	/* width: 00%; */
+	top: 50;
+	bottom: 50;
 	border-radius: 50%;
-	padding: ${props => props.theme.spacing.gap};
-`;
-
-const FishName = styled.h3`
-	position: absolute;
-	
-	color: ${"black"};
+	/* padding: ${props => props.theme.spacing.gap}; */
 `;
 
 const FishData = styled.p`
+	display: flex;
+	flex-flow: column;
+	align-items: center;
+	justify-content: center;
 	color: ${"black"};
-	font-size: ${props => props.theme.font.small}vmin;
+	text-align: center;
+	font-size: ${props => props.theme.font.medium}vmin;
 	background-color: rgba(255, 255, 255, 0.7);
 	margin: 0 ${props => props.theme.spacing.gapSmall};
 	padding: ${props => props.theme.spacing.gapSmall};
 	border-radius: 50%;
-	/* height: 100%; */
+	height: ${props => props.theme.font.small}vmin;
 `;
 
 export default FishNFT;

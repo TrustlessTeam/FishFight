@@ -75,10 +75,13 @@ const ViewFish = () => {
 };
 
 const GameButton = styled.button`
-	text-align: center;
+	display: flex;
+	flex-flow: column;
+	justify-content: center;
 	padding: 2.2vmin;
-	border-radius: 10%;
+	border-radius: 25px;
 	background-color: white;
+	border: none;
 	opacity: 0.7;
 	box-shadow: 1px 2px 4px 4px rgba(0, 0, 0, 0.25);
 	color: black;
@@ -114,7 +117,7 @@ const FishGrid = styled.div`
 	display: flex;
 	flex-direction: row nowrap;
 	justify-content: space-between;
-	height: 85%;
+	height: 72%;
 	overflow-y: hidden;
 	overflow-x: auto;
 `;
