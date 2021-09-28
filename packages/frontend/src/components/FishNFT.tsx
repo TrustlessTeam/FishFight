@@ -21,8 +21,6 @@ const FishNFT = ({ fish, onClick, selectedOpponent, selectedUser }: Props) => {
 	const toggleStats = () => {
 		setShowStats(prevShowStats => (!prevShowStats));
 	}
-	console.log(selectedOpponent)
-	console.log(selectedUser)
 
 	return (
 		<FishContainer>
@@ -66,20 +64,10 @@ const FishContainer = styled.div`
 	justify-content: flex-end;
 	align-items: center;
 	margin: 0 ${props => props.theme.spacing.gapSmall};
-	
-	/* border-radius: 50%;
-	padding: ${props => props.theme.spacing.gap};
-	
-	background-color: rgba(255, 255, 255, 0.5);
-	box-shadow: 2px 8px 10px 4px rgba(0, 0, 0, 0.3);
-	width: 40%;
-	height: 100%; */
 `;
 
 const FishImg = styled.img<ImgProps>`
-	/* width: 200px; */
 	height: 18vh;
-	/* width: auto; */
 	border-radius: 50%;
 	border: 1vh solid rgba(255, 255, 255, 0.5);
 	cursor: pointer; 
@@ -108,11 +96,9 @@ const FishStatsOverlay = styled.div`
 	justify-content: center;
 	align-items: flex-start;
 	height: 18vh;
-	/* width: 00%; */
 	top: 50;
 	bottom: 50;
 	border-radius: 50%;
-	/* padding: ${props => props.theme.spacing.gap}; */
 `;
 
 const FishData = styled.p`

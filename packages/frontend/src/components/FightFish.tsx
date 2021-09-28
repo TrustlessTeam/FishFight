@@ -20,6 +20,7 @@ import { useFishFight } from '../context/fishFightContext';
 import { useUnity } from '../context/unityContext';
 
 import FishNFT from './FishNFT';
+import { useFishPool } from '../context/fishPoolContext';
 
 enum FishToShow {
   Public,
@@ -28,7 +29,8 @@ enum FishToShow {
 
 
 const FightFish = () => {
-	const { FishFight, refetchBalance, userFish, publicFish} = useFishFight()
+	const { FishFight, refetchBalance } = useFishFight()
+	const { userFish, publicFish } = useFishPool()
 
 	// Fish selected for fight
 	const [mySelectedFish, setMySelectedFish] = useState<Fish | null>(null);
@@ -62,6 +64,7 @@ const FightFish = () => {
 
 	const setOpponent = (fish : Fish) => {
 		console.log("Opponent Fish: " + fish.tokenId)
+		unityContext.setFishModeFighting();
 		unityContext.clearFishPool();
 		if(mySelectedFish != null) {
 			unityContext.addFish(mySelectedFish);
@@ -72,6 +75,7 @@ const FightFish = () => {
 
 	const setUserFish = (fish : Fish) => {
 		console.log("UserSelected Fish: " + fish.tokenId)
+		unityContext.setFishModeFighting();
 		unityContext.clearFishPool();
 		if(opponentFish != null) {
 			unityContext.addFish(opponentFish);

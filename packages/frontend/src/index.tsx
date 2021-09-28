@@ -10,6 +10,7 @@ import { Web3ReactProvider } from '@web3-react/core';
 import { getLibraryProvider } from './utils/provider';
 import { FishFightProvider } from './context/fishFightContext';
 import { UnityProvider } from './context/unityContext';
+import { FishPoolProvider } from './context/fishPoolContext';
 
 
 ReactDOM.render(
@@ -18,7 +19,9 @@ ReactDOM.render(
 			<HarmonyProvider>
 				<UnityProvider>
 					<FishFightProvider>
-						<App />
+						<FishPoolProvider>
+							<App />
+						</FishPoolProvider>
 					</FishFightProvider>
 				</UnityProvider>
 			</HarmonyProvider>

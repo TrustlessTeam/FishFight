@@ -20,6 +20,8 @@ import Unity from 'react-unity-webgl';
 import { Fish } from '../utils/fish'
 import { useFishFight } from '../context/fishFightContext';
 import { useUnity } from '../context/unityContext';
+import { useFishPool } from '../context/fishPoolContext';
+import FishNFT from './FishNFT';
 
 type Props = {
   children?: React.ReactNode;
@@ -35,8 +37,11 @@ const catchRates = [
 
 const CatchFish = ({ children }: Props) => {
 	const unityContext = useUnity()
-	const { FishFight, refetchBalance, addUserPoolTokenId} = useFishFight()
+	const { FishFight, refetchBalance } = useFishFight()
+	const { addUserPoolTokenId } = useFishPool();
 	const [caughtFish, setCaughtFish] = useState<Fish | null>(null);
+	const [caughtFishHash, setCaughtFishHash] = useState<string | null>(null);
+
 
 	// Name of the fish that the user is creating/minting
 	const [fishName, setFishName] = useState("Fishy")
@@ -108,8 +113,14 @@ const CatchFish = ({ children }: Props) => {
 			fishInfo.traitsC
 		);
 		console.log(newFish)
-		addUserPoolTokenId(newFish.tokenId)
+		setCaughtFish(newFish)
+
+		// unityContext.setFishModeCatching();
 		unityContext.addFish(newFish);
+
+		// addUserPoolTokenId(newFish.tokenId)
+		// unityContext.setFishModeOcean();
+		// unityContext.addFish(newFish);
 	}
 
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -127,6 +138,8 @@ const CatchFish = ({ children }: Props) => {
 					gasLimit: 500000,
 					value: new Unit(value).asOne().toWei(),
 				});
+				console.log(fish)
+				setCaughtFishHash(fish.transactionHash)
 				const returnedTokenId = new BN(fish.events.Transfer.returnValues.tokenId).toNumber()
 				getUserFish(returnedTokenId);
 				toast.success('Transaction done', {
@@ -176,41 +189,81 @@ const CatchFish = ({ children }: Props) => {
 	}
 
 	const FishingOptions = () => {
-		if(caughtFish) {
+		if(caughtFish && caughtFishHash) {
 			return (
 				<div>
-					<FishNFT onClick={handleFishClick(caughtFish.tokenId)}>
-						<FishData>{caughtFish.birth}</FishData>
-						<FishData>Strength: {caughtFish.strength} Intelligence: {caughtFish.intelligence} Agility: {caughtFish.agility}</FishData>
-					</FishNFT>
+					<CaughtFish>
+						<FishData><b>Token ID: {caughtFish.tokenId}</b></FishData>
+						<FishData>Strength: {caughtFish.strength}</FishData>
+						<FishData>Intelligence: {caughtFish.intelligence}</FishData>
+						<FishData>Agiltiy: {caughtFish.agility}</FishData>
+						<TransactionLink target="_blank" href={`https://explorer.pops.one/tx/${caughtFishHash}`}>View Transaction</TransactionLink>
+					</CaughtFish>
 
-					<CatchFishButton onClick={() => {setCaughtFish(null)}}>
+					<GameButton onClick={() => {
+						setCaughtFish(null);
+						setCaughtFishHash(null);
+					}}>
 						Catch another fish!
-					</CatchFishButton>
+					</GameButton>
 				</div>
 			)
 		}
+		return null;
 
-		return (
-			<FishingContainer>
-				<Text>Catch a fish! Select the amount of ONE to use as bait!</Text>
-				<OptionsContainer>
-					{catchRates.map((rate, index) => (
-						<GameButton key={index} onClick={handleClickCatch(rate.value)}>
-							Bait with {rate.value} ONE<br></br>{rate.chance} catch rate
-						</GameButton>
-					))}
-				</OptionsContainer>
-			</FishingContainer>
+		// return (
+		// 	<FishingContainer>
+		// 		<Text>Catch a fish! Select the amount of ONE to use as bait!</Text>
+		// 		<OptionsContainer>
+		// 			{catchRates.map((rate, index) => (
+		// 				<GameButton key={index} onClick={handleClickCatch(rate.value)}>
+		// 					Bait with {rate.value} ONE<br></br>{rate.chance} catch rate
+		// 				</GameButton>
+		// 			))}
+		// 		</OptionsContainer>
+		// 	</FishingContainer>
 			
-		)
+		// )
 	}
 
 	return (
-		// <FishingOptions />
-		<></>
+		<FishingOptions />
 	);
 };
+
+const CaughtFish = styled.div`
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	background-color: white;
+	padding: ${props => props.theme.spacing.gap};
+	margin: ${props => props.theme.spacing.gap};
+	border-radius: 25px;
+`;
+
+const TransactionLink = styled.a`
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	/* width: 100%; */
+`;
+
+const FishData = styled.p`
+	display: flex;
+	flex-flow: column;
+	align-items: center;
+	justify-content: center;
+	color: ${"black"};
+	text-align: center;
+	font-size: ${props => props.theme.font.medium}vmin;
+	background-color: rgba(255, 255, 255, 0.7);
+	margin: 0 ${props => props.theme.spacing.gapSmall};
+	padding: ${props => props.theme.spacing.gapSmall};
+	border-radius: 50%;
+	height: ${props => props.theme.font.small}vmin;
+`;
 
 
 const FishingContainer = styled.div`
@@ -261,22 +314,6 @@ const GameButton = styled.button`
 	}
 `;
 
-const FishNFT = styled.div`
-	flex: 1;
-	border-radius: 25px;
-	width: 100%;
-	padding: 15px;
-	background-color: white;
-	box-shadow: 2px 8px 10px 4px rgba(0, 0, 0, 0.3);
-`;
-
-const FishName = styled.h3`
-	color: ${"black"};
-`;
-
-const FishData = styled.p`
-	color: ${"black"};
-`;
 
 const CatchFishButton = styled.button`
 	display: flex;

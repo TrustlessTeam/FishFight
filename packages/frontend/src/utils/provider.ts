@@ -16,7 +16,7 @@ export type Provider = {
 }
 
 // Depending on this the provider will be chosen
-const envProvider: string = process.env.REACT_APP_FRONTEND_NETWORK || 'localnet';
+const envProvider: string = process.env.REACT_APP_FRONTEND_NETWORK || 'testnet';
 
 
 // Provider list

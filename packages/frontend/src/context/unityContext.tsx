@@ -17,6 +17,9 @@ interface UnityProviderContext {
 	addFish: (fish: Fish) => void;
 	showFish: (fish: Fish) => void;
 	clearFishPool: () => void;
+	setFishModeOcean: () => void;
+	setFishModeFighting: () => void;
+	setFishModeCatching: () => void;
 }
 
 type UnityProviderProps = { children: React.ReactNode };
@@ -146,6 +149,17 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
 		console.log("ShowFish Completed")
 	};
 
+	const setFishModeOcean = () => {
+		UnityInstance.send('FishPool', 'SetFishMode', 'ShowOcean');
+	}
+
+	const setFishModeFighting = () => {
+		UnityInstance.send('FishPool', 'SetFishMode', 'ShowFight');
+	}
+
+	const setFishModeCatching = () => {
+		UnityInstance.send('FishPool', 'SetFishMode', 'ShowFishing');
+	}
 
 
 	const toggleIsUnityMounted = () => {
@@ -166,7 +180,10 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
     showFight: showFight,
     addFish: addFish,
 		showFish: showFish,
-		clearFishPool: clearFishPool
+		clearFishPool: clearFishPool,
+		setFishModeOcean: setFishModeOcean,
+		setFishModeFighting: setFishModeFighting,
+		setFishModeCatching: setFishModeCatching
 	};
 	return <UnityContext.Provider value={value}>{children}</UnityContext.Provider>;
 };

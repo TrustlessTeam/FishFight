@@ -10,6 +10,7 @@ import { useFishFight } from '../context/fishFightContext';
 import { useUnity } from '../context/unityContext';
 import Account from '../components/Account';
 import FishNFT from './FishNFT';
+import { useFishPool } from '../context/fishPoolContext';
 
 enum FishToShow {
   Public,
@@ -18,25 +19,34 @@ enum FishToShow {
 
 
 const ViewFish = () => {
-	const { FishFight, userFish, publicFish } = useFishFight();
+	const { FishFight } = useFishFight();
+	const { userFish, publicFish, arePublicFishLoaded, areUserFishLoaded } = useFishPool();
 	const [fishToShow, setFishToShow] = useState<FishToShow>(FishToShow.Public);
 	const unityContext = useUnity();
 
-	useEffect(() => {
-		// add function to clear fish pool
-		unityContext.clearFishPool();
-		unityContext.showOcean();
-		console.log("adding fish from public Fish")
-		publicFish.forEach(fish => {
-			unityContext.addFish(fish);
-		});
-
-		console.log("adding fish from user Fish")
-		userFish.forEach(fish => {
-			unityContext.addFish(fish);
-		});
+	// useEffect(() => {
+	// 	// add function to clear fish pool
+	// 	unityContext.showOcean();
+	// 	unityContext.clearFishPool();
+	// 	if(arePublicFishLoaded) {
+	// 		console.log("Adding fish from publicFish")
+	// 		publicFish.forEach(fish => {
+	// 			unityContext.addFish(fish);
+	// 		});
+	// 	}
 		
+	// 	if(areUserFishLoaded) {
+	// 		console.log("Adding fish from userFish")
+	// 		userFish.forEach(fish => {
+	// 			unityContext.addFish(fish);
+	// 		});
+	// 	}
+		
+	// }, [arePublicFishLoaded, areUserFishLoaded]);
+	useEffect(() => {
+		console.log("Fish arrays changed")
 	}, [userFish, publicFish]);
+
 
 	useEffect(() => {
 		unityContext.showOcean();
