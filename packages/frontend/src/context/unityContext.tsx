@@ -14,12 +14,11 @@ interface UnityProviderContext {
 	showFishing: () => void;
 	showOcean: () => void;
 	showFight: () => void;
-	addFish: (fish: Fish) => void;
+	addFishOcean: (fish: Fish) => void,
+	addFishFight: (fish: Fish) => void;
+	addFishFishing: (fish: Fish) => void;
 	showFish: (fish: Fish) => void;
-	clearFishPool: () => void;
-	setFishModeOcean: () => void;
-	setFishModeFighting: () => void;
-	setFishModeCatching: () => void;
+	clearFishPool: (pool: string) => void;
 }
 
 type UnityProviderProps = { children: React.ReactNode };
@@ -128,39 +127,40 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
 		UnityInstance.send('Camera', 'SetAnimState', 'ShowOcean');
 		console.log("ShowOcean Completed")
 	};
-	const clearFishPool = () => {
-		console.log("ClearFishPool Called")
+	const clearFishPool = (pool: string) => {
+		console.log("ClearFishPool Called " + pool)
     if(!isLoaded || !fishPoolReady) return;
-		UnityInstance.send('FishPool', 'ClearPool');
-		console.log("ClearFishPool Completed")
+		UnityInstance.send('FishPool', 'ClearPool', pool);
+		console.log("ClearFishPool Called " + pool)
 	};
-  const addFish = (fish: Fish) => {
+  const addFishOcean = (fish: Fish) => {
 		console.log("AddFish Called")
     if(!isLoaded || !fishPoolReady) return;
 		console.log(fish)
-		UnityInstance.send('FishPool', 'AddFish', JSON.stringify(fish));
+		UnityInstance.send('FishPool', 'AddFish_OceanView', JSON.stringify(fish));
+		console.log("AddFish Completed")
+	};
+	const addFishFight = (fish: Fish) => {
+		console.log("AddFish Called")
+    if(!isLoaded || !fishPoolReady) return;
+		console.log(fish)
+		UnityInstance.send('FishPool', 'AddFish_FightView', JSON.stringify(fish));
+		console.log("AddFish Completed")
+	};
+	const addFishFishing = (fish: Fish) => {
+		console.log("AddFish Called")
+    if(!isLoaded || !fishPoolReady) return;
+		console.log(fish)
+		UnityInstance.send('FishPool', 'AddFish_FishingView', JSON.stringify(fish));
 		console.log("AddFish Completed")
 	};
 	const showFish = (fish: Fish) => {
 		console.log("ShowFish Called")
     if(!isLoaded || !fishPoolReady) return;
 		UnityInstance.send('Camera', 'SetAnimState', 'ShowFish');
-		UnityInstance.send('FishPool', 'AddFish', JSON.stringify(fish));
+		UnityInstance.send('FishPool', 'AddFish_FishView', JSON.stringify(fish));
 		console.log("ShowFish Completed")
 	};
-
-	const setFishModeOcean = () => {
-		UnityInstance.send('FishPool', 'SetFishMode', 'ShowOcean');
-	}
-
-	const setFishModeFighting = () => {
-		UnityInstance.send('FishPool', 'SetFishMode', 'ShowFight');
-	}
-
-	const setFishModeCatching = () => {
-		UnityInstance.send('FishPool', 'SetFishMode', 'ShowFishing');
-	}
-
 
 	const toggleIsUnityMounted = () => {
 		setIsUnityMounted(!isUnityMounted);
@@ -178,12 +178,11 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
     showFishing: showFishing,
     showOcean: showOcean,
     showFight: showFight,
-    addFish: addFish,
+    addFishOcean: addFishOcean,
+		addFishFight: addFishFight,
+		addFishFishing: addFishFishing,
 		showFish: showFish,
 		clearFishPool: clearFishPool,
-		setFishModeOcean: setFishModeOcean,
-		setFishModeFighting: setFishModeFighting,
-		setFishModeCatching: setFishModeCatching
 	};
 	return <UnityContext.Provider value={value}>{children}</UnityContext.Provider>;
 };

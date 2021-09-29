@@ -64,24 +64,22 @@ const FightFish = () => {
 
 	const setOpponent = (fish : Fish) => {
 		console.log("Opponent Fish: " + fish.tokenId)
-		unityContext.setFishModeFighting();
-		unityContext.clearFishPool();
+		unityContext.clearFishPool('ShowFight');
 		if(mySelectedFish != null) {
-			unityContext.addFish(mySelectedFish);
+			unityContext.addFishFight(mySelectedFish);
 		}
 		setopponentFish(fish);
-		unityContext.addFish(fish)
+		unityContext.addFishFight(fish)
 	}
 
 	const setUserFish = (fish : Fish) => {
 		console.log("UserSelected Fish: " + fish.tokenId)
-		unityContext.setFishModeFighting();
-		unityContext.clearFishPool();
+		unityContext.clearFishPool('ShowFight');
 		if(opponentFish != null) {
-			unityContext.addFish(opponentFish);
+			unityContext.addFishFight(opponentFish);
 		}
 		setMySelectedFish(fish);
-		unityContext.addFish(fish)
+		unityContext.addFishFight(fish)
 	}
 
 	const fightFish = () => async () => {

@@ -4,7 +4,7 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
-
+import { CookiesProvider } from 'react-cookie';
 import { HarmonyProvider } from './context/harmonyContext';
 import { Web3ReactProvider } from '@web3-react/core';
 import { getLibraryProvider } from './utils/provider';
@@ -15,17 +15,19 @@ import { FishPoolProvider } from './context/fishPoolContext';
 
 ReactDOM.render(
 	<React.StrictMode>
-		<Web3ReactProvider getLibrary={getLibraryProvider}>
-			<HarmonyProvider>
-				<UnityProvider>
-					<FishFightProvider>
-						<FishPoolProvider>
-							<App />
-						</FishPoolProvider>
-					</FishFightProvider>
-				</UnityProvider>
-			</HarmonyProvider>
-		</Web3ReactProvider>
+		<CookiesProvider>
+			<Web3ReactProvider getLibrary={getLibraryProvider}>
+				<HarmonyProvider>
+					<UnityProvider>
+						<FishFightProvider>
+							<FishPoolProvider>
+								<App />
+							</FishPoolProvider>
+						</FishFightProvider>
+					</UnityProvider>
+				</HarmonyProvider>
+			</Web3ReactProvider>
+		</CookiesProvider>
 	</React.StrictMode>,
 	document.getElementById('root'),
 );

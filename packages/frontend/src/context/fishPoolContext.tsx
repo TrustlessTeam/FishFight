@@ -54,7 +54,7 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
         seedPublicPoolTokenIds([]);
       }
     }
-		unityContext.clearFishPool();
+		unityContext.clearFishPool('ShowOcean');
 		if(unityContext.isFishPoolReady) loadTokenData(account);
   }, [userConnected, unityContext.isFishPoolReady]);
 
@@ -121,7 +121,6 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
     const existingPublicFish = publicFish;
     try {
 			setPublicFish([]);
-			unityContext.setFishModeOcean()
       await Promise.all(publicPoolTokenIds.map(async tokenId => {
 				// don't re add a fish that we already have
 				const existingFish = existingPublicFish.filter(fish => fish.tokenId == tokenId)[0];
@@ -129,7 +128,7 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
         if(existingFish) {
           console.log("fish already exists")
 					setPublicFish(prevPublicFish => [...prevPublicFish, existingFish])
-					unityContext.addFish(existingFish);
+					unityContext.addFishOcean(existingFish);
           return;
         }
 
@@ -138,7 +137,7 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
         if(fish != null) {
 					console.log("getting fish")
           setPublicFish(prevPublicFish => [...prevPublicFish, fish])
-					unityContext.addFish(fish);
+					unityContext.addFishOcean(fish);
         }
 			}));   
       setArePublicFishLoaded(true);
@@ -153,7 +152,6 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
   // Get Fish owned by the connected account
 	const fetchUserFish = async () => {
     console.log("FETCH USER FISH")
-		unityContext.setFishModeOcean()
     try {
       userPoolTokenIds.forEach(async tokenId => {
         if(userFish.some(x => x.tokenId == tokenId)) {
@@ -165,7 +163,7 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
         const fish = await getFish(FishFight, tokenId)
         if(fish != null) {
           setUserFish(prevFish => ([...prevFish, fish]))
-					unityContext.addFish(fish);
+					unityContext.addFishOcean(fish);
         }
       });
       setAreUserFishLoaded(true);
@@ -179,14 +177,6 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
     setPublicPoolTokenIds([]);
 		setPublicFish([]);
 	};
-
-	// return {
-	// 	publicFish,
-  //   userFish,
-  //   arePublicFishLoaded,
-  //   areUserFishLoaded,
-  //   addUserPoolTokenId
-	// };
 
 	const value: FishPoolProviderContext = {
 		userFish: userFish,

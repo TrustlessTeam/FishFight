@@ -114,13 +114,9 @@ const CatchFish = ({ children }: Props) => {
 		);
 		console.log(newFish)
 		setCaughtFish(newFish)
+		unityContext.addFishFishing(newFish);
 
-		// unityContext.setFishModeCatching();
-		unityContext.addFish(newFish);
-
-		// addUserPoolTokenId(newFish.tokenId)
-		// unityContext.setFishModeOcean();
-		// unityContext.addFish(newFish);
+		addUserPoolTokenId(newFish.tokenId)
 	}
 
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {

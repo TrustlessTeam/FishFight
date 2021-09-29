@@ -1,11 +1,8 @@
 // React
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import {
-  BrowserRouter as Router,
   Switch,
-  Route,
-  Link,
-  useLocation
+  Route
 } from "react-router-dom";
 
 // Styled Components
@@ -14,51 +11,39 @@ import UnityWindow from './UnityWindow';
 import FightFish from './FightFish';
 import ViewFish from './ViewFish';
 import CatchFish from './CatchFish';
-import { useFishFight } from '../context/fishFightContext';
+
+import { useCookies } from 'react-cookie';
 
 type Props = {
   children?: React.ReactNode;
 };
 
-enum Views {
-  Ocean,
-  Fishing,
-  Fight,
-  Fish
-}
-
-// Try react-router dom here and switch for the different views? Can it still be linked to buttons?
-// On View/Fight/Catch render we refetchUser and publicUser and can pass pararmeters to the functions
-
 const Game = ({ children }: Props) => {
-  const location = useLocation();
-	// const { FishFight, userFish, refetchUserFish, publicFish, refetchPublicFish } = useFishFight();
-  const [currentView, setCurrentView] = useState<Views>(Views.Ocean);
+  const [cookies, setCookie] = useCookies(['accepted_terms']);
 
-  // useEffect(() => {
-	// 	async function updateFishLists() {
-	// 		await refetchUserFish();
-	// 		await refetchPublicFish();
-	// 	}
-	// 	updateFishLists();
-  //   console.log(currentView)
-		
-	// }, [location]);
+  const checkTerms = () => {
+    console.log("clcik")
+    if(cookies['accepted_terms'] == true) return;
+    setCookie('accepted_terms', true);
+    console.log(cookies['accepted_terms'])
+  }
 
 	return (
     <UnityWindow>
-      <Viewer>
-        <Switch>
-          <Route path="/catch">
-            <CatchFish/>
-          </Route>
-          <Route path="/fight">
-            <FightFish />
-          </Route>
-          <Route path="/">
-            <ViewFish />
-          </Route>
-        </Switch>	
+      <Viewer onClick={() => checkTerms()}>
+        {cookies['accepted_terms'] && 
+          <Switch>
+            <Route path="/catch">
+              <CatchFish/>
+            </Route>
+            <Route path="/fight">
+              <FightFish />
+            </Route>
+            <Route path="/">
+              <ViewFish />
+            </Route>
+          </Switch>	
+        }
       </Viewer>
     </UnityWindow>
 	);
