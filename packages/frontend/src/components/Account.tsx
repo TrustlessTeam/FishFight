@@ -42,7 +42,7 @@ const Account = () => {
 						{parsedAccount.substring(0, 6)}...{parsedAccount.substring(parsedAccount.length - 4)}
 					</span>
 				) : (
-					<span>Connect Wallet</span>
+					<span>Connect</span>
 				)}
 			</AccountComponent>
 			<Modal
@@ -59,16 +59,16 @@ const Account = () => {
 };
 
 const AccountComponent = styled.div`
-	/* position: absolute; */
 	display: flex;
-	justify-content: flex-end;
-	padding: 10px 20px;
+	justify-content: center;
+	font-size: ${props => props.theme.font.medium}vmin;
+	padding: ${props => props.theme.spacing.gapSmall} ${props => props.theme.spacing.gapSmall};
 	border-radius: 25px;
 	background-color: white;
 	opacity: 0.7;
 	box-shadow: 1px 2px 4px 4px rgba(0, 0, 0, 0.25);
 	color: black;
-	margin-left: 10px;
+	margin-left: ${props => props.theme.spacing.gapSmall};
 	transition: opacity 0.3s ease, box-shadow 0.25s ease-in-out;
 
 	&:hover {

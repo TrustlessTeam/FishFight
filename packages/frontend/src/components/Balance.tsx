@@ -12,13 +12,18 @@ const Balance = () => {
 
 	return (
 		<BalanceComponent>
-			<b>{balance}</b> <span>ONE</span>
+			<b>{balance.split('.')[0]}</b> <span>ONE</span>
 		</BalanceComponent>
 	);
 };
 
 const BalanceComponent = styled.div`
-	padding: 10px 20px;
+	display: flex;
+	flex-flow: row;
+	justify-content: center;
+	font-size: ${props => props.theme.font.medium}vmin;
+	margin-left: ${props => props.theme.spacing.gapSmall};
+	padding: ${props => props.theme.spacing.gapSmall} ${props => props.theme.spacing.gapSmall};
 	border-radius: 25px;
 	background-color: white;
 	color: black;

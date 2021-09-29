@@ -20,29 +20,19 @@ const UnityWindow = ({ children }: Props) => {
 			{!unityContext.isLoaded && <p>Loading {unityContext.progression * 100} percent...</p>}
 			<Fragment>
 				{unityContext.isUnityMounted === true && <Unity unityContent={unityContext.UnityInstance} />}
+				{children}
 			</Fragment>
-			{children}
+			
 		</UnityWindowComponent>
 	);
 };
 
 const UnityWindowComponent = styled.div`
-	/* margin-top: -280px;
-	padding: 200px; */
-	order: 0;
 	position: relative;
-	border-radius: 50%;
-	width: 50vw;
-	height: 50vw;
-	max-height: 50vh;
-	color: black;
-
+	width: 100%;
+	height: calc(99% - 1px);
 	& > div {
 		background: none !important;
-	}
-
-	& canvas {
-		border-radius: 10%10%;
 	}
 `;
 

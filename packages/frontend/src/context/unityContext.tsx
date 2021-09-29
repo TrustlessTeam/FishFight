@@ -8,12 +8,17 @@ interface UnityProviderContext {
 	isLoaded: boolean;
 	progression: number;
 	isFishPoolReady: boolean,
+	mintFish: number,
 	toggleIsUnityMounted: () => void;
 	fishCaught: (fish: Fish) => void;
 	showFishing: () => void;
 	showOcean: () => void;
 	showFight: () => void;
-	addFish: (fish: Fish) => void;
+	addFishOcean: (fish: Fish) => void,
+	addFishFight: (fish: Fish) => void;
+	addFishFishing: (fish: Fish) => void;
+	showFish: (fish: Fish) => void;
+	clearFishPool: (pool: string) => void;
 }
 
 type UnityProviderProps = { children: React.ReactNode };
@@ -25,12 +30,13 @@ const UnityContext = createContext<UnityProviderContext | undefined>(undefined);
 export const UnityProvider = ({ children }: UnityProviderProps) => {
 	// FishFight instance initiates with default url provider upon visiting page
 	const [UnityInstance, setUnityInstance] = useState<UnityContent>(
-		new UnityContent('./Build/fishfight-one.json', './Build/UnityLoader.js'),
+		new UnityContent('./Unity/fishfight-one-frontend.json', './Unity/UnityLoader.js'),
 	);
 	const [isUnityMounted, setIsUnityMounted] = useState(true);
 	const [isLoaded, setIsLoaded] = useState(false);
   const [fishPoolReady, setFishPoolReady] = useState(false);
 	const [progression, setProgression] = useState(0);
+	const [mintFish, setMintFish] = useState(0);
 
 	useEffect(() => {
 		console.log(UnityInstance);
@@ -54,12 +60,26 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
 		UnityInstance.on('UISelectionConfirm', function (data: any) {
 			console.log('UI changed');
 			console.log(data)
+			switch (data) {
+				case 'mint_fish_5p':
+					setMintFish(4);
+					return;
+				case 'mint_fish_25p':
+					setMintFish(3);
+					return;
+				case 'mint_fish_50p':
+					setMintFish(2);
+					return;
+				case 'mint_fish_75p':
+					setMintFish(1);
+					return;
+				default:
+					setMintFish(0)
+					return;
+			}
 		});
 		UnityInstance.on('FishPoolStartConfirm', function () {
       setFishPoolReady(true);
-			console.log('FishPoolStartConfirmed!');
-			console.log('FishPoolStartConfirmed!');
-			console.log('FishPoolStartConfirmed!');
 			console.log('FishPoolStartConfirmed!');
 		});
 		UnityInstance.on('SetAnimStateConfirm', function () {
@@ -107,15 +127,40 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
 		UnityInstance.send('Camera', 'SetAnimState', 'ShowOcean');
 		console.log("ShowOcean Completed")
 	};
-  const addFish = (fish: Fish) => {
+	const clearFishPool = (pool: string) => {
+		console.log("ClearFishPool Called " + pool)
+    if(!isLoaded || !fishPoolReady) return;
+		UnityInstance.send('FishPool', 'ClearPool', pool);
+		console.log("ClearFishPool Called " + pool)
+	};
+  const addFishOcean = (fish: Fish) => {
 		console.log("AddFish Called")
     if(!isLoaded || !fishPoolReady) return;
 		console.log(fish)
-		UnityInstance.send('FishPool', 'AddFish', JSON.stringify(fish));
+		UnityInstance.send('FishPool', 'AddFish_OceanView', JSON.stringify(fish));
 		console.log("AddFish Completed")
 	};
-
-
+	const addFishFight = (fish: Fish) => {
+		console.log("AddFish Called")
+    if(!isLoaded || !fishPoolReady) return;
+		console.log(fish)
+		UnityInstance.send('FishPool', 'AddFish_FightView', JSON.stringify(fish));
+		console.log("AddFish Completed")
+	};
+	const addFishFishing = (fish: Fish) => {
+		console.log("AddFish Called")
+    if(!isLoaded || !fishPoolReady) return;
+		console.log(fish)
+		UnityInstance.send('FishPool', 'AddFish_FishingView', JSON.stringify(fish));
+		console.log("AddFish Completed")
+	};
+	const showFish = (fish: Fish) => {
+		console.log("ShowFish Called")
+    if(!isLoaded || !fishPoolReady) return;
+		UnityInstance.send('Camera', 'SetAnimState', 'ShowFish');
+		UnityInstance.send('FishPool', 'AddFish_FishView', JSON.stringify(fish));
+		console.log("ShowFish Completed")
+	};
 
 	const toggleIsUnityMounted = () => {
 		setIsUnityMounted(!isUnityMounted);
@@ -127,12 +172,17 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
 		isLoaded: isLoaded,
 		progression: progression,
 		isFishPoolReady: fishPoolReady,
+		mintFish: mintFish,
 		toggleIsUnityMounted: toggleIsUnityMounted,
 		fishCaught: fishCaught,
     showFishing: showFishing,
     showOcean: showOcean,
     showFight: showFight,
-    addFish: addFish,
+    addFishOcean: addFishOcean,
+		addFishFight: addFishFight,
+		addFishFishing: addFishFishing,
+		showFish: showFish,
+		clearFishPool: clearFishPool,
 	};
 	return <UnityContext.Provider value={value}>{children}</UnityContext.Provider>;
 };

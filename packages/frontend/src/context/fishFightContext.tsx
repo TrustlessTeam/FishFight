@@ -19,21 +19,17 @@ import { isBech32Address, fromWei, hexToNumber, Units } from '@harmony-js/utils'
 import { Harmony } from "@harmony-js/core";
 import { Web3Provider } from "@ethersproject/providers";
 import axios from 'axios';
+import { useLocation } from "react-router-dom";
 
+const MAX_FISH = 42;
 
 // Typescript
 interface FishFightProviderContext {
     FishFight: FishFight
+    userConnected: boolean
     balance: string | undefined
-    // publicFish: Fish[] | null // once we have a default provider we can query the blockchain not logged in
     refetchBalance: () => void
 	  resetBalance: () => void
-    userFish: Fish[] | undefined
-    refetchUserFish: () => void
-    resetUserFish: () => void
-    publicFish: Fish[] | undefined
-    refetchPublicFish: () => void
-		resetPublicFish: () => void
 }
 
 type FishFightProviderProps = { children: React.ReactNode }
@@ -45,62 +41,43 @@ const FishFightContext = createContext<FishFightProviderContext | undefined>(und
 export const FishFightProvider = ({ children }: FishFightProviderProps ) => {
   // FishFight instance initiates with default url provider upon visiting page
   const [FishFightInstance, setFishFightInstance] = useState<FishFight>(new FishFight(getHarmonyProvider().provider, getHarmonyProvider().type))
+  const [userConnected, setUserConnected] = useState<boolean>(false);
   // State of web3React
   const { account, connector, library} = useWeb3React();
 
   const contextBalance = useBalance();
-  const contextUserFish = useUserFish();
-  const contextPublicFish = usePublicFish();
 
-  useEffect(() => {
-    // When not logged in
-    console.log("no logged in")
-    console.log("calling public fish")
-    contextPublicFish.fetchPublicFish(null, FishFightInstance)
-    
-  }, [])
   
   useEffect(() => {
     // When user logs in, get wallet provider (harmonyExtension or web3provider)
     if (account && connector && library) {
-      getWalletProvider(connector, library).then((wallet) => 
+      getWalletProvider(connector, library).then(async (wallet) =>
       {
         setFishFightInstance(new FishFight(wallet.provider, wallet.type))
-        contextBalance.fetchBalance(account, wallet.type, wallet.provider, library)
-        contextUserFish.fetchUserFish(account, FishFightInstance)
-        contextPublicFish.fetchPublicFish(account, FishFightInstance)
+        setUserConnected(true);
+
       })
     }
   }, [connector, library])
 
+  // useEffect(() => {
+  //   // When user has connected account set UserConnected
+  //   setUserConnected(true);
+  // }, [FishFightInstance])
+
+
   const refetchBalance = () => {
+    if(!connector || !library) return;
     account ? getWalletProvider(connector, library).then((wallet) => {
       contextBalance.fetchBalance(account, wallet.type, wallet.provider, library)
     }) : null
   }
 
-  const refetchUserFish = () => {
-    account ? getWalletProvider(connector, library).then(() => {
-      contextUserFish.fetchUserFish(account, FishFightInstance)
-    }) : null
-  }
-
-  const refetchPublicFish = () => {
-    account ? getWalletProvider(connector, library).then(() => {
-      contextPublicFish.fetchPublicFish(account, FishFightInstance)
-    }) : getWalletProvider(connector, library).then(() => {
-      contextPublicFish.fetchPublicFish(null, FishFightInstance)
-    })
-  }
-
   const value: FishFightProviderContext = {
     FishFight: FishFightInstance,
+    userConnected: userConnected,
     refetchBalance,
-    ...contextBalance,
-    refetchUserFish,
-    ...contextUserFish,
-    refetchPublicFish,
-    ...contextPublicFish
+    ...contextBalance
   }
   return (
       <FishFightContext.Provider value={value}>{children}</FishFightContext.Provider>
@@ -145,150 +122,38 @@ const useBalance = () => {
 };
 
 // Users Fish utilities that will be included in FishFightContext
-const useUserFish = () => {
-	const [userFish, setUserFish] = useState<Fish[]>();
+// const useSelectedFish = () => {
+// 	const [selectedFish, setSelectedFish] = useState<Fish | null>();
 
-	const fetchUserFish = useCallback(
-		async (account: string, fishFightInstance: FishFight) => {
-      const fishUserOwns: BN = await fishFightInstance.factory.methods.balanceOf(account).call();
-      const numFish = new BN(fishUserOwns).toNumber();
-      const tempFish: Fish[] = [];
+// 	const fetchSelectedFish = useCallback(
+// 		async (tokenId: number, fishFightInstance: FishFight) => {
+//       try {
+//         // Check if fish is already selected and metadata is loaded
+//         if(selectedFish?.tokenId == tokenId && selectedFish.imgSrc != null) return;
+//         const fish = await getFish(fishFightInstance, tokenId)
+//         console.log(fish)
+//         setSelectedFish(fish);
+//       } catch (error) {
+//         console.log("Error getting selected fish: ");
+//         console.log(error);
+//         resetSelectedFish()
+//       }
+      
+// 		},
+// 		[setSelectedFish],
+// 	);
 
-      // For every fish the user owns get token, then fish info, generate fish and push instance to tempFish 
-      // once its done, setMyFish to tempfish
-      for(let i = 0; i < numFish; i++) {
-        const tokenId: BN = await fishFightInstance.factory.methods.tokenOfOwnerByIndex(account, i).call();
-        const parsedTokenId = new BN(tokenId).toNumber();
-        const tokenURI = await fishFightInstance.factory.methods.tokenURI(parsedTokenId).call();
-        let imgSrc = null;
-        if(tokenURI != "") {
-          try {
-            const metadataResponse = await axios.get(tokenURI);
-            console.log(metadataResponse)
-            imgSrc = metadataResponse.data.image;
-            console.log(tokenURI)
-            console.log(metadataResponse.data.image)
-          } catch (error) {
-            console.log("Error in Axios call: ");
-            console.log(error)
-          }
-        }
-        
-        console.log(parsedTokenId)
-        const fishInfo = await fishFightInstance.factory.methods.getFishInfo(parsedTokenId).call();
-        console.log(fishInfo)
-        const fish = new Fish(
-          parsedTokenId,
-          new BN(fishInfo.fishTypeIndex).toNumber(),
-          fishInfo.name,
-          new BN(fishInfo.birth).toNumber(),
-          hexToNumber(fishInfo.strength),
-          hexToNumber(fishInfo.intelligence),
-          hexToNumber(fishInfo.agility),
-          new BN(fishInfo.wins).toNumber(),
-          new BN(fishInfo.challenger).toNumber(),
-          new BN(fishInfo.challenged).toNumber(),
-          fishInfo.traitsA,
-          fishInfo.traitsB,
-          fishInfo.traitsC,
-          imgSrc
-        );
-        console.log(fish)
-        tempFish.push(fish);
-      }
-      setUserFish(tempFish);
+// 	const resetSelectedFish = () => {
+// 		setSelectedFish(undefined);
+// 	};
 
-		},
-		[setUserFish],
-	);
+// 	return {
+// 		selectedFish,
+// 		fetchSelectedFish,
+// 		resetSelectedFish,
+// 	};
+// };
 
-	const resetUserFish = () => {
-		setUserFish(undefined);
-	};
-
-	return {
-		userFish,
-		fetchUserFish,
-		resetUserFish,
-	};
-};
-
-// Users Fish utilities that will be included in FishFightContext
-const usePublicFish = () => {
-	const [publicFish, setPublicFish] = useState<Fish[]>();
-
-	const fetchPublicFish = useCallback(
-		async (account: string | null, fishFightInstance: FishFight) => {
-      const userFish: number[] = [];
-      if(account != null) {
-        const fishUserOwns: BN = await fishFightInstance.factory.methods.balanceOf(account).call();
-        const numUserFish = new BN(fishUserOwns).toNumber();
-        for(let i = 0; i < numUserFish; i++) {
-          const tokenId: BN = await fishFightInstance.factory.methods.tokenOfOwnerByIndex(account, i).call();
-          const parsedTokenId = new BN(tokenId).toNumber();
-          userFish.push(parsedTokenId);
-        }
-      }
-
-      const fishSupply: BN = await fishFightInstance.factory.methods.totalSupply().call();
-      const totalFishSupply = new BN(fishSupply).toNumber();
-      const tempFish: Fish[] = [];
-
-      // For every fish the user owns get token, then fish info, generate fish and push instance to tempFish 
-      // once its done, setMyFish to tempfish
-      for(let i = 0; i < totalFishSupply; i++) {
-        if(!userFish.includes(i)) { // don't include the current accounts fish
-          // load image url from metadata
-          const tokenURI = await fishFightInstance.factory.methods.tokenURI(i).call();
-          let imgSrc = null;
-          if(tokenURI != "") {
-            try {
-              const metadataResponse = await axios.get(tokenURI);
-              console.log(metadataResponse)
-              imgSrc = metadataResponse.data.image;
-              console.log(tokenURI)
-              console.log(metadataResponse.data.image)
-            } catch (error) {
-              console.log("Error in Axios call: ");
-              console.log(error)
-            }
-          }
-          const fishInfo = await fishFightInstance.factory.methods.getFishInfo(i).call();
-          const fish = new Fish(
-            i,
-            new BN(fishInfo.fishTypeIndex).toNumber(),
-            fishInfo.name,
-            new BN(fishInfo.birth).toNumber(),
-            hexToNumber(fishInfo.strength),
-            hexToNumber(fishInfo.intelligence),
-            hexToNumber(fishInfo.agility),
-            new BN(fishInfo.wins).toNumber(),
-            new BN(fishInfo.challenger).toNumber(),
-            new BN(fishInfo.challenged).toNumber(),
-            fishInfo.traitsA,
-            fishInfo.traitsB,
-            fishInfo.traitsC,
-            imgSrc
-          );
-          tempFish.push(fish);
-        }
-      }
-      setPublicFish(tempFish);
-
-		},
-		[setPublicFish],
-	);
-
-	const resetPublicFish = () => {
-		setPublicFish(undefined);
-	};
-
-	return {
-		publicFish,
-		fetchPublicFish,
-		resetPublicFish,
-	};
-};
 
 // useFishFight
 export const useFishFight = () => {

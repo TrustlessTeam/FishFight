@@ -19,13 +19,23 @@ import { Fight} from '../utils/fight'
 import { useFishFight } from '../context/fishFightContext';
 import { useUnity } from '../context/unityContext';
 
+import FishNFT from './FishNFT';
+import { useFishPool } from '../context/fishPoolContext';
+
+enum FishToShow {
+  Public,
+  User
+}
+
 
 const FightFish = () => {
-	const { FishFight, refetchBalance, userFish, publicFish, refetchUserFish, refetchPublicFish} = useFishFight()
+	const { FishFight, refetchBalance } = useFishFight()
+	const { userFish, publicFish } = useFishPool()
 
 	// Fish selected for fight
 	const [mySelectedFish, setMySelectedFish] = useState<Fish | null>(null);
 	const [opponentFish, setopponentFish] = useState<Fish | null>(null);
+	const [fishToShow, setFishToShow] = useState<FishToShow>(FishToShow.Public);
 	const [fightResult, setFightResult] = useState<Fight | null>();
 	const [isFighting, setIsFighting] = useState<boolean>(false);
 
@@ -54,12 +64,22 @@ const FightFish = () => {
 
 	const setOpponent = (fish : Fish) => {
 		console.log("Opponent Fish: " + fish.tokenId)
+		unityContext.clearFishPool('ShowFight');
+		if(mySelectedFish != null) {
+			unityContext.addFishFight(mySelectedFish);
+		}
 		setopponentFish(fish);
+		unityContext.addFishFight(fish)
 	}
 
 	const setUserFish = (fish : Fish) => {
 		console.log("UserSelected Fish: " + fish.tokenId)
+		unityContext.clearFishPool('ShowFight');
+		if(opponentFish != null) {
+			unityContext.addFishFight(opponentFish);
+		}
 		setMySelectedFish(fish);
+		unityContext.addFishFight(fish)
 	}
 
 	const fightFish = () => async () => {
@@ -74,11 +94,10 @@ const FightFish = () => {
 				console.log(result)
 				const fightIndex = new BN(result.events.FightCompleted.returnValues._fightIndex).toNumber()
 				getUserFight(fightIndex);
+				setIsFighting(false);
 				toast.success('Transaction done', {
 					onClose: async () => {
 						refetchBalance()
-						refetchUserFish()
-						refetchPublicFish()
 					},
 				});
 			} catch (error: any) {
@@ -100,22 +119,36 @@ const FightFish = () => {
 		setopponentFish(null)
 	}
 
-	const FightResults = () => {
-		if(fightResult) {
-			return (
-				<ResultContainer>
-					<FishNFT>
-						<FishData>Challenger: {fightResult.fishChallenger} Vs. Challenged: {fightResult.fishChallenged}</FishData>
-						<FishData>Round 1: {fightResult.round1.description}</FishData>
-						<FishData>Round 2: {fightResult.round2.description}</FishData>
-						<FishData>Round 3: {fightResult.round3.description}</FishData>
-						<FishData>Winner: {fightResult.winner}</FishData>
-					</FishNFT>
+	const setFishToView = () => {
+		if(fishToShow == FishToShow.Public) {
+			setFishToShow(FishToShow.User)
+		}
+		else {
+			setFishToShow(FishToShow.Public)
+		}
+	}
 
-					<FightButton onClick={() => fightAgain()}>
-						Fight Another Fish!
-					</FightButton>
-				</ResultContainer>
+	const FightResults = () => {
+		if(fightResult && mySelectedFish && opponentFish) {
+			return (
+				<FishViewerContainer>
+					<FishViewerButtons>
+						<GameButton onClick={() => fightAgain()}>
+							Fight Another Fish!
+						</GameButton>
+					</FishViewerButtons>
+					<FightGrid>
+						<FishNFT selectedUser={true} fish={mySelectedFish}></FishNFT>
+						<ResultContainer>
+							<ResultData>Results</ResultData>
+							<ResultData>Round 1: {fightResult.round1.description}</ResultData>
+							<ResultData>Round 2: {fightResult.round2.description}</ResultData>
+							<ResultData>Round 3: {fightResult.round3.description}</ResultData>
+							<ResultData>Winner: {fightResult.winner}</ResultData>
+						</ResultContainer>
+						<FishNFT selectedOpponent={true} fish={opponentFish}></FishNFT>
+					</FightGrid>
+				</FishViewerContainer>
 			)
 		}
 		return(<></>)
@@ -124,26 +157,16 @@ const FightFish = () => {
 	const Fighting = () => {
 		if(isFighting && mySelectedFish && opponentFish) {
 			return (
-				<FightContainer>
-					<FightingContainer>
-						<FishNFT>
-							<FishName>{mySelectedFish.tokenId}</FishName>
-							<FishData>Strength: {mySelectedFish.strength}</FishData>
-							<FishData>Intelligence: {mySelectedFish.intelligence}</FishData>
-							<FishData>Agility: {mySelectedFish.agility}</FishData>
-							<FishData>Wins: {mySelectedFish.wins}</FishData>
-						</FishNFT>
-						<h2>VS.</h2>
-						<FishNFT>
-							<FishName>{opponentFish.tokenId}</FishName>
-							<FishData>Strength: {opponentFish.strength}</FishData>
-							<FishData>Intelligence: {opponentFish.intelligence}</FishData>
-							<FishData>Agility: {opponentFish.agility}</FishData>
-							<FishData>Wins: {opponentFish.wins}</FishData>
-						</FishNFT>
-					</FightingContainer>
-					<FightResults />
-				</FightContainer>
+				<FishViewerContainer>
+					<FightGrid>
+						<FishNFT selectedUser={true} fish={mySelectedFish}></FishNFT>
+						<VersusContainer>
+							<Text>VS</Text>
+							<Text>Awaiting results from blockchain...</Text>
+						</VersusContainer>
+						<FishNFT selectedOpponent={true} fish={opponentFish}></FishNFT>
+					</FightGrid>
+				</FishViewerContainer>
 			)
 		}
 		return(<></>)
@@ -152,44 +175,37 @@ const FightFish = () => {
 	const SelectFighters = () => {
 		if(!fightResult && !isFighting) {
 			return(
-				<FightContainer>
-					<h1>Let's Fight!</h1>
-					<FishSelector>
-						<h2>Select Opponent!</h2>
-						<FishGrid>
-						{publicFish?.map((fish, index) => (
-								<FishNFT  key={index} onClick={() => {setOpponent(fish)}}>
-									<FishName>{fish.tokenId}</FishName>
-									<FishData>Strength: {fish.strength}</FishData>
-									<FishData>Intelligence: {fish.intelligence}</FishData>
-									<FishData>Agility: {fish.agility}</FishData>
-									<FishData>Wins: {fish.wins}</FishData>
-									<FishData>{fish.tokenId == opponentFish?.tokenId ? "Selected Fish" : ""}</FishData>
-								</FishNFT>
-							))}
-						</FishGrid>
-					</FishSelector>
-					
-					<FishSelector>
-						<h2>Select your Fish!</h2>
-						<FishGrid>
-						{userFish?.map((fish, index) => (
-								<FishNFT key={index} onClick={() => {setUserFish(fish)}}>
-									<FishName>{fish.tokenId}</FishName>
-									<FishData>Strength: {fish.strength}</FishData>
-									<FishData>Intelligence: {fish.intelligence}</FishData>
-									<FishData>Agility: {fish.agility}</FishData>
-									<FishData>Wins: {fish.wins}</FishData>
-									<FishData>{fish.tokenId == mySelectedFish?.tokenId ? "Selected Fish": ""}</FishData>
-								</FishNFT>
-							))}
-						</FishGrid>
-					</FishSelector>
+				<FishViewerContainer>
+					<FishViewerButtons>
+						<GameButton onClick={() => setFishToView()}>{fishToShow == FishToShow.Public ? "Show my Fish" : "Show public Fish"}</GameButton>
+						{mySelectedFish == null &&
+							<Text>Select your fighter from My Fish!</Text>
+						}
+						{opponentFish == null &&
+							<Text>Select your opponent from Public Fish!</Text>
+						}
+						{mySelectedFish != null && opponentFish != null &&
+							<GameButton onClick={fightFish()}>
+								Fight Fish
+							</GameButton>
+						}
+					</FishViewerButtons>
 
-					<FightButton onClick={fightFish()}>
-						Fight Fish
-					</FightButton>
-				</FightContainer>
+						<FishGrid>
+						{fishToShow == FishToShow.Public &&
+							publicFish?.map((fish, index) => (
+								<FishNFT selectedOpponent={opponentFish?.tokenId == fish.tokenId} fish={fish} key={index} onClick={() => {setOpponent(fish)}}></FishNFT>
+							))
+						}
+						{fishToShow == FishToShow.User &&
+							userFish?.map((fish, index) => (
+								<FishNFT selectedUser={mySelectedFish?.tokenId == fish.tokenId ? true : false} fish={fish} key={index} onClick={() => {setUserFish(fish)}}></FishNFT>
+							))
+						}
+						</FishGrid>
+
+					
+				</FishViewerContainer>
 			)
 		}
 		return(<></>)
@@ -198,6 +214,7 @@ const FightFish = () => {
 	return (
 		<>
 			<Fighting />
+			<FightResults />
 			<SelectFighters />
 		</>
 		
@@ -205,89 +222,100 @@ const FightFish = () => {
 };
 
 
-const ResultContainer = styled.div`
+const VersusContainer = styled.div`
 	display: flex;
 	flex-direction: column;
+	justify-content: center;
 	align-items: center;
-	width: 100%;
 `;
 
-const FightContainer = styled.div`
+const GameButton = styled.button`
+	display: flex;
+	flex-flow: column;
+	justify-content: center;
+	padding: 2.2vmin;
+	border-radius: 25px;
+	background-color: white;
+	border: none;
+	opacity: 0.7;
+	box-shadow: 1px 2px 4px 4px rgba(0, 0, 0, 0.25);
+	color: black;
+	margin-left: ${props => props.theme.spacing.gapSmall};
+	transition: opacity 0.3s ease, box-shadow 0.25s ease-in-out;
+	text-transform: uppercase;
+	font-weight: bolder;
+	text-decoration: none;
+	font-size: ${props => props.theme.font.medium}vmin;
+
+	&:hover {
+		opacity: 1;
+		box-shadow: 1px 2px 2px 2px rgba(0, 0, 0, 0.2);
+		cursor: pointer;
+	}
+`;
+
+const FishViewerContainer = styled.div`
 	display: flex;
 	flex-direction: column;
-	align-items: center;
-	width: 100%;
-`;
-
-const FightingContainer = styled.div`
-	display: flex;
-	flex-direction: row nowrap;
 	justify-content: space-evenly;
 	width: 100%;
+	height: 100%;
+`;
+
+const FishViewerButtons = styled.div`
+	display: flex;
+	flex-flow: row nowrap;
+	height: 15%;
 `;
 
 const FishGrid = styled.div`
 	display: flex;
-	flex-direction: row wrap;
-	width: 100%;
-	margin: 15px;
-	border: 8px solid blue;
-	border-radius: 5px;
-	color: #a70000;
+	flex-direction: row nowrap;
+	justify-content: space-between;
+	height: 72%;
+	overflow-y: hidden;
+	overflow-x: auto;
 `;
 
-const FishSelector = styled.div`
+const FightGrid = styled.div`
 	display: flex;
-	flex-flow: column;
-	align-items: center;
-	justify-content: space-evenly;
-	width: 100%;
+	flex-direction: row nowrap;
+	justify-content: center;
+	height: 72%;
+	overflow-y: hidden;
+	overflow-x: auto;
 `;
 
-const FishNFT = styled.div`
+
+const Text = styled.p`
 	display: flex;
 	flex-flow: column;
-	align-items: center;
-	border-radius: 25px;
-	padding: 30px;
-	margin: 15px;
+	justify-content: center;
+	padding: ${props => props.theme.spacing.gap};
+	margin: 0;
 	background-color: white;
-	box-shadow: 2px 8px 10px 4px rgba(0, 0, 0, 0.3);
+	font-size: ${props => props.theme.font.large}vmin;
+	border-radius: 25px;
+	margin-left: ${props => props.theme.spacing.gapSmall};
 `;
 
-const FishName = styled.h3`
+const ResultData = styled.p`
 	color: ${"black"};
-`;
-
-const FishData = styled.p`
-	color: ${"black"};
+	font-size: ${props => props.theme.font.medium}vmin;
 	margin: 0;
 `;
 
-const FightButton = styled.button`
+const ResultContainer = styled.div`
 	display: flex;
+	flex-direction: column;
 	justify-content: center;
 	align-items: center;
-	background-color: rgba(255, 255, 255, 0.7);
-	color: black;
-	padding: 20px 20px;
-	border-radius: 10px;
-	max-width: 20%;
-	box-shadow: 1px 2px 4px 4px rgba(0, 0, 0, 0.2);
-	font-size: 1.5rem;
-	transition: background-color 0.3s ease;
-
-	&:hover {
-		background-color: rgba(255, 255, 255, 1);
-		cursor: pointer;
-	}
-
-	span {
-		font-size: 1rem;
-		margin-left: 8px;
-		align-self: flex-end;
-	}
+	background-color: white;
+	padding: ${props => props.theme.spacing.gap};
+	margin: ${props => props.theme.spacing.gap};
+	border-radius: 25px;
 `;
+
 
 
 export default FightFish;

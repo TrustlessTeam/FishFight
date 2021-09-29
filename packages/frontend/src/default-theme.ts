@@ -20,14 +20,42 @@ const gradientTopLeft = `linear-gradient(225deg, ${navyBlue}, ${darkCornflowerBl
 const gradientBottomLeft = `linear-gradient(315deg, ${navyBlue}, ${darkCornflowerBlue}, ${starCommandBlue}, ${blueGreen}, ${ceruleanCrayola}, ${skyBlueCrayola}, ${skyBlueCrayola2}, ${blizzardBlue}, ${powderBlue});`;
 const gradientRadial = `radial-gradient(${navyBlue}, ${darkCornflowerBlue}, ${starCommandBlue}, ${blueGreen}, ${ceruleanCrayola}, ${skyBlueCrayola}, ${skyBlueCrayola2}, ${blizzardBlue}, ${powderBlue});`;
 
-const spacingBase = 10;
-const gap = spacingBase + `px`;
-const gapMedium = spacingBase * 2 + `px`;
-const gapLarge = spacingBase * 3 + `px`
+const spacingBase = 2;
+const gapSmall = spacingBase / 2 + `vmin`;
+const gap = spacingBase + `vmin`;
+const gapMedium = spacingBase * 2 + `vmin`;
+const gapLarge = spacingBase * 3 + `vmin`
+
+const fontSmall = 1;
+const fontMedium = 1.5;
+const fontLarge = 1.8;
+
+const size = {
+  mobileS: '320px',
+  mobileM: '375px',
+  mobileL: '425px',
+  tablet: '768px',
+  laptop: '1024px',
+  laptopL: '1440px',
+  desktop: '2560px'
+}
+
+const device = {
+  mobileS: `(min-width: ${size.mobileS})`,
+  mobileM: `(min-width: ${size.mobileM})`,
+  mobileL: `(min-width: ${size.mobileL})`,
+  tablet: `(min-width: ${size.tablet})`,
+  laptop: `(min-width: ${size.laptop})`,
+  laptopL: `(min-width: ${size.laptopL})`,
+  desktop: `(min-width: ${size.desktop})`,
+  desktopL: `(min-width: ${size.desktop})`
+};
+
 
 const BaseTheme: DefaultTheme = {
   borderRadius: '5px',
   spacing: {
+    gapSmall: gapSmall,
     gap: gap,
     gapMedium: gapMedium,
     gapLarge: gapLarge
@@ -52,8 +80,22 @@ const BaseTheme: DefaultTheme = {
     gradientTopLeft: gradientTopLeft,
     gradientBottomLeft: gradientBottomLeft,
     gradientRadial: gradientRadial,
+  },
+  device: {
+    mobileS: device.mobileS,
+    mobileM: device.mobileM,
+    mobileL: device.mobileL,
+    tablet: device.tablet,
+    laptop: device.laptop,
+    laptopL: device.laptopL,
+    desktop: device.desktop,
+    desktopL: device.desktopL
+  },
+  font: {
+    small: fontSmall,
+    medium: fontMedium,
+    large: fontLarge
   }
-  
 };
 
 export { BaseTheme };

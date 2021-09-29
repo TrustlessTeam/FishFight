@@ -1,9 +1,9 @@
 {
-  "name": "localnet",
+  "name": "testnet",
   "chainId": "1666700000",
   "contracts": {
     "FishFactory": {
-      "address": "0x729108b154CeA96e967fEC00Eecd80BF82633fea",
+      "address": "0xc3f5Ba871A7FEDAD8c0b390ffdA54e882C888821",
       "abi": [
         {
           "inputs": [],
@@ -125,6 +125,32 @@
               "internalType": "string",
               "name": "",
               "type": "string"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [],
+          "name": "_devAddress0",
+          "outputs": [
+            {
+              "internalType": "address",
+              "name": "",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [],
+          "name": "_devAddress1",
+          "outputs": [
+            {
+              "internalType": "address",
+              "name": "",
+              "type": "address"
             }
           ],
           "stateMutability": "view",
@@ -736,7 +762,7 @@
       ]
     },
     "FishFight": {
-      "address": "0xCbB639B93358cDcBde137A8E38517E2EC0Da6B98",
+      "address": "0xdB6647bFfB2F50fB63783538D09D4197687EAB3c",
       "abi": [
         {
           "inputs": [

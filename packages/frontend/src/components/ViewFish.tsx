@@ -9,120 +9,127 @@ import { Fish } from '../utils/fish'
 import { useFishFight } from '../context/fishFightContext';
 import { useUnity } from '../context/unityContext';
 import Account from '../components/Account';
+import FishNFT from './FishNFT';
+import { useFishPool } from '../context/fishPoolContext';
+
+enum FishToShow {
+  Public,
+  User
+}
+
 
 const ViewFish = () => {
-	const { FishFight, userFish, refetchUserFish, publicFish, refetchPublicFish } = useFishFight()
-
+	const { FishFight } = useFishFight();
+	const { userFish, publicFish, arePublicFishLoaded, areUserFishLoaded } = useFishPool();
+	const [fishToShow, setFishToShow] = useState<FishToShow>(FishToShow.Public);
 	const unityContext = useUnity();
+
+	// useEffect(() => {
+	// 	// add function to clear fish pool
+	// 	unityContext.showOcean();
+	// 	unityContext.clearFishPool();
+	// 	if(arePublicFishLoaded) {
+	// 		console.log("Adding fish from publicFish")
+	// 		publicFish.forEach(fish => {
+	// 			unityContext.addFish(fish);
+	// 		});
+	// 	}
+		
+	// 	if(areUserFishLoaded) {
+	// 		console.log("Adding fish from userFish")
+	// 		userFish.forEach(fish => {
+	// 			unityContext.addFish(fish);
+	// 		});
+	// 	}
+		
+	// }, [arePublicFishLoaded, areUserFishLoaded]);
+	useEffect(() => {
+		console.log("Fish arrays changed")
+	}, [userFish, publicFish]);
+
 
 	useEffect(() => {
 		unityContext.showOcean();
-	}, [userFish, publicFish, unityContext.isFishPoolReady]);
+	}, [unityContext.isFishPoolReady]);
 
-	useEffect(() => {
-		if(publicFish) {
-			unityContext.addFish(publicFish[0]);
+	const setFishToView = () => {
+		if(fishToShow == FishToShow.Public) {
+			setFishToShow(FishToShow.User)
 		}
-	}, [publicFish, unityContext.isFishPoolReady]);
+		else {
+			setFishToShow(FishToShow.Public)
+		}
+	}
 
 	return (
-		<>
-			<FishListContainer>
-				<h2>Your Fish</h2>
-				{userFish ? 
-				<FishList>
-				{userFish?.map((fish, index) => (
-						<FishNFT  key={index}>
-							{fish.imgSrc && 
-								<FishImg src={fish.imgSrc}></FishImg>
-							}
-							<FishName>Token Id: {fish.tokenId}</FishName>
-								<FishData>Strength: {fish.strength}</FishData>
-								<FishData>Intelligence: {fish.intelligence}</FishData>
-								<FishData>Agility: {fish.agility}</FishData>
-								<FishData>Wins: {fish.wins}</FishData>
-						</FishNFT>
-					))}
-				</FishList>
-				:
-				<Account />
+		<FishViewerContainer>
+				<FishViewerButtons>
+					<GameButton onClick={() => setFishToView()}>{fishToShow == FishToShow.Public ? "Show my Fish" : "Show public Fish"}</GameButton>
+				</FishViewerButtons>
+
+				<FishGrid>
+				{fishToShow == FishToShow.Public &&
+					publicFish?.map((fish, index) => (
+						<FishNFT onClick={() => unityContext.showFish(fish)} fish={fish} key={index}></FishNFT>
+					))
 				}
-			</FishListContainer>
-			<PublicFishListContainer>
-				<h2>Public Fish</h2>
-				<FishList>
-				{publicFish?.map((fish, index) => (
-						<FishNFT  key={index}>
-							{fish.imgSrc && 
-								<FishImg src={fish.imgSrc}></FishImg>
-							}
-							<FishData>Strength: {fish.strength}</FishData>
-							<FishData>Intelligence: {fish.intelligence}</FishData>
-							<FishData>Agility: {fish.agility}</FishData>
-							<FishData>Wins: {fish.wins}</FishData>
-						</FishNFT>
-					))}
-				</FishList>
-			</PublicFishListContainer>
-		</>
+				{fishToShow == FishToShow.User &&
+					userFish?.map((fish, index) => (
+						<FishNFT onClick={() => unityContext.showFish(fish)} fish={fish} key={index}></FishNFT>
+					))
+				}
+				</FishGrid>
+		</FishViewerContainer>
 		
 	);
 };
 
-const Container = styled.div`
-	display: flex;
-	width: 100vw;
-	flex-direction: row nowrap;
-	justify-content: space-evenly;
-	padding-top: 5vh;
-`;
-
-const FishListContainer = styled.div`
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	width: 100%;
-	max-width: 20vw;
-	order: -1;
-	max-height: 80vh;
-	overflow: auto;
-`;
-
-const PublicFishListContainer = styled(FishListContainer)`
-	order: 1;
-`;
-
-const FishList = styled.div`
-	display: flex;
-	flex-flow: column;
-	justify-content: space-evenly;
-	width: 100%;
-`;
-
-const FishImg = styled.img`
-	width: 100%;
-	height: 100%;
-	border-radius: 50%50%;
-`;
-
-const FishNFT = styled.div`
+const GameButton = styled.button`
 	display: flex;
 	flex-flow: column;
 	justify-content: center;
-	align-items: center;
+	padding: 2.2vmin;
 	border-radius: 25px;
-	width: 100%;
-	/* padding: 15px; */
 	background-color: white;
-	box-shadow: 2px 8px 10px 4px rgba(0, 0, 0, 0.3);
+	border: none;
+	opacity: 0.7;
+	box-shadow: 1px 2px 4px 4px rgba(0, 0, 0, 0.25);
+	color: black;
+	margin-left: ${props => props.theme.spacing.gapSmall};
+	transition: opacity 0.3s ease, box-shadow 0.25s ease-in-out;
+	text-transform: uppercase;
+	font-weight: bolder;
+	text-decoration: none;
+	font-size: ${props => props.theme.font.medium}vmin;
+
+	&:hover {
+		opacity: 1;
+		box-shadow: 1px 2px 2px 2px rgba(0, 0, 0, 0.2);
+		cursor: pointer;
+	}
 `;
 
-const FishName = styled.h3`
-	color: ${"black"};
+const FishViewerContainer = styled.div`
+	display: flex;
+	flex-direction: column;
+	justify-content: space-evenly;
+	width: 100%;
+	height: 100%;
 `;
 
-const FishData = styled.p`
-	color: ${"black"};
+const FishViewerButtons = styled.div`
+	display: flex;
+	flex-flow: row nowrap;
+	height: 15%;
+`;
+
+const FishGrid = styled.div`
+	display: flex;
+	flex-direction: row nowrap;
+	justify-content: space-between;
+	height: 72%;
+	overflow-y: hidden;
+	overflow-x: auto;
 `;
 
 

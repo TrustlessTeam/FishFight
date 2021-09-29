@@ -6,6 +6,7 @@ declare module 'styled-components' {
     borderRadius: string;
 
     spacing: {
+      gapSmall: string;
       gap: string;
       gapMedium: string;
       gapLarge: string;
@@ -32,5 +33,22 @@ declare module 'styled-components' {
       gradientBottomLeft: string;
       gradientRadial: string;
     };
+
+    device: {
+      mobileS: string;
+      mobileM: string;
+      mobileL: string;
+      tablet: string;
+      laptop: string;
+      laptopL: string;
+      desktop: string;
+      desktopL: string;
+    };
+
+    font: {
+      small: number;
+      medium: number;
+      large: number;
+    }
   }
 }
