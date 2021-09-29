@@ -1,27 +1,11 @@
-// FishFightSDK
 import FishFight from "../FishFightSDK";
-import { Fish } from "../utils/fish";
-// Big Number
-import BN from 'bn.js';
-
-// React
 import { createContext, useContext, useEffect, useState, useCallback} from "react"
-
-// Web3React
 import { useWeb3React } from "@web3-react/core";
-
-// Helpers
 import { getHarmonyProvider, getWalletProvider } from '../helpers/providerHelper'
-
-// HarmonySDK
 import { toBech32 } from '@harmony-js/crypto';
 import { isBech32Address, fromWei, hexToNumber, Units } from '@harmony-js/utils';
 import { Harmony } from "@harmony-js/core";
 import { Web3Provider } from "@ethersproject/providers";
-import axios from 'axios';
-import { useLocation } from "react-router-dom";
-
-const MAX_FISH = 42;
 
 // Typescript
 interface FishFightProviderContext {
@@ -60,12 +44,6 @@ export const FishFightProvider = ({ children }: FishFightProviderProps ) => {
     }
   }, [connector, library])
 
-  // useEffect(() => {
-  //   // When user has connected account set UserConnected
-  //   setUserConnected(true);
-  // }, [FishFightInstance])
-
-
   const refetchBalance = () => {
     if(!connector || !library) return;
     account ? getWalletProvider(connector, library).then((wallet) => {
@@ -83,7 +61,6 @@ export const FishFightProvider = ({ children }: FishFightProviderProps ) => {
       <FishFightContext.Provider value={value}>{children}</FishFightContext.Provider>
   )
 }
-
 
 // Account balance utilities that will be included in FishFightContext
 const useBalance = () => {
@@ -121,46 +98,12 @@ const useBalance = () => {
 	};
 };
 
-// Users Fish utilities that will be included in FishFightContext
-// const useSelectedFish = () => {
-// 	const [selectedFish, setSelectedFish] = useState<Fish | null>();
-
-// 	const fetchSelectedFish = useCallback(
-// 		async (tokenId: number, fishFightInstance: FishFight) => {
-//       try {
-//         // Check if fish is already selected and metadata is loaded
-//         if(selectedFish?.tokenId == tokenId && selectedFish.imgSrc != null) return;
-//         const fish = await getFish(fishFightInstance, tokenId)
-//         console.log(fish)
-//         setSelectedFish(fish);
-//       } catch (error) {
-//         console.log("Error getting selected fish: ");
-//         console.log(error);
-//         resetSelectedFish()
-//       }
-      
-// 		},
-// 		[setSelectedFish],
-// 	);
-
-// 	const resetSelectedFish = () => {
-// 		setSelectedFish(undefined);
-// 	};
-
-// 	return {
-// 		selectedFish,
-// 		fetchSelectedFish,
-// 		resetSelectedFish,
-// 	};
-// };
-
-
 // useFishFight
 export const useFishFight = () => {
-    const context = useContext(FishFightContext)
+  const context = useContext(FishFightContext)
 
-    if(!context) {
-        throw 'useFishFight must be used within a FishFightProvider';
-    }
-    return context
+  if(!context) {
+    throw 'useFishFight must be used within a FishFightProvider';
+  }
+  return context
 }

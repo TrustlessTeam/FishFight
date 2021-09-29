@@ -1,6 +1,7 @@
 import { UnityContent } from 'react-unity-webgl';
 import { Fish } from '../utils/fish';
 import { createContext, useContext, useEffect, useState } from 'react';
+import { useCookies } from 'react-cookie';
 
 interface UnityProviderContext {
 	UnityInstance: UnityContent;
@@ -19,6 +20,8 @@ interface UnityProviderContext {
 	addFishFishing: (fish: Fish) => void;
 	showFish: (fish: Fish) => void;
 	clearFishPool: (pool: string) => void;
+	sendRound: (round: number, roundStat: number) => void;
+	sendWinner: (fish: Fish) => void;
 }
 
 type UnityProviderProps = { children: React.ReactNode };
@@ -37,6 +40,7 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
   const [fishPoolReady, setFishPoolReady] = useState(false);
 	const [progression, setProgression] = useState(0);
 	const [mintFish, setMintFish] = useState(0);
+	const [cookies, setCookie] = useCookies(['accepted_terms']);
 
 	useEffect(() => {
 		console.log(UnityInstance);
@@ -72,6 +76,10 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
 					return;
 				case 'mint_fish_75p':
 					setMintFish(1);
+					return;
+				case 'disclaimer_confirm':
+					if(cookies['accepted_terms'] == true) return;
+    			setCookie('accepted_terms', true);
 					return;
 				default:
 					setMintFish(0)
@@ -161,6 +169,27 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
 		UnityInstance.send('FishPool', 'AddFish_FishView', JSON.stringify(fish));
 		console.log("ShowFish Completed")
 	};
+	const sendRound = (round: number, roundStat: number) => {
+		switch (round) {
+			case 1:
+				UnityInstance.send('FishPool', 'SetRound1Stat', roundStat.toString())
+				break;
+			case 2:
+				UnityInstance.send('FishPool', 'SetRound2Stat', roundStat.toString())
+				break;
+			case 3:
+				UnityInstance.send('FishPool', 'SetRound3Stat', roundStat.toString())
+				break;
+			default:
+				break;
+		}
+	}
+
+	const sendWinner = (fish: Fish) => {
+		console.log("SetWinner Called")
+		UnityInstance.send('FishPool', 'SetWinner', JSON.stringify(fish));
+		console.log("SetWinner Completed")
+	};
 
 	const toggleIsUnityMounted = () => {
 		setIsUnityMounted(!isUnityMounted);
@@ -183,6 +212,8 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
 		addFishFishing: addFishFishing,
 		showFish: showFish,
 		clearFishPool: clearFishPool,
+		sendRound: sendRound,
+		sendWinner: sendWinner
 	};
 	return <UnityContext.Provider value={value}>{children}</UnityContext.Provider>;
 };

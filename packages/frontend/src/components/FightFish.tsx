@@ -14,6 +14,7 @@ import { useWeb3React } from '@web3-react/core';
 import BN from 'bn.js';
 
 // Utils
+import useHorizontalScroll from "../utils/horizontalScrolling";
 import { Fish } from '../utils/fish'
 import { Fight} from '../utils/fight'
 import { useFishFight } from '../context/fishFightContext';
@@ -60,6 +61,15 @@ const FightFish = () => {
 			new BN(fightInfo.winner).toNumber()
 		);
 		setFightResult(newFight)
+		unityContext.sendRound(1, newFight.round1.value);
+		unityContext.sendRound(2, newFight.round2.value);
+		unityContext.sendRound(3, newFight.round3.value);
+		if(newFight.winner == mySelectedFish?.tokenId) {
+			unityContext.sendWinner(mySelectedFish);
+		}
+		else if(newFight.winner == opponentFish?.tokenId) {
+			unityContext.sendWinner(opponentFish);
+		}
 	}
 
 	const setOpponent = (fish : Fish) => {
@@ -128,98 +138,84 @@ const FightFish = () => {
 		}
 	}
 
-	const FightResults = () => {
-		if(fightResult && mySelectedFish && opponentFish) {
-			return (
-				<FishViewerContainer>
-					<FishViewerButtons>
-						<GameButton onClick={() => fightAgain()}>
-							Fight Another Fish!
-						</GameButton>
-					</FishViewerButtons>
-					<FightGrid>
-						<FishNFT selectedUser={true} fish={mySelectedFish}></FishNFT>
-						<ResultContainer>
-							<ResultData>Results</ResultData>
-							<ResultData>Round 1: {fightResult.round1.description}</ResultData>
-							<ResultData>Round 2: {fightResult.round2.description}</ResultData>
-							<ResultData>Round 3: {fightResult.round3.description}</ResultData>
-							<ResultData>Winner: {fightResult.winner}</ResultData>
-						</ResultContainer>
-						<FishNFT selectedOpponent={true} fish={opponentFish}></FishNFT>
-					</FightGrid>
-				</FishViewerContainer>
-			)
-		}
-		return(<></>)
-	}
-
-	const Fighting = () => {
-		if(isFighting && mySelectedFish && opponentFish) {
-			return (
-				<FishViewerContainer>
-					<FightGrid>
-						<FishNFT selectedUser={true} fish={mySelectedFish}></FishNFT>
-						<VersusContainer>
-							<Text>VS</Text>
-							<Text>Awaiting results from blockchain...</Text>
-						</VersusContainer>
-						<FishNFT selectedOpponent={true} fish={opponentFish}></FishNFT>
-					</FightGrid>
-				</FishViewerContainer>
-			)
-		}
-		return(<></>)
-	}
-
-	const SelectFighters = () => {
-		if(!fightResult && !isFighting) {
-			return(
-				<FishViewerContainer>
-					<FishViewerButtons>
-						<GameButton onClick={() => setFishToView()}>{fishToShow == FishToShow.Public ? "Show my Fish" : "Show public Fish"}</GameButton>
-						{mySelectedFish == null &&
-							<Text>Select your fighter from My Fish!</Text>
-						}
-						{opponentFish == null &&
-							<Text>Select your opponent from Public Fish!</Text>
-						}
-						{mySelectedFish != null && opponentFish != null &&
-							<GameButton onClick={fightFish()}>
-								Fight Fish
-							</GameButton>
-						}
-					</FishViewerButtons>
-
-						<FishGrid>
-						{fishToShow == FishToShow.Public &&
-							publicFish?.map((fish, index) => (
-								<FishNFT selectedOpponent={opponentFish?.tokenId == fish.tokenId} fish={fish} key={index} onClick={() => {setOpponent(fish)}}></FishNFT>
-							))
-						}
-						{fishToShow == FishToShow.User &&
-							userFish?.map((fish, index) => (
-								<FishNFT selectedUser={mySelectedFish?.tokenId == fish.tokenId ? true : false} fish={fish} key={index} onClick={() => {setUserFish(fish)}}></FishNFT>
-							))
-						}
-						</FishGrid>
-
-					
-				</FishViewerContainer>
-			)
-		}
-		return(<></>)
-	}
+	const scrollRef = useHorizontalScroll();
 
 	return (
 		<>
-			<Fighting />
-			<FightResults />
-			<SelectFighters />
+		{/* Select Fish to Fight */}
+		{!fightResult && !isFighting &&
+			<FishViewerContainer>
+				<FishViewerButtons>
+					<GameButton onClick={() => setFishToView()}>{fishToShow == FishToShow.Public ? "Show my Fish" : "Show public Fish"}</GameButton>
+					{mySelectedFish == null &&
+						<Text>Select your fighter from My Fish!</Text>
+					}
+					{opponentFish == null &&
+						<Text>Select your opponent from Public Fish!</Text>
+					}
+					{mySelectedFish != null && opponentFish != null &&
+						<GameButton onClick={fightFish()}>
+							Fight Fish
+						</GameButton>
+					}
+				</FishViewerButtons>
+				<FishGrid ref={scrollRef}>
+				{fishToShow == FishToShow.Public &&
+					publicFish?.map((fish, index) => (
+						<FishNFT selectedOpponent={opponentFish?.tokenId == fish.tokenId} fish={fish} key={index} onClick={() => {setOpponent(fish)}}></FishNFT>
+					))
+				}
+				{fishToShow == FishToShow.User &&
+					userFish?.map((fish, index) => (
+						<FishNFT selectedUser={mySelectedFish?.tokenId == fish.tokenId ? true : false} fish={fish} key={index} onClick={() => {setUserFish(fish)}}></FishNFT>
+					))
+				}
+				</FishGrid>
+			</FishViewerContainer>
+		}
+
+		{/* Fish are Fighting */}
+		{isFighting && mySelectedFish && opponentFish &&
+			<FishViewerContainer>
+				<FightGrid >
+					<FishNFT selectedUser={true} fish={mySelectedFish}></FishNFT>
+					<VersusContainer>
+						<Text>VS</Text>
+						<Text>Awaiting results from blockchain...</Text>
+					</VersusContainer>
+					<FishNFT selectedOpponent={true} fish={opponentFish}></FishNFT>
+				</FightGrid>
+			</FishViewerContainer>
+		}
+
+		{/* Show Fight Results */}
+		{fightResult && mySelectedFish && opponentFish &&
+			<FishViewerContainer>
+				<FishViewerButtons>
+					<GameButton onClick={() => fightAgain()}>
+						Fight Another Fish!
+					</GameButton>
+				</FishViewerButtons>
+				<FightGrid>
+					<FishNFT selectedUser={true} fish={mySelectedFish}></FishNFT>
+					<ResultContainer>
+						<ResultData>Results</ResultData>
+						<ResultData>Round 1: {fightResult.round1.description}</ResultData>
+						<ResultData>Round 2: {fightResult.round2.description}</ResultData>
+						<ResultData>Round 3: {fightResult.round3.description}</ResultData>
+						<ResultData>Winner: {fightResult.winner}</ResultData>
+					</ResultContainer>
+					<FishNFT selectedOpponent={true} fish={opponentFish}></FishNFT>
+				</FightGrid>
+			</FishViewerContainer>
+		}
 		</>
-		
 	);
 };
+
+interface GridProps {
+	ref?: any;
+}
 
 
 const VersusContainer = styled.div`
@@ -268,13 +264,13 @@ const FishViewerButtons = styled.div`
 	height: 15%;
 `;
 
-const FishGrid = styled.div`
+const FishGrid = styled.div<GridProps>`
 	display: flex;
 	flex-direction: row nowrap;
 	justify-content: space-between;
 	height: 72%;
 	overflow-y: hidden;
-	overflow-x: auto;
+	overflow-x: hidden;
 `;
 
 const FightGrid = styled.div`

@@ -1,5 +1,5 @@
 // React
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   Switch,
   Route
@@ -13,24 +13,23 @@ import ViewFish from './ViewFish';
 import CatchFish from './CatchFish';
 
 import { useCookies } from 'react-cookie';
+import { useUnity } from '../context/unityContext';
+
 
 type Props = {
   children?: React.ReactNode;
 };
 
 const Game = ({ children }: Props) => {
-  const [cookies, setCookie] = useCookies(['accepted_terms']);
+  const [cookies] = useCookies(['accepted_terms']);
 
-  const checkTerms = () => {
-    console.log("clcik")
-    if(cookies['accepted_terms'] == true) return;
-    setCookie('accepted_terms', true);
-    console.log(cookies['accepted_terms'])
-  }
+  // useEffect(() => {
+	// 	console.log("Fish arrays changed")
+	// }, [cookies]);
 
 	return (
     <UnityWindow>
-      <Viewer onClick={() => checkTerms()}>
+      <Viewer>
         {cookies['accepted_terms'] && 
           <Switch>
             <Route path="/catch">
@@ -39,8 +38,10 @@ const Game = ({ children }: Props) => {
             <Route path="/fight">
               <FightFish />
             </Route>
-            <Route path="/">
+            <Route path="/view">
               <ViewFish />
+            </Route>
+            <Route path="/">
             </Route>
           </Switch>	
         }

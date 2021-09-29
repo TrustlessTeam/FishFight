@@ -39,6 +39,9 @@ const FishNFT = ({ fish, onClick, selectedOpponent, selectedUser }: Props) => {
 					<FishData>Int:{fish.intelligence}</FishData>
 					<FishData>Agi:{fish.agility}</FishData>
 					<FishData>Wins: {fish.wins}</FishData>
+					{fish.ipfsLink &&
+					<FishData><a target="_blank" href={fish.ipfsLink}>IPFS</a></FishData>
+					}
 				</FishStatsOverlay>
 			}
 			

@@ -1,4 +1,3 @@
-import { UnityContent } from 'react-unity-webgl';
 import { Fish } from '../utils/fish';
 import { createContext, useContext, useEffect, useState } from 'react';
 import { useWeb3React } from '@web3-react/core';
@@ -6,10 +5,11 @@ import { useFishFight } from './fishFightContext';
 import BN from 'bn.js';
 import axios from 'axios';
 import FishFight from '../FishFightSDK';
-import { isBech32Address, fromWei, hexToNumber, Units } from '@harmony-js/utils';
+import { hexToNumber } from '@harmony-js/utils';
 import { useUnity } from './unityContext';
 
 const MAX_FISH = 42;
+const serverURL = `http://localhost:8000`;
 
 interface FishPoolProviderContext {
 	userFish: Fish[]
@@ -33,7 +33,7 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
 	const [publicFish, setPublicFish] = useState<Fish[]>([]);
 	const [userFish, setUserFish] = useState<Fish[]>([]);
 
-  const { account, connector, library} = useWeb3React();
+  const { account } = useWeb3React();
 
   const { FishFight, userConnected } = useFishFight();
 
@@ -207,7 +207,20 @@ export const useFishPool = () => {
 const getFish = async (fishFightInstance: FishFight, tokenId: number) : Promise<Fish | null> => {
   try {
     const fishInfo = await fishFightInstance.factory.methods.getFishInfo(tokenId).call();
-    const imgSrc = await getFishMetaData(fishFightInstance, tokenId);
+    // load image url from metadata
+    let tokenURI = "";
+    try {
+      tokenURI = await fishFightInstance.factory.methods.tokenURI(tokenId).call();
+    } catch (error) {
+      console.log("Get TokenURI call failed:")
+      console.log(error)
+    }
+    console.log(tokenURI)
+    // const metadata = await getFishMetaData(tokenURI);
+    let imgSrc = null;
+    if(tokenURI) {
+      imgSrc = `${serverURL}/tokens/${tokenId}.png`
+    }
     console.log("Get fish from blockchain")
     return new Fish(
       tokenId,
@@ -223,7 +236,8 @@ const getFish = async (fishFightInstance: FishFight, tokenId: number) : Promise<
       fishInfo.traitsA,
       fishInfo.traitsB,
       fishInfo.traitsC,
-      imgSrc
+      imgSrc,
+      tokenURI
     );
 
   } catch (error) {
@@ -236,29 +250,20 @@ const getFish = async (fishFightInstance: FishFight, tokenId: number) : Promise<
 
 // Gets Fish tokenURI from smart contract and loads the associated metadata from IPFS
 // TODO: currently just returns imgSrc, will add mp4 src
-const getFishMetaData = async (fishFightInstance: FishFight, tokenId: number) : Promise<string> => {
-  // load image url from metadata
-  let tokenURI = "";
-  try {
-    tokenURI = await fishFightInstance.factory.methods.tokenURI(tokenId).call();
-  } catch (error) {
-    console.log("Get TokenURI call failed:")
-    console.log(error)
-  }
-  
-  let imgSrc = null;
+const getFishMetaData = async (tokenURI: string) : Promise<string> => {
+  let metadata = null;
   if(tokenURI != "") {
     try {
       const metadataResponse = await axios.get(tokenURI);
       console.log(metadataResponse)
-      imgSrc = metadataResponse.data.image;
-      console.log(imgSrc)
+      metadata = metadataResponse.data.image;
+      console.log(metadata)
     } catch (error) {
       console.log("Error in Axios call: ");
       console.log(error)
     }
   }
-  return imgSrc;
+  return metadata;
 }
 
 // const getRandomTokenIds = (startIndex: number, endIndex: number, excludedIndexes: number[]) => {

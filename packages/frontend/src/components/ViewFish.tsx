@@ -5,6 +5,7 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 
 // Utils
+import useHorizontalScroll from "../utils/horizontalScrolling";
 import { Fish } from '../utils/fish'
 import { useFishFight } from '../context/fishFightContext';
 import { useUnity } from '../context/unityContext';
@@ -61,13 +62,15 @@ const ViewFish = () => {
 		}
 	}
 
+	const scrollRef = useHorizontalScroll();
+
 	return (
 		<FishViewerContainer>
 				<FishViewerButtons>
 					<GameButton onClick={() => setFishToView()}>{fishToShow == FishToShow.Public ? "Show my Fish" : "Show public Fish"}</GameButton>
 				</FishViewerButtons>
 
-				<FishGrid>
+				<FishGrid ref={scrollRef}>
 				{fishToShow == FishToShow.Public &&
 					publicFish?.map((fish, index) => (
 						<FishNFT onClick={() => unityContext.showFish(fish)} fish={fish} key={index}></FishNFT>
@@ -83,6 +86,10 @@ const ViewFish = () => {
 		
 	);
 };
+
+interface GridProps {
+	ref?: any;
+}
 
 const GameButton = styled.button`
 	display: flex;
@@ -123,13 +130,13 @@ const FishViewerButtons = styled.div`
 	height: 15%;
 `;
 
-const FishGrid = styled.div`
+const FishGrid = styled.div<GridProps>`
 	display: flex;
 	flex-direction: row nowrap;
 	justify-content: space-between;
 	height: 72%;
 	overflow-y: hidden;
-	overflow-x: auto;
+	overflow-x: hidden;
 `;
 
 
