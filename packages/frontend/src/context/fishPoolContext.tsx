@@ -123,13 +123,14 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
 			setPublicFish([]);
       await Promise.all(publicPoolTokenIds.map(async tokenId => {
 				// don't re add a fish that we already have
-				const existingFish = existingPublicFish.filter(fish => fish.tokenId == tokenId)[0];
-				console.log(existingFish)
-        if(existingFish) {
-          console.log("fish already exists")
-					setPublicFish(prevPublicFish => [...prevPublicFish, existingFish])
-					unityContext.addFishOcean(existingFish);
-          return;
+        if(existingPublicFish.length > 0) {
+          const existingFish = existingPublicFish.filter(fish => fish.tokenId == tokenId)[0];
+          if(existingFish) {
+            console.log("fish already exists")
+            setPublicFish(prevPublicFish => [...prevPublicFish, existingFish])
+            unityContext.addFishOcean(existingFish);
+            return;
+          }
         }
 
         // fish doesn't exist in the fish pool yet so add it
@@ -139,7 +140,7 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
           setPublicFish(prevPublicFish => [...prevPublicFish, fish])
 					unityContext.addFishOcean(fish);
         }
-			}));   
+			}));
       setArePublicFishLoaded(true);
       // setPublicFish(tempPublicFish);
     } catch (error) {
@@ -153,20 +154,19 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
 	const fetchUserFish = async () => {
     console.log("FETCH USER FISH")
     try {
-      userPoolTokenIds.forEach(async tokenId => {
+      await Promise.all(userPoolTokenIds.map(async tokenId => {
         if(userFish.some(x => x.tokenId == tokenId)) {
           console.log("User token already exists, skipping")
           return;
         }
-        console.log("Getting token id: ")
-        console.log(tokenId)
+
         const fish = await getFish(FishFight, tokenId)
         if(fish != null) {
           setUserFish(prevFish => ([...prevFish, fish]))
 					unityContext.addFishOcean(fish);
         }
-      });
-      setAreUserFishLoaded(true);
+      }));
+      if(account) setAreUserFishLoaded(true);
     } catch (error) {
       console.log("Error fetching userFish: ");
       console.log(error);

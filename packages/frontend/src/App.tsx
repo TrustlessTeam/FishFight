@@ -48,12 +48,12 @@ const App = () => {
 				<Wrapper>
 					<Container>
 						<Topbar>
-							<Logo>
+							<Logo to={"/"}>
 								<LogoImg src={logo}></LogoImg>
 							</Logo>
 							
 							<Nav>
-								<GameButton to="/"><span>See<br></br>Fish!</span></GameButton>
+								<GameButton to="/view"><span>See<br></br>Fish!</span></GameButton>
 								<GameButton to="/catch"><span>Catch<br></br>Fish!</span></GameButton>
 								<GameButton to="/fight"><span>Fight<br></br>Fish!</span></GameButton>
 							</Nav>
@@ -178,7 +178,7 @@ const LinkButton = styled(Link)`
 	}
 `;
 
-const Logo = styled.div`
+const Logo = styled(Link)`
 	display: none;
 	@media ${props => props.theme.device.tablet} {
     display: flex;

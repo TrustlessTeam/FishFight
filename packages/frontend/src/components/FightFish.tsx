@@ -1,27 +1,18 @@
-// React
 import { useEffect, useState } from 'react';
-
-// Styled Components
+import { Link } from "react-router-dom";
 import styled from 'styled-components';
-
-// Toast
 import { toast } from 'react-toastify';
-
-// Web3
 import { useWeb3React } from '@web3-react/core';
-
-// Big Number
 import BN from 'bn.js';
-
-// Utils
 import useHorizontalScroll from "../utils/horizontalScrolling";
+
 import { Fish } from '../utils/fish'
 import { Fight} from '../utils/fight'
 import { useFishFight } from '../context/fishFightContext';
 import { useUnity } from '../context/unityContext';
-
 import FishNFT from './FishNFT';
 import { useFishPool } from '../context/fishPoolContext';
+import Account from '../components/Account';
 
 enum FishToShow {
   Public,
@@ -31,7 +22,7 @@ enum FishToShow {
 
 const FightFish = () => {
 	const { FishFight, refetchBalance } = useFishFight()
-	const { userFish, publicFish } = useFishPool()
+	const { userFish, publicFish, areUserFishLoaded, arePublicFishLoaded } = useFishPool()
 
 	// Fish selected for fight
 	const [mySelectedFish, setMySelectedFish] = useState<Fish | null>(null);
@@ -69,6 +60,9 @@ const FightFish = () => {
 		}
 		else if(newFight.winner == opponentFish?.tokenId) {
 			unityContext.sendWinner(opponentFish);
+		}
+		else if(newFight.winner) {
+			unityContext.sendTie()
 		}
 	}
 
@@ -157,6 +151,15 @@ const FightFish = () => {
 						<GameButton onClick={fightFish()}>
 							Fight Fish
 						</GameButton>
+					}
+					{fishToShow == FishToShow.User && account && !areUserFishLoaded &&
+						<Text>Loading you fish...</Text>
+					}
+					{fishToShow == FishToShow.User && account && areUserFishLoaded && userFish?.length == 0 &&
+						<CatchButton to={'/catch'}>Catch a Fish!</CatchButton>
+					}
+					{fishToShow == FishToShow.User && !account &&
+						<Account/>
 					}
 				</FishViewerButtons>
 				<FishGrid ref={scrollRef}>
@@ -250,10 +253,35 @@ const GameButton = styled.button`
 	}
 `;
 
+const CatchButton = styled(Link)`
+	display: flex;
+	flex-flow: column;
+	justify-content: center;
+	padding: 2.2vmin;
+	border-radius: 25px;
+	background-color: white;
+	border: none;
+	opacity: 0.7;
+	box-shadow: 1px 2px 4px 4px rgba(0, 0, 0, 0.25);
+	color: black;
+	margin-left: ${props => props.theme.spacing.gapSmall};
+	transition: opacity 0.3s ease, box-shadow 0.25s ease-in-out;
+	text-transform: uppercase;
+	font-weight: bolder;
+	text-decoration: none;
+	font-size: ${props => props.theme.font.medium}vmin;
+
+	&:hover {
+		opacity: 1;
+		box-shadow: 1px 2px 2px 2px rgba(0, 0, 0, 0.2);
+		cursor: pointer;
+	}
+`;
+
 const FishViewerContainer = styled.div`
 	display: flex;
 	flex-direction: column;
-	justify-content: space-evenly;
+	justify-content: flex-end;
 	width: 100%;
 	height: 100%;
 `;
@@ -261,7 +289,7 @@ const FishViewerContainer = styled.div`
 const FishViewerButtons = styled.div`
 	display: flex;
 	flex-flow: row nowrap;
-	height: 15%;
+	height: 17%;
 `;
 
 const FishGrid = styled.div<GridProps>`

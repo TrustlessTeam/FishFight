@@ -15,6 +15,7 @@ interface UnityProviderContext {
 	showFishing: () => void;
 	showOcean: () => void;
 	showFight: () => void;
+	showHome: () => void;
 	addFishOcean: (fish: Fish) => void,
 	addFishFight: (fish: Fish) => void;
 	addFishFishing: (fish: Fish) => void;
@@ -22,6 +23,7 @@ interface UnityProviderContext {
 	clearFishPool: (pool: string) => void;
 	sendRound: (round: number, roundStat: number) => void;
 	sendWinner: (fish: Fish) => void;
+	sendTie: () => void;
 }
 
 type UnityProviderProps = { children: React.ReactNode };
@@ -106,8 +108,24 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
 			console.log('SetFightStateConfirm!');
 		});
 		UnityInstance.on('FishCaughtReceived', function () {
-			console.log('Received from ');
+			console.log('FishCaughtReceived');
 		});
+		UnityInstance.on('FishPoolFightRound1', function () {
+			console.log('Confirm FishPoolFightRound1');
+		});
+		UnityInstance.on('FishPoolFightRound2', function () {
+			console.log('Confirm FishPoolFightRound2');
+		});
+		UnityInstance.on('FishPoolFightRound3', function () {
+			console.log('Confirm FishPoolFightRound3');
+		});
+		UnityInstance.on('FishPoolFightWinner', function () {
+			console.log('Confirm FishPoolFightWinner');
+		});
+		UnityInstance.on('FishPoolFightTie', function () {
+			console.log('Confirm FishPoolFightTie');
+		});
+
 	}, []);
 
 	const fishCaught = (fish: Fish) => {
@@ -134,6 +152,12 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
     if(!isLoaded || !fishPoolReady) return;
 		UnityInstance.send('Camera', 'SetAnimState', 'ShowOcean');
 		console.log("ShowOcean Completed")
+	};
+	const showHome = () => {
+		console.log("ShowHome Called")
+    if(!isLoaded) return;
+		UnityInstance.send('Camera', 'SetAnimState', 'ShowHome');
+		console.log("ShowHome Completed")
 	};
 	const clearFishPool = (pool: string) => {
 		console.log("ClearFishPool Called " + pool)
@@ -170,6 +194,7 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
 		console.log("ShowFish Completed")
 	};
 	const sendRound = (round: number, roundStat: number) => {
+		console.log(roundStat)
 		switch (round) {
 			case 1:
 				UnityInstance.send('FishPool', 'SetRound1Stat', roundStat.toString())
@@ -191,6 +216,12 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
 		console.log("SetWinner Completed")
 	};
 
+	const sendTie = () => {
+		console.log("SetTie Called")
+		UnityInstance.send('FishPool', 'SetTie');
+		console.log("SetTie Completed")
+	};
+
 	const toggleIsUnityMounted = () => {
 		setIsUnityMounted(!isUnityMounted);
 	};
@@ -207,13 +238,15 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
     showFishing: showFishing,
     showOcean: showOcean,
     showFight: showFight,
+		showHome: showHome,
     addFishOcean: addFishOcean,
 		addFishFight: addFishFight,
 		addFishFishing: addFishFishing,
 		showFish: showFish,
 		clearFishPool: clearFishPool,
 		sendRound: sendRound,
-		sendWinner: sendWinner
+		sendWinner: sendWinner,
+		sendTie: sendTie
 	};
 	return <UnityContext.Provider value={value}>{children}</UnityContext.Provider>;
 };

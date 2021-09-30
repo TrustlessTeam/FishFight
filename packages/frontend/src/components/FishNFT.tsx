@@ -70,9 +70,9 @@ const FishContainer = styled.div`
 `;
 
 const FishImg = styled.img<ImgProps>`
-	height: 18vh;
+	height: 17vh;
 	border-radius: 50%;
-	border: 1vh solid rgba(255, 255, 255, 0.5);
+	border: 0.5vh solid rgba(255, 255, 255, 0.5);
 	cursor: pointer; 
 	${({ selectedUser }) => selectedUser && `
     border-color: rgba(0, 128, 0, 0.5)
@@ -98,7 +98,7 @@ const FishStatsOverlay = styled.div`
 	flex-flow: row wrap;
 	justify-content: center;
 	align-items: flex-start;
-	height: 18vh;
+	height: 17vh;
 	top: 50;
 	bottom: 50;
 	border-radius: 50%;

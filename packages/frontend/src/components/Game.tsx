@@ -58,7 +58,7 @@ const Viewer = styled.div`
 	align-items: center;
 	justify-content: flex-end;
 	width: 100%;
-  height: 30%;
+  height: 27%;
   bottom: 0;
   background: white;
   z-index: 5;
