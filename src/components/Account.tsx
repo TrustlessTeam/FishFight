@@ -42,7 +42,7 @@ const Account = () => {
 						{parsedAccount.substring(0, 6)}...{parsedAccount.substring(parsedAccount.length - 4)}
 					</span>
 				) : (
-					<span>Connect Wallet</span>
+					<Span>Connect Wallet</Span>
 				)}
 			</AccountComponent>
 			<Modal
@@ -77,6 +77,13 @@ const AccountComponent = styled.div`
 		cursor: pointer;
 	}
 	z-index: 5;
+`;
+
+const Span = styled.span`
+	display: flex;
+	flex-flow: column;
+	justify-content: center;
+	align-items: center;
 `;
 
 export default Account;

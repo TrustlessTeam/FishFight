@@ -47,7 +47,7 @@ const App = () => {
 							<Logo to={"/"}>
 								<LogoImg src={logo}></LogoImg>
 							</Logo>
-							
+					
 							<Nav>
 								<GameButton to="/view"><span>See<br></br>Fish!</span></GameButton>
 								<GameButton to="/catch"><span>Catch<br></br>Fish!</span></GameButton>
@@ -55,7 +55,7 @@ const App = () => {
 							</Nav>
 
 							<AccountContainer>
-								{/* <LinkButton to="/learn">Learn</LinkButton> */}
+								<Text>TESTNET</Text>
 								{account &&
 									<Balance />
 								}
@@ -65,9 +65,6 @@ const App = () => {
 						</Topbar>
 
 						<Switch>
-							<Route path="/learn">
-								<CatchFish/>
-							</Route>
 							<Route path="/">
 								<Game />
 							</Route>
@@ -152,26 +149,16 @@ const GameButton = styled(Link)`
 	}
 `;
 
-const LinkButton = styled(Link)`
-	text-align: center;
-	padding: 2.2vmin;
-	border-radius: 50%;
+const Text = styled.p`
+	display: flex;
+	flex-flow: column;
+	justify-content: center;
+	padding: ${props => props.theme.spacing.gap};
+	margin: 0;
 	background-color: white;
-	opacity: 0.7;
-	box-shadow: 1px 2px 4px 4px rgba(0, 0, 0, 0.25);
-	color: black;
+	font-size: ${props => props.theme.font.large}vmin;
+	border-radius: 25px;
 	margin-left: ${props => props.theme.spacing.gapSmall};
-	transition: opacity 0.3s ease, box-shadow 0.25s ease-in-out;
-	text-transform: uppercase;
-	font-weight: bolder;
-	text-decoration: none;
-	font-size: ${props => props.theme.font.medium}vmin;
-
-	&:hover {
-		opacity: 1;
-		box-shadow: 1px 2px 2px 2px rgba(0, 0, 0, 0.2);
-		cursor: pointer;
-	}
 `;
 
 const Logo = styled(Link)`
