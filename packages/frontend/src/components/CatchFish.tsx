@@ -1,98 +1,60 @@
-// React
-import React, { Fragment, useState, useEffect, useCallback } from 'react';
-
-// Styled Components
+import React, { useState, useEffect, useCallback } from 'react';
 import styled from 'styled-components';
-
-// Toast
 import { toast } from 'react-toastify';
-
-// Web3
 import { useWeb3React } from '@web3-react/core';
-
-// Big Number
 import BN from 'bn.js';
+import { hexToNumber, Unit } from '@harmony-js/utils';
 
-// Harmony SDK
-import { numberToString, fromWei, hexToNumber, Units, Unit } from '@harmony-js/utils';
-import Unity from 'react-unity-webgl';
-// Utils
 import { Fish } from '../utils/fish'
 import { useFishFight } from '../context/fishFightContext';
 import { useUnity } from '../context/unityContext';
 import { useFishPool } from '../context/fishPoolContext';
-import FishNFT from './FishNFT';
 
-type Props = {
-  children?: React.ReactNode;
-};
+// const catchRates = [
+// 	{value: 1000, chance: "100%"},
+// 	{value: 100, chance: "~10%"},
+// 	{value: 50, chance: "~5%"},
+// 	{value: 25, chance: "~2.5%"}
+// ];
 
-
-const catchRates = [
-	{value: 100, chance: "100%"},
-	{value: 50, chance: "~25%"},
-	{value: 25, chance: "~6.25%"},
-	{value: 5, chance: "~1.25%"}
-];
-
-const CatchFish = ({ children }: Props) => {
+const CatchFish = () => {
 	const unityContext = useUnity()
+	const { account } = useWeb3React();
 	const { FishFight, refetchBalance } = useFishFight()
 	const { addUserPoolTokenId } = useFishPool();
 	const [caughtFish, setCaughtFish] = useState<Fish | null>(null);
 	const [caughtFishHash, setCaughtFishHash] = useState<string | null>(null);
 
-
-	// Name of the fish that the user is creating/minting
-	const [fishName, setFishName] = useState("Fishy")
-
-	// Contract balance
-	const [contractBalance, setContractBalance] = useState("");
-	console.log("Contract Balance: " + contractBalance)
-
-	// Context
-	const { account } = useWeb3React();
-
 	useEffect(() => {
-		console.log("Calling Show Fishing")
-		// FishFight.factory.events.FishMinted(function(error: any, event: any){ console.log("THE EVENT ", event); })
 		unityContext.showFishing();
 	}, [unityContext.isFishPoolReady]);
+
+	useEffect(() => {
+		unityContext.clearFishPool('ShowFishing');
+	}, []);
 
 	useEffect(() => {
 		unityContext.UnityInstance.on('UISelectionConfirm', function (data: any) {
 			console.log('UI changed catch fish');
 			console.log(data)
 			switch (data) {
-				case 'mint_fish_5p':
-					mintFish(5, account);
-					return;
-				case 'mint_fish_25p':
+				case 'mint_fish_2.5percent':
 					mintFish(25, account);
 					return;
-				case 'mint_fish_50p':
+				case 'mint_fish_5percent':
 					mintFish(50, account);
 					return;
-				case 'mint_fish_75p':
+				case 'mint_fish_10percent':
 					mintFish(100, account);
+					return;
+				case 'mint_fish_100percent':
+					mintFish(1000, account);
 					return;
 				default:
 					return;
 			}
 		});
 	}, [unityContext.isFishPoolReady]);
-
-	// Get contract balance and parse it to One
-	const getContractBalance = async () => {
-		try {
-			const balance = await FishFight.factory.methods.getContractBalance().call();
-			const parsedBalance = fromWei(balance, Units.one);
-			setContractBalance(parsedBalance);
-		} catch (error) {
-			console.error(error);
-		}
-		return null
-	};
 
 	const getUserFish = async (tokenId: number) => {
 		const fishInfo = await FishFight.factory.methods.getFishInfo(tokenId).call();
@@ -115,13 +77,9 @@ const CatchFish = ({ children }: Props) => {
 		console.log(newFish)
 		setCaughtFish(newFish)
 		unityContext.addFishFishing(newFish);
-
 		addUserPoolTokenId(newFish.tokenId)
 	}
 
-	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		setFishName(e.target.value);
-	}
 
 	const mintFish = useCallback(async (value: number, account: string | null | undefined)=>{
 		console.log(account)
@@ -140,7 +98,6 @@ const CatchFish = ({ children }: Props) => {
 				getUserFish(returnedTokenId);
 				toast.success('Transaction done', {
 					onClose: async () => {
-						getContractBalance()
 						refetchBalance()
 					},
 				});
@@ -152,37 +109,31 @@ const CatchFish = ({ children }: Props) => {
 		}
 	}, []);
 
-	const handleClickCatch = (value: number) => async () => {
-		console.log("in caught")
-		if (account) {
-			try {
-				const fish = await FishFight.factory.methods.catchFish().send({
-					from: account,
-					gasPrice: 1000000000,
-					gasLimit: 500000,
-					value: new Unit(value).asOne().toWei(),
-				});
-				const returnedTokenId = new BN(fish.events.Transfer.returnValues.tokenId).toNumber()
-				getUserFish(returnedTokenId);
-				toast.success('Transaction done', {
-					onClose: async () => {
-						getContractBalance()
-						refetchBalance()
-					},
-				});
-			} catch (error) {
-				// toast.error(error);
-			}
-		} else {
-			toast.error('Connect your wallet');
-		}
-		return null
-	};
-
-	const handleFishClick = (tokenId: number) => async () => {
-		const tokenUri = await FishFight.factory.methods.tokenURI(tokenId).call();
-		console.log(tokenUri)
-	}
+	// const handleClickCatch = (value: number) => async () => {
+	// 	console.log("in caught")
+	// 	if (account) {
+	// 		try {
+	// 			const fish = await FishFight.factory.methods.catchFish().send({
+	// 				from: account,
+	// 				gasPrice: 1000000000,
+	// 				gasLimit: 500000,
+	// 				value: new Unit(value).asOne().toWei(),
+	// 			});
+	// 			const returnedTokenId = new BN(fish.events.Transfer.returnValues.tokenId).toNumber()
+	// 			getUserFish(returnedTokenId);
+	// 			toast.success('Transaction done', {
+	// 				onClose: async () => {
+	// 					refetchBalance()
+	// 				},
+	// 			});
+	// 		} catch (error) {
+	// 			// toast.error(error);
+	// 		}
+	// 	} else {
+	// 		toast.error('Connect your wallet');
+	// 	}
+	// 	return null
+	// };
 
 	const FishingOptions = () => {
 		if(caughtFish && caughtFishHash) {
@@ -199,6 +150,7 @@ const CatchFish = ({ children }: Props) => {
 					<GameButton onClick={() => {
 						setCaughtFish(null);
 						setCaughtFishHash(null);
+						unityContext.clearFishPool('ShowFishing');
 					}}>
 						Catch another fish!
 					</GameButton>
@@ -243,7 +195,6 @@ const TransactionLink = styled.a`
 	flex-direction: column;
 	align-items: center;
 	justify-content: center;
-	/* width: 100%; */
 `;
 
 const FishData = styled.p`
@@ -259,32 +210,6 @@ const FishData = styled.p`
 	padding: ${props => props.theme.spacing.gapSmall};
 	border-radius: 50%;
 	height: ${props => props.theme.font.small}vmin;
-`;
-
-
-const FishingContainer = styled.div`
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	justify-content: flex-end;
-	width: 100%;
-`;
-
-const Text = styled.p`
-	padding: ${props => props.theme.spacing.gap};
-	margin: 0;
-	background-color: white;
-	font-size: ${props => props.theme.font.large}vmin;
-	border-radius: 25px;
-	margin: ${props => props.theme.spacing.gap} 0;
-`;
-
-const OptionsContainer = styled.div`
-	display: flex;
-	flex-direction: row nowrap;
-	align-items: center;
-	justify-content: space-evenly;
-	width: 100%;
 `;
 
 const GameButton = styled.button`
@@ -310,30 +235,54 @@ const GameButton = styled.button`
 	}
 `;
 
+// const CatchFishButton = styled.button`
+// 	display: flex;
+// 	justify-content: center;
+// 	align-items: center;
+// 	background-color: rgba(255, 255, 255, 0.7);
+// 	color: black;
+// 	padding: 20px 20px;
+// 	border-radius: 10px;
+// 	box-shadow: 1px 2px 4px 4px rgba(0, 0, 0, 0.2);
+// 	font-size: 1.5rem;
+// 	transition: background-color 0.3s ease;
 
-const CatchFishButton = styled.button`
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	background-color: rgba(255, 255, 255, 0.7);
-	color: black;
-	padding: 20px 20px;
-	border-radius: 10px;
-	box-shadow: 1px 2px 4px 4px rgba(0, 0, 0, 0.2);
-	font-size: 1.5rem;
-	transition: background-color 0.3s ease;
+// 	&:hover {
+// 		background-color: rgba(255, 255, 255, 1);
+// 		cursor: pointer;
+// 	}
 
-	&:hover {
-		background-color: rgba(255, 255, 255, 1);
-		cursor: pointer;
-	}
+// 	span {
+// 		font-size: 1rem;
+// 		margin-left: 8px;
+// 		align-self: flex-end;
+// 	}
+// `;
 
-	span {
-		font-size: 1rem;
-		margin-left: 8px;
-		align-self: flex-end;
-	}
-`;
+// const FishingContainer = styled.div`
+// 	display: flex;
+// 	flex-direction: column;
+// 	align-items: center;
+// 	justify-content: flex-end;
+// 	width: 100%;
+// `;
+
+// const Text = styled.p`
+// 	padding: ${props => props.theme.spacing.gap};
+// 	margin: 0;
+// 	background-color: white;
+// 	font-size: ${props => props.theme.font.large}vmin;
+// 	border-radius: 25px;
+// 	margin: ${props => props.theme.spacing.gap} 0;
+// `;
+
+// const OptionsContainer = styled.div`
+// 	display: flex;
+// 	flex-direction: row nowrap;
+// 	align-items: center;
+// 	justify-content: space-evenly;
+// 	width: 100%;
+// `;
 
 
 export default CatchFish;

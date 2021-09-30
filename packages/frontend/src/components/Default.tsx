@@ -10,8 +10,8 @@ const Default = () => {
 	const unityContext = useUnity();
 
 	useEffect(() => {
-		unityContext.showOcean();
-	}, [unityContext.isFishPoolReady]);
+		unityContext.showHome();
+	}, []);
 
 	return (
 		<></>

@@ -197,13 +197,13 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
 		console.log(roundStat)
 		switch (round) {
 			case 1:
-				UnityInstance.send('FishPool', 'SetRound1Stat', roundStat.toString())
+				UnityInstance.send('FishPool', 'SetRound1Stat', roundStat)
 				break;
 			case 2:
-				UnityInstance.send('FishPool', 'SetRound2Stat', roundStat.toString())
+				UnityInstance.send('FishPool', 'SetRound2Stat', roundStat)
 				break;
 			case 3:
-				UnityInstance.send('FishPool', 'SetRound3Stat', roundStat.toString())
+				UnityInstance.send('FishPool', 'SetRound3Stat', roundStat)
 				break;
 			default:
 				break;

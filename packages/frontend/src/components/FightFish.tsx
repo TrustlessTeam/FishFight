@@ -21,7 +21,7 @@ enum FishToShow {
 
 
 const FightFish = () => {
-	const { FishFight, refetchBalance } = useFishFight()
+	const { FishFight, refetchBalance, userConnected } = useFishFight()
 	const { userFish, publicFish, areUserFishLoaded, arePublicFishLoaded } = useFishPool()
 
 	// Fish selected for fight
@@ -34,6 +34,14 @@ const FightFish = () => {
 	// Context
 	const { account } = useWeb3React();
 	const unityContext = useUnity();
+
+	useEffect(() => {
+		console.log("Account changed")
+		if(userConnected) {
+			setFishToShow(FishToShow.User)
+		}
+		setFishToShow(FishToShow.Public)
+	}, [userConnected]);
 
 	useEffect(() => {
 		unityContext.showFight();
@@ -121,6 +129,7 @@ const FightFish = () => {
 		setIsFighting(false)
 		setMySelectedFish(null)
 		setopponentFish(null)
+		unityContext.clearFishPool('ShowFight');
 	}
 
 	const setFishToView = () => {

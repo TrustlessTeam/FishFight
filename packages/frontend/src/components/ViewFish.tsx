@@ -1,40 +1,36 @@
-// React
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from "react-router-dom";
-
-// Styled Components
 import styled from 'styled-components';
 
-// Utils
-import useHorizontalScroll from "../utils/horizontalScrolling";
+import { useFishPool } from '../context/fishPoolContext';
+import { useFishFight } from '../context/fishFightContext';
 import { useUnity } from '../context/unityContext';
+import useHorizontalScroll from "../utils/horizontalScrolling";
 import Account from '../components/Account';
 import FishNFT from './FishNFT';
-import { useFishPool } from '../context/fishPoolContext';
-import { useWeb3React } from '@web3-react/core';
 
 enum FishToShow {
   Public,
   User
 }
 
-
 const ViewFish = () => {
 	const { userFish, publicFish, arePublicFishLoaded, areUserFishLoaded } = useFishPool();
 	const [fishToShow, setFishToShow] = useState<FishToShow>(FishToShow.Public);
 	const unityContext = useUnity();
-	const { account } = useWeb3React();
+	const { userConnected } = useFishFight()
 
 	useEffect(() => {
-		console.log("account connected")
-		if(account) {
+		console.log("Account changed")
+		if(userConnected) {
 			setFishToShow(FishToShow.User)
 		}
 		setFishToShow(FishToShow.Public)
-	}, [account]);
+	}, [userConnected]);
 
 	useEffect(() => {
 		console.log("Fish arrays changed")
+		console.log(arePublicFishLoaded)
 	}, [userFish, publicFish]);
 
 
@@ -57,18 +53,18 @@ const ViewFish = () => {
 		<FishViewerContainer>
 				<FishViewerButtons>
 					{fishToShow == FishToShow.Public ? <Text>Public Fish</Text> : <Text>Your Fish</Text>}
-					{account ?
+					{fishToShow == FishToShow.Public && !arePublicFishLoaded &&
+						<Text>Loading public fish...</Text>
+					}
+					{fishToShow == FishToShow.User && userConnected && !areUserFishLoaded &&
+						<Text>Loading your fish...</Text>
+					}
+					{userConnected ?
 					<GameButton onClick={() => setFishToView()}>{fishToShow == FishToShow.Public ? "Show my Fish" : "Show public Fish"}</GameButton>
 					:
 					<Account/>
 					}
-					{fishToShow == FishToShow.Public && !arePublicFishLoaded &&
-						<Text>Loading public fish...</Text>
-					}
-					{fishToShow == FishToShow.User && account && !areUserFishLoaded &&
-						<Text>Loading your fish...</Text>
-					}
-					{fishToShow == FishToShow.User && account && areUserFishLoaded && userFish?.length == 0 &&
+					{fishToShow == FishToShow.User && userConnected && areUserFishLoaded && userFish?.length == 0 &&
 						<CatchButton to={'/catch'}>Catch a Fish!</CatchButton>
 					}
 					
@@ -80,7 +76,7 @@ const ViewFish = () => {
 						<FishNFT onClick={() => unityContext.showFish(fish)} fish={fish} key={index}></FishNFT>
 					))
 				}
-				{fishToShow == FishToShow.User && account && userFish?.length > 0 &&
+				{fishToShow == FishToShow.User && userConnected && userFish?.length > 0 &&
 					userFish?.map((fish, index) => (
 						<FishNFT onClick={() => unityContext.showFish(fish)} fish={fish} key={index}></FishNFT>
 					))
@@ -155,11 +151,6 @@ const CatchButton = styled(Link)`
 		box-shadow: 1px 2px 2px 2px rgba(0, 0, 0, 0.2);
 		cursor: pointer;
 	}
-`;
-
-const ConnectButton = styled(Account)`
-	justify-content: center;
-	height: 10%;
 `;
 
 const FishViewerContainer = styled.div`

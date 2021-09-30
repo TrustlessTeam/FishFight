@@ -39,8 +39,11 @@ export const FishFightProvider = ({ children }: FishFightProviderProps ) => {
       {
         setFishFightInstance(new FishFight(wallet.provider, wallet.type))
         setUserConnected(true);
-
       })
+    }
+    if(!account) {
+      console.log("account not connected");
+      setUserConnected(false);
     }
   }, [connector, library])
 

@@ -60,12 +60,16 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
 
   // Get Public Fish data from the blockchain
   useEffect(() => {
-    fetchPublicFish()
+    if(publicPoolTokenIds.length > 0) {
+      fetchPublicFish()
+    }
   }, [publicPoolTokenIds]);
 
   // Get Public Fish data from the blockchain
   useEffect(() => {
-    fetchUserFish()
+    if(userPoolTokenIds.length > 0) {
+      fetchUserFish()
+    }
   }, [userPoolTokenIds]);
   
 // TODO add function to clear pool when user logs out?

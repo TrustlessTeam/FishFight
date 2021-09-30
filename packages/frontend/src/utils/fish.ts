@@ -260,7 +260,7 @@ const fishType = [
       HeadFlat: [0, 80],
       HeadSplit: [0, 70], // map to intelligence
       HeadFlatnose: [0, 100], // map to agility
-      BodyFat: [0, 100], // map to strength
+      BodyFat: [0, 75], // map to strength
 
       // Textures
       TextureBodyPrimary: [0, 8], // need to know upper range index for each option, using 2 for now
