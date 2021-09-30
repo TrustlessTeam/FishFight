@@ -63,31 +63,31 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
 		UnityInstance.on('CameraStartConfirm', function () {
 			console.log('CameraStartConfirmed!');
 		});
-		UnityInstance.on('UISelectionConfirm', function (data: any) {
-			console.log('UI changed');
-			console.log(data)
-			switch (data) {
-				case 'mint_fish_5p':
-					setMintFish(4);
-					return;
-				case 'mint_fish_25p':
-					setMintFish(3);
-					return;
-				case 'mint_fish_50p':
-					setMintFish(2);
-					return;
-				case 'mint_fish_75p':
-					setMintFish(1);
-					return;
-				case 'disclaimer_confirm':
-					if(cookies['accepted_terms'] == true) return;
-    			setCookie('accepted_terms', true);
-					return;
-				default:
-					setMintFish(0)
-					return;
-			}
-		});
+		// UnityInstance.on('UISelectionConfirm', function (data: any) {
+		// 	console.log('UI changed');
+		// 	console.log(data)
+		// 	switch (data) {
+		// 		case 'mint_fish_5p':
+		// 			setMintFish(4);
+		// 			return;
+		// 		case 'mint_fish_25p':
+		// 			setMintFish(3);
+		// 			return;
+		// 		case 'mint_fish_50p':
+		// 			setMintFish(2);
+		// 			return;
+		// 		case 'mint_fish_75p':
+		// 			setMintFish(1);
+		// 			return;
+		// 		case 'disclaimer_confirm':
+		// 			if(cookies['accepted_terms'] == true) return;
+    // 			setCookie('accepted_terms', true);
+		// 			return;
+		// 		default:
+		// 			setMintFish(0)
+		// 			return;
+		// 	}
+		// });
 		UnityInstance.on('FishPoolStartConfirm', function () {
       setFishPoolReady(true);
 			console.log('FishPoolStartConfirmed!');
@@ -119,39 +119,39 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
 		UnityInstance.on('FishPoolFightRound3', function () {
 			console.log('Confirm FishPoolFightRound3');
 		});
-		UnityInstance.on('FishPoolFightWinner', function () {
-			console.log('Confirm FishPoolFightWinner');
-		});
-		UnityInstance.on('FishPoolFightTie', function () {
-			console.log('Confirm FishPoolFightTie');
-		});
+		// UnityInstance.on('FishPoolFightWinner', function () {
+		// 	console.log('Confirm FishPoolFightWinner');
+		// });
+		// UnityInstance.on('FishPoolFightTie', function () {
+		// 	console.log('Confirm FishPoolFightTie');
+		// });
 
 	}, []);
 
 	const fishCaught = (fish: Fish) => {
-		console.log("FishCaught Called")
+		// console.log("FishCaught Called")
     if(!isLoaded || !fishPoolReady) return;
 		console.log(JSON.stringify(fish))
     UnityInstance.send('CanvasUserInterface', 'FishCaught', JSON.stringify(fish));
-		console.log("FishCaught Completed")
+		// console.log("FishCaught Completed")
 	};
 	const showFishing = () => {
-		console.log("ShowFishing Called")
+		// console.log("ShowFishing Called")
     if(!isLoaded || !fishPoolReady) return;
 		UnityInstance.send('Camera', 'SetAnimState', 'ShowFishing');
-		console.log("ShowFishing Completed")
+		// console.log("ShowFishing Completed")
 	};
 	const showFight = () => {
-		console.log("ShowFight Called")
+		// console.log("ShowFight Called")
     if(!isLoaded || !fishPoolReady) return;
 		UnityInstance.send('Camera', 'SetAnimState', 'ShowFight');
-		console.log("ShowFight Completed")
+		// console.log("ShowFight Completed")
 	};
 	const showOcean = () => {
-		console.log("ShowOcean Called")
+		// console.log("ShowOcean Called")
     if(!isLoaded || !fishPoolReady) return;
 		UnityInstance.send('Camera', 'SetAnimState', 'ShowOcean');
-		console.log("ShowOcean Completed")
+		// console.log("ShowOcean Completed")
 	};
 	const showHome = () => {
 		console.log("ShowHome Called")
@@ -160,24 +160,24 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
 		console.log("ShowHome Completed")
 	};
 	const clearFishPool = (pool: string) => {
-		console.log("ClearFishPool Called " + pool)
+		// console.log("ClearFishPool Called " + pool)
     if(!isLoaded || !fishPoolReady) return;
 		UnityInstance.send('FishPool', 'ClearPool', pool);
-		console.log("ClearFishPool Called " + pool)
+		// console.log("ClearFishPool Called " + pool)
 	};
   const addFishOcean = (fish: Fish) => {
-		console.log("AddFish Called")
+		console.log(`AddFish ${fish.tokenId}`)
     if(!isLoaded || !fishPoolReady) return;
-		console.log(fish)
+		// console.log(fish)
 		UnityInstance.send('FishPool', 'AddFish_OceanView', JSON.stringify(fish));
-		console.log("AddFish Completed")
+		// console.log("AddFish Completed")
 	};
 	const addFishFight = (fish: Fish) => {
-		console.log("AddFish Called")
+		// console.log("AddFish Called")
     if(!isLoaded || !fishPoolReady) return;
 		console.log(fish)
 		UnityInstance.send('FishPool', 'AddFish_FightView', JSON.stringify(fish));
-		console.log("AddFish Completed")
+		// console.log("AddFish Completed")
 	};
 	const addFishFishing = (fish: Fish) => {
 		console.log("AddFish Called")
@@ -187,11 +187,11 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
 		console.log("AddFish Completed")
 	};
 	const showFish = (fish: Fish) => {
-		console.log("ShowFish Called")
+		// console.log("ShowFish Called")
     if(!isLoaded || !fishPoolReady) return;
 		UnityInstance.send('Camera', 'SetAnimState', 'ShowFish');
 		UnityInstance.send('FishPool', 'AddFish_FishView', JSON.stringify(fish));
-		console.log("ShowFish Completed")
+		// console.log("ShowFish Completed")
 	};
 	const sendRound = (round: number, roundStat: number) => {
 		console.log(roundStat)

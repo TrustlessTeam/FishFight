@@ -55,6 +55,7 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
       }
     }
 		unityContext.clearFishPool('ShowOcean');
+    setArePublicFishLoaded(false)
 		if(unityContext.isFishPoolReady) loadTokenData(account);
   }, [userConnected, unityContext.isFishPoolReady]);
 
@@ -119,8 +120,6 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
     // Get public fish
     // TODO: limit fish loaded (some kind of random selection of fish)
     console.log("FETCH PUBLIC FISH")
-    console.log(publicPoolTokenIds)
-		console.log(publicFish)
 		
     const existingPublicFish = publicFish;
     try {
@@ -130,7 +129,7 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
         if(existingPublicFish.length > 0) {
           const existingFish = existingPublicFish.filter(fish => fish.tokenId == tokenId)[0];
           if(existingFish) {
-            console.log("fish already exists")
+            // console.log("fish already exists")
             setPublicFish(prevPublicFish => [...prevPublicFish, existingFish])
             unityContext.addFishOcean(existingFish);
             return;
@@ -140,7 +139,7 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
         // fish doesn't exist in the fish pool yet so add it
         const fish = await getFish(FishFight, tokenId);
         if(fish != null) {
-					console.log("getting fish")
+					// console.log("getting fish")
           setPublicFish(prevPublicFish => [...prevPublicFish, fish])
 					unityContext.addFishOcean(fish);
         }
@@ -160,7 +159,6 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
     try {
       await Promise.all(userPoolTokenIds.map(async tokenId => {
         if(userFish.some(x => x.tokenId == tokenId)) {
-          console.log("User token already exists, skipping")
           return;
         }
 
@@ -210,6 +208,7 @@ export const useFishPool = () => {
 // Gets fish data from smart contract and builds Fish object
 const getFish = async (fishFightInstance: FishFight, tokenId: number) : Promise<Fish | null> => {
   try {
+    console.log(`Loading Fish ${tokenId} from blockchain`)
     const fishInfo = await fishFightInstance.factory.methods.getFishInfo(tokenId).call();
     // load image url from metadata
     let tokenURI = "";
@@ -219,13 +218,10 @@ const getFish = async (fishFightInstance: FishFight, tokenId: number) : Promise<
       console.log("Get TokenURI call failed:")
       console.log(error)
     }
-    console.log(tokenURI)
-    // const metadata = await getFishMetaData(tokenURI);
     let imgSrc = null;
     if(tokenURI) {
       imgSrc = `${serverURL}/tokens/${tokenId}.png`
     }
-    console.log("Get fish from blockchain")
     return new Fish(
       tokenId,
       new BN(fishInfo.fishTypeIndex).toNumber(),
@@ -259,9 +255,7 @@ const getFishMetaData = async (tokenURI: string) : Promise<string> => {
   if(tokenURI != "") {
     try {
       const metadataResponse = await axios.get(tokenURI);
-      console.log(metadataResponse)
       metadata = metadataResponse.data.image;
-      console.log(metadata)
     } catch (error) {
       console.log("Error in Axios call: ");
       console.log(error)

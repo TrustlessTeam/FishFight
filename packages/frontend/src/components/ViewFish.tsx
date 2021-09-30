@@ -24,15 +24,10 @@ const ViewFish = () => {
 		console.log("Account changed")
 		if(userConnected) {
 			setFishToShow(FishToShow.User)
+		} else {
+			setFishToShow(FishToShow.Public)
 		}
-		setFishToShow(FishToShow.Public)
 	}, [userConnected]);
-
-	useEffect(() => {
-		console.log("Fish arrays changed")
-		console.log(arePublicFishLoaded)
-	}, [userFish, publicFish]);
-
 
 	useEffect(() => {
 		unityContext.showOcean();

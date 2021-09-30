@@ -29,6 +29,7 @@ const FightFish = () => {
 	const [opponentFish, setopponentFish] = useState<Fish | null>(null);
 	const [fishToShow, setFishToShow] = useState<FishToShow>(FishToShow.Public);
 	const [fightResult, setFightResult] = useState<Fight | null>();
+	const [showFightResult, setShowFightResult] = useState(false);
 	const [isFighting, setIsFighting] = useState<boolean>(false);
 
 	// Context
@@ -37,14 +38,27 @@ const FightFish = () => {
 
 	useEffect(() => {
 		console.log("Account changed")
+		console.log(userConnected)
 		if(userConnected) {
 			setFishToShow(FishToShow.User)
+		} else {
+			setFishToShow(FishToShow.Public)
 		}
-		setFishToShow(FishToShow.Public)
 	}, [userConnected]);
 
 	useEffect(() => {
 		unityContext.showFight();
+	}, [unityContext.isFishPoolReady]);
+
+	useEffect(() => {
+		unityContext.UnityInstance.on('FishPoolFightWinner', function () {
+			console.log('Confirm FishPoolFightWinner');
+			setShowFightResult(true);
+		});
+		unityContext.UnityInstance.on('FishPoolFightTie', function () {
+			console.log('Confirm FishPoolFightTie');
+			setShowFightResult(true);
+		});
 	}, [unityContext.isFishPoolReady]);
 
 	const getUserFight = async (fightIndex: number) => {
@@ -59,7 +73,6 @@ const FightFish = () => {
 			fightInfo.round3,
 			new BN(fightInfo.winner).toNumber()
 		);
-		setFightResult(newFight)
 		unityContext.sendRound(1, newFight.round1.value);
 		unityContext.sendRound(2, newFight.round2.value);
 		unityContext.sendRound(3, newFight.round3.value);
@@ -69,9 +82,10 @@ const FightFish = () => {
 		else if(newFight.winner == opponentFish?.tokenId) {
 			unityContext.sendWinner(opponentFish);
 		}
-		else if(newFight.winner) {
+		else if(newFight.winner == -1) {
 			unityContext.sendTie()
 		}
+		setFightResult(newFight)
 	}
 
 	const setOpponent = (fish : Fish) => {
@@ -129,6 +143,7 @@ const FightFish = () => {
 		setIsFighting(false)
 		setMySelectedFish(null)
 		setopponentFish(null)
+		setShowFightResult(false);
 		unityContext.clearFishPool('ShowFight');
 	}
 
@@ -210,6 +225,7 @@ const FightFish = () => {
 				</FishViewerButtons>
 				<FightGrid>
 					<FishNFT selectedUser={true} fish={mySelectedFish}></FishNFT>
+					{showFightResult ? 
 					<ResultContainer>
 						<ResultData>Results</ResultData>
 						<ResultData>Round 1: {fightResult.round1.description}</ResultData>
@@ -217,6 +233,10 @@ const FightFish = () => {
 						<ResultData>Round 3: {fightResult.round3.description}</ResultData>
 						<ResultData>Winner: {fightResult.winner}</ResultData>
 					</ResultContainer>
+					:
+					<VersusContainer><Text>Fight Starting!</Text></VersusContainer>
+					}
+					
 					<FishNFT selectedOpponent={true} fish={opponentFish}></FishNFT>
 				</FightGrid>
 			</FishViewerContainer>
