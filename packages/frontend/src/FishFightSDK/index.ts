@@ -3,7 +3,7 @@ import { Harmony, HarmonyExtension } from "@harmony-js/core"
 import { Contract } from "@harmony-js/contract"
 
 // Contracts
-import Contracts from '../contracts/contracts.json'
+import Contracts from '@fishfight-one/contracts/FishFightContracts/testnet/contracts.json'
 import Web3 from "web3"
 
 class FishFight {

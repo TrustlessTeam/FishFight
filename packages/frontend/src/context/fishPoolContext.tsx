@@ -9,7 +9,7 @@ import { hexToNumber } from '@harmony-js/utils';
 import { useUnity } from './unityContext';
 
 const MAX_FISH = 42;
-const serverURL = `http://localhost:8000`;
+const serverURL = `http://localhost:5000`;
 
 interface FishPoolProviderContext {
 	userFish: Fish[]
