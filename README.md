@@ -1,4 +1,4 @@
-FishFight.one : A NFT/Blockchain game
+# FishFight.one : A NFT/Blockchain game
 
 Harmony Hackathon submission: Harmony - Bridging TradFi to DeFi
 ## Cross-Chain with Trustless Bridge -
