@@ -3,6 +3,8 @@
 ## Video Demo
 [Video Demo](https://youtu.be/Ymq9lgS3dsM)
 
+## [PDF of this README file] (https://docs.google.com/document/d/e/2PACX-1vQTp0GpxwyuYrw93n-UNr8fozF4hJ82m30YEazRGm0vNuR5wzwymEbdH9_42AmE1q3HfRtFXL63sg5J/pub)
+
 ## Testnet Link
 [FishFight.ONE](https://fishfight.one/)
 TESTNET Only
