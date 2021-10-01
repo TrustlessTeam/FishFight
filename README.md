@@ -6,11 +6,6 @@
 ## Testnet Link
 [TESTNET LINK](https://fishfight.one/)
 TESTNET Only
-Work in progress.
-Bugs to note:
-Once loaded connect account before clicking the Catch fish button.
-Routes do not reload on page refresh.
-The backend server that renders static metadata has been hit or miss, so fish images along the bottom may not load until the meta data is successfully rendered.
 
 Harmony Hackathon submission: Harmony - Bridging TradFi to DeFi
 ## Cross-Chain with Trustless Bridge -
@@ -204,3 +199,9 @@ currently the game supplies everything needed to play but the option in the futu
 2. Breeding Policy
 3. Upgrades to Fighting visuals and contracts.
 4. Selling $FISH NFTs to the FishingPool Market
+
+### Work in progress.
+#### Known Issues:
+1. Once loaded connect account before clicking the Catch fish button.
+2. Routes do not reload on page refresh.
+3. The backend server that renders static metadata has been hit or miss, so fish images along the bottom may not load until the meta data is successfully rendered.
