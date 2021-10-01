@@ -4,7 +4,7 @@
 [Video Demo](https://youtu.be/Ymq9lgS3dsM)
 
 ## Testnet Link
-[TESTNET LINK](https://fishfight.one/)
+[FishFight.ONE](https://fishfight.one/)
 TESTNET Only
 
 Harmony Hackathon submission: Harmony - Bridging TradFi to DeFi
