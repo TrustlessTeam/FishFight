@@ -17,7 +17,8 @@ interface UnityProviderContext {
 	showFight: () => void;
 	showHome: () => void;
 	addFishOcean: (fish: Fish) => void,
-	addFishFight: (fish: Fish) => void;
+	addFishFight1: (fish: Fish) => void;
+	addFishFight2: (fish: Fish) => void;
 	addFishFishing: (fish: Fish) => void;
 	showFish: (fish: Fish) => void;
 	clearFishPool: (pool: string) => void;
@@ -172,11 +173,18 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
 		UnityInstance.send('FishPool', 'AddFish_OceanView', JSON.stringify(fish));
 		// console.log("AddFish Completed")
 	};
-	const addFishFight = (fish: Fish) => {
+	const addFishFight1 = (fish: Fish) => {
 		// console.log("AddFish Called")
     if(!isLoaded || !fishPoolReady) return;
 		console.log(fish)
-		UnityInstance.send('FishPool', 'AddFish_FightView', JSON.stringify(fish));
+		UnityInstance.send('FishPool', 'AddFish1_FightView', JSON.stringify(fish));
+		// console.log("AddFish Completed")
+	};
+	const addFishFight2 = (fish: Fish) => {
+		// console.log("AddFish Called")
+    if(!isLoaded || !fishPoolReady) return;
+		console.log(fish)
+		UnityInstance.send('FishPool', 'AddFish2_FightView', JSON.stringify(fish));
 		// console.log("AddFish Completed")
 	};
 	const addFishFishing = (fish: Fish) => {
@@ -240,7 +248,8 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
     showFight: showFight,
 		showHome: showHome,
     addFishOcean: addFishOcean,
-		addFishFight: addFishFight,
+		addFishFight1: addFishFight1,
+		addFishFight2: addFishFight2,
 		addFishFishing: addFishFishing,
 		showFish: showFish,
 		clearFishPool: clearFishPool,

@@ -90,22 +90,22 @@ const FightFish = () => {
 
 	const setOpponent = (fish : Fish) => {
 		console.log("Opponent Fish: " + fish.tokenId)
-		unityContext.clearFishPool('ShowFight');
+		//unityContext.clearFishPool('ShowFight');
 		if(mySelectedFish != null) {
-			unityContext.addFishFight(mySelectedFish);
+			unityContext.addFishFight2(mySelectedFish);
 		}
 		setopponentFish(fish);
-		unityContext.addFishFight(fish)
+		unityContext.addFishFight2(fish)
 	}
 
 	const setUserFish = (fish : Fish) => {
 		console.log("UserSelected Fish: " + fish.tokenId)
-		unityContext.clearFishPool('ShowFight');
+		//unityContext.clearFishPool('ShowFight');
 		if(opponentFish != null) {
-			unityContext.addFishFight(opponentFish);
+			unityContext.addFishFight1(opponentFish);
 		}
 		setMySelectedFish(fish);
-		unityContext.addFishFight(fish)
+		unityContext.addFishFight1(fish)
 	}
 
 	const fightFish = () => async () => {
@@ -143,8 +143,7 @@ const FightFish = () => {
 		setIsFighting(false)
 		setMySelectedFish(null)
 		setopponentFish(null)
-		setShowFightResult(false);
-		unityContext.clearFishPool('ShowFight');
+		setShowFightResult(false);		
 	}
 
 	const setFishToView = () => {
