@@ -39,54 +39,56 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
 
 	const unityContext = useUnity();
 
-  // Load Token Data from Blockchain
+  // Load public fish ids
   useEffect(() => {
-    const loadTokenData = async (account: any) => {
-      if(account) {
+    const loadTokenData = async () => {
+      console.log("ACCOUNT NOT CONNECTED")
+      console.log("Building publicFish tokenIds")
+      seedPublicPoolTokenIds();
+    }
+		loadTokenData();
+  }, []);
+
+  // Load connected user fish data from the blockchain
+  useEffect(() => {
+    const loadTokenData = async (account: string | null | undefined, arePublicFishLoaded: boolean) => {
+      if(account && arePublicFishLoaded) {
         console.log("ACCOUNT CONNECTED")
         console.log("Building userFish tokenIds")
-        const userTokens = await seedUserPoolTokenIds(account)
-        seedPublicPoolTokenIds(userTokens);
+        seedUserPoolTokenIds(account);
       } 
-      else {
-        console.log("ACCOUNT NOT CONNECTED")
-        console.log("Building publicFish tokenIds")
-        seedPublicPoolTokenIds([]);
-      }
     }
-		unityContext.clearFishPool('ShowOcean');
-    setArePublicFishLoaded(false)
-		if(unityContext.isFishPoolReady) loadTokenData(account);
-  }, [userConnected, unityContext.isFishPoolReady]);
+		if(unityContext.isFishPoolReady) loadTokenData(account, arePublicFishLoaded);
+  }, [account, unityContext.isFishPoolReady, arePublicFishLoaded]);
 
   // Get Public Fish data from the blockchain
   useEffect(() => {
     if(publicPoolTokenIds.length > 0) {
       fetchPublicFish()
     }
-  }, [publicPoolTokenIds]);
+  }, [unityContext.isFishPoolReady, publicPoolTokenIds]);
 
   // Get Public Fish data from the blockchain
-  useEffect(() => {
-    if(userPoolTokenIds.length > 0) {
-      fetchUserFish()
-    }
-  }, [userPoolTokenIds]);
+  // useEffect(() => {
+  //   if(userPoolTokenIds.length > 0) {
+  //     fetchUserFish()
+  //   }
+  // }, [userPoolTokenIds]);
   
 // TODO add function to clear pool when user logs out?
 
 
   
-  const seedPublicPoolTokenIds = async (userTokenIds: number[]) => {
+  const seedPublicPoolTokenIds = async () => {
     const fishSupply: BN = await FishFight.factory.methods.totalSupply().call();
     const totalFishSupply = new BN(fishSupply).toNumber();
+    let tokenIds: number[] = [];
     if(totalFishSupply > MAX_FISH) {
-      // getRandomTokenIds()
-    }
-    const tokenIds = []
-    for(let i = 0; i < totalFishSupply; i++) {
-      if(userTokenIds.includes(i)) continue;
-      tokenIds.push(i)
+      console.log("getting random fish")
+      tokenIds = getRandomFish(totalFishSupply)
+    } else {
+      // getting default fish
+      tokenIds = [...Array(totalFishSupply).keys()]
     }
     console.log(tokenIds);
     setPublicPoolTokenIds(tokenIds);
@@ -97,12 +99,16 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
     const userFish: number[] = [];
     try {
       const fishUserOwns: BN = await FishFight.factory.methods.balanceOf(account).call();
+      console.log(`User owns: ${fishUserOwns}`)
       const numUserFish = new BN(fishUserOwns).toNumber();
       for(let i = 0; i < numUserFish; i++) {
         const tokenId: BN = await FishFight.factory.methods.tokenOfOwnerByIndex(account, i).call();
         const parsedTokenId = new BN(tokenId).toNumber();
-        userFish.push(parsedTokenId);
+        setUserPoolTokenIds(prevUserFishTokens => [...prevUserFishTokens, parsedTokenId])
+        fetchUserFish(parsedTokenId)
+        // userFish.push(parsedTokenId);
       }
+      setAreUserFishLoaded(true);
     } catch (error) {
       console.log("Error loading Fish tokens owned by account: ")
       console.log(error)
@@ -113,39 +119,23 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
 
   const addUserPoolTokenId = (tokenId: number) => {
     setUserPoolTokenIds(prevTokens => [...prevTokens, tokenId])
+    fetchUserFish(tokenId);
   };
 
   // Get a selection from all minted fish, excluding the connected accounts fish
 	const fetchPublicFish = async () => {
     // Get public fish
-    // TODO: limit fish loaded (some kind of random selection of fish)
     console.log("FETCH PUBLIC FISH")
-		
-    const existingPublicFish = publicFish;
     try {
-			setPublicFish([]);
       await Promise.all(publicPoolTokenIds.map(async tokenId => {
-				// don't re add a fish that we already have
-        if(existingPublicFish.length > 0) {
-          const existingFish = existingPublicFish.filter(fish => fish.tokenId == tokenId)[0];
-          if(existingFish) {
-            // console.log("fish already exists")
-            setPublicFish(prevPublicFish => [...prevPublicFish, existingFish])
-            unityContext.addFishOcean(existingFish);
-            return;
-          }
-        }
-
         // fish doesn't exist in the fish pool yet so add it
         const fish = await getFish(FishFight, tokenId);
         if(fish != null) {
-					// console.log("getting fish")
           setPublicFish(prevPublicFish => [...prevPublicFish, fish])
-					unityContext.addFishOcean(fish);
+          unityContext.addFishOcean(fish);
         }
 			}));
       setArePublicFishLoaded(true);
-      // setPublicFish(tempPublicFish);
     } catch (error) {
       console.log("Failed to load total supply and public fish: ")
       console.log(error)
@@ -154,21 +144,26 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
   }
 
   // Get Fish owned by the connected account
-	const fetchUserFish = async () => {
+	const fetchUserFish = async (tokenId: number) => {
     console.log("FETCH USER FISH")
     try {
-      await Promise.all(userPoolTokenIds.map(async tokenId => {
-        if(userFish.some(x => x.tokenId == tokenId)) {
-          return;
-        }
-
-        const fish = await getFish(FishFight, tokenId)
-        if(fish != null) {
-          setUserFish(prevFish => ([...prevFish, fish]))
-					unityContext.addFishOcean(fish);
-        }
-      }));
-      if(account) setAreUserFishLoaded(true);
+      // // don't re-add fish
+      // if(userFish.some(x => x.tokenId === tokenId)) {
+      //   return;
+      // }
+      // remove user fish from public fish
+      if(publicFish.some(x => x.tokenId === tokenId)) {
+        setPublicFish(prevPublicFish => (
+          prevPublicFish.filter((fish, i) => fish.tokenId !== tokenId)
+        ));
+      }
+      
+      // get user fish data
+      const fish = await getFish(FishFight, tokenId)
+      if(fish != null) {
+        setUserFish(prevFish => ([...prevFish, fish]))
+        unityContext.addFishOcean(fish);
+      }
     } catch (error) {
       console.log("Error fetching userFish: ");
       console.log(error);
@@ -264,17 +259,16 @@ const getFishMetaData = async (tokenURI: string) : Promise<string> => {
   return metadata;
 }
 
-// const getRandomTokenIds = (startIndex: number, endIndex: number, excludedIndexes: number[]) => {
+function getRandomInt(min: number, max: number) {
+  return Math.random() * (max - min) + min;
+}
 
-// }
-
-// function getRandomInt(min: number, max: number) {
-//   return Math.random() * (max - min) + min;
-// }
-
-// function shuffle(o: number[]) {
-//   for(var j, x, i = o.length; i; j = parseInt(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
-//   return o;
-// };
-
-// var random = shuffle(numbers);
+const getRandomFish = (maxSupply: number) => {
+  const randomTokenIds: number[] = [];
+  while(randomTokenIds.length < MAX_FISH) {
+    let randomToken = Math.round(getRandomInt(0, maxSupply));
+    console.log(randomToken)
+    if(!randomTokenIds.includes(randomToken)) randomTokenIds.push(randomToken);
+  }
+  return randomTokenIds;
+}
