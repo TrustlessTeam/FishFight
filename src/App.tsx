@@ -55,7 +55,7 @@ const App = () => {
 							</Nav>
 
 							<AccountContainer>
-								<Text>TESTNET</Text>
+								<Text>$ONE TESTNET</Text>
 								{account &&
 									<Balance />
 								}

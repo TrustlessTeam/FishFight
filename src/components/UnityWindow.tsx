@@ -17,7 +17,7 @@ const UnityWindow = ({ children }: Props) => {
 	
 	return (
 		<UnityWindowComponent>
-			{!unityContext.isLoaded && <p>Loading {unityContext.progression * 100} percent...</p>}
+			{!unityContext.isLoaded && <p className="loading-text">Loading {unityContext.progression * 100} percent...</p>}
 			<Fragment>
 				{unityContext.isUnityMounted === true && <Unity unityContent={unityContext.UnityInstance} />}
 				{children}
