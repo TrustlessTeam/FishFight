@@ -68,24 +68,11 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
 			console.log('UI changed');
 			console.log(data)
 			switch (data) {
-				case 'mint_fish_5p':
-					setMintFish(4);
-					return;
-				case 'mint_fish_25p':
-					setMintFish(3);
-					return;
-				case 'mint_fish_50p':
-					setMintFish(2);
-					return;
-				case 'mint_fish_75p':
-					setMintFish(1);
-					return;
 				case 'disclaimer_confirm':
-					if(cookies['accepted_terms'] == true) return;
+					if(cookies['accepted_terms'] === true) return;
     			setCookie('accepted_terms', true);
 					return;
 				default:
-					setMintFish(0)
 					return;
 			}
 		});

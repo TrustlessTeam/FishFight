@@ -35,7 +35,7 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
 
   const { account } = useWeb3React();
 
-  const { FishFight, userConnected } = useFishFight();
+  const { FishFight } = useFishFight();
 
 	const unityContext = useUnity();
 
@@ -106,7 +106,6 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
         const parsedTokenId = new BN(tokenId).toNumber();
         setUserPoolTokenIds(prevUserFishTokens => [...prevUserFishTokens, parsedTokenId])
         fetchUserFish(parsedTokenId)
-        // userFish.push(parsedTokenId);
       }
       setAreUserFishLoaded(true);
     } catch (error) {
@@ -191,6 +190,7 @@ export const useFishPool = () => {
 	const context = useContext(FishPoolContext);
 
 	if (!context) {
+		// eslint-disable-next-line no-throw-literal
 		throw 'useFishFight must be used within a FishFightProvider';
 	}
 	return context;

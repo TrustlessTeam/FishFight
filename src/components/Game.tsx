@@ -13,7 +13,8 @@ import ViewFish from './ViewFish';
 import CatchFish from './CatchFish';
 
 import { useCookies } from 'react-cookie';
-import { useUnity } from '../context/unityContext';
+import { useFishFight } from '../context/fishFightContext';
+import ConnectWallet from './ConnectWallet';
 
 
 type Props = {
@@ -22,6 +23,8 @@ type Props = {
 
 const Game = ({ children }: Props) => {
   const [cookies] = useCookies(['accepted_terms']);
+  const { userConnected } = useFishFight();
+
 
   // useEffect(() => {
 	// 	console.log("Fish arrays changed")
@@ -33,7 +36,14 @@ const Game = ({ children }: Props) => {
         {cookies['accepted_terms'] && 
           <Switch>
             <Route path="/catch">
-              <CatchFish/>
+              {
+                userConnected &&
+                <CatchFish />
+              }
+              {
+                !userConnected &&
+                <ConnectWallet />
+              }
             </Route>
             <Route path="/fight">
               <FightFish />
