@@ -34,9 +34,7 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
 	const [userFish, setUserFish] = useState<Fish[]>([]);
 
   const { account } = useWeb3React();
-
   const { FishFight } = useFishFight();
-
 	const unityContext = useUnity();
 
   // Load public fish ids
@@ -146,15 +144,15 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
 	const fetchUserFish = async (tokenId: number) => {
     console.log("FETCH USER FISH")
     try {
-      // // don't re-add fish
-      // if(userFish.some(x => x.tokenId === tokenId)) {
-      //   return;
-      // }
-      // remove user fish from public fish
-      if(publicFish.some(x => x.tokenId === tokenId)) {
+      // if user fish in public fish remove from public and add to user fish
+      var existingFish = publicFish.filter(fish => fish.tokenId === tokenId)
+      if(existingFish.length > 0) {
         setPublicFish(prevPublicFish => (
           prevPublicFish.filter((fish, i) => fish.tokenId !== tokenId)
         ));
+        setUserFish(prevFish => ([...prevFish, existingFish[0]]))
+        unityContext.addFishOcean(existingFish[0]);
+        return;
       }
       
       // get user fish data
