@@ -184,6 +184,7 @@ currently the game supplies everything needed to play but the option in the futu
 5. hardat/truffle
 
 ### Team/Contributors
+#### TrustlessTeam (github - @TrustlessTeam - @TrustlessTeam ) - DAO
 #### Edd Norris (github - @twobitEDD twitter - @EddNorris ) - Developer
 #### Isaac Schwab (github - @isaacSchwab twitter - @DevSchwab )  - Developer
 
