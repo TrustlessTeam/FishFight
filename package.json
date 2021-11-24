@@ -5,7 +5,7 @@
   "dependencies": {
     "@ethersproject/providers": "^5.4.1",
     "@ethersproject/units": "^5.4.0",
-    "@fishfight-one/contracts": "git+https://github.com/TrustlessTeam/FishFight-Contract.git",
+    "@fishfight-one/contracts": "git+https://github.com/TrustlessTeam/FishFight-Contract.git#contract-upgrade-2",
     "@harmony-js/core": "^0.1.57",
     "@harmony-react/abstract-connector": "^1.0.2",
     "@harmony-react/mathwallet-connector": "^1.0.2",
