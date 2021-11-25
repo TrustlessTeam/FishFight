@@ -9,6 +9,7 @@ import { Fish } from '../utils/fish'
 import { useFishFight } from '../context/fishFightContext';
 import { useUnity } from '../context/unityContext';
 import { useFishPool } from '../context/fishPoolContext';
+import Web3 from 'web3';
 
 // const catchRates = [
 // 	{value: 1000, chance: "100%"},
@@ -84,7 +85,15 @@ const CatchFish = () => {
 
 	const mintFish = async (value: number, account: string | null | undefined) => {
 		console.log(account)
+		
 		if (account) {
+			if(FishFight.type == 'web3') {
+				const provider = FishFight.provider as Web3;
+				if(await provider.eth.getChainId() != 1666700000) {
+					toast.error('Wrong Network');
+					return;
+				}
+			}
 			console.log("catch fish")
 			setNoCatch(false);
 			setCaughtFish(null);
@@ -95,7 +104,7 @@ const CatchFish = () => {
 					from: account,
 					gasPrice: 1000000000,
 					gasLimit: 500000,
-					value: new Unit(value).asOne().toWei(),
+					value: new Unit(value).asOne().toWei()
 				});
 				console.log(fish)
 				if(fish.events.Transfer) {
