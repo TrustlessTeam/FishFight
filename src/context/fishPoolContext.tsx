@@ -2,11 +2,12 @@ import { Fish } from '../utils/fish';
 import { createContext, useContext, useEffect, useState } from 'react';
 import { useWeb3React } from '@web3-react/core';
 import { useFishFight } from './fishFightContext';
-import BN from 'bn.js';
+import web3 from 'web3'
 import axios from 'axios';
 import FishFight from '../FishFightSDK';
 import { hexToNumber } from '@harmony-js/utils';
 import { useUnity } from './unityContext';
+import { Hex } from 'web3/utils';
 
 const MAX_FISH = 42;
 const serverURL = `http://198.199.79.15:5000`;
@@ -32,6 +33,7 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
   const [arePublicFishLoaded, setArePublicFishLoaded] = useState<boolean>(false);
 	const [publicFish, setPublicFish] = useState<Fish[]>([]);
 	const [userFish, setUserFish] = useState<Fish[]>([]);
+	const [fightingWatersFish, setfightingWatersFish] = useState<Fish[]>([]);
 
   const { account } = useWeb3React();
   const { FishFight } = useFishFight();
@@ -78,15 +80,24 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
 
   
   const seedPublicPoolTokenIds = async () => {
-    const fishSupply: BN = await FishFight.fishFactory.methods.totalSupply().call();
-    const totalFishSupply = new BN(fishSupply).toNumber();
+    console.log("here")
     let tokenIds: number[] = [];
-    if(totalFishSupply > MAX_FISH) {
-      console.log("getting random fish")
-      tokenIds = getRandomFish(totalFishSupply)
-    } else {
-      // getting default fish
-      tokenIds = [...Array(totalFishSupply).keys()]
+
+    try {
+      const fishSupply = await FishFight.fishFactory.methods.totalSupply().call();
+      console.log(fishSupply)
+      const totalFishSupply = web3.utils.toBN(fishSupply).toNumber();
+      console.log(totalFishSupply)
+    
+      if(totalFishSupply > MAX_FISH) {
+        console.log("getting random fish")
+        tokenIds = getRandomFish(totalFishSupply)
+      } else {
+        // getting default fish
+        tokenIds = [...Array(totalFishSupply).keys()]
+      }
+    } catch (error) {
+      console.log(error)
     }
     console.log(tokenIds);
     setPublicPoolTokenIds(tokenIds);
@@ -96,12 +107,12 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
   const seedUserPoolTokenIds = async (account: string) => {
     const userFish: number[] = [];
     try {
-      const fishUserOwns: BN = await FishFight.fishFactory.methods.balanceOf(account).call();
+      const fishUserOwns = await FishFight.fishFactory.methods.balanceOf(account).call();
       console.log(`User owns: ${fishUserOwns}`)
-      const numUserFish = new BN(fishUserOwns).toNumber();
+      const numUserFish = web3.utils.toBN(fishUserOwns).toNumber();
       for(let i = 0; i < numUserFish; i++) {
-        const tokenId: BN = await FishFight.fishFactory.methods.tokenOfOwnerByIndex(account, i).call();
-        const parsedTokenId = new BN(tokenId).toNumber();
+        const tokenId = await FishFight.fishFactory.methods.tokenOfOwnerByIndex(account, i).call();
+        const parsedTokenId = web3.utils.toBN(tokenId).toNumber();
         setUserPoolTokenIds(prevUserFishTokens => [...prevUserFishTokens, parsedTokenId])
         fetchUserFish(parsedTokenId)
       }
@@ -216,15 +227,15 @@ const getFish = async (fishFightInstance: FishFight, tokenId: number) : Promise<
     if(tokenURI) {
       imgSrc = `${serverURL}/tokens/${tokenId}.png`
     }
-    return new Fish(
+    let fish = new Fish(
       fishInfo.tokenId,
       fishInfo.birthTime,
       fishInfo.genes,
       fishInfo.fishType,
       fishInfo.rarity,
-      new BN(fishInfo.strength).toNumber().toString(),
-      new BN(fishInfo.intelligence).toNumber().toString(),
-      new BN(fishInfo.agility).toNumber().toString(),
+      fishInfo.strength,
+      fishInfo.intelligence,
+      fishInfo.agility,
       fishInfo.cooldownMultiplier,
       fishInfo.lifetimeWins,
       fishInfo.lifetimeAlphaBreeds,
@@ -236,6 +247,8 @@ const getFish = async (fishFightInstance: FishFight, tokenId: number) : Promise<
       imgSrc,
       tokenURI
     );
+    console.log(fish)
+    return fish;
 
   } catch (error) {
     console.log("Get FishInfo call failed:")

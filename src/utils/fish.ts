@@ -1,12 +1,14 @@
+import web3 from 'web3'
+
 export class Fish {
   tokenId: number;
   birthTime: number;
   genes: string;
   fishType: number;
   rarity: number;
-  strength: string;
-  intelligence: string;
-  agility: string;
+  strength: number;
+  intelligence: number;
+  agility: number;
   cooldownMultiplier: number;
   lifetimeWins: number;
   lifetimeAlphaBreeds: number;
@@ -21,42 +23,42 @@ export class Fish {
   ipfsLink: string | null;
 
   constructor(
-    tokenId: number,
-    birthTime: number,
-    genes: string,
-    fishType: number,
-    rarity: number,
-    strength: string,
-    intelligence: string,
-    agility: string,
-    cooldownMultiplier: number,
-    lifetimeWins: number,
-    lifetimeAlphaBreeds: number,
-    lifetimeBettaBreeds: number,
-    parentA: number,
-    parentB: number,
-    breedKey: string,
-    deathTime: number,
+    tokenId: any,
+    birthTime: any,
+    genes: any,
+    fishType: any,
+    rarity: any,
+    strength: any,
+    intelligence: any,
+    agility: any,
+    cooldownMultiplier: any,
+    lifetimeWins: any,
+    lifetimeAlphaBreeds: any,
+    lifetimeBettaBreeds: any,
+    parentA: any,
+    parentB: any,
+    breedKey: any,
+    deathTime: any,
     imgSrc?: string | null,
     ipfsLink?: string | null
   ) 
   {
-    this.tokenId = tokenId;
-    this.birthTime = birthTime;
+    this.tokenId = web3.utils.toNumber(tokenId);
+    this.birthTime = web3.utils.toNumber(birthTime);
     this.genes = genes;
-    this.fishType = fishType;
-    this.rarity = rarity;
-    this.strength = strength;
-    this.intelligence = intelligence;
-    this.agility = agility;
-    this.cooldownMultiplier = cooldownMultiplier;
-    this.lifetimeWins = lifetimeWins;
-    this.lifetimeAlphaBreeds = lifetimeAlphaBreeds;
-    this.lifetimeBettaBreeds = lifetimeBettaBreeds;
+    this.fishType = web3.utils.toNumber(fishType);
+    this.rarity = web3.utils.toNumber(rarity);
+    this.strength = web3.utils.hexToNumber(`0x${strength}`);
+    this.intelligence = web3.utils.hexToNumber(`0x${intelligence}`);
+    this.agility = web3.utils.hexToNumber(`0x${agility}`);
+    this.cooldownMultiplier = web3.utils.toNumber(cooldownMultiplier);
+    this.lifetimeWins = web3.utils.toNumber(lifetimeWins);
+    this.lifetimeAlphaBreeds = web3.utils.toNumber(lifetimeAlphaBreeds);
+    this.lifetimeBettaBreeds = web3.utils.toNumber(lifetimeBettaBreeds);
     this.parentA = parentA;
     this.parentB = parentB;
     this.breedKey = breedKey;
-    this.deathTime = deathTime;
+    this.deathTime = web3.utils.toNumber(deathTime);
     this.genesArray = this.parseGenes(this.genes);
     this.visualTraits = this.parseTraits();
     this.imgSrc = imgSrc ? imgSrc : null;
@@ -98,43 +100,43 @@ export class Fish {
       ColorEyeTertiary: {r: genesArray[66], g: genesArray[67], b: genesArray[68], a: 255},
       
       // Head trait mapping
-      HeadEdges: this.mapTraitValueToRange(genesArray[69], fishType[this.fishType].ranges.HeadEdges), // range (0 - ?)
-      HeadNose: this.mapTraitValueToRange(genesArray[70], fishType[this.fishType].ranges.HeadNose),
-      HeadFrills: this.mapTraitValueToRange(genesArray[71], fishType[this.fishType].ranges.HeadFrills),
-      HeadFlat: this.mapTraitValueToRange(genesArray[72], fishType[this.fishType].ranges.HeadFlat),
-      HeadSplit: this.mapTraitValueToRange(genesArray[73], fishType[this.fishType].ranges.HeadSplit),
-      HeadFlatnose: this.mapTraitValueToRange(genesArray[74], fishType[this.fishType].ranges.HeadFlatnose),
-      BodyFat: this.mapTraitValueToRange(genesArray[75], fishType[this.fishType].ranges.BodyFat),
+      HeadEdges: this.mapTraitValueToRange(genesArray[69], fishTypes[this.fishType].ranges.HeadEdges), // range (0 - ?)
+      HeadNose: this.mapTraitValueToRange(genesArray[70], fishTypes[this.fishType].ranges.HeadNose),
+      HeadFrills: this.mapTraitValueToRange(genesArray[71], fishTypes[this.fishType].ranges.HeadFrills),
+      HeadFlat: this.mapTraitValueToRange(genesArray[72], fishTypes[this.fishType].ranges.HeadFlat),
+      HeadSplit: this.mapTraitValueToRange(genesArray[73], fishTypes[this.fishType].ranges.HeadSplit),
+      HeadFlatnose: this.mapTraitValueToRange(genesArray[74], fishTypes[this.fishType].ranges.HeadFlatnose),
+      BodyFat: this.mapTraitValueToRange(genesArray[75], fishTypes[this.fishType].ranges.BodyFat),
 
       // Texture trait mapping
-      TextureBodyPrimary: this.mapTraitValueToRange(genesArray[76], fishType[this.fishType].ranges.TextureBodyPrimary), // range (0 - ?)
-      TextureBodySecondary: this.mapTraitValueToRange(genesArray[77], fishType[this.fishType].ranges.TextureBodySecondary),
+      TextureBodyPrimary: this.mapTraitValueToRange(genesArray[76], fishTypes[this.fishType].ranges.TextureBodyPrimary), // range (0 - ?)
+      TextureBodySecondary: this.mapTraitValueToRange(genesArray[77], fishTypes[this.fishType].ranges.TextureBodySecondary),
       
-      TextureHeadPrimary: this.mapTraitValueToRange(genesArray[78], fishType[this.fishType].ranges.TextureHeadPrimary),
-      TextureHeadSecondary: this.mapTraitValueToRange(genesArray[79], fishType[this.fishType].ranges.TextureHeadSecondary),
+      TextureHeadPrimary: this.mapTraitValueToRange(genesArray[78], fishTypes[this.fishType].ranges.TextureHeadPrimary),
+      TextureHeadSecondary: this.mapTraitValueToRange(genesArray[79], fishTypes[this.fishType].ranges.TextureHeadSecondary),
       
-      TexturePectoralPrimary: this.mapTraitValueToRange(genesArray[80], fishType[this.fishType].ranges.TexturePectoralPrimary),
-      TexturePectoralSecondary: this.mapTraitValueToRange(genesArray[81], fishType[this.fishType].ranges.TexturePectoralSecondary),
+      TexturePectoralPrimary: this.mapTraitValueToRange(genesArray[80], fishTypes[this.fishType].ranges.TexturePectoralPrimary),
+      TexturePectoralSecondary: this.mapTraitValueToRange(genesArray[81], fishTypes[this.fishType].ranges.TexturePectoralSecondary),
 
-      TextureDorsalPrimary: this.mapTraitValueToRange(genesArray[82], fishType[this.fishType].ranges.TextureDorsalPrimary),
-      TextureDorsalSecondary: this.mapTraitValueToRange(genesArray[83], fishType[this.fishType].ranges.TextureDorsalSecondary),
+      TextureDorsalPrimary: this.mapTraitValueToRange(genesArray[82], fishTypes[this.fishType].ranges.TextureDorsalPrimary),
+      TextureDorsalSecondary: this.mapTraitValueToRange(genesArray[83], fishTypes[this.fishType].ranges.TextureDorsalSecondary),
       
-      TextureTailPrimary: this.mapTraitValueToRange(genesArray[84], fishType[this.fishType].ranges.TextureTailPrimary),
-      TextureTailSecondary: this.mapTraitValueToRange(genesArray[85], fishType[this.fishType].ranges.TextureTailSecondary),
+      TextureTailPrimary: this.mapTraitValueToRange(genesArray[84], fishTypes[this.fishType].ranges.TextureTailPrimary),
+      TextureTailSecondary: this.mapTraitValueToRange(genesArray[85], fishTypes[this.fishType].ranges.TextureTailSecondary),
       
-      TextureJawPrimary: this.mapTraitValueToRange(genesArray[86], fishType[this.fishType].ranges.TextureJawPrimary),
-      TextureJawSecondary: this.mapTraitValueToRange(genesArray[87], fishType[this.fishType].ranges.TextureJawSecondary),
+      TextureJawPrimary: this.mapTraitValueToRange(genesArray[86], fishTypes[this.fishType].ranges.TextureJawPrimary),
+      TextureJawSecondary: this.mapTraitValueToRange(genesArray[87], fishTypes[this.fishType].ranges.TextureJawSecondary),
 
       // Mesh Mapping
-      MeshBodyIndex: this.mapTraitValueToRange(genesArray[88], fishType[this.fishType].ranges.MeshBodyIndex),
-      MeshJawIndex: this.mapTraitValueToRange(genesArray[89], fishType[this.fishType].ranges.MeshJawIndex),
-      MeshEyeIndex: this.mapTraitValueToRange(genesArray[90], fishType[this.fishType].ranges.MeshEyeIndex),
-      MeshDorsalIndex: this.mapTraitValueToRange(genesArray[91], fishType[this.fishType].ranges.MeshDorsalIndex),
-      MeshPectoralIndex: this.mapTraitValueToRange(genesArray[92], fishType[this.fishType].ranges.MeshPectoralIndex),
-      MeshTailIndex: this.mapTraitValueToRange(genesArray[93], fishType[this.fishType].ranges.MeshTailIndex),
+      MeshBodyIndex: this.mapTraitValueToRange(genesArray[88], fishTypes[this.fishType].ranges.MeshBodyIndex),
+      MeshJawIndex: this.mapTraitValueToRange(genesArray[89], fishTypes[this.fishType].ranges.MeshJawIndex),
+      MeshEyeIndex: this.mapTraitValueToRange(genesArray[90], fishTypes[this.fishType].ranges.MeshEyeIndex),
+      MeshDorsalIndex: this.mapTraitValueToRange(genesArray[91], fishTypes[this.fishType].ranges.MeshDorsalIndex),
+      MeshPectoralIndex: this.mapTraitValueToRange(genesArray[92], fishTypes[this.fishType].ranges.MeshPectoralIndex),
+      MeshTailIndex: this.mapTraitValueToRange(genesArray[93], fishTypes[this.fishType].ranges.MeshTailIndex),
 
       // Glimmer Mapping
-      GlimmerStrength: this.mapTraitValueToRange(genesArray[94], fishType[this.fishType].ranges.GlimmerStrength),
+      GlimmerStrength: this.mapTraitValueToRange(genesArray[94], fishTypes[this.fishType].ranges.GlimmerStrength),
     };
 
     return fishTraits;
@@ -240,7 +242,7 @@ type VisualTraits = {
   GlimmerStrength: number
 }
 
-const fishType = [
+const fishTypes = [
   {
     name: "GenesisFish",
     ranges: {
