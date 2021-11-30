@@ -59,22 +59,25 @@ const CatchFish = () => {
 	}, [unityContext.isFishPoolReady]);
 
 	const getUserFish = async (tokenId: number) => {
-		const fishInfo = await FishFight.factory.methods.getFishInfo(tokenId).call();
+		const fishInfo = await FishFight.fishFactory.methods.getFishInfo(tokenId).call();
 		console.log(fishInfo)
 		const newFish = new Fish(
-			tokenId,
-			new BN(fishInfo.fishTypeIndex).toNumber(),
-			fishInfo.name,
-			new BN(fishInfo.birth).toNumber(),
-			hexToNumber(fishInfo.strength),
-			hexToNumber(fishInfo.intelligence),
-			hexToNumber(fishInfo.agility),
-			new BN(fishInfo.wins).toNumber(),
-			new BN(fishInfo.challenger).toNumber(),
-			new BN(fishInfo.challenged).toNumber(),
-			fishInfo.traitsA,
-			fishInfo.traitsB,
-			fishInfo.traitsC
+			fishInfo.tokenId,
+      fishInfo.birthTime,
+      fishInfo.genes,
+      fishInfo.fishType,
+      fishInfo.rarity,
+      fishInfo.strength,
+      fishInfo.intelligence,
+      fishInfo.agility,
+      fishInfo.cooldownMultiplier,
+      fishInfo.lifetimeWins,
+      fishInfo.lifetimeAlphaBreeds,
+      fishInfo.lifetimeBettaBreeds,
+      fishInfo.parentA,
+      fishInfo.parentB,
+      fishInfo.breedKey,
+      fishInfo.deathTime
 		);
 		console.log(newFish)
 		setCaughtFish(newFish)
@@ -100,7 +103,7 @@ const CatchFish = () => {
 			setCaughtFishHash(null);
 			unityContext.clearFishPool('ShowFishing');
 			try {
-				const fish = await FishFight.factory.methods.catchFish().send({
+				const fish = await FishFight.fishingWaters.methods.goFishing().send({
 					from: account,
 					gasPrice: 1000000000,
 					gasLimit: 500000,

@@ -16,11 +16,17 @@ export type Provider = {
 }
 
 // Depending on this the provider will be chosen
-const envProvider: string = process.env.REACT_APP_FRONTEND_NETWORK || 'testnet';
+const envProvider: string = process.env.REACT_APP_FRONTEND_NETWORK || 'localnet';
 
 
 // Provider list
 const configProviders: { [name: string]: Provider } = {
+	hardhat: {
+		chainId: ChainID.HmyLocal,
+		chainType: ChainType.Harmony,
+		url: 'http://localhost:8545',
+		networkId: '31337',
+	},
 	localnet: {
 		chainId: ChainID.HmyLocal,
 		chainType: ChainType.Harmony,

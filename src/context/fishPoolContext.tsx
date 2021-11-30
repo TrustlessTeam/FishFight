@@ -78,7 +78,7 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
 
   
   const seedPublicPoolTokenIds = async () => {
-    const fishSupply: BN = await FishFight.factory.methods.totalSupply().call();
+    const fishSupply: BN = await FishFight.fishFactory.methods.totalSupply().call();
     const totalFishSupply = new BN(fishSupply).toNumber();
     let tokenIds: number[] = [];
     if(totalFishSupply > MAX_FISH) {
@@ -96,11 +96,11 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
   const seedUserPoolTokenIds = async (account: string) => {
     const userFish: number[] = [];
     try {
-      const fishUserOwns: BN = await FishFight.factory.methods.balanceOf(account).call();
+      const fishUserOwns: BN = await FishFight.fishFactory.methods.balanceOf(account).call();
       console.log(`User owns: ${fishUserOwns}`)
       const numUserFish = new BN(fishUserOwns).toNumber();
       for(let i = 0; i < numUserFish; i++) {
-        const tokenId: BN = await FishFight.factory.methods.tokenOfOwnerByIndex(account, i).call();
+        const tokenId: BN = await FishFight.fishFactory.methods.tokenOfOwnerByIndex(account, i).call();
         const parsedTokenId = new BN(tokenId).toNumber();
         setUserPoolTokenIds(prevUserFishTokens => [...prevUserFishTokens, parsedTokenId])
         fetchUserFish(parsedTokenId)
@@ -202,11 +202,12 @@ export const useFishPool = () => {
 const getFish = async (fishFightInstance: FishFight, tokenId: number) : Promise<Fish | null> => {
   try {
     console.log(`Loading Fish ${tokenId} from blockchain`)
-    const fishInfo = await fishFightInstance.factory.methods.getFishInfo(tokenId).call();
+    const fishInfo = await fishFightInstance.fishFactory.methods.getFishInfo(tokenId).call();
+    console.log(fishInfo)
     // load image url from metadata
     let tokenURI = "";
     try {
-      tokenURI = await fishFightInstance.factory.methods.tokenURI(tokenId).call();
+      tokenURI = await fishFightInstance.fishFactory.methods.tokenURI(tokenId).call();
     } catch (error) {
       console.log("Get TokenURI call failed:")
       console.log(error)
@@ -216,19 +217,22 @@ const getFish = async (fishFightInstance: FishFight, tokenId: number) : Promise<
       imgSrc = `${serverURL}/tokens/${tokenId}.png`
     }
     return new Fish(
-      tokenId,
-      new BN(fishInfo.fishTypeIndex).toNumber(),
-      fishInfo.name,
-      new BN(fishInfo.birth).toNumber(),
-      hexToNumber(fishInfo.strength),
-      hexToNumber(fishInfo.intelligence),
-      hexToNumber(fishInfo.agility),
-      new BN(fishInfo.wins).toNumber(),
-      new BN(fishInfo.challenger).toNumber(),
-      new BN(fishInfo.challenged).toNumber(),
-      fishInfo.traitsA,
-      fishInfo.traitsB,
-      fishInfo.traitsC,
+      fishInfo.tokenId,
+      fishInfo.birthTime,
+      fishInfo.genes,
+      fishInfo.fishType,
+      fishInfo.rarity,
+      new BN(fishInfo.strength).toNumber().toString(),
+      new BN(fishInfo.intelligence).toNumber().toString(),
+      new BN(fishInfo.agility).toNumber().toString(),
+      fishInfo.cooldownMultiplier,
+      fishInfo.lifetimeWins,
+      fishInfo.lifetimeAlphaBreeds,
+      fishInfo.lifetimeBettaBreeds,
+      fishInfo.parentA,
+      fishInfo.parentB,
+      fishInfo.breedKey,
+      fishInfo.deathTime,
       imgSrc,
       tokenURI
     );
