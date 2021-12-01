@@ -94,7 +94,7 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
         tokenIds = getRandomFish(totalFishSupply)
       } else {
         // getting default fish
-        tokenIds = [...Array(totalFishSupply).keys()]
+        tokenIds = [...Array(totalFishSupply+1).keys()].slice(1);
       }
     } catch (error) {
       console.log(error)

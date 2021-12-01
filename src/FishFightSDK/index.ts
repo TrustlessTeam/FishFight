@@ -71,6 +71,18 @@ class FishFight {
 
         return 'def'
     }
+
+    setSeasonsContract = (provider: any, type: "web3" | "harmony" | "default") => {
+        if (type === "harmony" || type === "default" ) {
+            return provider.contracts.createContract(Contracts.contracts.Seasons.abi, Contracts.contracts.Seasons.address)
+        }
+
+        if (type === "web3") {
+            return new provider.eth.Contract(Contracts.contracts.Seasons.abi, Contracts.contracts.Seasons.address)
+        }
+
+        return 'def'
+    }
 }
 
 export default FishFight 

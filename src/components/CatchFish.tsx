@@ -9,7 +9,7 @@ import { Fish } from '../utils/fish'
 import { useFishFight } from '../context/fishFightContext';
 import { useUnity } from '../context/unityContext';
 import { useFishPool } from '../context/fishPoolContext';
-import Web3 from 'web3';
+import web3 from 'web3';
 
 // const catchRates = [
 // 	{value: 1000, chance: "100%"},
@@ -21,7 +21,7 @@ import Web3 from 'web3';
 const CatchFish = () => {
 	const unityContext = useUnity()
 	const { account } = useWeb3React();
-	const { FishFight, refetchBalance } = useFishFight()
+	const { FishFight, refetchBalance, defaultProvider } = useFishFight()
 	const { addUserPoolTokenId } = useFishPool();
 	const [caughtFish, setCaughtFish] = useState<Fish | null>(null);
 	const [caughtFishHash, setCaughtFishHash] = useState<string | null>(null);
@@ -59,6 +59,7 @@ const CatchFish = () => {
 	}, [unityContext.isFishPoolReady]);
 
 	const getUserFish = async (tokenId: number) => {
+		console.log(tokenId)
 		const fishInfo = await FishFight.fishFactory.methods.getFishInfo(tokenId).call();
 		console.log(fishInfo)
 		const newFish = new Fish(
@@ -91,7 +92,7 @@ const CatchFish = () => {
 		
 		if (account) {
 			if(FishFight.type == 'web3') {
-				const provider = FishFight.provider as Web3;
+				const provider = FishFight.provider as web3;
 				if(await provider.eth.getChainId() != 1666700000) {
 					toast.error('Wrong Network');
 					return;
@@ -103,6 +104,8 @@ const CatchFish = () => {
 			setCaughtFishHash(null);
 			unityContext.clearFishPool('ShowFishing');
 			try {
+				const currentBlockNum = await defaultProvider.eth.getBlockNumber();
+				console.log(currentBlockNum)
 				const fish = await FishFight.fishingWaters.methods.goFishing().send({
 					from: account,
 					gasPrice: 1000000000,
@@ -110,14 +113,31 @@ const CatchFish = () => {
 					value: new Unit(value).asOne().toWei()
 				});
 				console.log(fish)
-				if(fish.events.Transfer) {
+				FishFight.fishingWaters.events.FishingResult({
+					filter: {address: account}, // Using an array means OR: e.g. 20 or 23
+					fromBlock: currentBlockNum
+				}, function(error: any, event: any)
+				{
+					console.log(event);
+
+					console.log(event.returnValues.tokenId)
 					setCaughtFishHash(fish.transactionHash)
-					const returnedTokenId = new BN(fish.events.Transfer.returnValues.tokenId).toNumber()
-					getUserFish(returnedTokenId);
-				} else {
-					console.log("set no catch")
-					setNoCatch(true);
-				}
+					// const returnedTokenId = new BN().toNumber()
+					getUserFish(event.returnValues.tokenId);
+					
+				})
+				FishFight.fishFactory.events.FishMinted({
+					filter: {address: account}, // Using an array means OR: e.g. 20 or 23
+					fromBlock: currentBlockNum
+				}, function(error: any, event: any)
+				{
+					console.log(event);
+					if(!event.returnValues.success) {
+						console.log("set no catch")
+						setNoCatch(true);
+					}
+				})
+
 				toast.success('Transaction done', {
 					onClose: async () => {
 						refetchBalance()

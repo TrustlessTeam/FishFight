@@ -6,12 +6,14 @@ import { toBech32 } from '@harmony-js/crypto';
 import { isBech32Address, fromWei, hexToNumber, Units } from '@harmony-js/utils';
 import { Harmony } from "@harmony-js/core";
 import { Web3Provider } from "@ethersproject/providers";
+import Web3 from 'web3';
 
 // Typescript
 interface FishFightProviderContext {
     FishFight: FishFight
     userConnected: boolean
     balance: string | undefined
+    defaultProvider: Web3
     refetchBalance: () => void
 	  resetBalance: () => void
 }
@@ -30,6 +32,8 @@ export const FishFightProvider = ({ children }: FishFightProviderProps ) => {
   const { account, connector, library} = useWeb3React();
 
   const contextBalance = useBalance();
+
+  const provider = new Web3('http://localhost:9500')
 
   
   useEffect(() => {
@@ -58,6 +62,7 @@ export const FishFightProvider = ({ children }: FishFightProviderProps ) => {
   const value: FishFightProviderContext = {
     FishFight: FishFightInstance,
     userConnected: userConnected,
+    defaultProvider: provider,
     refetchBalance,
     ...contextBalance
   }
