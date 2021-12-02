@@ -13,20 +13,20 @@ import Web3 from 'web3';
 import { getProvider } from "../utils/provider";
 
 type getWalletProviderReturn = {
-	provider: HarmonyExtension | Web3 | Harmony, // type of provider (harmony wallet, or web3 wallet)
-	type: "harmony" | "web3" | "default" // will let sdk know what type of provider we are dealing with to initiate contracts correctly. If type === default, user is not signed in
+	provider: HarmonyExtension | Web3, // type of provider (harmony wallet, or web3 wallet)
+	type: "harmony" | "web3" // will let sdk know what type of provider we are dealing with to initiate contracts correctly. If type === default, user is not signed in
 }
 
 // To-do useMemo
-export const getHarmonyProvider = (): getWalletProviderReturn => {
-	const prov = getProvider()
-	const provider = new Harmony(prov.url, {chainId: prov.chainId, chainType: prov.chainType})
-	return {provider, type: "default"}
-}
+// export const getHarmonyProvider = (): getWalletProviderReturn => {
+// 	const prov = getProvider()
+// 	const provider = new Harmony(prov.url, {chainId: prov.chainId, chainType: prov.chainType})
+// 	return {provider, type: "default"}
+// }
 
 
 export const getWalletProvider = async (connector: AbstractConnector | HarmonyAbstractConnector | undefined, library: Blockchain | any | undefined ): Promise<getWalletProviderReturn> => {
-    let provider: HarmonyExtension | Web3 | Harmony
+    let provider: HarmonyExtension | Web3
     
     const harmonyConnector = connector as HarmonyAbstractConnector;
     // If connector is a HarmonyAbstractConnector, it will contain windowKey (mathWallet or OneWallet).

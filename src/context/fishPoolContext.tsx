@@ -84,7 +84,7 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
     let tokenIds: number[] = [];
 
     try {
-      const fishSupply = await FishFight.fishFactory.methods.totalSupply().call();
+      const fishSupply = await FishFight.readFishFactory.methods.totalSupply().call();
       console.log(fishSupply)
       const totalFishSupply = web3.utils.toBN(fishSupply).toNumber();
       console.log(totalFishSupply)
@@ -107,11 +107,11 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
   const seedUserPoolTokenIds = async (account: string) => {
     const userFish: number[] = [];
     try {
-      const fishUserOwns = await FishFight.fishFactory.methods.balanceOf(account).call();
+      const fishUserOwns = await FishFight.readFishFactory.methods.balanceOf(account).call();
       console.log(`User owns: ${fishUserOwns}`)
       const numUserFish = web3.utils.toBN(fishUserOwns).toNumber();
       for(let i = 0; i < numUserFish; i++) {
-        const tokenId = await FishFight.fishFactory.methods.tokenOfOwnerByIndex(account, i).call();
+        const tokenId = await FishFight.readFishFactory.methods.tokenOfOwnerByIndex(account, i).call();
         const parsedTokenId = web3.utils.toBN(tokenId).toNumber();
         setUserPoolTokenIds(prevUserFishTokens => [...prevUserFishTokens, parsedTokenId])
         fetchUserFish(parsedTokenId)
@@ -213,12 +213,12 @@ export const useFishPool = () => {
 const getFish = async (fishFightInstance: FishFight, tokenId: number) : Promise<Fish | null> => {
   try {
     console.log(`Loading Fish ${tokenId} from blockchain`)
-    const fishInfo = await fishFightInstance.fishFactory.methods.getFishInfo(tokenId).call();
+    const fishInfo = await fishFightInstance.readFishFactory.methods.getFishInfo(tokenId).call();
     console.log(fishInfo)
     // load image url from metadata
     let tokenURI = "";
     try {
-      tokenURI = await fishFightInstance.fishFactory.methods.tokenURI(tokenId).call();
+      tokenURI = await fishFightInstance.readFishFactory.methods.tokenURI(tokenId).call();
     } catch (error) {
       console.log("Get TokenURI call failed:")
       console.log(error)

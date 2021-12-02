@@ -21,14 +21,16 @@ import web3 from 'web3';
 const CatchFish = () => {
 	const unityContext = useUnity()
 	const { account } = useWeb3React();
-	const { FishFight, refetchBalance, defaultProvider } = useFishFight()
+	const { FishFight, refetchBalance } = useFishFight()
 	const { addUserPoolTokenId } = useFishPool();
 	const [caughtFish, setCaughtFish] = useState<Fish | null>(null);
 	const [caughtFishHash, setCaughtFishHash] = useState<string | null>(null);
 	const [noCatch, setNoCatch] = useState<boolean>(false);
+	const [currentPhase, setCurrentPhase] = useState<string>('');
 
 	useEffect(() => {
 		unityContext.showFishing();
+		getSeason()
 	}, [unityContext.isFishPoolReady]);
 
 	useEffect(() => {
@@ -60,7 +62,7 @@ const CatchFish = () => {
 
 	const getUserFish = async (tokenId: number) => {
 		console.log(tokenId)
-		const fishInfo = await FishFight.fishFactory.methods.getFishInfo(tokenId).call();
+		const fishInfo = await FishFight.readFishFactory.methods.getFishInfo(tokenId).call();
 		console.log(fishInfo)
 		const newFish = new Fish(
 			fishInfo.tokenId,
@@ -104,39 +106,24 @@ const CatchFish = () => {
 			setCaughtFishHash(null);
 			unityContext.clearFishPool('ShowFishing');
 			try {
-				const currentBlockNum = await defaultProvider.eth.getBlockNumber();
+				const currentBlockNum = await FishFight.provider.eth.getBlockNumber();
 				console.log(currentBlockNum)
-				const fish = await FishFight.fishingWaters.methods.goFishing().send({
+				
+				const fish = await FishFight.fishingWaters?.methods.goFishing().send({
 					from: account,
 					gasPrice: 1000000000,
 					gasLimit: 500000,
 					value: new Unit(value).asOne().toWei()
 				});
 				console.log(fish)
-				FishFight.fishingWaters.events.FishingResult({
-					filter: {address: account}, // Using an array means OR: e.g. 20 or 23
-					fromBlock: currentBlockNum
-				}, function(error: any, event: any)
-				{
-					console.log(event);
-
-					console.log(event.returnValues.tokenId)
+				if(fish.events.FishingResult.returnValues.index == 0) {
+					console.log("set no catch")
+					setNoCatch(true);
+				} else {
 					setCaughtFishHash(fish.transactionHash)
 					// const returnedTokenId = new BN().toNumber()
-					getUserFish(event.returnValues.tokenId);
-					
-				})
-				FishFight.fishFactory.events.FishMinted({
-					filter: {address: account}, // Using an array means OR: e.g. 20 or 23
-					fromBlock: currentBlockNum
-				}, function(error: any, event: any)
-				{
-					console.log(event);
-					if(!event.returnValues.success) {
-						console.log("set no catch")
-						setNoCatch(true);
-					}
-				})
+					getUserFish(fish.events.FishingResult.returnValues.index);
+				}
 
 				toast.success('Transaction done', {
 					onClose: async () => {
@@ -145,15 +132,36 @@ const CatchFish = () => {
 				});
 			} catch (error: any) {
 				toast.error(error);
+				console.log(error)
 			}
 		} else {
 			toast.error('Connect your wallet');
 		}
 	};
 
+	const getSeason = async () => {
+		let seasonPhase = await FishFight.readSeasons.methods.getCurrentSeasonPhase().call();
+		console.log(seasonPhase)
+		switch (web3.utils.toNumber(seasonPhase)) {
+			case 1:
+				setCurrentPhase('FISHING')
+				break;
+			case 2:
+				setCurrentPhase('FIGHTING')
+				break;
+			case 3:
+				setCurrentPhase('BREEDING')
+				break;
+			default:
+				break;
+		}
+		
+	}
+
 
 	return (
 		<>
+		<h1>{currentPhase}</h1>
 		{caughtFish && caughtFishHash &&
 			<>
 				<CaughtFish>

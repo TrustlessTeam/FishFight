@@ -62,7 +62,7 @@ const FightFish = () => {
 	}, [unityContext.isFishPoolReady]);
 
 	const getUserFight = async (fightIndex: number) => {
-		const fightInfo = await FishFight.fightingWaters.methods.getFightInfo(fightIndex).call();
+		const fightInfo = await FishFight.fightingWaters?.methods.getFightInfo(fightIndex).call();
 		const newFight = new Fight(
 			new BN(fightInfo.typeOfFight).toNumber(),
 			new BN(fightInfo.fishChallenger).toNumber(),
@@ -98,7 +98,7 @@ const FightFish = () => {
 		unityContext.addFishFight2(fish)
 	}
 
-	const setUserFish = (fish : Fish) => {
+	const setUserFish = async (fish : Fish) => {
 		console.log("UserSelected Fish: " + fish.tokenId)
 		//unityContext.clearFishPool('ShowFight');
 		if(opponentFish != null) {
@@ -106,13 +106,25 @@ const FightFish = () => {
 		}
 		setMySelectedFish(fish);
 		unityContext.addFishFight1(fish)
+		const approve = await FishFight.fishFactory?.methods.approve(FishFight.readFightingWaters.options.address, fish.tokenId).send({
+			from: account,
+			gasPrice: 1000000000,
+			gasLimit: 500000,
+		})
+		console.log(approve)
+		const addToFightingWaters = await FishFight.fightingWaters?.methods.deposit(fish.tokenId).send({
+			from: account,
+			gasPrice: 1000000000,
+			gasLimit: 800000,
+		})
+		console.log(addToFightingWaters)
 	}
 
 	const fightFish = () => async () => {
 		if (account && mySelectedFish != null && opponentFish != null) {
 			try {
 				setIsFighting(true);
-				const result = await FishFight.fightingWaters.methods.deathFight(mySelectedFish.tokenId, opponentFish.tokenId).send({
+				const result = await FishFight.fightingWaters?.methods.deathFight(mySelectedFish.tokenId, opponentFish.tokenId).send({
 					from: account,
 					gasPrice: 1000000000,
 					gasLimit: 500000,

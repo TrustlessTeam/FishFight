@@ -1,7 +1,7 @@
 import FishFight from "../FishFightSDK";
 import { createContext, useContext, useEffect, useState, useCallback} from "react"
 import { useWeb3React } from "@web3-react/core";
-import { getHarmonyProvider, getWalletProvider } from '../helpers/providerHelper'
+import { getWalletProvider } from '../helpers/providerHelper'
 import { toBech32 } from '@harmony-js/crypto';
 import { isBech32Address, fromWei, hexToNumber, Units } from '@harmony-js/utils';
 import { Harmony } from "@harmony-js/core";
@@ -13,7 +13,6 @@ interface FishFightProviderContext {
     FishFight: FishFight
     userConnected: boolean
     balance: string | undefined
-    defaultProvider: Web3
     refetchBalance: () => void
 	  resetBalance: () => void
 }
@@ -26,14 +25,12 @@ const FishFightContext = createContext<FishFightProviderContext | undefined>(und
 // Defining context provider
 export const FishFightProvider = ({ children }: FishFightProviderProps ) => {
   // FishFight instance initiates with default url provider upon visiting page
-  const [FishFightInstance, setFishFightInstance] = useState<FishFight>(new FishFight(getHarmonyProvider().provider, getHarmonyProvider().type))
+  const [FishFightInstance, setFishFightInstance] = useState<FishFight>(new FishFight())
   const [userConnected, setUserConnected] = useState<boolean>(false);
   // State of web3React
   const { account, connector, library} = useWeb3React();
 
   const contextBalance = useBalance();
-
-  const provider = new Web3('http://localhost:9500')
 
   
   useEffect(() => {
@@ -41,8 +38,10 @@ export const FishFightProvider = ({ children }: FishFightProviderProps ) => {
     if (account && connector && library) {
       getWalletProvider(connector, library).then(async (wallet) =>
       {
-        setFishFightInstance(new FishFight(wallet.provider, wallet.type))
+        FishFightInstance.setProviderWallet(wallet.provider, wallet.type);
+        // setFishFightInstance(new FishFight())
         setUserConnected(true);
+        console.log(FishFightInstance)
       })
     }
     if(!account) {
@@ -62,7 +61,6 @@ export const FishFightProvider = ({ children }: FishFightProviderProps ) => {
   const value: FishFightProviderContext = {
     FishFight: FishFightInstance,
     userConnected: userConnected,
-    defaultProvider: provider,
     refetchBalance,
     ...contextBalance
   }

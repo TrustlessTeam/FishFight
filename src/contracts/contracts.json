@@ -3,7 +3,7 @@
   "chainId": "1666700000",
   "contracts": {
     "BreedComputation": {
-      "address": "0x7Ea7E2E06F531a43aD2CA562862f7DC770E03FDc",
+      "address": "0xb0FB7E23cC4EE3D04C70a178526efB585373C505",
       "abi": [
         {
           "inputs": [
@@ -346,7 +346,7 @@
       ]
     },
     "BreedingWaters": {
-      "address": "0x6580B43F413C0A0CAc183210f0506aEeF901278A",
+      "address": "0x2dD17a7a2758B2e2df2c1D40caE1c5d70473f7E8",
       "abi": [
         {
           "inputs": [
@@ -1111,7 +1111,7 @@
       ]
     },
     "DeadFishFactory": {
-      "address": "0x7d68651BFe5ECEAB80e351274529aD1975F06251",
+      "address": "0xf89bE64aeE79eE722b97C89Fa425f7C069248f4c",
       "abi": [
         {
           "inputs": [
@@ -1780,7 +1780,7 @@
       ]
     },
     "FightComputation": {
-      "address": "0x6f3F5DFf6eccDfD91F0996a77B927deAE37C1829",
+      "address": "0x878FD34C6299b03a8C0672FbbD2839ee1A284a00",
       "abi": [
         {
           "inputs": [
@@ -1830,7 +1830,7 @@
       ]
     },
     "FightingWaters": {
-      "address": "0x7f723CB15c8fe0868d26E08f0458ec1B8445cd73",
+      "address": "0x4320638D765c2591dA1a8ee0afc2e631BDdEe98B",
       "abi": [
         {
           "inputs": [
@@ -2800,7 +2800,7 @@
       ]
     },
     "FishFactory": {
-      "address": "0x6b218b6Cb9BA2f28c88F7953F04c5a15CcB7188C",
+      "address": "0x5Ed68eC99131c4dF8002Af760A9E3FC6C2a4Ed7B",
       "abi": [
         {
           "inputs": [],
@@ -3340,7 +3340,13 @@
             }
           ],
           "name": "mintChildFish",
-          "outputs": [],
+          "outputs": [
+            {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+            }
+          ],
           "stateMutability": "nonpayable",
           "type": "function"
         },
@@ -3440,7 +3446,13 @@
             }
           ],
           "name": "mintFish",
-          "outputs": [],
+          "outputs": [
+            {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+            }
+          ],
           "stateMutability": "nonpayable",
           "type": "function"
         },
@@ -4685,7 +4697,7 @@
       ]
     },
     "FishingWaters": {
-      "address": "0x5611cE6d7832a5907799ad5c274a04DE65587aBe",
+      "address": "0x42a38A33a5EfD4345Ce9B8A067c41941445A7e3E",
       "abi": [
         {
           "inputs": [
@@ -4718,9 +4730,9 @@
           "inputs": [
             {
               "indexed": false,
-              "internalType": "bool",
-              "name": "success",
-              "type": "bool"
+              "internalType": "uint256",
+              "name": "index",
+              "type": "uint256"
             },
             {
               "indexed": true,
@@ -4884,7 +4896,13 @@
         {
           "inputs": [],
           "name": "goFishing",
-          "outputs": [],
+          "outputs": [
+            {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+            }
+          ],
           "stateMutability": "payable",
           "type": "function"
         },
@@ -4931,7 +4949,7 @@
       ]
     },
     "FoodFactory": {
-      "address": "0x0eEBC53A884926C7bcB149159837793B504876A5",
+      "address": "0x18DFf8407c04116B4f1E1F35723bd2ceD201c91E",
       "abi": [
         {
           "inputs": [
@@ -5166,7 +5184,7 @@
       ]
     },
     "Seasons": {
-      "address": "0x3c8689C2c2a6306601ACeF2368b39c41BC4C8cF3",
+      "address": "0x3c301aA57f85777C992BE6288806eD0477c5C3ce",
       "abi": [
         {
           "inputs": [
