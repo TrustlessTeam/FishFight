@@ -29,11 +29,12 @@ const FishPoolContext = createContext<FishPoolProviderContext | undefined>(undef
 export const FishPoolProvider = ({ children }: UnityProviderProps) => {
 	const [publicPoolTokenIds, setPublicPoolTokenIds] = useState<number[]>([]);
   const [userPoolTokenIds, setUserPoolTokenIds] = useState<number[]>([]);
+  const [fightingWatersTokenIds, setFightingWatersTokenIds] = useState<number[]>([]);
   const [areUserFishLoaded, setAreUserFishLoaded] = useState<boolean>(false);
   const [arePublicFishLoaded, setArePublicFishLoaded] = useState<boolean>(false);
 	const [publicFish, setPublicFish] = useState<Fish[]>([]);
 	const [userFish, setUserFish] = useState<Fish[]>([]);
-	const [fightingWatersFish, setfightingWatersFish] = useState<Fish[]>([]);
+	const [fightingWatersFish, setFightingWatersFish] = useState<Fish[]>([]);
 
   const { account } = useWeb3React();
   const { FishFight } = useFishFight();
@@ -45,6 +46,7 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
       console.log("ACCOUNT NOT CONNECTED")
       console.log("Building publicFish tokenIds")
       seedPublicPoolTokenIds();
+      seedUserPoolTokenIds(FishFight.readFightingWaters?.options.address)
     }
 		loadTokenData();
   }, []);
@@ -104,6 +106,28 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
     return tokenIds;
   }
 
+  const seedFightingWatersTokenIds = async () => {
+    const userFish: number[] = [];
+    const account = FishFight.readFightingWaters.options.address
+    try {
+      const fishFightingWatersOwns = await FishFight.readFishFactory.methods.balanceOf(account).call();
+      console.log(`Fish in Fighting Waters: ${fishFightingWatersOwns}`)
+      const numUserFish = web3.utils.toBN(fishFightingWatersOwns).toNumber();
+      for(let i = 0; i < numUserFish; i++) {
+        const tokenId = await FishFight.readFishFactory.methods.tokenOfOwnerByIndex(account, i).call();
+        const parsedTokenId = web3.utils.toBN(tokenId).toNumber();
+        setFightingWatersTokenIds(prevTokens => [...prevTokens, parsedTokenId])
+        fetchUserFish(parsedTokenId)
+      }
+      setAreUserFishLoaded(true);
+    } catch (error) {
+      console.log("Error loading Fish tokens owned by account: ")
+      console.log(error)
+    }
+    setUserPoolTokenIds(userFish);
+    return userFish;
+  }
+
   const seedUserPoolTokenIds = async (account: string) => {
     const userFish: number[] = [];
     try {
@@ -151,6 +175,24 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
       
   }
 
+  const fetchFightingFish = async () => {
+    console.log("FETCH PUBLIC FISH")
+    try {
+      await Promise.all(fightingWatersTokenIds.map(async tokenId => {
+        // fish doesn't exist in the fish pool yet so add it
+        const fish = await getFish(FishFight, tokenId);
+        if(fish != null) {
+          setFightingWatersFish(prevFish => [...prevFish, fish])
+          // unityContext.addFishOcean(fish);
+        }
+			}));
+      // setArePublicFishLoaded(true);
+    } catch (error) {
+      console.log("Failed to load total supply and fighting fish: ")
+      console.log(error)
+    }
+  }
+
   // Get Fish owned by the connected account
 	const fetchUserFish = async (tokenId: number) => {
     console.log("FETCH USER FISH")
@@ -162,7 +204,7 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
           prevPublicFish.filter((fish, i) => fish.tokenId !== tokenId)
         ));
         setUserFish(prevFish => ([...prevFish, existingFish[0]]))
-        unityContext.addFishOcean(existingFish[0]);
+        // unityContext.addFishOcean(existingFish[0]);
         return;
       }
       

@@ -169,6 +169,7 @@ const CatchFish = () => {
 					<FishData>Strength: {caughtFish.strength}</FishData>
 					<FishData>Intelligence: {caughtFish.intelligence}</FishData>
 					<FishData>Agiltiy: {caughtFish.agility}</FishData>
+					<FishData>Rarity: {caughtFish.rarity}</FishData>
 					<TransactionLink target="_blank" href={`https://explorer.pops.one/tx/${caughtFishHash}`}>View Transaction</TransactionLink>
 				</CaughtFish>
 

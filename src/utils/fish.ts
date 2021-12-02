@@ -48,9 +48,9 @@ export class Fish {
     this.genes = genes;
     this.fishType = web3.utils.toNumber(fishType);
     this.rarity = web3.utils.toNumber(rarity);
-    this.strength = web3.utils.hexToNumber(`0x${strength}`);
-    this.intelligence = web3.utils.hexToNumber(`0x${intelligence}`);
-    this.agility = web3.utils.hexToNumber(`0x${agility}`);
+    this.strength = web3.utils.toNumber(strength);
+    this.intelligence = web3.utils.toNumber(intelligence);
+    this.agility = web3.utils.toNumber(agility);
     this.cooldownMultiplier = web3.utils.toNumber(cooldownMultiplier);
     this.lifetimeWins = web3.utils.toNumber(lifetimeWins);
     this.lifetimeAlphaBreeds = web3.utils.toNumber(lifetimeAlphaBreeds);

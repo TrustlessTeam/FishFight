@@ -3,7 +3,7 @@
   "chainId": "1666700000",
   "contracts": {
     "BreedComputation": {
-      "address": "0xb0FB7E23cC4EE3D04C70a178526efB585373C505",
+      "address": "0x99d6Fc1150355dBe11CAa9352A22CaDC32c586e6",
       "abi": [
         {
           "inputs": [
@@ -346,7 +346,7 @@
       ]
     },
     "BreedingWaters": {
-      "address": "0x2dD17a7a2758B2e2df2c1D40caE1c5d70473f7E8",
+      "address": "0x14B3e44f74CBAD1588FE387213fAd03e1dA263eC",
       "abi": [
         {
           "inputs": [
@@ -1111,7 +1111,7 @@
       ]
     },
     "DeadFishFactory": {
-      "address": "0xf89bE64aeE79eE722b97C89Fa425f7C069248f4c",
+      "address": "0xD1BB9E644223254943073379baEBB93fc266f716",
       "abi": [
         {
           "inputs": [
@@ -1780,7 +1780,7 @@
       ]
     },
     "FightComputation": {
-      "address": "0x878FD34C6299b03a8C0672FbbD2839ee1A284a00",
+      "address": "0xDF2b9Cf11408C4B59E0fA24abeEea68Fdfc2fb9A",
       "abi": [
         {
           "inputs": [
@@ -1830,7 +1830,7 @@
       ]
     },
     "FightingWaters": {
-      "address": "0x4320638D765c2591dA1a8ee0afc2e631BDdEe98B",
+      "address": "0x8888Cb0aD47687F62F088fE632c5e420189dE77C",
       "abi": [
         {
           "inputs": [
@@ -2800,7 +2800,7 @@
       ]
     },
     "FishFactory": {
-      "address": "0x5Ed68eC99131c4dF8002Af760A9E3FC6C2a4Ed7B",
+      "address": "0xEE2E6fDAfB79a4B2E06779c2424eE37BFba9cd6E",
       "abi": [
         {
           "inputs": [],
@@ -4697,7 +4697,7 @@
       ]
     },
     "FishingWaters": {
-      "address": "0x42a38A33a5EfD4345Ce9B8A067c41941445A7e3E",
+      "address": "0x1588687308f6379F8f11652374912753bf216361",
       "abi": [
         {
           "inputs": [
@@ -4949,7 +4949,7 @@
       ]
     },
     "FoodFactory": {
-      "address": "0x18DFf8407c04116B4f1E1F35723bd2ceD201c91E",
+      "address": "0xe3eC198d0Ea217aF29029c47905B648fd3f893bF",
       "abi": [
         {
           "inputs": [
@@ -5184,7 +5184,7 @@
       ]
     },
     "Seasons": {
-      "address": "0x3c301aA57f85777C992BE6288806eD0477c5C3ce",
+      "address": "0x28c08e6D24CB2327410643a0629701837F03c337",
       "abi": [
         {
           "inputs": [
@@ -5353,6 +5353,45 @@
         {
           "inputs": [],
           "name": "_fishPhaseLength",
+          "outputs": [
+            {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [],
+          "name": "_maxFishBred",
+          "outputs": [
+            {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [],
+          "name": "_maxFishCaught",
+          "outputs": [
+            {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [],
+          "name": "_maxFishKilled",
           "outputs": [
             {
               "internalType": "uint256",
