@@ -1830,7 +1830,7 @@
       ]
     },
     "FightingWaters": {
-      "address": "0x8888Cb0aD47687F62F088fE632c5e420189dE77C",
+      "address": "0x68cE4F1c8a51215aB888E579c0d39559BE13E896",
       "abi": [
         {
           "inputs": [
@@ -4697,7 +4697,7 @@
       ]
     },
     "FishingWaters": {
-      "address": "0x1588687308f6379F8f11652374912753bf216361",
+      "address": "0xCe01fc1aeF3EEbb2264e1f680Ca6d70DDa14D970",
       "abi": [
         {
           "inputs": [

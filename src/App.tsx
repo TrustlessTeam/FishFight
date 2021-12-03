@@ -27,6 +27,11 @@ import CatchFish from './components/CatchFish';
 
 import Game from './components/Game';
 import logo from '../src/img/FishFightLogo.png'
+import Blockchain from './components/BlockchainStatus';
+
+import fishingImg from "./img/icons/fishing.svg"
+import breedingImg from "./img/icons/breeding.svg"
+import fightingImg from "./img/icons/fighting.svg"
 
 
 const App = () => {
@@ -43,14 +48,24 @@ const App = () => {
 				<Wrapper>
 					<Container>
 						<Topbar>
-							<Logo to={"/"}>
+							{/* <Logo to={"/"}>
 								<LogoImg src={logo}></LogoImg>
-							</Logo>
+							</Logo> */}
 					
 							<Nav>
-								<GameButton to="/view"><span>See<br></br>Fish!</span></GameButton>
-								<GameButton to="/catch"><span>Catch<br></br>Fish!</span></GameButton>
-								<GameButton to="/fight"><span>Fight<br></br>Fish!</span></GameButton>
+								{/* <BubbleButton to="/ocean"><span>Ocean</span></BubbleButton> */}
+								<Logo to="/fishing">
+									<LogoImg src={fishingImg} alt="Fishing"></LogoImg>
+								</Logo>
+								<Logo to="/breeding">
+									<LogoImg src={breedingImg} alt="Breeding"></LogoImg>
+								</Logo>
+								<Logo to="/fighting">
+									<LogoImg src={fightingImg} alt="Fighting"></LogoImg>
+								</Logo>
+								{/* <GameButton to="/fishing"><span>Fishing</span></GameButton> */}
+								{/* <GameButton to="/fighting"><span>Fighting</span></GameButton> */}
+								{/* <GameButton to="/breeding"><span>Breeding</span></GameButton> */}
 							</Nav>
 
 							<AccountContainer>
@@ -69,7 +84,8 @@ const App = () => {
 							</Route>
 						</Switch>		
 
-						
+						<Blockchain></Blockchain>
+
 					</Container>
 					<ToastContainer
 						position="bottom-right"
@@ -112,8 +128,9 @@ const Topbar = styled.div`
 	flex-flow: row nowrap;
 	justify-content: space-evenly;
 	align-items: center;
-	margin: ${props => props.theme.spacing.gap};
-	width: 95%;
+	/* margin: ${props => props.theme.spacing.gap}; */
+	margin-top: 4px;
+	width: 98%;
 	height: 8%;
 	z-index: 5;
 `;
@@ -162,6 +179,7 @@ const Text = styled.p`
 
 const Logo = styled(Link)`
 	display: none;
+	height: 100%;
 	@media ${props => props.theme.device.tablet} {
     display: flex;
 		flex-flow: row nowrap;
@@ -172,7 +190,9 @@ const Logo = styled(Link)`
 `;
 
 const LogoImg = styled.img`
-	width: 100%;
+	height: 100%;
+	border: 3px solid white;
+	border-radius: 50%;
 `;
 
 
@@ -185,5 +205,34 @@ const Nav = styled.nav`
 	width: 100%;
 	height: 100%;
 `;
+
+// const baseSize = 
+
+const BubbleButton = styled(Link)`
+	transition: opacity 0.3s ease, box-shadow 0.25s ease-in-out;
+	font-weight: bolder;
+	text-decoration: none;
+	color: white;
+	padding: 2.2vmin;
+	border-radius: 50%;
+	box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2), inset 0px 5px 15px 2.5px rgba(255, 255, 255, 1);
+	height: 50px;
+	width: 50px;
+	/* position: absolute; */
+	position: relative;
+	/* width: 100px; */
+	/* top: 500px; */
+
+	&:after {
+		background: radial-gradient(ellipse at center,  rgba(255,255,255,0.5) 0%,rgba(255,255,255,0) 70%); /* W3C */
+		border-radius: 50%;
+		box-shadow: inset 0 10px 15px rgba(255, 255, 255, 0.3);
+		content: "";
+		/* height: 90px; */
+		left: 5px;
+		position: absolute;
+		/* width: 90px; */
+	}
+`; 
 
 export default App;

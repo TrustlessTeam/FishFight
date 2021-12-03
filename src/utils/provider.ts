@@ -47,8 +47,22 @@ const configProviders: { [name: string]: Provider } = {
 	},
 };
 
+// Provider list
+const configWebSockets: { [name: string]: any } = {
+	localnet: {
+		url: 'ws://localhost:9800',
+	},
+	testnet: {
+		url: 'ws://ws.s0.b.hmny.io',
+	},
+	mainnet: {
+		url: 'ws://ws.s0.t.hmny.io',
+	},
+};
+
 // From provider list get the one we need
 export const getProvider = (): Provider => configProviders[envProvider];
+export const getWebSocketProvider = (): Provider => configWebSockets[envProvider];
 
 export const getLibraryProvider = (provider: Harmony | any): Library => {
 	let library: Library;

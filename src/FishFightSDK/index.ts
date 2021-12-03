@@ -2,7 +2,7 @@
 import { Harmony, HarmonyExtension } from "@harmony-js/core"
 import { Contract as HarmonyContract } from "@harmony-js/contract"
 import { Contract } from "web3-eth-contract";
-import { getProvider } from "../utils/provider";
+import { getProvider, getWebSocketProvider } from "../utils/provider";
 
 // Contracts
 // import Contracts from '@fishfight-one/contracts/FishFightContracts/testnet/contracts.json'
@@ -11,6 +11,7 @@ import Web3 from "web3"
 
 class FishFight {
     provider: Web3
+    listener: Web3
     providerWallet: HarmonyExtension | Web3 | null
     type: "web3" | "harmony" | null
     readFishFactory: Contract
@@ -18,14 +19,17 @@ class FishFight {
     readFightingWaters: Contract
     readBreedingWaters: Contract
     readSeasons: Contract
+    readFishFood: Contract
     fishFactory: Contract | HarmonyContract | null
     fishingWaters: Contract | HarmonyContract | null
     fightingWaters: Contract | HarmonyContract | null
     breedingWaters: Contract | HarmonyContract | null
     seasons: Contract | HarmonyContract | null
+    fishFood: Contract| HarmonyContract | null
 
     constructor(){
         this.provider = new Web3(getProvider().url);
+        this.listener = new Web3(getWebSocketProvider().url)
         this.type = null
         
         this.readFishFactory = this.setFishFactoryContract(this.provider, "web3")
@@ -33,6 +37,7 @@ class FishFight {
         this.readFightingWaters = this.setFightingWatersContract(this.provider, "web3")
         this.readBreedingWaters = this.setBreedingWatersContract(this.provider, "web3")
         this.readSeasons = this.setSeasonsContract(this.provider, "web3")
+        this.readFishFood = this.setFishFoodContract(this.provider, "web3")
 
         this.providerWallet = null;
         this.fishFactory = null;
@@ -40,6 +45,7 @@ class FishFight {
         this.fightingWaters = null;
         this.breedingWaters = null;
         this.seasons = null;
+        this.fishFood = null;
     }
 
     setProviderWallet = (providerWallet: HarmonyExtension | Web3, type: "web3" | "harmony") => {
@@ -50,6 +56,7 @@ class FishFight {
         this.fightingWaters = this.setFightingWatersContract(this.providerWallet, type)
         this.breedingWaters = this.setBreedingWatersContract(this.providerWallet, type)
         this.seasons = this.setSeasonsContract(this.providerWallet, type)
+        this.fishFood = this.setFishFoodContract(this.provider, type)
     }
 
     setFishFactoryContract = (provider: any, type: "web3" | "harmony" | "default") => {
@@ -107,6 +114,18 @@ class FishFight {
 
         if (type === "web3") {
             return new provider.eth.Contract(Contracts.contracts.Seasons.abi, Contracts.contracts.Seasons.address)
+        }
+
+        return null;
+    }
+
+    setFishFoodContract = (provider: any, type: "web3" | "harmony" | "default") => {
+        if (type === "harmony" || type === "default" ) {
+            return provider.contracts.createContract(Contracts.contracts.FishFood.abi, Contracts.contracts.FishFood.address)
+        }
+
+        if (type === "web3") {
+            return new provider.eth.Contract(Contracts.contracts.FishFood.abi, Contracts.contracts.FishFood.address)
         }
 
         return null;

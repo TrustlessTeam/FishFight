@@ -13,6 +13,8 @@ interface FishFightProviderContext {
     FishFight: FishFight
     userConnected: boolean
     balance: string | undefined
+    balanceFood: string | undefined
+    currentBlock: number
     refetchBalance: () => void
 	  resetBalance: () => void
 }
@@ -27,10 +29,29 @@ export const FishFightProvider = ({ children }: FishFightProviderProps ) => {
   // FishFight instance initiates with default url provider upon visiting page
   const [FishFightInstance, setFishFightInstance] = useState<FishFight>(new FishFight())
   const [userConnected, setUserConnected] = useState<boolean>(false);
+  const [currentBlock, setCurrentBlock] = useState<number>(0);
   // State of web3React
   const { account, connector, library} = useWeb3React();
 
   const contextBalance = useBalance();
+
+  
+
+  useEffect(() => {
+    // Set websocket block listener
+    var subscription = FishFightInstance.listener.eth.subscribe('newBlockHeaders');
+    subscription.on("data", function(blockHeader){
+      setCurrentBlock(blockHeader.number)
+    })
+      
+    return () => {
+      subscription.unsubscribe(function(error, success){
+        if (success) {
+            console.log('Successfully unsubscribed!');
+        }
+      });
+    }
+  }, [])
 
   
   useEffect(() => {
@@ -41,6 +62,7 @@ export const FishFightProvider = ({ children }: FishFightProviderProps ) => {
         FishFightInstance.setProviderWallet(wallet.provider, wallet.type);
         // setFishFightInstance(new FishFight())
         setUserConnected(true);
+        refetchBalance();
         console.log(FishFightInstance)
       })
     }
@@ -54,13 +76,14 @@ export const FishFightProvider = ({ children }: FishFightProviderProps ) => {
     if(!connector || !library) return;
     // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     account ? getWalletProvider(connector, library).then((wallet) => {
-      contextBalance.fetchBalance(account, wallet.type, wallet.provider, library)
+      contextBalance.fetchBalance(account, wallet.type, wallet.provider, library, FishFightInstance)
     }) : null
   }
 
   const value: FishFightProviderContext = {
     FishFight: FishFightInstance,
     userConnected: userConnected,
+    currentBlock: currentBlock,
     refetchBalance,
     ...contextBalance
   }
@@ -72,16 +95,21 @@ export const FishFightProvider = ({ children }: FishFightProviderProps ) => {
 // Account balance utilities that will be included in FishFightContext
 const useBalance = () => {
 	const [balance, setBalance] = useState<string>();
+	const [balanceFood, setBalanceFood] = useState<string>();
 
 	const fetchBalance = useCallback(
-		async (account: string, type: string, provider: Harmony | Web3Provider | any, library: any) => {
+		async (account: string, type: string, provider: Harmony | Web3Provider | any, library: any, FishFight: FishFight) => {
       // function should morph into accomodating user's provider.
       // If user is using harmony wallet, use HarmonyExtension, else use web3Provider
-      if (type === "harmony" || type === "default") {
+      if (type === "harmony") {
         const address = isBech32Address(account) ? account : toBech32(account);
         const balance = await provider.blockchain.getBalance({ address });
         const parsedBalance = fromWei(hexToNumber(balance.result), Units.one);
         setBalance(parsedBalance);
+
+        const food = await FishFight.fishFood?.methods.balanceOf(account);
+        const parsedFood = fromWei(food, Units.one)
+        setBalanceFood(parsedFood);
       }
 
       if (type === "web3") {
@@ -100,6 +128,7 @@ const useBalance = () => {
 
 	return {
 		balance,
+    balanceFood,
 		fetchBalance,
 		resetBalance,
 	};
