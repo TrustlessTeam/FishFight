@@ -70,7 +70,7 @@ const FishContainer = styled.div`
 `;
 
 const FishImg = styled.img<ImgProps>`
-	height: 17vh;
+	height: 12vh;
 	border-radius: 50%;
 	border: 0.5vh solid rgba(255, 255, 255, 0.5);
 	cursor: pointer; 

@@ -20,12 +20,14 @@ class FishFight {
     readBreedingWaters: Contract
     readSeasons: Contract
     readFishFood: Contract
+    readDeadFishFactory: Contract
     fishFactory: Contract | HarmonyContract | null
     fishingWaters: Contract | HarmonyContract | null
     fightingWaters: Contract | HarmonyContract | null
     breedingWaters: Contract | HarmonyContract | null
     seasons: Contract | HarmonyContract | null
     fishFood: Contract| HarmonyContract | null
+    deadFishFactory: Contract| HarmonyContract | null
 
     constructor(){
         this.provider = new Web3(getProvider().url);
@@ -38,6 +40,7 @@ class FishFight {
         this.readBreedingWaters = this.setBreedingWatersContract(this.provider, "web3")
         this.readSeasons = this.setSeasonsContract(this.provider, "web3")
         this.readFishFood = this.setFishFoodContract(this.provider, "web3")
+        this.readDeadFishFactory = this.setDeadFishFactoryContract(this.provider, "web3")
 
         this.providerWallet = null;
         this.fishFactory = null;
@@ -46,6 +49,7 @@ class FishFight {
         this.breedingWaters = null;
         this.seasons = null;
         this.fishFood = null;
+        this.deadFishFactory = null;
     }
 
     setProviderWallet = (providerWallet: HarmonyExtension | Web3, type: "web3" | "harmony") => {
@@ -57,6 +61,7 @@ class FishFight {
         this.breedingWaters = this.setBreedingWatersContract(this.providerWallet, type)
         this.seasons = this.setSeasonsContract(this.providerWallet, type)
         this.fishFood = this.setFishFoodContract(this.provider, type)
+        this.deadFishFactory = this.setDeadFishFactoryContract(this.provider, type)
     }
 
     setFishFactoryContract = (provider: any, type: "web3" | "harmony" | "default") => {
@@ -66,6 +71,18 @@ class FishFight {
 
         if (type === "web3") {
             return new provider.eth.Contract(Contracts.contracts.FishFactory.abi as any, Contracts.contracts.FishFactory.address)
+        }
+
+        return null;
+    }
+
+    setDeadFishFactoryContract = (provider: any, type: "web3" | "harmony" | "default") => {
+        if (type === "harmony") {
+            return provider.contracts.createContract(Contracts.contracts.DeadFishFactory.abi, Contracts.contracts.DeadFishFactory.address)
+        }
+
+        if (type === "web3") {
+            return new provider.eth.Contract(Contracts.contracts.DeadFishFactory.abi as any, Contracts.contracts.DeadFishFactory.address)
         }
 
         return null;

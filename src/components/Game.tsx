@@ -8,8 +8,8 @@ import {
 // Styled Components
 import styled from 'styled-components';
 import UnityWindow from './UnityWindow';
-import FightFish from './FightFish';
-import ViewFish from './ViewFish';
+import FightingWaters from './FightingWaters';
+import Ocean from './Ocean';
 import CatchFish from './CatchFish';
 
 import { useCookies } from 'react-cookie';
@@ -35,7 +35,7 @@ const Game = ({ children }: Props) => {
       <Viewer>
         {cookies['accepted_terms'] && 
           <Switch>
-            <Route path="/catch">
+            <Route path="/fishing">
               {
                 userConnected &&
                 <CatchFish />
@@ -45,11 +45,14 @@ const Game = ({ children }: Props) => {
                 <ConnectWallet />
               }
             </Route>
-            <Route path="/fight">
-              <FightFish />
+            <Route path="/fighting">
+              <FightingWaters />
             </Route>
-            <Route path="/view">
-              <ViewFish />
+            <Route path="/breeding">
+              <FightingWaters />
+            </Route>
+            <Route path="/ocean">
+              <Ocean />
             </Route>
             <Route path="/">
             </Route>
@@ -68,7 +71,8 @@ const Viewer = styled.div`
 	align-items: center;
 	justify-content: flex-end;
 	width: 100%;
-  height: 27%;
+  height: 100%;
+  pointer-events: none;
   bottom: 0;
   background: white;
   z-index: 5;

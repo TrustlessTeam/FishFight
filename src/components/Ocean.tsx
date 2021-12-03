@@ -6,15 +6,15 @@ import { useFishPool } from '../context/fishPoolContext';
 import { useFishFight } from '../context/fishFightContext';
 import { useUnity } from '../context/unityContext';
 import useHorizontalScroll from "../utils/horizontalScrolling";
-import Account from '../components/Account';
-import FishNFT from './FishNFT';
+import Account from './Account';
+import FishViewer from './FishViewer';
 
 enum FishToShow {
   Public,
   User
 }
 
-const ViewFish = () => {
+const Ocean = () => {
 	const { userFish, publicFish, arePublicFishLoaded, areUserFishLoaded } = useFishPool();
 	const [fishToShow, setFishToShow] = useState<FishToShow>(FishToShow.Public);
 	const unityContext = useUnity();
@@ -45,7 +45,11 @@ const ViewFish = () => {
 	const scrollRef = useHorizontalScroll();
 
 	return (
-		<FishViewerContainer>
+
+		<OceanContainer>
+				{/* <HighLevelOptions>
+
+				</HighLevelOptions> */}
 				<FishViewerButtons>
 					{fishToShow == FishToShow.Public ? <Text>Public Fish</Text> : <Text>Your Fish</Text>}
 					{fishToShow == FishToShow.Public && !arePublicFishLoaded &&
@@ -65,19 +69,8 @@ const ViewFish = () => {
 					
 				</FishViewerButtons>
 
-				<FishGrid ref={scrollRef}>
-				{fishToShow == FishToShow.Public &&
-					publicFish?.map((fish, index) => (
-						<FishNFT onClick={() => unityContext.showFish(fish)} fish={fish} key={index}></FishNFT>
-					))
-				}
-				{fishToShow == FishToShow.User && userConnected && userFish?.length > 0 &&
-					userFish?.map((fish, index) => (
-						<FishNFT onClick={() => unityContext.showFish(fish)} fish={fish} key={index}></FishNFT>
-					))
-				}
-				</FishGrid>
-		</FishViewerContainer>
+				<FishViewer fishCollection={fishToShow == FishToShow.Public ? publicFish : userFish} onClick={unityContext.showFish}></FishViewer>
+		</OceanContainer>
 		
 	);
 };
@@ -102,13 +95,15 @@ const GameButton = styled.button`
 	display: flex;
 	flex-flow: column;
 	justify-content: center;
-	padding: 2.2vmin;
+	padding: 0 1vmin;
 	border-radius: 25px;
 	background-color: white;
 	border: none;
 	opacity: 0.7;
 	box-shadow: 1px 2px 4px 4px rgba(0, 0, 0, 0.25);
 	color: black;
+	margin-top: 0;
+	margin-bottom: 0;
 	margin-left: ${props => props.theme.spacing.gapSmall};
 	transition: opacity 0.3s ease, box-shadow 0.25s ease-in-out;
 	text-transform: uppercase;
@@ -148,18 +143,21 @@ const CatchButton = styled(Link)`
 	}
 `;
 
-const FishViewerContainer = styled.div`
+const OceanContainer = styled.div`
 	display: flex;
 	flex-direction: column;
 	justify-content: flex-end;
 	width: 100%;
 	height: 100%;
+	/* pointer-events: auto; */
 `;
 
 const FishViewerButtons = styled.div`
 	display: flex;
 	flex-flow: row nowrap;
-	height: 17%;
+	/* height: 17%; */
+	pointer-events: auto;
+
 `;
 
 const FishGrid = styled.div<GridProps>`
@@ -172,4 +170,4 @@ const FishGrid = styled.div<GridProps>`
 `;
 
 
-export default ViewFish;
+export default Ocean;

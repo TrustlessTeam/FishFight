@@ -9,7 +9,7 @@ import deadImg from "../img/icons/dead.svg"
 import foodImg from "../img/icons/food.svg"
 
 
-const Balance = () => {
+const SeasonStatus = () => {
 	const { balance, balanceFish, balanceDeadFish, balanceFood  } = useFishFight();
 
 	if (!balance) return null;
@@ -72,4 +72,4 @@ const LogoImg = styled.img`
 	height: 100%;
 `;
 
-export default Balance;
+export default SeasonStatus;

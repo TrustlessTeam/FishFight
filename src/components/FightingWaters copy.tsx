@@ -12,7 +12,7 @@ import { useFishFight } from '../context/fishFightContext';
 import { useUnity } from '../context/unityContext';
 import FishNFT from './FishNFT';
 import { useFishPool } from '../context/fishPoolContext';
-import Account from '../components/Account';
+import Account from './Account';
 
 enum FishToShow {
   Public,
@@ -20,7 +20,7 @@ enum FishToShow {
 }
 
 
-const FightFish = () => {
+const FightingWaters = () => {
 	const { FishFight, refetchBalance, userConnected } = useFishFight()
 	const { userFish, publicFish, areUserFishLoaded, arePublicFishLoaded } = useFishPool()
 
@@ -382,4 +382,4 @@ const ResultContainer = styled.div`
 
 
 
-export default FightFish;
+export default FightingWaters;

@@ -14,9 +14,13 @@ interface FishFightProviderContext {
     userConnected: boolean
     balance: string | undefined
     balanceFood: string | undefined
+    balanceFish: string | undefined
+    balanceDeadFish: string | undefined
     currentBlock: number
     refetchBalance: () => void
 	  resetBalance: () => void
+    // seasonNumber: number
+    // seasonPhase: string
 }
 
 type FishFightProviderProps = { children: React.ReactNode }
@@ -34,6 +38,8 @@ export const FishFightProvider = ({ children }: FishFightProviderProps ) => {
   const { account, connector, library} = useWeb3React();
 
   const contextBalance = useBalance();
+  const contextSeasons = useSeasons();
+
 
   
 
@@ -73,11 +79,14 @@ export const FishFightProvider = ({ children }: FishFightProviderProps ) => {
   }, [connector, library])
 
   const refetchBalance = () => {
-    if(!connector || !library) return;
+    if(!connector || !library){
+      contextBalance.resetBalance()
+      return;
+    }  
     // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     account ? getWalletProvider(connector, library).then((wallet) => {
-      contextBalance.fetchBalance(account, wallet.type, wallet.provider, library, FishFightInstance)
-    }) : null
+      contextBalance.fetchBalance(account, FishFightInstance)
+    }) : contextBalance.resetBalance()
   }
 
   const value: FishFightProviderContext = {
@@ -85,7 +94,8 @@ export const FishFightProvider = ({ children }: FishFightProviderProps ) => {
     userConnected: userConnected,
     currentBlock: currentBlock,
     refetchBalance,
-    ...contextBalance
+    ...contextBalance,
+    ...contextSeasons
   }
   return (
       <FishFightContext.Provider value={value}>{children}</FishFightContext.Provider>
@@ -96,41 +106,70 @@ export const FishFightProvider = ({ children }: FishFightProviderProps ) => {
 const useBalance = () => {
 	const [balance, setBalance] = useState<string>();
 	const [balanceFood, setBalanceFood] = useState<string>();
+	const [balanceFish, setBalanceFish] = useState<string>();
+	const [balanceDeadFish, setBalanceDeadFish] = useState<string>();
 
 	const fetchBalance = useCallback(
-		async (account: string, type: string, provider: Harmony | Web3Provider | any, library: any, FishFight: FishFight) => {
-      // function should morph into accomodating user's provider.
-      // If user is using harmony wallet, use HarmonyExtension, else use web3Provider
-      if (type === "harmony") {
-        const address = isBech32Address(account) ? account : toBech32(account);
-        const balance = await provider.blockchain.getBalance({ address });
-        const parsedBalance = fromWei(hexToNumber(balance.result), Units.one);
-        setBalance(parsedBalance);
+		async (account: string, FishFight: FishFight) => {
+      // when account is connected get balances - uses default and read only providers
+      const balance = await FishFight.provider.eth.getBalance(account)
+      const parsedBalance = fromWei(balance, Units.one)
+      setBalance(parsedBalance)
 
-        const food = await FishFight.fishFood?.methods.balanceOf(account);
-        const parsedFood = fromWei(food, Units.one)
-        setBalanceFood(parsedFood);
-      }
+      const food = await FishFight.readFishFood.methods.balanceOf(account).call();
+      console.log(food)
+      const parsedFood = FishFight.provider.utils.fromWei(food);
+      setBalanceFood(parsedFood);
 
-      if (type === "web3") {
-        const balance = await provider.eth.getBalance(account)
-        const parsedBalance = fromWei(balance, Units.one)
-        setBalance(parsedBalance)
-      }
- 
+      const fish = await FishFight.readFishFactory.methods.balanceOf(account).call();
+      const parsedFish = fish
+      setBalanceFish(parsedFish);
+
+      const deadfish = await FishFight.readDeadFishFactory.methods.balanceOf(account).call();
+      const parsedDeadFish = deadfish
+      setBalanceDeadFish(parsedDeadFish);
 		},
-		[setBalance],
+		[setBalance, setBalanceFish, setBalanceFood, setBalanceDeadFish],
 	);
 
 	const resetBalance = () => {
 		setBalance(undefined);
+		setBalanceFood(undefined);
+		setBalanceFish(undefined);
+		setBalanceDeadFish(undefined);
 	};
 
 	return {
 		balance,
     balanceFood,
+    balanceFish,
+    balanceDeadFish,
 		fetchBalance,
 		resetBalance,
+	};
+};
+
+// Account balance utilities that will be included in FishFightContext
+const useSeasons = () => {
+	const [seasonNumber, setSeasonNumber] = useState<number>();
+	const [seasonPhase, setSeasonPhase] = useState<string>();
+
+	const fetchSeason = useCallback(
+		async (FishFight: FishFight) => {
+      // when account is connected get balances - uses default and read only providers
+      const season = await FishFight.readSeasons.methods.getCurrentSeason().call();
+      console.log(season)
+      // setSeasonNumber(season.)
+
+      // setSeasonPhase(parsedFood);
+		},
+		[setSeasonNumber, setSeasonPhase],
+	);
+
+	return {
+		seasonNumber,
+    seasonPhase,
+		fetchSeason,
 	};
 };
 

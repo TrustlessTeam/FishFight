@@ -32,6 +32,7 @@ import Blockchain from './components/BlockchainStatus';
 import fishingImg from "./img/icons/fishing.svg"
 import breedingImg from "./img/icons/breeding.svg"
 import fightingImg from "./img/icons/fighting.svg"
+import oceanImg from "./img/icons/ocean.svg"
 
 
 const App = () => {
@@ -54,6 +55,9 @@ const App = () => {
 					
 							<Nav>
 								{/* <BubbleButton to="/ocean"><span>Ocean</span></BubbleButton> */}
+								<Logo to="/ocean">
+									<LogoImg src={oceanImg} alt="Ocean"></LogoImg>
+								</Logo>
 								<Logo to="/fishing">
 									<LogoImg src={fishingImg} alt="Fishing"></LogoImg>
 								</Logo>
@@ -69,7 +73,6 @@ const App = () => {
 							</Nav>
 
 							<AccountContainer>
-								<Text>$ONE TESTNET</Text>
 								{account &&
 									<Balance />
 								}

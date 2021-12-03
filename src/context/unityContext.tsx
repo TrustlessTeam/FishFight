@@ -147,6 +147,11 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
 		UnityInstance.send('Camera', 'SetAnimState', 'ShowHome');
 		console.log("ShowHome Completed")
 	};
+
+	const renderSubsetOfFish = (fishColletion: Fish[]) => {
+
+	}
+
 	const clearFishPool = (pool: string) => {
 		// console.log("ClearFishPool Called " + pool)
     if(!isLoaded || !fishPoolReady) return;
