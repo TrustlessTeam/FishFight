@@ -10,39 +10,41 @@ import foodImg from "../img/icons/food.svg"
 
 
 const SeasonStatus = () => {
-	const { balance, balanceFish, balanceDeadFish, balanceFood  } = useFishFight();
+	const { currentSeason, currentPhaseEndTime } = useFishFight();
 
-	if (!balance) return null;
+	if (!currentSeason) return null;
+	console.log(currentPhaseEndTime)
+	console.log(currentSeason)
 
 	return (
-		<Balances>
-			{/* <BalanceComponent>
+		<SeasonStatusContainer>
+			{/* <StatusComponent>
 				<b>{balance.split('.')[0]}</b> <span>ONE</span>
-			</BalanceComponent> */}
-			<BalanceComponent title="FISH Balance">
-				<BalanceText>{balanceFish}</BalanceText>
-				<LogoImg src={fishImg} alt="FISH" ></LogoImg>
-			</BalanceComponent>
-			<BalanceComponent title="DEADFISH Balance">
-				<BalanceText>{balanceDeadFish}</BalanceText>
-				<LogoImg src={deadImg} alt="DEADFISH"></LogoImg>
-			</BalanceComponent>
-			<BalanceComponent title="FISHFOOD Balance">
-				<BalanceText>{balanceFood}</BalanceText>
-				<LogoImg src={foodImg} alt="FISHFOOD"></LogoImg>
-			</BalanceComponent>
-		</Balances>
+			</StatusComponent> */}
+			<StatusComponent title="">
+				<StatusText>{`Season ${currentSeason.index}`}</StatusText>
+				{/* <LogoImg src={fishImg} alt="FISH" ></LogoImg> */}
+			</StatusComponent>
+			<StatusComponent title="">
+				<StatusText>{`Phase ${currentSeason.phaseString}`}</StatusText>
+				{/* <LogoImg src={deadImg} alt="DEADFISH"></LogoImg> */}
+			</StatusComponent>
+			<StatusComponent title="">
+				<StatusText>{`Phase End ${currentPhaseEndTime?.toLocaleString()}`}</StatusText>
+				{/* <LogoImg src={foodImg} alt="FISHFOOD"></LogoImg> */}
+			</StatusComponent>
+		</SeasonStatusContainer>
 		
 	);
 };
 
-const Balances = styled.div`
+const SeasonStatusContainer = styled.div`
 	display: flex;
 	flex-flow: row;
 
 `;
 
-const BalanceText = styled.b`
+const StatusText = styled.b`
 	display: flex;
 	flex-flow: column;
 	justify-content: center;
@@ -51,7 +53,7 @@ const BalanceText = styled.b`
 	cursor: default;
 `;
 
-const BalanceComponent = styled.div`
+const StatusComponent = styled.div`
 	display: flex;
 	flex-flow: row;
 	justify-content: center;

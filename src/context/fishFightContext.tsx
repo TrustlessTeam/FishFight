@@ -7,6 +7,7 @@ import { isBech32Address, fromWei, hexToNumber, Units } from '@harmony-js/utils'
 import { Harmony } from "@harmony-js/core";
 import { Web3Provider } from "@ethersproject/providers";
 import Web3 from 'web3';
+import { Season } from '../utils/season';
 
 // Typescript
 interface FishFightProviderContext {
@@ -17,8 +18,11 @@ interface FishFightProviderContext {
     balanceFish: string | undefined
     balanceDeadFish: string | undefined
     currentBlock: number
+    currentSeason: Season | undefined
+    currentPhaseEndTime: Date | undefined
     refetchBalance: () => void
 	  resetBalance: () => void
+    refetchSeason: () => void
     // seasonNumber: number
     // seasonPhase: string
 }
@@ -40,24 +44,24 @@ export const FishFightProvider = ({ children }: FishFightProviderProps ) => {
   const contextBalance = useBalance();
   const contextSeasons = useSeasons();
 
-
+  console.log("fishfight")
   
 
-  useEffect(() => {
-    // Set websocket block listener
-    var subscription = FishFightInstance.listener.eth.subscribe('newBlockHeaders');
-    subscription.on("data", function(blockHeader){
-      setCurrentBlock(blockHeader.number)
-    })
+  // useEffect(() => {
+  //   // Set websocket block listener
+  //   var subscription = FishFightInstance.listener.eth.subscribe('newBlockHeaders');
+  //   subscription.on("data", function(blockHeader){
+  //     setCurrentBlock(blockHeader.number)
+  //   })
       
-    return () => {
-      subscription.unsubscribe(function(error, success){
-        if (success) {
-            console.log('Successfully unsubscribed!');
-        }
-      });
-    }
-  }, [])
+  //   return () => {
+  //     subscription.unsubscribe(function(error, success){
+  //       if (success) {
+  //           console.log('Successfully unsubscribed!');
+  //       }
+  //     });
+  //   }
+  // }, [])
 
   
   useEffect(() => {
@@ -69,12 +73,14 @@ export const FishFightProvider = ({ children }: FishFightProviderProps ) => {
         // setFishFightInstance(new FishFight())
         setUserConnected(true);
         refetchBalance();
+        refetchSeason();
         console.log(FishFightInstance)
       })
     }
     if(!account) {
       console.log("account not connected");
       setUserConnected(false);
+      refetchSeason();
     }
   }, [connector, library])
 
@@ -89,13 +95,18 @@ export const FishFightProvider = ({ children }: FishFightProviderProps ) => {
     }) : contextBalance.resetBalance()
   }
 
+  const refetchSeason = () => {
+    contextSeasons.fetchSeason(FishFightInstance);
+  }
+
   const value: FishFightProviderContext = {
     FishFight: FishFightInstance,
     userConnected: userConnected,
     currentBlock: currentBlock,
     refetchBalance,
     ...contextBalance,
-    ...contextSeasons
+    ...contextSeasons,
+    refetchSeason
   }
   return (
       <FishFightContext.Provider value={value}>{children}</FishFightContext.Provider>
@@ -151,24 +162,25 @@ const useBalance = () => {
 
 // Account balance utilities that will be included in FishFightContext
 const useSeasons = () => {
-	const [seasonNumber, setSeasonNumber] = useState<number>();
-	const [seasonPhase, setSeasonPhase] = useState<string>();
+	const [currentSeason, setCurrentSeason] = useState<Season | undefined>(undefined);
+	const [currentPhaseEndTime, setCurrentPhaseEndTime] = useState<Date | undefined>(undefined);
 
 	const fetchSeason = useCallback(
 		async (FishFight: FishFight) => {
       // when account is connected get balances - uses default and read only providers
       const season = await FishFight.readSeasons.methods.getCurrentSeason().call();
+      const phaseEndTime = await FishFight.readSeasons.methods._phaseEndTime().call();
+      const endTimeDate = new Date(Web3.utils.toNumber(phaseEndTime) * 1000)
       console.log(season)
-      // setSeasonNumber(season.)
-
-      // setSeasonPhase(parsedFood);
+      setCurrentSeason(new Season(season));
+      setCurrentPhaseEndTime(endTimeDate);
 		},
-		[setSeasonNumber, setSeasonPhase],
+		[setCurrentSeason, setCurrentPhaseEndTime],
 	);
 
 	return {
-		seasonNumber,
-    seasonPhase,
+		currentSeason,
+    currentPhaseEndTime,
 		fetchSeason,
 	};
 };

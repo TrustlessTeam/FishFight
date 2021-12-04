@@ -33,10 +33,11 @@ import fishingImg from "./img/icons/fishing.svg"
 import breedingImg from "./img/icons/breeding.svg"
 import fightingImg from "./img/icons/fighting.svg"
 import oceanImg from "./img/icons/ocean.svg"
+import SeasonStatus from './components/SeasonStatus';
 
 
 const App = () => {
-	const {FishFight} = useFishFight()
+	// const {FishFight} = useFishFight()
 	// Will all remain undefined until user logs in
 	// If user is using harmony wallet, library will only contain blockchain
 	// If user is using other wallet, library will have a web3Provider
@@ -52,6 +53,8 @@ const App = () => {
 							{/* <Logo to={"/"}>
 								<LogoImg src={logo}></LogoImg>
 							</Logo> */}
+
+							<SeasonStatus></SeasonStatus>
 					
 							<Nav>
 								{/* <BubbleButton to="/ocean"><span>Ocean</span></BubbleButton> */}
