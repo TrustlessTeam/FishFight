@@ -17,9 +17,10 @@ import JoinFightingWaters from './JoinFightingWaters';
 import FishViewer from './FishViewer';
 
 enum ViewToShow {
-  Public,
-  User,
-	ViewFightingWaters,
+  AllFightingFish,
+  UserFightingFish,
+	UserFish,
+	StartFight,
 	ViewStakedFish,
 	JoinFightingWaters
 }
@@ -27,12 +28,12 @@ enum ViewToShow {
 
 const FightingWaters = () => {
 	const { FishFight, refetchBalance, userConnected } = useFishFight()
-	const { userFish, fightingWatersFish, areUserFishLoaded, arePublicFishLoaded } = useFishPool()
+	const { userFish, fightingFish, userFightingFish, areUserFishLoaded, areFightingFishLoaded, areUserFightingFishLoaded } = useFishPool()
 
 	// Fish selected for fight
 	const [mySelectedFish, setMySelectedFish] = useState<Fish | null>(null);
 	const [opponentFish, setopponentFish] = useState<Fish | null>(null);
-	const [viewToShow, setViewToShow] = useState<number>(ViewToShow.ViewFightingWaters);
+	const [viewToShow, setViewToShow] = useState<number>(ViewToShow.AllFightingFish);
 	const [fightResult, setFightResult] = useState<Fight | null>();
 	const [showFightResult, setShowFightResult] = useState(false);
 	const [isFighting, setIsFighting] = useState<boolean>(false);
@@ -40,16 +41,6 @@ const FightingWaters = () => {
 	// Context
 	const { account } = useWeb3React();
 	const unityContext = useUnity();
-
-	useEffect(() => {
-		console.log("Account changed")
-		console.log(userConnected)
-		if(userConnected) {
-			setViewToShow(ViewToShow.User)
-		} else {
-			setViewToShow(ViewToShow.Public)
-		}
-	}, [userConnected]);
 
 	useEffect(() => {
 		unityContext.showFight();
@@ -176,8 +167,9 @@ const FightingWaters = () => {
 		<FishingWatersOptions>
 			{account &&
 				<>
+					<GameButton onClick={() => setViewToShow(ViewToShow.UserFightingFish)}>{'My Fighting Fish'}</GameButton>
+					<GameButton onClick={() => setViewToShow(ViewToShow.AllFightingFish)}>{'All Fighting Fish'}</GameButton>
 					<GameButton onClick={() => setViewToShow(ViewToShow.JoinFightingWaters)}>{'Deposit Fish'}</GameButton>
-					<GameButton onClick={() => setViewToShow(ViewToShow.ViewStakedFish)}>{'Staked Fish'}</GameButton>
 				</>
 			}
 			{!account &&
@@ -210,8 +202,11 @@ const FightingWaters = () => {
 		{account && viewToShow == ViewToShow.JoinFightingWaters &&
 			<JoinFightingWaters></JoinFightingWaters>
 		}
-		{viewToShow == ViewToShow.ViewFightingWaters && 
-			<FishViewer fishCollection={fightingWatersFish}></FishViewer>
+		{viewToShow == ViewToShow.AllFightingFish && 
+			<FishViewer fishCollection={fightingFish}></FishViewer>
+		}
+		{viewToShow == ViewToShow.UserFightingFish && 
+			<FishViewer fishCollection={userFightingFish}></FishViewer>
 		}
 	</FightingWatersContainer>
 	
@@ -293,27 +288,11 @@ const FightingWatersContainer = styled.div`
 const FishingWatersOptions = styled.div`
 	display: flex;
 	flex-flow: row nowrap;
+	justify-content: center;
 	position: absolute;
 	top: 10%;
+	width: 100%;
 	/* height: 17%; */
-`;
-
-const FishGrid = styled.div<GridProps>`
-	display: flex;
-	flex-direction: row nowrap;
-	justify-content: space-between;
-	height: 72%;
-	overflow-y: hidden;
-	overflow-x: hidden;
-`;
-
-const FightGrid = styled.div`
-	display: flex;
-	flex-direction: row nowrap;
-	justify-content: center;
-	height: 72%;
-	overflow-y: hidden;
-	overflow-x: auto;
 `;
 
 

@@ -46,9 +46,9 @@ const SeasonStatusContainer = styled.div`
 
 const StatusText = styled.b`
 	display: flex;
-	flex-flow: column;
+	/* flex-flow: column;
 	justify-content: center;
-	align-items: center;
+	align-items: center; */
 	margin-right: ${props => props.theme.spacing.gapSmall};
 	cursor: default;
 `;
@@ -57,9 +57,9 @@ const StatusComponent = styled.div`
 	display: flex;
 	flex-flow: row;
 	justify-content: center;
-	font-size: ${props => props.theme.font.large}vmin;
+	font-size: ${props => props.theme.font.small}vmin;
 	margin-left: ${props => props.theme.spacing.gap};
-	padding: ${props => props.theme.spacing.gap} ${props => props.theme.spacing.gap};
+	/* padding: ${props => props.theme.spacing.gap} ${props => props.theme.spacing.gap}; */
 	/* background-color: white; */
 	color: white;
 	/* border: 2px solid white; */

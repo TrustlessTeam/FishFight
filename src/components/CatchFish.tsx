@@ -22,7 +22,7 @@ const CatchFish = () => {
 	const unityContext = useUnity()
 	const { account } = useWeb3React();
 	const { FishFight, refetchBalance } = useFishFight()
-	const { addUserPoolTokenId } = useFishPool();
+	const { addUserFishTokenId } = useFishPool();
 	const [caughtFish, setCaughtFish] = useState<Fish | null>(null);
 	const [caughtFishHash, setCaughtFishHash] = useState<string | null>(null);
 	const [noCatch, setNoCatch] = useState<boolean>(false);
@@ -85,7 +85,7 @@ const CatchFish = () => {
 		console.log(newFish)
 		setCaughtFish(newFish)
 		unityContext.addFishFishing(newFish);
-		addUserPoolTokenId(newFish.tokenId)
+		addUserFishTokenId(newFish.tokenId)
 	}
 
 
