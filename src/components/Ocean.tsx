@@ -15,10 +15,16 @@ enum FishToShow {
 }
 
 const Ocean = () => {
-	const { userFish, publicFish, arePublicFishLoaded, areUserFishLoaded } = useFishPool();
+	const { userFish, oceanFish, arePublicFishLoaded, areUserFishLoaded } = useFishPool();
 	const [fishToShow, setFishToShow] = useState<FishToShow>(FishToShow.Public);
+	const [renderedFish, setRenderedFish] = useState<number[]>([]);
 	const unityContext = useUnity();
-	const { userConnected } = useFishFight()
+	const { userConnected } = useFishFight();
+
+	useEffect(() => {
+		console.log("CLEAR OCEAN")
+		unityContext.clearFishPool('ShowOcean')
+	}, []);
 
 	useEffect(() => {
 		console.log("Account changed")
@@ -30,8 +36,25 @@ const Ocean = () => {
 	}, [userConnected]);
 
 	useEffect(() => {
+		console.log("Ocean Fish Changed")
+		// console.log(oceanFish)
+		if(!unityContext.isFishPoolReady) return;
+		let i = 0;
+		oceanFish.forEach(fish => {
+			if(!renderedFish.includes(fish.tokenId)) {
+				unityContext.addFishOcean(fish);
+				setRenderedFish(prevData => [...prevData, fish.tokenId])
+				i++;
+			}
+		})
+		console.log(i)
+	}, [oceanFish, unityContext.isFishPoolReady]);
+
+	useEffect(() => {
 		unityContext.showOcean();
 	}, [unityContext.isFishPoolReady]);
+
+	
 
 	const setFishToView = () => {
 		if(fishToShow == FishToShow.Public) {
@@ -69,7 +92,7 @@ const Ocean = () => {
 					
 				</FishViewerButtons>
 
-				<FishViewer fishCollection={fishToShow == FishToShow.Public ? publicFish : userFish} onClick={unityContext.showFish}></FishViewer>
+				<FishViewer fishCollection={fishToShow == FishToShow.Public ? oceanFish : userFish} onClick={unityContext.showFish}></FishViewer>
 		</OceanContainer>
 		
 	);

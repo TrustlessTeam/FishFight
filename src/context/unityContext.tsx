@@ -135,6 +135,12 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
 		UnityInstance.send('Camera', 'SetAnimState', 'ShowFight');
 		// console.log("ShowFight Completed")
 	};
+	const showBreeding = () => {
+		// console.log("ShowFight Called")
+    if(!isLoaded || !fishPoolReady) return;
+		UnityInstance.send('Camera', 'SetAnimState', 'ShowBreeding');
+		// console.log("ShowFight Completed")
+	};
 	const showOcean = () => {
 		// console.log("ShowOcean Called")
     if(!isLoaded || !fishPoolReady) return;
@@ -146,6 +152,12 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
     if(!isLoaded) return;
 		UnityInstance.send('Camera', 'SetAnimState', 'ShowHome');
 		console.log("ShowHome Completed")
+	};
+	const showTank = () => {
+		console.log("ShowTank Called")
+    if(!isLoaded) return;
+		UnityInstance.send('Camera', 'SetAnimState', 'ShowTank');
+		console.log("ShowTank Completed")
 	};
 
 	const renderSubsetOfFish = (fishColletion: Fish[]) => {
