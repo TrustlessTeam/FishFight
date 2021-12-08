@@ -15,7 +15,7 @@ enum FishToShow {
 }
 
 const Ocean = () => {
-	const { userFish, oceanFish, arePublicFishLoaded, areUserFishLoaded } = useFishPool();
+	const { userFish, oceanFish, areOceanFishLoaded, areUserFishLoaded } = useFishPool();
 	const [fishToShow, setFishToShow] = useState<FishToShow>(FishToShow.Public);
 	const [renderedFish, setRenderedFish] = useState<number[]>([]);
 	const unityContext = useUnity();
@@ -75,7 +75,7 @@ const Ocean = () => {
 				</HighLevelOptions> */}
 				<FishViewerButtons>
 					{fishToShow == FishToShow.Public ? <Text>Public Fish</Text> : <Text>Your Fish</Text>}
-					{fishToShow == FishToShow.Public && !arePublicFishLoaded &&
+					{fishToShow == FishToShow.Public && !areOceanFishLoaded &&
 						<Text>Loading public fish...</Text>
 					}
 					{fishToShow == FishToShow.User && userConnected && !areUserFishLoaded &&

@@ -22,7 +22,7 @@ enum FishToShow {
 
 const FightingWaters = () => {
 	const { FishFight, refetchBalance, userConnected } = useFishFight()
-	const { userFish, publicFish, areUserFishLoaded, arePublicFishLoaded } = useFishPool()
+	const { userFish, areUserFishLoaded, areOceanFishLoaded } = useFishPool()
 
 	// Fish selected for fight
 	const [mySelectedFish, setMySelectedFish] = useState<Fish | null>(null);
@@ -198,11 +198,11 @@ const FightingWaters = () => {
 					}
 				</FishViewerButtons>
 				<FishGrid ref={scrollRef}>
-				{fishToShow == FishToShow.Public &&
+				{/* {fishToShow == FishToShow.Public &&
 					publicFish?.map((fish, index) => (
 						<FishNFT selectedOpponent={opponentFish?.tokenId == fish.tokenId} fish={fish} key={index} onClick={() => {setOpponent(fish)}}></FishNFT>
 					))
-				}
+				} */}
 				{fishToShow == FishToShow.User &&
 					userFish?.map((fish, index) => (
 						<FishNFT selectedUser={mySelectedFish?.tokenId == fish.tokenId ? true : false} fish={fish} key={index} onClick={() => {setUserFish(fish)}}></FishNFT>

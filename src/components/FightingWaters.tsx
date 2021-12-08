@@ -13,8 +13,9 @@ import { useUnity } from '../context/unityContext';
 import FishNFT from './FishNFT';
 import { useFishPool } from '../context/fishPoolContext';
 import Account from './Account';
-import JoinFightingWaters from './JoinFightingWaters';
+import UserFightingWaters from './UserFightingWaters';
 import FishViewer from './FishViewer';
+import Menu from './Menu';
 
 enum ViewToShow {
   AllFightingFish,
@@ -25,6 +26,8 @@ enum ViewToShow {
 	JoinFightingWaters
 }
 
+const ModeOptions = ['View', 'My Fighting Fish', 'Withdraw', 'Fight']
+
 
 const FightingWaters = () => {
 	const { FishFight, refetchBalance, userConnected } = useFishFight()
@@ -33,10 +36,14 @@ const FightingWaters = () => {
 	// Fish selected for fight
 	const [mySelectedFish, setMySelectedFish] = useState<Fish | null>(null);
 	const [opponentFish, setopponentFish] = useState<Fish | null>(null);
-	const [viewToShow, setViewToShow] = useState<number>(ViewToShow.AllFightingFish);
+	const [viewToShow, setViewToShow] = useState<string>(ModeOptions[0]);
+	const [renderedFish, setRenderedFish] = useState<number[]>([]);
+
 	const [fightResult, setFightResult] = useState<Fight | null>();
 	const [showFightResult, setShowFightResult] = useState(false);
 	const [isFighting, setIsFighting] = useState<boolean>(false);
+
+	
 
 	// Context
 	const { account } = useWeb3React();
@@ -45,6 +52,21 @@ const FightingWaters = () => {
 	useEffect(() => {
 		unityContext.showFight();
 	}, [unityContext.isFishPoolReady]);
+
+	useEffect(() => {
+		console.log("Fightintg Fish Changed")
+		console.log(fightingFish)
+		if(!unityContext.isFishPoolReady) return;
+		let i = 0;
+		fightingFish.forEach(fish => {
+			if(!renderedFish.includes(fish.tokenId)) {
+				unityContext.addFishOcean(fish);
+				setRenderedFish(prevData => [...prevData, fish.tokenId])
+				i++;
+			}
+		})
+		console.log(i)
+	}, [fightingFish, unityContext.isFishPoolReady]);
 
 	useEffect(() => {
 		unityContext.UnityInstance.on('FishPoolFightWinner', function () {
@@ -154,7 +176,7 @@ const FightingWaters = () => {
 		setShowFightResult(false);		
 	}
 
-	const setView = (selection: ViewToShow) => {
+	const setView = (selection: string) => {
 		console.log(selection)
 		setViewToShow(selection)
 	}
@@ -164,17 +186,15 @@ const FightingWaters = () => {
 	return (
 	<>
 	<FightingWatersContainer>
-		<FishingWatersOptions>
+		
+		<FishingWatersControl>
+			<Title>Fighting Waters</Title>
 			{account &&
-				<>
-					<GameButton onClick={() => setViewToShow(ViewToShow.UserFightingFish)}>{'My Fighting Fish'}</GameButton>
-					<GameButton onClick={() => setViewToShow(ViewToShow.AllFightingFish)}>{'All Fighting Fish'}</GameButton>
-					<GameButton onClick={() => setViewToShow(ViewToShow.JoinFightingWaters)}>{'Deposit Fish'}</GameButton>
-				</>
+				<Menu name={'Fighting Options'} items={ModeOptions} onClick={setView}></Menu>
 			}
 			{!account &&
 				<>
-					{/* <GameButton onClick={() => setViewToShow(ViewToShow.ViewFightingWaters)}>{'Fighting Waters'}</GameButton> */}
+					<h1>{'Connect Wallet to Fight Fish!'}</h1>
 				</>
 			}
 			
@@ -198,15 +218,12 @@ const FightingWaters = () => {
 			{viewToShow == ViewToShow.User && !account &&
 				<Account/>
 			} */}
-		</FishingWatersOptions>
-		{account && viewToShow == ViewToShow.JoinFightingWaters &&
-			<JoinFightingWaters></JoinFightingWaters>
+		</FishingWatersControl>
+		{account &&  viewToShow === 'My Fighting Fish' &&
+			<UserFightingWaters></UserFightingWaters>
 		}
-		{viewToShow == ViewToShow.AllFightingFish && 
+		{viewToShow === 'View' && 
 			<FishViewer fishCollection={fightingFish}></FishViewer>
-		}
-		{viewToShow == ViewToShow.UserFightingFish && 
-			<FishViewer fishCollection={userFightingFish}></FishViewer>
 		}
 	</FightingWatersContainer>
 	
@@ -217,6 +234,19 @@ const FightingWaters = () => {
 interface GridProps {
 	ref?: any;
 }
+
+const Title = styled.h1`
+	display: flex;
+	flex-flow: column;
+	justify-content: center;
+	padding: ${props => props.theme.spacing.gap};
+	margin: 0;
+	color: white;
+	/* background-color: white; */
+	/* font-size: ${props => props.theme.font.large}vmin; */
+	border-radius: 25px;
+	/* margin-left: ${props => props.theme.spacing.gapSmall}; */
+`;
 
 
 const VersusContainer = styled.div`
@@ -285,13 +315,14 @@ const FightingWatersContainer = styled.div`
 	height: 100%;
 `;
 
-const FishingWatersOptions = styled.div`
+const FishingWatersControl = styled.div`
 	display: flex;
 	flex-flow: row nowrap;
 	justify-content: center;
 	position: absolute;
 	top: 10%;
 	width: 100%;
+	pointer-events: auto;
 	/* height: 17%; */
 `;
 

@@ -14,17 +14,20 @@ import FishNFT from './FishNFT';
 import { useFishPool } from '../context/fishPoolContext';
 import Account from './Account';
 import FishViewer from './FishViewer';
+import Menu from './Menu';
 
 enum FishToShow {
   Public,
   User
 }
 
+const ModeOptions = ['Fighting Fish', 'Available Fish']
 
-const JoinFightingWaters = () => {
+
+const UserFightingWaters = () => {
 	const { FishFight, refetchBalance, userConnected } = useFishFight()
-	const { userFish, publicFish, areUserFishLoaded, arePublicFishLoaded,  } = useFishPool()
-
+	const { userFish, userFightingFish, areUserFishLoaded, areOceanFishLoaded,  } = useFishPool()
+	const [viewToShow, setViewToShow] = useState<string>(ModeOptions[0]);
 	// Fish selected for fight
 	const [mySelectedFish, setMySelectedFish] = useState<Fish | null>(null);
 
@@ -74,18 +77,80 @@ const JoinFightingWaters = () => {
 		setMySelectedFish(null)
 	}
 
+	const withdrawFish = async (fish : Fish) => {
+		if (account && mySelectedFish != null) {
+			try {
+				// const approve = await FishFight.fishFactory?.methods.approve(FishFight.readFightingWaters.options.address, fish.tokenId).send({
+				// 	from: account,
+				// 	gasPrice: 1000000000,
+				// 	gasLimit: 500000,
+				// })
+				// console.log(approve)
+				// unityContext.addFishFight1(fish)
+				const withdrawFightingWaters = await FishFight.fightingWaters?.methods.withdraw(fish.tokenId).send({
+					from: account,
+					gasPrice: 1000000000,
+					gasLimit: 800000,
+				})
+				console.log(withdrawFightingWaters)
+				toast.success('Transaction done', {
+					onClose: async () => {
+						refetchBalance()
+						// call to refresh userFish and userFightingWaters Fish
+					},
+				});
+			} catch (error: any) {
+				toast.error(error);
+			}
+		} else {
+			toast.error('Connect your wallet');
+		}
+		setMySelectedFish(null)
+	}
+
+	const setView = (selection: string) => {
+		console.log(selection)
+		setViewToShow(selection)
+	}
+
 	return (
 		<>
-		{/* Select Fish to Fight */}
-		{mySelectedFish == null &&
-			<FishViewer fishCollection={userFish} onClick={setUserFish}></FishViewer>
+		{viewToShow === ModeOptions[0] &&
+			<Container>
+				{mySelectedFish == null &&
+				<>
+					<Menu name={viewToShow} onClick={setView} items={ModeOptions}></Menu>
+					<FishViewer fishCollection={userFightingFish} onClick={setUserFish}></FishViewer>
+				</>
+				}
+				{mySelectedFish != null &&
+				<>
+					<GameButton onClick={() => withdrawFish(mySelectedFish)}>{'Withdraw'}</GameButton>
+					{/* <GameButton onClick={() => startFightFish(mySelectedFish)}>{'Use in Fight'}</GameButton> */}
+					<GameButton onClick={() => selectAnother()}>{'Back to Fish'}</GameButton>
+				</>
+				}
+			</Container>
 		}
-		{mySelectedFish != null &&
-		<>
-			<GameButton onClick={() => depositFish(mySelectedFish)}>{'Deposit Fish'}</GameButton>
-			<GameButton onClick={() => selectAnother()}>{'Back to Fish'}</GameButton>
-		</>
-		}
+		{viewToShow === ModeOptions[1] &&
+			<Container>
+				{mySelectedFish == null &&
+				<>
+					<Menu name={viewToShow} onClick={setView} items={ModeOptions}></Menu>
+					<FishViewer fishCollection={userFish} onClick={setUserFish}></FishViewer>
+				</>
+				}
+				{mySelectedFish != null &&
+				<>
+					<GameButton onClick={() => depositFish(mySelectedFish)}>{'Deposit'}</GameButton>
+					{/* <GameButton onClick={() => startFightFish(mySelectedFish)}>{'Use in Fight'}</GameButton> */}
+					<GameButton onClick={() => selectAnother()}>{'Back to Fish'}</GameButton>
+				</>
+				}
+			</Container>
+		} 
+		{/* Staked Fish*/}
+		
 		</>
 	);
 };
@@ -93,6 +158,12 @@ const JoinFightingWaters = () => {
 interface GridProps {
 	ref?: any;
 }
+
+const Container = styled.div`
+	display: flex;
+	flex-flow: column;
+	pointer-events: auto;
+`
 
 
 const VersusContainer = styled.div`
@@ -217,4 +288,4 @@ const ResultContainer = styled.div`
 
 
 
-export default JoinFightingWaters;
+export default UserFightingWaters;
