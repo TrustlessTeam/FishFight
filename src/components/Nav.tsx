@@ -40,6 +40,7 @@ const Nav = () => {
           <LogoImg active={location === 'ocean'} src={oceanImg} alt="Ocean"></LogoImg>
         </Link>
         <SubContainer active={location === 'ocean' || location === 'ocean-tank'}>
+          <Option active={location === 'ocean'} to='/ocean'>Ocean View</Option>
           <Option active={location === 'ocean-tank'} to='/ocean-tank'>Tank View</Option>
           <Option active={location === 'ocean-swim'} to='/ocean-swim'>Go Swimming!</Option>
         </SubContainer>

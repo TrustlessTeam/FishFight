@@ -16,6 +16,8 @@ import Account from './Account';
 import UserFightingWaters from './UserFightingWaters';
 import FishViewer from './FishViewer';
 import Menu from './Menu';
+import { BaseContainer, ContainerControls, BaseLinkButton } from './BaseStyles';
+
 
 enum ViewToShow {
   AllFightingFish,
@@ -183,7 +185,7 @@ const FightingWaters = () => {
 
 	return (
 	<>
-	<FightingWatersContainer>
+	<BaseContainer>
 		
 		{/* <FishingWatersControl>
 			<Title>Fighting Waters</Title>
@@ -223,7 +225,7 @@ const FightingWaters = () => {
 		{viewToShow === 'View' && 
 			<FishViewer fishCollection={fightingFish}></FishViewer>
 		}
-	</FightingWatersContainer>
+	</BaseContainer>
 	
 	</>
 	);

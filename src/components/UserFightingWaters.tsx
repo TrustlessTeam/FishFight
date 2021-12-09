@@ -15,6 +15,8 @@ import { useFishPool } from '../context/fishPoolContext';
 import Account from './Account';
 import FishViewer from './FishViewer';
 import Menu from './Menu';
+import StakedStatus from './StakedStatus';
+
 
 enum FishToShow {
   Public,
@@ -149,6 +151,7 @@ const UserFightingWaters = () => {
 							<GameButton onClick={() => selectAnother()}>{'Back to Fish'}</GameButton>
 						</OptionsContainer>
 					}
+					<StakedStatus></StakedStatus>
 					<Menu name={viewToShow} onClick={setView} items={ModeOptions}></Menu>
 					<FishViewer selectedFish={mySelectedFish} fishCollection={userFightingFish} onClick={setUserFish}></FishViewer>
 			</Container>
