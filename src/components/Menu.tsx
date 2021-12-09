@@ -10,6 +10,7 @@ const StyledUl = styled.ul`
   display: flex;
   cursor: pointer;
   /* justify-content: center; */
+  pointer-events: auto;
 
 `;
 
@@ -35,6 +36,7 @@ const DropDownContent = styled.div<DropdownProps>`
   min-width: 20%;
   box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
   z-index: 1;
+  bottom: 50px;
 `;
 
 const DropDownLi = styled(StyledLi)`

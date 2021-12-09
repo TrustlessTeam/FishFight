@@ -21,13 +21,15 @@ enum FishToShow {
   User
 }
 
-const ModeOptions = ['Fighting Fish', 'Available Fish']
+const ModeOptions = ['Staked Fish', 'Available Fish']
 
 
 const UserFightingWaters = () => {
 	const { FishFight, refetchBalance, userConnected } = useFishFight()
-	const { userFish, userFightingFish, areUserFishLoaded, areOceanFishLoaded,  } = useFishPool()
+	const { userFish, userFightingFish, fightingFish, addUserFightingFish } = useFishPool()
 	const [viewToShow, setViewToShow] = useState<string>(ModeOptions[0]);
+	const [renderedFish, setRenderedFish] = useState<number[]>([]);
+
 	// Fish selected for fight
 	const [mySelectedFish, setMySelectedFish] = useState<Fish | null>(null);
 
@@ -35,15 +37,36 @@ const UserFightingWaters = () => {
 	const { account } = useWeb3React();
 	const unityContext = useUnity();
 
+	useEffect(() => {
+		console.log("UserFightingFish")
+		unityContext.showFight();
+	}, [unityContext.isFishPoolReady]);
+
+	useEffect(() => {
+		console.log("Fightintg Fish Changed")
+		console.log(fightingFish)
+		if(!unityContext.isFishPoolReady) return;
+		let i = 0;
+		fightingFish.forEach(fish => {
+			if(!renderedFish.includes(fish.tokenId)) {
+				unityContext.addFishOcean(fish);
+				setRenderedFish(prevData => [...prevData, fish.tokenId])
+				i++;
+			}
+		})
+		console.log(i)
+	}, [fightingFish, unityContext.isFishPoolReady]);
+
 	const setUserFish = (fish : Fish) => {
 		console.log("User Fish: " + fish.tokenId)
 		setMySelectedFish(fish);
-		unityContext.showFish(fish);
+		unityContext.addFishFight1(fish);
+		// unityContext.showFish(fish);
 	}
 
 	const selectAnother = () => {
 		setMySelectedFish(null);
-		unityContext.showFight(); // switch to FightingWaters view
+		// unityContext.showFight(); // switch to FightingWaters view
 	}
 
 	const depositFish = async (fish : Fish) => {
@@ -62,6 +85,7 @@ const UserFightingWaters = () => {
 					gasLimit: 800000,
 				})
 				console.log(addToFightingWaters)
+				addUserFightingFish(fish);
 				toast.success('Transaction done', {
 					onClose: async () => {
 						refetchBalance()
@@ -110,6 +134,7 @@ const UserFightingWaters = () => {
 
 	const setView = (selection: string) => {
 		console.log(selection)
+		setMySelectedFish(null);
 		setViewToShow(selection)
 	}
 
@@ -117,36 +142,28 @@ const UserFightingWaters = () => {
 		<>
 		{viewToShow === ModeOptions[0] &&
 			<Container>
-				{mySelectedFish == null &&
-				<>
+					{mySelectedFish != null &&
+						<OptionsContainer>
+							<GameButton onClick={() => withdrawFish(mySelectedFish)}>{'Withdraw'}</GameButton>
+							{/* <GameButton onClick={() => startFightFish(mySelectedFish)}>{'Use in Fight'}</GameButton> */}
+							<GameButton onClick={() => selectAnother()}>{'Back to Fish'}</GameButton>
+						</OptionsContainer>
+					}
 					<Menu name={viewToShow} onClick={setView} items={ModeOptions}></Menu>
-					<FishViewer fishCollection={userFightingFish} onClick={setUserFish}></FishViewer>
-				</>
-				}
-				{mySelectedFish != null &&
-				<>
-					<GameButton onClick={() => withdrawFish(mySelectedFish)}>{'Withdraw'}</GameButton>
-					{/* <GameButton onClick={() => startFightFish(mySelectedFish)}>{'Use in Fight'}</GameButton> */}
-					<GameButton onClick={() => selectAnother()}>{'Back to Fish'}</GameButton>
-				</>
-				}
+					<FishViewer selectedFish={mySelectedFish} fishCollection={userFightingFish} onClick={setUserFish}></FishViewer>
 			</Container>
 		}
 		{viewToShow === ModeOptions[1] &&
 			<Container>
-				{mySelectedFish == null &&
-				<>
+					{mySelectedFish != null &&
+					<OptionsContainer>
+						<GameButton onClick={() => depositFish(mySelectedFish)}>{'Deposit'}</GameButton>
+						{/* <GameButton onClick={() => startFightFish(mySelectedFish)}>{'Use in Fight'}</GameButton> */}
+						<GameButton onClick={() => selectAnother()}>{'Back to Fish'}</GameButton>
+					</OptionsContainer>
+					}
 					<Menu name={viewToShow} onClick={setView} items={ModeOptions}></Menu>
-					<FishViewer fishCollection={userFish} onClick={setUserFish}></FishViewer>
-				</>
-				}
-				{mySelectedFish != null &&
-				<>
-					<GameButton onClick={() => depositFish(mySelectedFish)}>{'Deposit'}</GameButton>
-					{/* <GameButton onClick={() => startFightFish(mySelectedFish)}>{'Use in Fight'}</GameButton> */}
-					<GameButton onClick={() => selectAnother()}>{'Back to Fish'}</GameButton>
-				</>
-				}
+					<FishViewer selectedFish={mySelectedFish} fishCollection={userFish} onClick={setUserFish}></FishViewer>
 			</Container>
 		} 
 		{/* Staked Fish*/}
@@ -161,14 +178,16 @@ interface GridProps {
 
 const Container = styled.div`
 	display: flex;
-	flex-flow: column;
-	pointer-events: auto;
+	flex-direction: column;
+	justify-content: flex-end;
+	width: 100%;
+	height: 100%;
 `
 
 
-const VersusContainer = styled.div`
+const OptionsContainer = styled.div`
 	display: flex;
-	flex-direction: column;
+	flex-flow: row nowrap;
 	justify-content: center;
 	align-items: center;
 `;

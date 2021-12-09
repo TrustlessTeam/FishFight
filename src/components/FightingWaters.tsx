@@ -43,8 +43,6 @@ const FightingWaters = () => {
 	const [showFightResult, setShowFightResult] = useState(false);
 	const [isFighting, setIsFighting] = useState<boolean>(false);
 
-	
-
 	// Context
 	const { account } = useWeb3React();
 	const unityContext = useUnity();
@@ -187,7 +185,7 @@ const FightingWaters = () => {
 	<>
 	<FightingWatersContainer>
 		
-		<FishingWatersControl>
+		{/* <FishingWatersControl>
 			<Title>Fighting Waters</Title>
 			{account &&
 				<Menu name={'Fighting Options'} items={ModeOptions} onClick={setView}></Menu>
@@ -196,7 +194,7 @@ const FightingWaters = () => {
 				<>
 					<h1>{'Connect Wallet to Fight Fish!'}</h1>
 				</>
-			}
+			} */}
 			
 			{/* {mySelectedFish == null &&
 				<Text>Select your fighter from My Fish!</Text>
@@ -218,10 +216,10 @@ const FightingWaters = () => {
 			{viewToShow == ViewToShow.User && !account &&
 				<Account/>
 			} */}
-		</FishingWatersControl>
-		{account &&  viewToShow === 'My Fighting Fish' &&
+		{/* </FishingWatersControl> */}
+		{/* {account &&  viewToShow === 'My Fighting Fish' &&
 			<UserFightingWaters></UserFightingWaters>
-		}
+		} */}
 		{viewToShow === 'View' && 
 			<FishViewer fishCollection={fightingFish}></FishViewer>
 		}

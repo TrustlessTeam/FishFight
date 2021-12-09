@@ -20,16 +20,19 @@ const Balance = () => {
 				<b>{balance.split('.')[0]}</b> <span>ONE</span>
 			</BalanceComponent> */}
 			<BalanceComponent title="FISH Balance">
-				<BalanceText>{balanceFish}</BalanceText>
-				<LogoImg src={fishImg} alt="FISH" ></LogoImg>
+				<BalanceText>
+					{balanceFish}<LogoImg src={fishImg} alt="FISH" ></LogoImg>
+				</BalanceText>
 			</BalanceComponent>
 			<BalanceComponent title="DEADFISH Balance">
-				<BalanceText>{balanceDeadFish}</BalanceText>
-				<LogoImg src={deadImg} alt="DEADFISH"></LogoImg>
+				<BalanceText>
+					{balanceDeadFish}<LogoImg src={deadImg} alt="DEADFISH"></LogoImg>
+				</BalanceText>
 			</BalanceComponent>
 			<BalanceComponent title="FISHFOOD Balance">
-				<BalanceText>{balanceFood}</BalanceText>
-				<LogoImg src={foodImg} alt="FISHFOOD"></LogoImg>
+				<BalanceText>
+					{parseFloat(balanceFood ? balanceFood : '0').toFixed(2)}<LogoImg src={foodImg} alt="FISHFOOD"></LogoImg>
+				</BalanceText>
 			</BalanceComponent>
 		</Balances>
 		
@@ -44,10 +47,10 @@ const Balances = styled.div`
 
 const BalanceText = styled.b`
 	display: flex;
-	flex-flow: column;
+	flex-flow: row nowrap;
 	justify-content: center;
 	align-items: center;
-	margin-right: ${props => props.theme.spacing.gapSmall};
+	/* margin-right: ${props => props.theme.spacing.gapSmall}; */
 	cursor: default;
 `;
 
@@ -57,7 +60,7 @@ const BalanceComponent = styled.div`
 	justify-content: center;
 	font-size: ${props => props.theme.font.large}vmin;
 	margin-left: ${props => props.theme.spacing.gap};
-	padding: ${props => props.theme.spacing.gap} ${props => props.theme.spacing.gap};
+	/* padding: ${props => props.theme.spacing.gap} ${props => props.theme.spacing.gap}; */
 	/* background-color: white; */
 	color: white;
 	/* border: 2px solid white; */
@@ -69,7 +72,8 @@ const BalanceComponent = styled.div`
 `;
 
 const LogoImg = styled.img`
-	height: 100%;
+	height: 30px;
+	margin-left: ${props => props.theme.spacing.gapSmall};
 `;
 
 export default Balance;

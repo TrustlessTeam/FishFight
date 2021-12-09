@@ -21,6 +21,7 @@ import styled, { ThemeProvider } from 'styled-components';
 import { BaseTheme } from './default-theme';
 
 // Components
+import Nav from './components/Nav';
 import Account from './components/Account';
 import Balance from './components/Balance';
 import CatchFish from './components/CatchFish';
@@ -29,10 +30,7 @@ import Game from './components/Game';
 import logo from '../src/img/FishFightLogo.png'
 import Blockchain from './components/BlockchainStatus';
 
-import fishingImg from "./img/icons/fishing.svg"
-import breedingImg from "./img/icons/breeding.svg"
-import fightingImg from "./img/icons/fighting.svg"
-import oceanImg from "./img/icons/ocean.svg"
+
 import SeasonStatus from './components/SeasonStatus';
 
 
@@ -56,24 +54,7 @@ const App = () => {
 
 							<SeasonStatus></SeasonStatus>
 					
-							<Nav>
-								{/* <BubbleButton to="/ocean"><span>Ocean</span></BubbleButton> */}
-								<Logo to="/ocean">
-									<LogoImg src={oceanImg} alt="Ocean"></LogoImg>
-								</Logo>
-								<Logo to="/fishing">
-									<LogoImg src={fishingImg} alt="Fishing"></LogoImg>
-								</Logo>
-								<Logo to="/breeding">
-									<LogoImg src={breedingImg} alt="Breeding"></LogoImg>
-								</Logo>
-								<Logo to="/fighting">
-									<LogoImg src={fightingImg} alt="Fighting"></LogoImg>
-								</Logo>
-								{/* <GameButton to="/fishing"><span>Fishing</span></GameButton> */}
-								{/* <GameButton to="/fighting"><span>Fighting</span></GameButton> */}
-								{/* <GameButton to="/breeding"><span>Breeding</span></GameButton> */}
-							</Nav>
+							<Nav></Nav>
 
 							<AccountContainer>
 								{account &&
@@ -139,6 +120,7 @@ const Topbar = styled.div`
 	width: 98%;
 	height: 8%;
 	z-index: 5;
+	pointer-events: auto;
 `;
 
 const AccountContainer = styled.div`
@@ -203,14 +185,7 @@ const LogoImg = styled.img`
 
 
 
-const Nav = styled.nav`
-	display: flex;
-	flex-flow: row nowrap;
-	justify-content: space-evenly;
-	align-items: center;
-	width: 100%;
-	height: 100%;
-`;
+
 
 // const baseSize = 
 

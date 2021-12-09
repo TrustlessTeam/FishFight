@@ -23,6 +23,7 @@ interface FishPoolProviderContext {
 	addUserFish: (fish: Fish) => void
 	addUserFightingFish: (fish: Fish) => void
 	addFightingFish: (fish: Fish) => void
+  refetchUserFightingFish: () => void
 }
 
 type BlockchainItem = {
@@ -87,10 +88,13 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
 
       // const allTokenIds = [...Array(totalFishSupply+1).keys()].slice(1);
       oceanIds.forEach(async tokenId => {
-        const fishData = await getFish(FishFight, web3.utils.toNumber(tokenId))
-        if(fishData != null) {
-          setOceanFish(prevData => [...prevData, fishData])
-          // setAllLoadedFish(prevData => [...prevData, fishData])
+        const parsedTokenId = web3.utils.toNumber(tokenId);
+        if(!oceanFish.some(fish => fish.tokenId == parsedTokenId)) {
+          const fishData = await getFish(FishFight, parsedTokenId)
+          if(fishData != null) {
+            setOceanFish(prevData => [...prevData, fishData])
+            // setAllLoadedFish(prevData => [...prevData, fishData])
+          }
         }
       });
     
@@ -107,11 +111,12 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
       const numUserFish = web3.utils.toBN(fishUserOwns).toNumber();
       for(let i = 0; i < numUserFish; i++) {
         const tokenId = await FishFight.readFishFactory.methods.tokenOfOwnerByIndex(account, i).call();
-        // const parsedTokenId = web3.utils.toBN(tokenId).toNumber();
-        const fishData = await getFish(FishFight, web3.utils.toNumber(tokenId))
-        if(fishData != null) {
-          setUserFish(prevData => [...prevData, fishData])
-          // setAllLoadedFish(prevData => [...prevData, fishData])
+        if(!userFish.some(fish => fish.tokenId == tokenId)) {
+          const fishData = await getFish(FishFight, web3.utils.toNumber(tokenId))
+          if(fishData != null) {
+            setUserFish(prevData => [...prevData, fishData])
+            // setAllLoadedFish(prevData => [...prevData, fishData])
+          }
         }
       }
       setAreUserFishLoaded(true);
@@ -129,9 +134,11 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
       const numUserFish = web3.utils.toBN(stakedFishUserOwns).toNumber();
       for(let i = 0; i < numUserFish; i++) {
         const tokenId = await FishFight.readFightingWaters.methods.tokenOfOwnerByIndex(account, i).call();
-        const fishData = await getFish(FishFight, web3.utils.toNumber(tokenId))
-        if(fishData != null) {
-          setUserFightingFish(prevData => [...prevData, fishData])
+        if(!userFightingFish.some(fish => fish.tokenId == tokenId)) {
+          const fishData = await getFish(FishFight, web3.utils.toNumber(tokenId))
+          if(fishData != null) {
+            setUserFightingFish(prevData => [...prevData, fishData])
+          }
         }
       }
     } catch (error) {
@@ -149,9 +156,11 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
       const numUserFish = web3.utils.toBN(fishFightingWatersOwns).toNumber();
       for(let i = 0; i < numUserFish; i++) {
         const tokenId = await FishFight.readFishFactory.methods.tokenOfOwnerByIndex(fightingWatersAddress, i).call();
-        const fishData = await getFish(FishFight, web3.utils.toNumber(tokenId))
-        if(fishData != null) {
-          setUserFightingFish(prevData => [...prevData, fishData])
+        if(!fightingFish.some(fish => fish.tokenId == tokenId)) {
+          const fishData = await getFish(FishFight, web3.utils.toNumber(tokenId))
+          if(fishData != null) {
+            setFightingFish(prevData => [...prevData, fishData])
+          }
         }
       }
     } catch (error) {
@@ -166,6 +175,11 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
 
   const addUserFightingFish = (fish: Fish) => {
     setUserFightingFish(prevTokens => [...prevTokens, fish])
+    addFightingFish(fish);
+    // Remove the fish from the UserFish array
+    setUserFish(prevFish => (
+      prevFish.filter(f => f.tokenId !== fish.tokenId)
+    ));
   };
 
   const addFightingFish = (fish: Fish) => {
@@ -175,6 +189,12 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
 	const resetPublicFish = () => {
 
 		// setPublicFish([]);
+	};
+
+  const refetchUserFightingFish = () => {
+    if(account) {
+      fetchUserFightingFish(account)
+    }
 	};
 
 	const value: FishPoolProviderContext = {
@@ -189,6 +209,7 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
 		addUserFish: addUserFish,
 		addUserFightingFish: addUserFightingFish,
 		addFightingFish: addFightingFish,
+    refetchUserFightingFish: refetchUserFightingFish
 	};
 	
 	return <FishPoolContext.Provider value={value}>{children}</FishPoolContext.Provider>;

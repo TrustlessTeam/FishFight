@@ -15,6 +15,7 @@ import CatchFish from './CatchFish';
 import { useCookies } from 'react-cookie';
 import { useFishFight } from '../context/fishFightContext';
 import ConnectWallet from './ConnectWallet';
+import UserFightingWaters from './UserFightingWaters';
 
 
 type Props = {
@@ -53,6 +54,9 @@ const Game = ({ children }: Props) => {
             </Route>
             <Route path="/ocean">
               <Ocean />
+            </Route>
+            <Route path="/fighting-user">
+              <UserFightingWaters />
             </Route>
             <Route path="/">
             </Route>
