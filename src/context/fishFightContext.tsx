@@ -128,7 +128,6 @@ const useBalance = () => {
       setBalance(parsedBalance)
 
       const food = await FishFight.readFishFood.methods.balanceOf(account).call();
-      console.log(food)
       const parsedFood = FishFight.provider.utils.fromWei(food);
       setBalanceFood(parsedFood);
 

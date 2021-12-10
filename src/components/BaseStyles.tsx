@@ -1,6 +1,10 @@
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 
+interface DefaultOptions {
+	position?: string;
+}
+
 export const BaseContainer = styled.div`
 	display: flex;
 	flex-direction: column;
@@ -16,7 +20,7 @@ export const ContainerControls = styled.div`
 	padding: ${props => props.theme.spacing.gapSmall};
 	/* height: 17%; */
 	pointer-events: auto;
-
+	
 `;
 
 export const BaseText = styled.p`
@@ -35,7 +39,7 @@ export const BaseButton = styled.button`
 	display: flex;
 	flex-flow: column;
 	justify-content: center;
-	padding: 0 1vmin;
+	padding: 1.2vmin 1.2vmin;
 	border-radius: 25px;
 	background-color: white;
 	border: none;

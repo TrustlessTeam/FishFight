@@ -13,9 +13,10 @@ import { useUnity } from '../context/unityContext';
 import FishNFT from './FishNFT';
 import { useFishPool } from '../context/fishPoolContext';
 import Account from './Account';
-import { BaseContainer, ContainerControls, BaseLinkButton } from './BaseStyles';
+import { BaseContainer, ContainerControls, BaseLinkButton, BaseButton } from './BaseStyles';
 import FishViewer from './FishViewer';
 import Menu from './Menu';
+import Web3 from 'web3';
 
 
 enum FishToShow {
@@ -28,7 +29,7 @@ const FishOptions = ['Staked Fish', 'Fish']
 
 const StartFight = () => {
 	const { FishFight, refetchBalance, userConnected } = useFishFight()
-	const { userFish, fightingFish, userFightingFish } = useFishPool()
+	const { userFish, fightingFish, userFightingFish, refreshFish } = useFishPool()
 
 	// Fish selected for fight
 	const [mySelectedFish, setMySelectedFish] = useState<Fish | null>(null);
@@ -89,10 +90,11 @@ const StartFight = () => {
 		else if(newFight.winner == opponentFish?.tokenId) {
 			unityContext.sendWinner(opponentFish);
 		}
-		else if(newFight.winner == -1) {
+		else if(newFight.winner == 0) {
 			unityContext.sendTie()
 		}
 		setFightResult(newFight)
+		refreshFish(newFight.winner)
 	}
 
 	const setOpponent = (fish : Fish) => {
@@ -139,7 +141,7 @@ const StartFight = () => {
 					const result = await FishFight.fightingWaters?.methods.depositAndDeathFight(mySelectedFish.tokenId, opponentFish.tokenId).send({
 						from: account,
 						gasPrice: 1000000000,
-						gasLimit: 1200000,
+						gasLimit: 5000000,
 					})
 					console.log(result)
 					const fightIndex = new BN(result.events.FightCompleted.returnValues._fightIndex).toNumber()
@@ -148,6 +150,7 @@ const StartFight = () => {
 					toast.success('Transaction done', {
 						onClose: async () => {
 							refetchBalance()
+							// refetchFightingFish()
 						},
 					});
 				} catch (error: any) {
@@ -161,10 +164,20 @@ const StartFight = () => {
 			else { // If User selected fish is already deposited, we can just fight them
 				try {
 					setIsFighting(true);
+					// FishFight.fightingWaters?.methods.deathFight(mySelectedFish.tokenId, opponentFish.tokenId).estimateGas({gas: 5000000}, function(error: any, gasAmount: any){
+					// 	console.log(gasAmount)
+					// 	if(gasAmount == 5000000)
+					// 		console.log('Method ran out of gas');
+					// });
+					// const estimateGas = await FishFight.fightingWaters?.methods.deathFight(mySelectedFish.tokenId, opponentFish.tokenId).estimateGas({
+					// 	from: account,
+					// 	gas: 1000000,
+					// });
+					// console.log(Web3.utils.toNumber(estimateGas))
 					const result = await FishFight.fightingWaters?.methods.deathFight(mySelectedFish.tokenId, opponentFish.tokenId).send({
 						from: account,
 						gasPrice: 1000000000,
-						gasLimit: 1000000,
+						gasLimit: 5000000,
 					});
 					console.log(result)
 					const fightIndex = new BN(result.events.FightCompleted.returnValues._fightIndex).toNumber()
@@ -173,6 +186,7 @@ const StartFight = () => {
 					toast.success('Transaction done', {
 						onClose: async () => {
 							refetchBalance()
+							// refetchFightingFish()
 						},
 					});
 				} catch (error: any) {
@@ -212,17 +226,35 @@ const StartFight = () => {
 		{/* Select Fish to Fight */}
 		{!fightResult && !isFighting &&
 			<BaseContainer>
+				{
+					<FightGrid>
+						{mySelectedFish &&
+							<FishNFT selectedUser={true} fish={mySelectedFish}></FishNFT>
+						}
+						<VersusContainer>
+							<Text>VS</Text>
+							{mySelectedFish != null && opponentFish != null ?
+								<BaseButton onClick={() => fightFish()}>
+									Fight Fish
+								</BaseButton>
+								:
+								<Text>Select Fish to Fight</Text>
+							}
+						</VersusContainer>
+						{opponentFish &&
+							<FishNFT selectedOpponent={true} fish={opponentFish}></FishNFT>
+						}
+					</FightGrid>
+				}
 				<ContainerControls>
-					{mySelectedFish != null && opponentFish != null &&
-						<GameButton onClick={() => fightFish()}>
-							Fight Fish
-						</GameButton>
-					}
+					
 					{viewToShow == ViewOptions[0] && account && userFish?.length === 0 &&
 						<CatchButton to={'/catch'}>Catch a Fish!</CatchButton>
 					}
 					<Menu name={viewToShow} onClick={setViewToShow} items={ViewOptions}></Menu>
-					<Menu name={fishToShow} onClick={setFishToShow} items={FishOptions}></Menu>
+					{viewToShow == ViewOptions[0] &&
+						<Menu name={fishToShow} onClick={setFishToShow} items={FishOptions}></Menu>
+					}
 				</ContainerControls>
 				{viewToShow == ViewOptions[0] &&
 					<FishViewer selectedFish={mySelectedFish} fishCollection={fishToShow == FishOptions[0] ? userFightingFish : userFish} onClick={setUserFish}></FishViewer>
@@ -235,7 +267,7 @@ const StartFight = () => {
 
 		{/* Fish are Fighting */}
 		{isFighting && mySelectedFish && opponentFish &&
-			<FishViewerContainer>
+			<BaseContainer>
 				<FightGrid >
 					<FishNFT selectedUser={true} fish={mySelectedFish}></FishNFT>
 					<VersusContainer>
@@ -244,17 +276,17 @@ const StartFight = () => {
 					</VersusContainer>
 					<FishNFT selectedOpponent={true} fish={opponentFish}></FishNFT>
 				</FightGrid>
-			</FishViewerContainer>
+			</BaseContainer>
 		}
 
 		{/* Show Fight Results */}
 		{fightResult && mySelectedFish && opponentFish &&
-			<FishViewerContainer>
-				<FishViewerButtons>
-					<GameButton onClick={() => fightAgain()}>
+			<BaseContainer>
+				<ContainerControls>
+					<BaseButton onClick={() => fightAgain()}>
 						Fight Another Fish!
-					</GameButton>
-				</FishViewerButtons>
+					</BaseButton>
+				</ContainerControls>
 				<FightGrid>
 					<FishNFT selectedUser={true} fish={mySelectedFish}></FishNFT>
 					{showFightResult ? 
@@ -271,7 +303,7 @@ const StartFight = () => {
 					
 					<FishNFT selectedOpponent={true} fish={opponentFish}></FishNFT>
 				</FightGrid>
-			</FishViewerContainer>
+			</BaseContainer>
 		}
 		</>
 	);
@@ -353,22 +385,14 @@ const FishViewerButtons = styled.div`
 	height: 17%;
 `;
 
-const FishGrid = styled.div<GridProps>`
-	display: flex;
-	flex-direction: row nowrap;
-	justify-content: space-between;
-	height: 72%;
-	overflow-y: hidden;
-	overflow-x: hidden;
-`;
-
 const FightGrid = styled.div`
 	display: flex;
 	flex-direction: row nowrap;
 	justify-content: center;
-	height: 72%;
+	/* height: 72%; */
 	overflow-y: hidden;
 	overflow-x: auto;
+	pointer-events: auto;
 `;
 
 

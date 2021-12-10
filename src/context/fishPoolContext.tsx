@@ -20,10 +20,13 @@ interface FishPoolProviderContext {
 	areOceanFishLoaded: boolean
 	areFightingFishLoaded: boolean
 	areUserFightingFishLoaded: boolean
+  refreshFish: (tokenId: number) => void
 	addUserFish: (fish: Fish) => void
 	addUserFightingFish: (fish: Fish) => void
 	addFightingFish: (fish: Fish) => void
+  withdrawUserFightingFish: (fish: Fish) => void
   refetchUserFightingFish: () => void
+  refetchFightingFish: () => void
 }
 
 type BlockchainItem = {
@@ -53,6 +56,34 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
 	const unityContext = useUnity();
 
   useEffect(() => {
+    // Set websocket block listener
+    var burned = FishFight.listenFishFactory.events.FishBurned()
+    burned.on("data", function(data: any){
+      console.log(data)
+      if(data.returnValues.tokenId) {
+        fishBurned(web3.utils.toNumber(data.returnValues.tokenId));
+      }
+    })
+
+    var depositedFighter = FishFight.listenFightingWaters.events.Deposit()
+    depositedFighter.on("data", function(data: any){
+      console.log(data)
+      console.log(data.returnValues.user)
+      if(data.returnValues.tokenId) {
+        addFightingFishById(data.returnValues.tokenId)
+      }
+    })
+
+    var withdrawFighter = FishFight.listenFightingWaters.events.Withdraw()
+    withdrawFighter.on("data", function(data: any){
+      console.log(data)
+      if(data.returnValues.tokenId) {
+        removeFightingFishById(data.returnValues.tokenId)
+      }
+    })
+  }, [])
+
+  useEffect(() => {
     const loadTokenData = async () => {
       console.log("ACCOUNT NOT CONNECTED")
       console.log("Getting public fish")
@@ -76,6 +107,10 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
   }, [account]);
   
 // TODO add function to clear pool when user logs out?
+
+  const getAccount = () => {
+    return account;
+  }
 
   const fetchOceanFish = async () => {
     console.log("Loading Ocean Fish")
@@ -169,22 +204,126 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
     }
   }
 
+  const refetchFightingFish = async () => {
+    console.log("Loading Fighting Fish")
+    const fightingWatersAddress = FishFight.readFightingWaters.options.address
+    try {
+      const fishFightingWatersOwns = await FishFight.readFishFactory.methods.balanceOf(fightingWatersAddress).call();
+      console.log(`Fish in Fighting Waters: ${fishFightingWatersOwns}`)
+      const numUserFish = web3.utils.toBN(fishFightingWatersOwns).toNumber();
+      const existingFish = fightingFish;
+      const newFish: Fish[] = [];
+      for(let i = 0; i < numUserFish; i++) {
+        const tokenId = await FishFight.readFishFactory.methods.tokenOfOwnerByIndex(fightingWatersAddress, i).call();
+        const existingFishId = existingFish.findIndex(fish => fish.tokenId === tokenId)
+        if(existingFishId) {
+          newFish.push(existingFish[existingFishId])
+        } else {
+          const fishData = await getFish(FishFight, web3.utils.toNumber(tokenId))
+          if(fishData != null) {
+            newFish.push(fishData);
+          }
+        }
+      }
+      setFightingFish(newFish);
+    } catch (error) {
+      console.log("Error Fighting Fish: ")
+      console.log(error)
+    }
+  }
+
   const addUserFish = (fish: Fish) => {
     setUserFish(prevTokens => [...prevTokens, fish])
   };
 
   const addUserFightingFish = (fish: Fish) => {
     setUserFightingFish(prevTokens => [...prevTokens, fish])
-    addFightingFish(fish);
     // Remove the fish from the UserFish array
     setUserFish(prevFish => (
       prevFish.filter(f => f.tokenId !== fish.tokenId)
     ));
   };
 
-  const addFightingFish = (fish: Fish) => {
+  // When user withdraws a fish remove from UserFightingFish and FightingFish
+  // Add back to UserFish
+  const withdrawUserFightingFish = (fish: Fish) => {
+    setUserFightingFish(prevFish => (
+      prevFish.filter(f => f.tokenId !== fish.tokenId)
+    ));
+    removeFightingFishById(fish.tokenId);
+    addUserFish(fish);
+    
+  }
+
+  // Remove Burned Fish from all Fish arrays
+  const fishBurned = (tokenId: number) => {
+    setUserFish(prevFish => (
+      prevFish.filter(f => f.tokenId !== tokenId)
+    ));
+
+    setUserFightingFish(prevFish => (
+      prevFish.filter(f => f.tokenId !== tokenId)
+    ));
+
+    setFightingFish(prevFish => (
+      prevFish.filter(f => f.tokenId !== tokenId)
+    ));
+
+    setOceanFish(prevFish => (
+      prevFish.filter(f => f.tokenId !== tokenId)
+    ));
+  }
+
+  const addFightingFishById = async (tokenId: number) => {
+    console.log("Add FightingFish By Id")
+    const fishData = await getFish(FishFight, tokenId)
+    if(fishData != null) {
+      setFightingFish(prevTokens => [...prevTokens, fishData])
+    }
+  };
+
+  const addFightingFish = async (fish: Fish) => {
     setFightingFish(prevTokens => [...prevTokens, fish])
   };
+
+  const removeFightingFishById = (tokenId: number) => {
+    setFightingFish(prevFish => (
+      prevFish.filter(f => f.tokenId !== tokenId)
+    ));
+  }
+
+  const refreshFish = async (tokenId: number) => {
+    const fishData = await getFish(FishFight, tokenId)
+    if(fishData != null) {
+      setUserFish(prevFish => {
+        const tempFish = prevFish.filter(f => f.tokenId !== tokenId)
+        tempFish.push(fishData)
+        return tempFish;
+      }
+      );
+
+      setUserFightingFish(prevFish => {
+        const tempFish = prevFish.filter(f => f.tokenId !== tokenId)
+        tempFish.push(fishData)
+        return tempFish;
+      }
+      );
+
+      setFightingFish(prevFish => {
+        const tempFish = prevFish.filter(f => f.tokenId !== tokenId)
+        tempFish.push(fishData)
+        return tempFish;
+      }
+      );
+
+      setOceanFish(prevFish => {
+        const tempFish = prevFish.filter(f => f.tokenId !== tokenId)
+        tempFish.push(fishData)
+        return tempFish;
+      }
+      );
+    }
+  }
 
 	const resetPublicFish = () => {
 
@@ -206,10 +345,13 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
 		areOceanFishLoaded: areOceanFishLoaded,
 		areFightingFishLoaded: areFightingFishLoaded,
 		areUserFightingFishLoaded: areUserFightingFishLoaded,
+    refreshFish: refreshFish,
 		addUserFish: addUserFish,
 		addUserFightingFish: addUserFightingFish,
 		addFightingFish: addFightingFish,
-    refetchUserFightingFish: refetchUserFightingFish
+    withdrawUserFightingFish: withdrawUserFightingFish,
+    refetchUserFightingFish: refetchUserFightingFish,
+    refetchFightingFish: refetchFightingFish
 	};
 	
 	return <FishPoolContext.Provider value={value}>{children}</FishPoolContext.Provider>;

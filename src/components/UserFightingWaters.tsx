@@ -30,7 +30,7 @@ const ModeOptions = ['Staked Fish', 'Available Fish']
 
 const UserFightingWaters = () => {
 	const { FishFight, refetchBalance, userConnected } = useFishFight()
-	const { userFish, userFightingFish, fightingFish, addUserFightingFish } = useFishPool()
+	const { userFish, userFightingFish, fightingFish, addUserFightingFish, withdrawUserFightingFish } = useFishPool()
 	const [viewToShow, setViewToShow] = useState<string>(ModeOptions[0]);
 	const [renderedFish, setRenderedFish] = useState<number[]>([]);
 
@@ -49,6 +49,8 @@ const UserFightingWaters = () => {
 	useEffect(() => {
 		console.log("Fightintg Fish Changed")
 		console.log(fightingFish)
+		console.log(userFightingFish)
+		console.log(userFish)
 		if(!unityContext.isFishPoolReady) return;
 		let i = 0;
 		fightingFish.forEach(fish => {
@@ -59,7 +61,7 @@ const UserFightingWaters = () => {
 			}
 		})
 		console.log(i)
-	}, [fightingFish, unityContext.isFishPoolReady]);
+	}, [fightingFish, userFightingFish, userFish, unityContext.isFishPoolReady]);
 
 	const setUserFish = (fish : Fish) => {
 		console.log("User Fish: " + fish.tokenId)
@@ -121,6 +123,7 @@ const UserFightingWaters = () => {
 					gasLimit: 800000,
 				})
 				console.log(withdrawFightingWaters)
+				withdrawUserFightingFish(fish);
 				toast.success('Transaction done', {
 					onClose: async () => {
 						refetchBalance()

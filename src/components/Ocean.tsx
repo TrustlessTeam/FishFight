@@ -8,6 +8,7 @@ import Account from './Account';
 import FishViewer from './FishViewer';
 import Menu from './Menu';
 import { BaseContainer, ContainerControls, BaseLinkButton } from './BaseStyles';
+import { Fish } from '../utils/fish';
 
 const ModeOptions = ['Ocean Fish', 'My Fish']
 
@@ -52,6 +53,8 @@ const Ocean = () => {
 		unityContext.showOcean();
 	}, [unityContext.isFishPoolReady]);
 
+	const sortStr = (a: Fish, b: Fish) => a.agility - b.agility
+
 	return (
 
 		<BaseContainer>
@@ -65,7 +68,7 @@ const Ocean = () => {
 					}
 				</ContainerControls>
 
-				<FishViewer fishCollection={fishToShow === ModeOptions[0] ? oceanFish : userFish} onClick={unityContext.showFish}></FishViewer>
+				<FishViewer sortFn={sortStr} fishCollection={fishToShow === ModeOptions[0] ? oceanFish : userFish} onClick={unityContext.showFish}></FishViewer>
 		</BaseContainer>
 		
 	);

@@ -12,9 +12,10 @@ type Props = {
 	onClick?: (fish: Fish) => void;
 	selectedFish?: Fish | null;
 	selectedOpponent?: Fish | null;
+	sortFn?: (a: Fish, b: Fish) => number
 };
 
-const FishViewer = ({ fishCollection, onClick, selectedFish, selectedOpponent }: Props) => {
+const FishViewer = ({ fishCollection, onClick, selectedFish, selectedOpponent, sortFn }: Props) => {
 	const [showStats, setShowStats] = useState<boolean>(false);
 
 	const scrollRef = useHorizontalScroll();
@@ -22,7 +23,7 @@ const FishViewer = ({ fishCollection, onClick, selectedFish, selectedOpponent }:
 	return (
 		<FishGrid ref={scrollRef}>
 		{
-			fishCollection?.map((fish, index) => (
+			fishCollection.sort(sortFn ? sortFn : (a, b) => a.tokenId - b.tokenId)?.map((fish, index) => (
 				<FishNFT selectedOpponent={selectedOpponent?.tokenId === fish.tokenId} selectedUser={selectedFish?.tokenId === fish.tokenId} onClick={onClick ? () => onClick(fish) : undefined} fish={fish} key={index}></FishNFT>
 			))
 		}
