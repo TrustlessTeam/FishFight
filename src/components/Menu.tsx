@@ -66,18 +66,18 @@ const Menu = ({ onClick, name, items }: Props) => {
   }
 	
 	return (
-      <Drop>
-        <Dropbtn onClick={() => toggleDropdown()}>
-          {name}
-          <DropContent open={open}>
-          {items.map((selection: any) => {
-            return (
-              <DropItem onClick={() => handleSelectionClick(selection)}>{selection}</DropItem>
-            )
-          })}
-        </DropContent>
-        </Dropbtn>
-      </Drop>
+    <Drop>
+      <Dropbtn onClick={() => toggleDropdown()}>
+        {name}
+        <DropContent open={open}>
+        {items.map((selection: any) => {
+          return (
+            <DropItem onClick={() => handleSelectionClick(selection)}>{selection}</DropItem>
+          )
+        })}
+      </DropContent>
+      </Dropbtn>
+    </Drop>
   );
 };
 

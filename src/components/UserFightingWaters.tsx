@@ -16,6 +16,8 @@ import Account from './Account';
 import FishViewer from './FishViewer';
 import Menu from './Menu';
 import StakedStatus from './StakedStatus';
+import { BaseContainer, ContainerControls, BaseLinkButton } from './BaseStyles';
+
 
 
 enum FishToShow {
@@ -141,9 +143,9 @@ const UserFightingWaters = () => {
 	}
 
 	return (
-		<>
+		<BaseContainer>
 		{viewToShow === ModeOptions[0] &&
-			<Container>
+			<>
 					{mySelectedFish != null &&
 						<OptionsContainer>
 							<GameButton onClick={() => withdrawFish(mySelectedFish)}>{'Withdraw'}</GameButton>
@@ -151,13 +153,15 @@ const UserFightingWaters = () => {
 							<GameButton onClick={() => selectAnother()}>{'Back to Fish'}</GameButton>
 						</OptionsContainer>
 					}
-					<StakedStatus></StakedStatus>
-					<Menu name={viewToShow} onClick={setView} items={ModeOptions}></Menu>
+					<ContainerControls>
+						<Menu name={viewToShow} onClick={setView} items={ModeOptions}></Menu>
+						<StakedStatus></StakedStatus>
+					</ContainerControls>
 					<FishViewer selectedFish={mySelectedFish} fishCollection={userFightingFish} onClick={setUserFish}></FishViewer>
-			</Container>
+			</>
 		}
 		{viewToShow === ModeOptions[1] &&
-			<Container>
+			<>
 					{mySelectedFish != null &&
 					<OptionsContainer>
 						<GameButton onClick={() => depositFish(mySelectedFish)}>{'Deposit'}</GameButton>
@@ -165,13 +169,15 @@ const UserFightingWaters = () => {
 						<GameButton onClick={() => selectAnother()}>{'Back to Fish'}</GameButton>
 					</OptionsContainer>
 					}
-					<Menu name={viewToShow} onClick={setView} items={ModeOptions}></Menu>
+					<ContainerControls>
+						<Menu name={viewToShow} onClick={setView} items={ModeOptions}></Menu>
+					</ContainerControls>
 					<FishViewer selectedFish={mySelectedFish} fishCollection={userFish} onClick={setUserFish}></FishViewer>
-			</Container>
+			</>
 		} 
 		{/* Staked Fish*/}
 		
-		</>
+		</BaseContainer>
 	);
 };
 

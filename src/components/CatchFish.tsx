@@ -41,22 +41,8 @@ const CatchFish = () => {
 		unityContext.UnityInstance.on('UISelectionConfirm', function (data: any) {
 			console.log('UI changed catch fish');
 			console.log(data)
-			switch (data) {
-				case 'mint_fish_2.5percent':
-					mintFish(25, account);
-					return;
-				case 'mint_fish_5percent':
-					mintFish(50, account);
-					return;
-				case 'mint_fish_10percent':
-					mintFish(100, account);
-					return;
-				case 'mint_fish_100percent':
-					mintFish(1000, account);
-					return;
-				default:
-					return;
-			}
+			mintFish(100);
+			return;
 		});
 	}, [unityContext.isFishPoolReady]);
 
@@ -89,7 +75,7 @@ const CatchFish = () => {
 	}
 
 
-	const mintFish = async (value: number, account: string | null | undefined) => {
+	const mintFish = async (value: number) => {
 		console.log(account)
 		
 		if (account) {

@@ -13,21 +13,28 @@ import { useUnity } from '../context/unityContext';
 import FishNFT from './FishNFT';
 import { useFishPool } from '../context/fishPoolContext';
 import Account from './Account';
+import { BaseContainer, ContainerControls, BaseLinkButton } from './BaseStyles';
+import FishViewer from './FishViewer';
+import Menu from './Menu';
+
 
 enum FishToShow {
   Public,
   User
 }
 
+const ViewOptions = ['Select Fighter', 'Select Opponent']
+const FishOptions = ['Staked Fish', 'Fish']
 
-const FightingWaters = () => {
+const StartFight = () => {
 	const { FishFight, refetchBalance, userConnected } = useFishFight()
-	const { userFish, areUserFishLoaded, areOceanFishLoaded } = useFishPool()
+	const { userFish, fightingFish, userFightingFish } = useFishPool()
 
 	// Fish selected for fight
 	const [mySelectedFish, setMySelectedFish] = useState<Fish | null>(null);
-	const [opponentFish, setopponentFish] = useState<Fish | null>(null);
-	const [fishToShow, setFishToShow] = useState<FishToShow>(FishToShow.Public);
+	const [opponentFish, setOpponentFish] = useState<Fish | null>(null);
+	const [viewToShow, setViewToShow] = useState<string>(ViewOptions[0]);
+	const [fishToShow, setFishToShow] = useState<string>(FishOptions[0]);
 	const [fightResult, setFightResult] = useState<Fight | null>();
 	const [showFightResult, setShowFightResult] = useState(false);
 	const [isFighting, setIsFighting] = useState<boolean>(false);
@@ -36,15 +43,15 @@ const FightingWaters = () => {
 	const { account } = useWeb3React();
 	const unityContext = useUnity();
 
-	useEffect(() => {
-		console.log("Account changed")
-		console.log(userConnected)
-		if(userConnected) {
-			setFishToShow(FishToShow.User)
-		} else {
-			setFishToShow(FishToShow.Public)
-		}
-	}, [userConnected]);
+	// useEffect(() => {
+	// 	console.log("Account changed")
+	// 	console.log(userConnected)
+	// 	if(userConnected) {
+	// 		setFishToShow(FishToShow.User)
+	// 	} else {
+	// 		setFishToShow(FishToShow.Public)
+	// 	}
+	// }, [userConnected]);
 
 	useEffect(() => {
 		unityContext.showFight();
@@ -94,7 +101,7 @@ const FightingWaters = () => {
 		if(mySelectedFish != null) {
 			unityContext.addFishFight2(mySelectedFish);
 		}
-		setopponentFish(fish);
+		setOpponentFish(fish);
 		unityContext.addFishFight2(fish)
 	}
 
@@ -106,43 +113,74 @@ const FightingWaters = () => {
 		}
 		setMySelectedFish(fish);
 		unityContext.addFishFight1(fish)
-		const approve = await FishFight.fishFactory?.methods.approve(FishFight.readFightingWaters.options.address, fish.tokenId).send({
-			from: account,
-			gasPrice: 1000000000,
-			gasLimit: 500000,
-		})
-		console.log(approve)
-		const addToFightingWaters = await FishFight.fightingWaters?.methods.deposit(fish.tokenId).send({
-			from: account,
-			gasPrice: 1000000000,
-			gasLimit: 800000,
-		})
-		console.log(addToFightingWaters)
 	}
 
-	const fightFish = () => async () => {
+	const isDeposited = async (tokenId: number) => {
+		const owner = await FishFight.readFishFactory.methods.ownerOf(tokenId).call();
+		console.log(owner)
+		console.log(FishFight.readFishingWaters.options.address)
+		return owner == FishFight.readFightingWaters.options.address;
+	}
+
+	const fightFish = async () => {
 		if (account && mySelectedFish != null && opponentFish != null) {
-			try {
-				setIsFighting(true);
-				const result = await FishFight.fightingWaters?.methods.deathFight(mySelectedFish.tokenId, opponentFish.tokenId).send({
-					from: account,
-					gasPrice: 1000000000,
-					gasLimit: 500000,
-				});
-				console.log(result)
-				const fightIndex = new BN(result.events.FightCompleted.returnValues._fightIndex).toNumber()
-				getUserFight(fightIndex);
-				setIsFighting(false);
-				toast.success('Transaction done', {
-					onClose: async () => {
-						refetchBalance()
-					},
-				});
-			} catch (error: any) {
-				toast.error(error);
-				setIsFighting(false)
-				setMySelectedFish(null)
-				setopponentFish(null)
+			const deposited = await isDeposited(mySelectedFish.tokenId);
+			// Must approve not deposited fish before fighting, then trigger depositAndDeathFight
+			if(!deposited) {
+				try {
+					const approve = await FishFight.fishFactory?.methods.approve(FishFight.readFightingWaters.options.address, mySelectedFish.tokenId).send({
+						from: account,
+						gasPrice: 1000000000,
+						gasLimit: 500000,
+					})
+					console.log(approve)
+
+					setIsFighting(true);
+					const result = await FishFight.fightingWaters?.methods.depositAndDeathFight(mySelectedFish.tokenId, opponentFish.tokenId).send({
+						from: account,
+						gasPrice: 1000000000,
+						gasLimit: 1200000,
+					})
+					console.log(result)
+					const fightIndex = new BN(result.events.FightCompleted.returnValues._fightIndex).toNumber()
+					getUserFight(fightIndex);
+					setIsFighting(false);
+					toast.success('Transaction done', {
+						onClose: async () => {
+							refetchBalance()
+						},
+					});
+				} catch (error: any) {
+					console.log(error)
+					toast.error(error);
+					setIsFighting(false)
+					setMySelectedFish(null)
+					setOpponentFish(null)
+				}
+			}
+			else { // If User selected fish is already deposited, we can just fight them
+				try {
+					setIsFighting(true);
+					const result = await FishFight.fightingWaters?.methods.deathFight(mySelectedFish.tokenId, opponentFish.tokenId).send({
+						from: account,
+						gasPrice: 1000000000,
+						gasLimit: 1000000,
+					});
+					console.log(result)
+					const fightIndex = new BN(result.events.FightCompleted.returnValues._fightIndex).toNumber()
+					getUserFight(fightIndex);
+					setIsFighting(false);
+					toast.success('Transaction done', {
+						onClose: async () => {
+							refetchBalance()
+						},
+					});
+				} catch (error: any) {
+					toast.error(error);
+					setIsFighting(false)
+					setMySelectedFish(null)
+					setOpponentFish(null)
+				}
 			}
 		} else {
 			toast.error('Connect your wallet');
@@ -154,18 +192,18 @@ const FightingWaters = () => {
 		setFightResult(null)
 		setIsFighting(false)
 		setMySelectedFish(null)
-		setopponentFish(null)
+		setOpponentFish(null)
 		setShowFightResult(false);		
 	}
 
-	const setFishToView = () => {
-		if(fishToShow == FishToShow.Public) {
-			setFishToShow(FishToShow.User)
-		}
-		else {
-			setFishToShow(FishToShow.Public)
-		}
-	}
+	// const setFishToView = () => {
+	// 	if(fishToShow == FishToShow.Public) {
+	// 		setFishToShow(FishToShow.User)
+	// 	}
+	// 	else {
+	// 		setFishToShow(FishToShow.Public)
+	// 	}
+	// }
 
 	const scrollRef = useHorizontalScroll();
 
@@ -173,43 +211,26 @@ const FightingWaters = () => {
 		<>
 		{/* Select Fish to Fight */}
 		{!fightResult && !isFighting &&
-			<FishViewerContainer>
-				<FishViewerButtons>
-					<GameButton onClick={() => setFishToView()}>{fishToShow == FishToShow.Public ? "Show my Fish" : "Show public Fish"}</GameButton>
-					{mySelectedFish == null &&
-						<Text>Select your fighter from My Fish!</Text>
-					}
-					{opponentFish == null &&
-						<Text>Select your opponent from Public Fish!</Text>
-					}
+			<BaseContainer>
+				<ContainerControls>
 					{mySelectedFish != null && opponentFish != null &&
-						<GameButton onClick={fightFish()}>
+						<GameButton onClick={() => fightFish()}>
 							Fight Fish
 						</GameButton>
 					}
-					{fishToShow == FishToShow.User && account && !areUserFishLoaded &&
-						<Text>Loading you fish...</Text>
-					}
-					{fishToShow == FishToShow.User && account && areUserFishLoaded && userFish?.length == 0 &&
+					{viewToShow == ViewOptions[0] && account && userFish?.length === 0 &&
 						<CatchButton to={'/catch'}>Catch a Fish!</CatchButton>
 					}
-					{fishToShow == FishToShow.User && !account &&
-						<Account/>
-					}
-				</FishViewerButtons>
-				<FishGrid ref={scrollRef}>
-				{/* {fishToShow == FishToShow.Public &&
-					publicFish?.map((fish, index) => (
-						<FishNFT selectedOpponent={opponentFish?.tokenId == fish.tokenId} fish={fish} key={index} onClick={() => {setOpponent(fish)}}></FishNFT>
-					))
-				} */}
-				{fishToShow == FishToShow.User &&
-					userFish?.map((fish, index) => (
-						<FishNFT selectedUser={mySelectedFish?.tokenId == fish.tokenId ? true : false} fish={fish} key={index} onClick={() => {setUserFish(fish)}}></FishNFT>
-					))
+					<Menu name={viewToShow} onClick={setViewToShow} items={ViewOptions}></Menu>
+					<Menu name={fishToShow} onClick={setFishToShow} items={FishOptions}></Menu>
+				</ContainerControls>
+				{viewToShow == ViewOptions[0] &&
+					<FishViewer selectedFish={mySelectedFish} fishCollection={fishToShow == FishOptions[0] ? userFightingFish : userFish} onClick={setUserFish}></FishViewer>
 				}
-				</FishGrid>
-			</FishViewerContainer>
+				{viewToShow == ViewOptions[1] &&
+					<FishViewer selectedOpponent={opponentFish} fishCollection={fightingFish} onClick={setOpponent}></FishViewer>
+				}
+			</BaseContainer>
 		}
 
 		{/* Fish are Fighting */}
@@ -382,4 +403,4 @@ const ResultContainer = styled.div`
 
 
 
-export default FightingWaters;
+export default StartFight;
