@@ -14,11 +14,15 @@ import FishNFT from './FishNFT';
 import { useFishPool } from '../context/fishPoolContext';
 import Account from './Account';
 import FishViewer from './FishViewer';
-import Menu from './Menu';
+import Menu, { MenuItem } from './Menu';
+import StakedStatus from './StakedStatus';
+import { BaseContainer, ContainerControls, BaseLinkButton } from './BaseStyles';
 
-enum FishToShow {
-  Public,
-  User
+
+
+enum FishSelectionEnum {
+  UserFightingFish,
+  UserFish
 }
 
 const ModeOptions = ['Staked Fish', 'Available Fish']
@@ -26,8 +30,8 @@ const ModeOptions = ['Staked Fish', 'Available Fish']
 
 const UserFightingWaters = () => {
 	const { FishFight, refetchBalance, userConnected } = useFishFight()
-	const { userFish, userFightingFish, fightingFish, addUserFightingFish } = useFishPool()
-	const [viewToShow, setViewToShow] = useState<string>(ModeOptions[0]);
+	const { userFish, userFightingFish, fightingFish, addUserFightingFish, withdrawUserFightingFish } = useFishPool()
+	const [fishSelectionToShow, setFishSelectionToShow] = useState<number>(FishSelectionEnum.UserFightingFish);
 	const [renderedFish, setRenderedFish] = useState<number[]>([]);
 
 	// Fish selected for fight
@@ -37,6 +41,17 @@ const UserFightingWaters = () => {
 	const { account } = useWeb3React();
 	const unityContext = useUnity();
 
+	const FishViewOptions: MenuItem[] = [
+		{
+			name: 'My Fighting Fish',
+			onClick: () => setFishSelectionToShow(FishSelectionEnum.UserFightingFish)
+		},
+		{
+			name: 'My Fish',
+			onClick: () => setFishSelectionToShow(FishSelectionEnum.UserFish)
+		}
+	]
+
 	useEffect(() => {
 		console.log("UserFightingFish")
 		unityContext.showFight();
@@ -45,6 +60,8 @@ const UserFightingWaters = () => {
 	useEffect(() => {
 		console.log("Fightintg Fish Changed")
 		console.log(fightingFish)
+		console.log(userFightingFish)
+		console.log(userFish)
 		if(!unityContext.isFishPoolReady) return;
 		let i = 0;
 		fightingFish.forEach(fish => {
@@ -55,7 +72,7 @@ const UserFightingWaters = () => {
 			}
 		})
 		console.log(i)
-	}, [fightingFish, unityContext.isFishPoolReady]);
+	}, [fightingFish, userFightingFish, userFish, unityContext.isFishPoolReady]);
 
 	const setUserFish = (fish : Fish) => {
 		console.log("User Fish: " + fish.tokenId)
@@ -117,6 +134,7 @@ const UserFightingWaters = () => {
 					gasLimit: 800000,
 				})
 				console.log(withdrawFightingWaters)
+				withdrawUserFightingFish(fish);
 				toast.success('Transaction done', {
 					onClose: async () => {
 						refetchBalance()
@@ -132,43 +150,28 @@ const UserFightingWaters = () => {
 		setMySelectedFish(null)
 	}
 
-	const setView = (selection: string) => {
-		console.log(selection)
-		setMySelectedFish(null);
-		setViewToShow(selection)
-	}
 
 	return (
-		<>
-		{viewToShow === ModeOptions[0] &&
-			<Container>
-					{mySelectedFish != null &&
-						<OptionsContainer>
-							<GameButton onClick={() => withdrawFish(mySelectedFish)}>{'Withdraw'}</GameButton>
-							{/* <GameButton onClick={() => startFightFish(mySelectedFish)}>{'Use in Fight'}</GameButton> */}
-							<GameButton onClick={() => selectAnother()}>{'Back to Fish'}</GameButton>
-						</OptionsContainer>
-					}
-					<Menu name={viewToShow} onClick={setView} items={ModeOptions}></Menu>
-					<FishViewer selectedFish={mySelectedFish} fishCollection={userFightingFish} onClick={setUserFish}></FishViewer>
-			</Container>
-		}
-		{viewToShow === ModeOptions[1] &&
-			<Container>
-					{mySelectedFish != null &&
-					<OptionsContainer>
-						<GameButton onClick={() => depositFish(mySelectedFish)}>{'Deposit'}</GameButton>
-						{/* <GameButton onClick={() => startFightFish(mySelectedFish)}>{'Use in Fight'}</GameButton> */}
-						<GameButton onClick={() => selectAnother()}>{'Back to Fish'}</GameButton>
-					</OptionsContainer>
-					}
-					<Menu name={viewToShow} onClick={setView} items={ModeOptions}></Menu>
-					<FishViewer selectedFish={mySelectedFish} fishCollection={userFish} onClick={setUserFish}></FishViewer>
-			</Container>
-		} 
-		{/* Staked Fish*/}
-		
-		</>
+		<BaseContainer>
+			{mySelectedFish != null &&
+			<OptionsContainer>
+				{fishSelectionToShow === FishSelectionEnum.UserFightingFish ?
+					<GameButton onClick={() => withdrawFish(mySelectedFish)}>{'Withdraw'}</GameButton>
+					:
+					<GameButton onClick={() => depositFish(mySelectedFish)}>{'Deposit'}</GameButton>
+				}
+				<GameButton onClick={() => selectAnother()}>{'Back to Fish'}</GameButton>
+			</OptionsContainer>
+			}
+			<ContainerControls>
+				<Menu name={FishSelectionEnum[fishSelectionToShow]} items={FishViewOptions}></Menu>
+			</ContainerControls>
+			{fishSelectionToShow === FishSelectionEnum.UserFightingFish ?
+				<FishViewer selectedFish={mySelectedFish} fishCollection={userFightingFish} onClick={setUserFish}></FishViewer>
+				:
+				<FishViewer selectedFish={mySelectedFish} fishCollection={userFish} onClick={setUserFish}></FishViewer>
+			}
+		</BaseContainer>
 	);
 };
 

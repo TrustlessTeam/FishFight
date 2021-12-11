@@ -1,12 +1,8 @@
-// FishFight
-import { useFishFight } from './context/fishFightContext';
 
 // React
 import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  Link
+  Link,
+	Outlet
 } from "react-router-dom";
 
 // React web3
@@ -18,25 +14,19 @@ import 'react-toastify/dist/ReactToastify.css';
 
 // Styled Components
 import styled, { ThemeProvider } from 'styled-components';
-import { BaseTheme } from './default-theme';
+import { BaseTheme } from '../default-theme';
 
 // Components
-import Nav from './components/Nav';
-import Account from './components/Account';
-import Balance from './components/Balance';
-import CatchFish from './components/CatchFish';
+import Nav from './Nav';
+import Account from './Account';
+import Balance from './Balance';
 
 import logo from '../src/img/FishFightLogo.png'
-import Blockchain from './components/BlockchainStatus';
+import Blockchain from './BlockchainStatus';
 
 
-import SeasonStatus from './components/SeasonStatus';
-import UnityWindow from './components/UnityWindow';
-import Ocean from './components/Ocean';
-import FightingWaters from './components/FightingWaters';
-import UserFightingWaters from './components/UserFightingWaters';
-import UILayout from './components/UILayout';
-import StartFight from './components/StartFight';
+import SeasonStatus from './SeasonStatus';
+
 
 
 const App = () => {
@@ -48,61 +38,39 @@ const App = () => {
 	
 
 	return (
-		<ThemeProvider theme={BaseTheme}>
-			<Router>
-				<Wrapper>
-					<Container>
-						<Topbar>
-							{/* <Logo to={"/"}>
-								<LogoImg src={logo}></LogoImg>
-							</Logo> */}
+		<Wrapper>
+			<Container>
+				<Topbar>
+					{/* <Logo to={"/"}>
+						<LogoImg src={logo}></LogoImg>
+					</Logo> */}
 
-							<SeasonStatus></SeasonStatus>
-					
-							<Nav></Nav>
-
-							<AccountContainer>
-								{account &&
-									<Balance />
-								}
-								<Account/>
-							</AccountContainer>
-							
-						</Topbar>
-
-						<Routes>
-							{/* <Route path="/" element={<UnityWindow />}></Route> */}
-							
-								<Route element={<UnityWindow />}>
-									<Route element={<UILayout />}>
-										<Route path="/ocean" element={<Ocean />} />
-										<Route path="/fishing" element={<CatchFish />} />
-										<Route path="/fighting" element={<FightingWaters />}>
-											<Route path="/fighting/user" element={<UserFightingWaters />} />
-											<Route path="/fighting/start" element={<StartFight />} />
-										</Route>
-										<Route path="/breeding" element={<FightingWaters />} />
-									</Route>
-								</Route>
-							
-							
-          	</Routes>	
-	
-
-						<Blockchain></Blockchain>
-
-					</Container>
-					<ToastContainer
-						position="bottom-right"
-						newestOnTop={false}
-						pauseOnFocusLoss={false}
-						pauseOnHover={false}
-						rtl={false}
-					/>
-				</Wrapper>
-			</Router>
-		</ThemeProvider>
+					<SeasonStatus></SeasonStatus>
 			
+					<Nav></Nav>
+
+					<AccountContainer>
+						{account &&
+							<Balance />
+						}
+						<Account/>
+					</AccountContainer>
+					
+				</Topbar>
+
+				<Outlet />
+
+				<Blockchain></Blockchain>
+
+			</Container>
+			<ToastContainer
+				position="bottom-right"
+				newestOnTop={false}
+				pauseOnFocusLoss={false}
+				pauseOnHover={false}
+				rtl={false}
+			/>
+		</Wrapper>
 	);
 };
 
@@ -111,8 +79,8 @@ const Wrapper = styled.div`
 	flex-flow: row wrap;
 	width: 100vw;
 	max-height: 100vh;
-	background-color: ${props => props.theme.colors.color1};
-	background-image: ${props => props.theme.colors.gradientTop};
+	background-color: none;
+	background-image: none;
 	font-size: 1rem;
 `;
 

@@ -21,6 +21,13 @@ class FishFight {
     readSeasons: Contract
     readFishFood: Contract
     readDeadFishFactory: Contract
+    listenFishFactory: Contract
+    listenFishingWaters: Contract
+    listenFightingWaters: Contract
+    listenBreedingWaters: Contract
+    listenSeasons: Contract
+    listenFishFood: Contract
+    listenDeadFishFactory: Contract
     fishFactory: Contract | HarmonyContract | null
     fishingWaters: Contract | HarmonyContract | null
     fightingWaters: Contract | HarmonyContract | null
@@ -41,6 +48,14 @@ class FishFight {
         this.readSeasons = this.setSeasonsContract(this.provider, "web3")
         this.readFishFood = this.setFishFoodContract(this.provider, "web3")
         this.readDeadFishFactory = this.setDeadFishFactoryContract(this.provider, "web3")
+
+        this.listenFishFactory = this.setFishFactoryContract(this.listener, "web3")
+        this.listenFishingWaters = this.setFishingWatersContract(this.listener, "web3")
+        this.listenFightingWaters = this.setFightingWatersContract(this.listener, "web3")
+        this.listenBreedingWaters = this.setBreedingWatersContract(this.listener, "web3")
+        this.listenSeasons = this.setSeasonsContract(this.listener, "web3")
+        this.listenFishFood = this.setFishFoodContract(this.listener, "web3")
+        this.listenDeadFishFactory = this.setDeadFishFactoryContract(this.listener, "web3")
 
         this.providerWallet = null;
         this.fishFactory = null;
