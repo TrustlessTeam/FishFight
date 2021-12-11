@@ -15,6 +15,7 @@ export const BaseContainer = styled.div`
 `;
 
 export const ContainerControls = styled.div`
+	position: relative;
 	display: flex;
 	flex-flow: row nowrap;
 	padding: ${props => props.theme.spacing.gapSmall};

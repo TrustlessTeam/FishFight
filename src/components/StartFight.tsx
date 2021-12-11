@@ -15,27 +15,29 @@ import { useFishPool } from '../context/fishPoolContext';
 import Account from './Account';
 import { BaseContainer, ContainerControls, BaseLinkButton, BaseButton } from './BaseStyles';
 import FishViewer from './FishViewer';
-import Menu from './Menu';
+import Menu, { MenuItem } from './Menu';
 import Web3 from 'web3';
 
 
-enum FishToShow {
-  Public,
-  User
+enum FishSelectionEnum {
+  UserFightingFish,
+  UserFish
 }
 
-const ViewOptions = ['Select Fighter', 'Select Opponent']
-const FishOptions = ['Staked Fish', 'Fish']
+enum FighterSelectionEnum {
+  MyFighter,
+	OpponentFighter
+}
 
 const StartFight = () => {
-	const { FishFight, refetchBalance, userConnected } = useFishFight()
+	const { FishFight, refetchBalance } = useFishFight()
 	const { userFish, fightingFish, userFightingFish, refreshFish } = useFishPool()
 
 	// Fish selected for fight
 	const [mySelectedFish, setMySelectedFish] = useState<Fish | null>(null);
 	const [opponentFish, setOpponentFish] = useState<Fish | null>(null);
-	const [viewToShow, setViewToShow] = useState<string>(ViewOptions[0]);
-	const [fishToShow, setFishToShow] = useState<string>(FishOptions[0]);
+	const [fighterSelectionToShow, setFighterSelectionToShow] = useState<number>(FighterSelectionEnum.MyFighter);
+	const [fishSelectionToShow, setFishSelectionToShow] = useState<number>(FishSelectionEnum.UserFightingFish);
 	const [fightResult, setFightResult] = useState<Fight | null>();
 	const [showFightResult, setShowFightResult] = useState(false);
 	const [isFighting, setIsFighting] = useState<boolean>(false);
@@ -44,13 +46,35 @@ const StartFight = () => {
 	const { account } = useWeb3React();
 	const unityContext = useUnity();
 
+	const FishViewOptions: MenuItem[] = [
+		{
+			name: 'My Fighting Fish',
+			onClick: () => setFishSelectionToShow(FishSelectionEnum.UserFightingFish)
+		},
+		{
+			name: 'My Fish',
+			onClick: () => setFishSelectionToShow(FishSelectionEnum.UserFish)
+		}
+	]
+
+	const FighterSelectionOptions: MenuItem[] = [
+		{
+			name: 'Select Fighter',
+			onClick: () => setFighterSelectionToShow(FighterSelectionEnum.MyFighter)
+		},
+		{
+			name: 'Select Opponent',
+			onClick: () => setFighterSelectionToShow(FighterSelectionEnum.OpponentFighter)
+		}
+	]
+
 	// useEffect(() => {
 	// 	console.log("Account changed")
 	// 	console.log(userConnected)
 	// 	if(userConnected) {
-	// 		setFishToShow(FishToShow.User)
+	// 		setFishSelectionToShow(FishToShow.User)
 	// 	} else {
-	// 		setFishToShow(FishToShow.Public)
+	// 		setFishSelectionToShow(FishToShow.Public)
 	// 	}
 	// }, [userConnected]);
 
@@ -211,11 +235,11 @@ const StartFight = () => {
 	}
 
 	// const setFishToView = () => {
-	// 	if(fishToShow == FishToShow.Public) {
-	// 		setFishToShow(FishToShow.User)
+	// 	if(fishSelectionToShow == FishToShow.Public) {
+	// 		setFishSelectionToShow(FishToShow.User)
 	// 	}
 	// 	else {
-	// 		setFishToShow(FishToShow.Public)
+	// 		setFishSelectionToShow(FishToShow.Public)
 	// 	}
 	// }
 
@@ -247,19 +271,15 @@ const StartFight = () => {
 					</FightGrid>
 				}
 				<ContainerControls>
-					
-					{viewToShow == ViewOptions[0] && account && userFish?.length === 0 &&
-						<CatchButton to={'/catch'}>Catch a Fish!</CatchButton>
-					}
-					<Menu name={viewToShow} onClick={setViewToShow} items={ViewOptions}></Menu>
-					{viewToShow == ViewOptions[0] &&
-						<Menu name={fishToShow} onClick={setFishToShow} items={FishOptions}></Menu>
+					<Menu name={FighterSelectionEnum[fighterSelectionToShow]} items={FighterSelectionOptions}></Menu>
+					{fighterSelectionToShow === FighterSelectionEnum.MyFighter &&
+						<Menu name={FishSelectionEnum[fishSelectionToShow]} items={FishViewOptions}></Menu>
 					}
 				</ContainerControls>
-				{viewToShow == ViewOptions[0] &&
-					<FishViewer selectedFish={mySelectedFish} fishCollection={fishToShow == FishOptions[0] ? userFightingFish : userFish} onClick={setUserFish}></FishViewer>
+				{fighterSelectionToShow === FighterSelectionEnum.MyFighter &&
+					<FishViewer selectedFish={mySelectedFish} fishCollection={fishSelectionToShow === FishSelectionEnum.UserFightingFish ? userFightingFish : userFish} onClick={setUserFish}></FishViewer>
 				}
-				{viewToShow == ViewOptions[1] &&
+				{fighterSelectionToShow === FighterSelectionEnum.OpponentFighter &&
 					<FishViewer selectedOpponent={opponentFish} fishCollection={fightingFish} onClick={setOpponent}></FishViewer>
 				}
 			</BaseContainer>

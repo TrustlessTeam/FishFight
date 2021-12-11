@@ -46,12 +46,17 @@ interface DropdownProps {
 }
 
 type Props = {
-  onClick: (choice: string) => void;
+  name: string,
+  items: MenuItem[]
+}
+
+export type MenuItem = {
   name: string;
-  items: any;
+  onClick: () => void;
+  // extra?: any;
 };
 
-const Menu = ({ onClick, name, items }: Props) => {
+const Menu = ({name, items} : Props) => {
   const [open, setOpen] = useState<boolean>(false);
 
   const toggleDropdown = () => {
@@ -59,20 +64,18 @@ const Menu = ({ onClick, name, items }: Props) => {
     console.log(open)
     setOpen(!open);
   };
-
-  const handleSelectionClick = (choice: string) => {
-    toggleDropdown();
-    onClick(choice)
-  }
 	
 	return (
     <Drop>
       <Dropbtn onClick={() => toggleDropdown()}>
         {name}
         <DropContent open={open}>
-        {items.map((selection: any) => {
+        {items.map((selection: MenuItem, index) => {
           return (
-            <DropItem onClick={() => handleSelectionClick(selection)}>{selection}</DropItem>
+            <DropItem key={index} onClick={() => {
+              toggleDropdown();
+              selection.onClick();
+            }}>{selection.name}</DropItem>
           )
         })}
       </DropContent>

@@ -6,19 +6,32 @@ import { useWeb3React } from '@web3-react/core';
 
 import Account from './Account';
 import FishViewer from './FishViewer';
-import Menu from './Menu';
+import Menu, { MenuItem } from './Menu';
 import { BaseContainer, ContainerControls, BaseLinkButton } from './BaseStyles';
-import { Fish } from '../utils/fish';
 
-const ModeOptions = ['Ocean Fish', 'My Fish']
+enum FishView {
+	'Ocean',
+	'User'
+}
 
 const Ocean = () => {
 	const { userFish, oceanFish } = useFishPool();
-	const [fishToShow, setFishToShow] = useState<string>(ModeOptions[0]);
+	const [fishToShow, setFishToShow] = useState<number>(FishView.Ocean);
+
 	const [renderedFish, setRenderedFish] = useState<number[]>([]);
 	const unityContext = useUnity();
 	const { account } = useWeb3React();
 
+	const FishViewOptions: MenuItem[] = [
+		{
+			name: 'Ocean Fish',
+			onClick: () => setFishToShow(FishView.Ocean)
+		},
+		{
+			name: 'My Fish',
+			onClick: () => setFishToShow(FishView.User)
+		}
+	]
 
 	useEffect(() => {
 		console.log("CLEAR OCEAN")
@@ -28,9 +41,9 @@ const Ocean = () => {
 	useEffect(() => {
 		console.log("Account changed")
 		if(account) {
-			setFishToShow(ModeOptions[1])
+			setFishToShow(FishView.User)
 		} else {
-			setFishToShow(ModeOptions[0])
+			setFishToShow(FishView.Ocean)
 		}
 	}, [account]);
 
@@ -53,22 +66,20 @@ const Ocean = () => {
 		unityContext.showOcean();
 	}, [unityContext.isFishPoolReady]);
 
-	const sortStr = (a: Fish, b: Fish) => a.agility - b.agility
-
 	return (
 
 		<BaseContainer>
 				<ContainerControls>
-					<Menu name={fishToShow} onClick={setFishToShow} items={ModeOptions}></Menu>
-					{!account && fishToShow === ModeOptions[1] &&
+					<Menu name={FishView[fishToShow]} items={FishViewOptions}></Menu>
+					{!account && fishToShow === FishView.User &&
 						<Account/>
 					}
-					{fishToShow === ModeOptions[1] && account && userFish?.length === 0 &&
+					{fishToShow === FishView.User && account && userFish?.length === 0 &&
 						<BaseLinkButton to={'/catch'}>Catch a Fish!</BaseLinkButton>
 					}
 				</ContainerControls>
 
-				<FishViewer sortFn={sortStr} fishCollection={fishToShow === ModeOptions[0] ? oceanFish : userFish} onClick={unityContext.showFish}></FishViewer>
+				<FishViewer fishCollection={fishToShow === FishView.Ocean ? oceanFish : userFish} onClick={unityContext.showFish}></FishViewer>
 		</BaseContainer>
 		
 	);

@@ -14,15 +14,15 @@ import FishNFT from './FishNFT';
 import { useFishPool } from '../context/fishPoolContext';
 import Account from './Account';
 import FishViewer from './FishViewer';
-import Menu from './Menu';
+import Menu, { MenuItem } from './Menu';
 import StakedStatus from './StakedStatus';
 import { BaseContainer, ContainerControls, BaseLinkButton } from './BaseStyles';
 
 
 
-enum FishToShow {
-  Public,
-  User
+enum FishSelectionEnum {
+  UserFightingFish,
+  UserFish
 }
 
 const ModeOptions = ['Staked Fish', 'Available Fish']
@@ -31,7 +31,7 @@ const ModeOptions = ['Staked Fish', 'Available Fish']
 const UserFightingWaters = () => {
 	const { FishFight, refetchBalance, userConnected } = useFishFight()
 	const { userFish, userFightingFish, fightingFish, addUserFightingFish, withdrawUserFightingFish } = useFishPool()
-	const [viewToShow, setViewToShow] = useState<string>(ModeOptions[0]);
+	const [fishSelectionToShow, setFishSelectionToShow] = useState<number>(FishSelectionEnum.UserFightingFish);
 	const [renderedFish, setRenderedFish] = useState<number[]>([]);
 
 	// Fish selected for fight
@@ -40,6 +40,17 @@ const UserFightingWaters = () => {
 	// Context
 	const { account } = useWeb3React();
 	const unityContext = useUnity();
+
+	const FishViewOptions: MenuItem[] = [
+		{
+			name: 'My Fighting Fish',
+			onClick: () => setFishSelectionToShow(FishSelectionEnum.UserFightingFish)
+		},
+		{
+			name: 'My Fish',
+			onClick: () => setFishSelectionToShow(FishSelectionEnum.UserFish)
+		}
+	]
 
 	useEffect(() => {
 		console.log("UserFightingFish")
@@ -139,47 +150,27 @@ const UserFightingWaters = () => {
 		setMySelectedFish(null)
 	}
 
-	const setView = (selection: string) => {
-		console.log(selection)
-		setMySelectedFish(null);
-		setViewToShow(selection)
-	}
 
 	return (
 		<BaseContainer>
-		{viewToShow === ModeOptions[0] &&
-			<>
-					{mySelectedFish != null &&
-						<OptionsContainer>
-							<GameButton onClick={() => withdrawFish(mySelectedFish)}>{'Withdraw'}</GameButton>
-							{/* <GameButton onClick={() => startFightFish(mySelectedFish)}>{'Use in Fight'}</GameButton> */}
-							<GameButton onClick={() => selectAnother()}>{'Back to Fish'}</GameButton>
-						</OptionsContainer>
-					}
-					<ContainerControls>
-						<Menu name={viewToShow} onClick={setView} items={ModeOptions}></Menu>
-						<StakedStatus></StakedStatus>
-					</ContainerControls>
-					<FishViewer selectedFish={mySelectedFish} fishCollection={userFightingFish} onClick={setUserFish}></FishViewer>
-			</>
-		}
-		{viewToShow === ModeOptions[1] &&
-			<>
-					{mySelectedFish != null &&
-					<OptionsContainer>
-						<GameButton onClick={() => depositFish(mySelectedFish)}>{'Deposit'}</GameButton>
-						{/* <GameButton onClick={() => startFightFish(mySelectedFish)}>{'Use in Fight'}</GameButton> */}
-						<GameButton onClick={() => selectAnother()}>{'Back to Fish'}</GameButton>
-					</OptionsContainer>
-					}
-					<ContainerControls>
-						<Menu name={viewToShow} onClick={setView} items={ModeOptions}></Menu>
-					</ContainerControls>
-					<FishViewer selectedFish={mySelectedFish} fishCollection={userFish} onClick={setUserFish}></FishViewer>
-			</>
-		} 
-		{/* Staked Fish*/}
-		
+			{mySelectedFish != null &&
+			<OptionsContainer>
+				{fishSelectionToShow === FishSelectionEnum.UserFightingFish ?
+					<GameButton onClick={() => withdrawFish(mySelectedFish)}>{'Withdraw'}</GameButton>
+					:
+					<GameButton onClick={() => depositFish(mySelectedFish)}>{'Deposit'}</GameButton>
+				}
+				<GameButton onClick={() => selectAnother()}>{'Back to Fish'}</GameButton>
+			</OptionsContainer>
+			}
+			<ContainerControls>
+				<Menu name={FishSelectionEnum[fishSelectionToShow]} items={FishViewOptions}></Menu>
+			</ContainerControls>
+			{fishSelectionToShow === FishSelectionEnum.UserFightingFish ?
+				<FishViewer selectedFish={mySelectedFish} fishCollection={userFightingFish} onClick={setUserFish}></FishViewer>
+				:
+				<FishViewer selectedFish={mySelectedFish} fishCollection={userFish} onClick={setUserFish}></FishViewer>
+			}
 		</BaseContainer>
 	);
 };
