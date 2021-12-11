@@ -23,9 +23,9 @@ enum FighterSelectionEnum {
 	OpponentFighter
 }
 
-const StartFight = () => {
+const StartBreed = () => {
 	const { FishFight, refetchBalance } = useFishFight()
-	const { userFish, fightingFish, userFightingFish, refreshFish } = useFishPool()
+	const { userFish, breedingFish, userBreedingFish, refreshFish } = useFishPool()
 
 	// Fish selected for fight
 	const [mySelectedFish, setMySelectedFish] = useState<Fish | null>(null);
@@ -250,10 +250,10 @@ const StartFight = () => {
 					}
 				</ContainerControls>
 				{fighterSelectionToShow === FighterSelectionEnum.MyFighter &&
-					<FishViewer selectedFish={mySelectedFish} fishCollection={fishSelectionToShow === FishSelectionEnum.UserFightingFish ? userFightingFish : userFish} onClick={setUserFish}></FishViewer>
+					<FishViewer selectedFish={mySelectedFish} fishCollection={fishSelectionToShow === FishSelectionEnum.UserFightingFish ? userBreedingFish : userFish} onClick={setUserFish}></FishViewer>
 				}
 				{fighterSelectionToShow === FighterSelectionEnum.OpponentFighter &&
-					<FishViewer selectedOpponent={opponentFish} fishCollection={fightingFish} onClick={setOpponent}></FishViewer>
+					<FishViewer selectedOpponent={opponentFish} fishCollection={breedingFish} onClick={setOpponent}></FishViewer>
 				}
 			</BaseContainer>
 		}
@@ -350,4 +350,4 @@ const ResultContainer = styled.div`
 
 
 
-export default StartFight;
+export default StartBreed;

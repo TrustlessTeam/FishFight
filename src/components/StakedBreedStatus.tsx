@@ -1,19 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { useWeb3React } from '@web3-react/core';
-
-import { useHarmony } from '../context/harmonyContext';
 import { useFishFight } from '../context/fishFightContext';
-import fishImg from "../img/icons/fish.svg"
-import deadImg from "../img/icons/dead.svg"
-import foodImg from "../img/icons/food.svg"
 import { useFishPool } from '../context/fishPoolContext';
 import Web3 from 'web3';
 
 
-const StakedStatus = () => {
+const StakedBreedStatus = () => {
 	const { FishFight } = useFishFight();
-	const { userFightingFish } = useFishPool();
+	const { userBreedingFish } = useFishPool();
 	const [pendingAward, setPendingAward] = useState<string>();
 
 	const { account } = useWeb3React();
@@ -24,7 +19,7 @@ const StakedStatus = () => {
 			getPendingFood();
     }
 		loadData(account);
-	}, [account, userFightingFish]);
+	}, [account, userBreedingFish]);
 
 
 	if (!account) return null;
@@ -32,7 +27,7 @@ const StakedStatus = () => {
 	
 	const getPendingFood = async () => {
 		if(!account) return;
-		const result = await FishFight.readFightingWaters.methods.pendingAward(account).call();
+		const result = await FishFight.readBreedingWaters.methods.pendingAward(account).call();
 		setPendingAward(Web3.utils.fromWei(result));
 	}
 
@@ -42,7 +37,7 @@ const StakedStatus = () => {
 				<b>{balance.split('.')[0]}</b> <span>ONE</span>
 			</StatusComponent> */}
 			<StatusComponent title="">
-				<StatusText>{`Staked Fight Fish ${userFightingFish.length}`}</StatusText>
+				<StatusText>{`Staked Breed Fish ${userBreedingFish.length}`}</StatusText>
 				{/* <LogoImg src={fishImg} alt="FISH" ></LogoImg> */}
 			</StatusComponent>
 			<StatusComponent title="">
@@ -89,4 +84,4 @@ const Refresh = styled.button`
 	pointer-events: auto;
 `;
 
-export default StakedStatus;
+export default StakedBreedStatus;

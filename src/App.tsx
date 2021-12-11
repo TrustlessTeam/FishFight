@@ -37,7 +37,9 @@ import FightingWaters from './components/FightingWaters';
 import UserFightingWaters from './components/UserFightingWaters';
 import UILayout from './components/UILayout';
 import StartFight from './components/StartFight';
-
+import BreedingWaters from './components/BreedingWaters';
+import UserBreedingWaters from './components/UserBreedingWaters';
+import StartBreed from './components/StartBreed';
 
 const App = () => {
 	// const {FishFight} = useFishFight()
@@ -71,21 +73,20 @@ const App = () => {
 						</Topbar>
 
 						<Routes>
-							{/* <Route path="/" element={<UnityWindow />}></Route> */}
-							
-								<Route element={<UnityWindow />}>
-									<Route element={<UILayout />}>
-										<Route path="/ocean" element={<Ocean />} />
-										<Route path="/fishing" element={<CatchFish />} />
-										<Route path="/fighting" element={<FightingWaters />}>
-											<Route path="/fighting/user" element={<UserFightingWaters />} />
-											<Route path="/fighting/start" element={<StartFight />} />
-										</Route>
-										<Route path="/breeding" element={<FightingWaters />} />
+							<Route element={<UnityWindow />}>
+								<Route element={<UILayout />}>
+									<Route path="/ocean" element={<Ocean />} />
+									<Route path="/fishing" element={<CatchFish />} />
+									<Route path="/fighting" element={<FightingWaters />}>
+										<Route path="/fighting/user" element={<UserFightingWaters />} />
+										<Route path="/fighting/start" element={<StartFight />} />
+									</Route>
+									<Route path="/breeding" element={<BreedingWaters />}>
+										<Route path="/breeding/user" element={<UserBreedingWaters />} />
+										<Route path="/breeding/start" element={<StartBreed />} />
 									</Route>
 								</Route>
-							
-							
+							</Route>
           	</Routes>	
 	
 

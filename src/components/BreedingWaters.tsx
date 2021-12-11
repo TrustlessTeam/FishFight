@@ -3,12 +3,13 @@ import { Outlet } from "react-router-dom";
 import { useUnity } from '../context/unityContext';
 
 
-const FightingWaters = () => {
+const BreedingWaters = () => {
 	const unityContext = useUnity();
 
 	useEffect(() => {
-		console.log("UserFightingFish")
+		console.log("Breeding Fish")
 		unityContext.showFight();
+		// unityContext.showBreed() ?
 	}, [unityContext.isFishPoolReady]);
 
 	return (
@@ -16,4 +17,4 @@ const FightingWaters = () => {
 	);
 };
 
-export default FightingWaters;
+export default BreedingWaters;

@@ -11,16 +11,17 @@ import FishViewer from './FishViewer';
 import Menu, { MenuItem } from './Menu';
 import StakedStatus from './StakedStatus';
 import { BaseContainer, ContainerControls } from './BaseStyles';
+import StakedBreedStatus from './StakedBreedStatus';
 
 enum FishSelectionEnum {
-  UserFightingFish,
+  UserBreedingFish,
   UserFish
 }
 
-const UserFightingWaters = () => {
+const UserBreedingWaters = () => {
 	const { FishFight, refetchBalance } = useFishFight()
-	const { userFish, userFightingFish, fightingFish, depositUserFightingFish, withdrawUserFightingFish } = useFishPool()
-	const [fishSelectionToShow, setFishSelectionToShow] = useState<number>(FishSelectionEnum.UserFightingFish);
+	const { userFish, userBreedingFish, breedingFish, depositUserBreedingFish, withdrawUserBreedingFish } = useFishPool()
+	const [fishSelectionToShow, setFishSelectionToShow] = useState<number>(FishSelectionEnum.UserBreedingFish);
 	const [renderedFish, setRenderedFish] = useState<number[]>([]);
 
 	// Fish selected for fight
@@ -32,8 +33,8 @@ const UserFightingWaters = () => {
 
 	const FishViewOptions: MenuItem[] = [
 		{
-			name: 'My Fighting Fish',
-			onClick: () => setFishSelectionToShow(FishSelectionEnum.UserFightingFish)
+			name: 'My Breeding Fish',
+			onClick: () => setFishSelectionToShow(FishSelectionEnum.UserBreedingFish)
 		},
 		{
 			name: 'My Fish',
@@ -42,18 +43,16 @@ const UserFightingWaters = () => {
 	]
 
 	useEffect(() => {
-		console.log("UserFightingFish")
+		console.log("UserBreedingFish")
 		unityContext.showFight();
 	}, [unityContext.isFishPoolReady]);
 
 	useEffect(() => {
 		console.log("Fightintg Fish Changed")
-		console.log(fightingFish)
-		console.log(userFightingFish)
 		console.log(userFish)
 		if(!unityContext.isFishPoolReady) return;
 		let i = 0;
-		fightingFish.forEach(fish => {
+		breedingFish.forEach(fish => {
 			if(!renderedFish.includes(fish.tokenId)) {
 				unityContext.addFishOcean(fish);
 				setRenderedFish(prevData => [...prevData, fish.tokenId])
@@ -61,7 +60,7 @@ const UserFightingWaters = () => {
 			}
 		})
 		console.log(i)
-	}, [fightingFish, userFightingFish, userFish, unityContext.isFishPoolReady]);
+	}, [breedingFish, userBreedingFish, userFish, unityContext.isFishPoolReady]);
 
 	const setUserFish = (fish : Fish) => {
 		console.log("User Fish: " + fish.tokenId)
@@ -78,20 +77,20 @@ const UserFightingWaters = () => {
 	const depositFish = async (fish : Fish) => {
 		if (account && mySelectedFish != null) {
 			try {
-				const approve = await FishFight.fishFactory?.methods.approve(FishFight.readFightingWaters.options.address, fish.tokenId).send({
+				const approve = await FishFight.fishFactory?.methods.approve(FishFight.readBreedingWaters.options.address, fish.tokenId).send({
 					from: account,
 					gasPrice: 1000000000,
 					gasLimit: 500000,
 				})
 				console.log(approve)
 				unityContext.addFishFight1(fish)
-				const addToFightingWaters = await FishFight.fightingWaters?.methods.deposit(fish.tokenId).send({
+				const addToBreedingWaters = await FishFight.breedingWaters?.methods.deposit(fish.tokenId).send({
 					from: account,
 					gasPrice: 1000000000,
 					gasLimit: 800000,
 				})
-				console.log(addToFightingWaters)
-				depositUserFightingFish(fish);
+				console.log(addToBreedingWaters)
+				depositUserBreedingFish(fish);
 				toast.success('Transaction done', {
 					onClose: async () => {
 						refetchBalance()
@@ -117,13 +116,13 @@ const UserFightingWaters = () => {
 				// })
 				// console.log(approve)
 				// unityContext.addFishFight1(fish)
-				const withdrawFightingWaters = await FishFight.fightingWaters?.methods.withdraw(fish.tokenId).send({
+				const withdrawBreedingWaters = await FishFight.breedingWaters?.methods.withdraw(fish.tokenId).send({
 					from: account,
 					gasPrice: 1000000000,
 					gasLimit: 800000,
 				})
-				console.log(withdrawFightingWaters)
-				withdrawUserFightingFish(fish);
+				console.log(withdrawBreedingWaters)
+				withdrawUserBreedingFish(fish);
 				toast.success('Transaction done', {
 					onClose: async () => {
 						refetchBalance()
@@ -144,7 +143,7 @@ const UserFightingWaters = () => {
 		<BaseContainer>
 			{mySelectedFish != null &&
 			<OptionsContainer>
-				{fishSelectionToShow === FishSelectionEnum.UserFightingFish ?
+				{fishSelectionToShow === FishSelectionEnum.UserBreedingFish ?
 					<GameButton onClick={() => withdrawFish(mySelectedFish)}>{'Withdraw'}</GameButton>
 					:
 					<GameButton onClick={() => depositFish(mySelectedFish)}>{'Deposit'}</GameButton>
@@ -154,22 +153,18 @@ const UserFightingWaters = () => {
 			}
 			<ContainerControls>
 				<Menu name={FishViewOptions[fishSelectionToShow].name} items={FishViewOptions}></Menu>
-				{fishSelectionToShow === FishSelectionEnum.UserFightingFish &&
-					<StakedStatus></StakedStatus>
+				{fishSelectionToShow === FishSelectionEnum.UserBreedingFish &&
+					<StakedBreedStatus></StakedBreedStatus>
 				}
 			</ContainerControls>
-			{fishSelectionToShow === FishSelectionEnum.UserFightingFish ?
-				<FishViewer selectedFish={mySelectedFish} fishCollection={userFightingFish} onClick={setUserFish}></FishViewer>
+			{fishSelectionToShow === FishSelectionEnum.UserBreedingFish ?
+				<FishViewer selectedFish={mySelectedFish} fishCollection={userBreedingFish} onClick={setUserFish}></FishViewer>
 				:
-				<FishViewer selectedFish={mySelectedFish} fishCollection={userFish} onClick={setUserFish}></FishViewer>
+				<FishViewer selectedFish={mySelectedFish} fishCollection={userFish.filter((fish) => fish.lifetimeWins > 0)} onClick={setUserFish}></FishViewer>
 			}
 		</BaseContainer>
 	);
 };
-
-interface GridProps {
-	ref?: any;
-}
 
 
 const OptionsContainer = styled.div`
@@ -206,4 +201,4 @@ const GameButton = styled.button`
 `;
 
 
-export default UserFightingWaters;
+export default UserBreedingWaters;

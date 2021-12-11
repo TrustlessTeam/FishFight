@@ -53,6 +53,11 @@ const Nav = () => {
         <NavImg className={({isActive}) => isActive ? 'active' : ''} to="/breeding">
           <LogoImg active={location === 'breeding'} src={breedingImg} alt="Breeding"></LogoImg>
         </NavImg>
+        <SubContainer>
+          <Option className={({isActive}) => isActive ? 'active' : ''} to='/breeding' end>Breeding Waters</Option>
+          <Option className={({isActive}) => isActive ? 'active' : ''} to='/breeding/user'>My Breeding Fish</Option>
+          <Option className={({isActive}) => isActive ? 'active' : ''} to='/breeding/start'>Breed!</Option>
+        </SubContainer>
       </NavItem>
       <NavItem>
         <NavImg className={({isActive}) => isActive ? 'active' : ''} to="/fighting">
