@@ -44,7 +44,6 @@ export class Season {
 }
 
 export class FishSeasonStats {
-	seasonIndex: number;
 	fightWins: number;
 	alphaBreeds: number;
 	bettaBreeds: number;
@@ -54,7 +53,6 @@ export class FishSeasonStats {
     seasonObject: any
   ) 
   {
-		this.seasonIndex = web3.utils.toNumber(seasonObject.seasonIndex);
 		this.fightWins = web3.utils.toNumber(seasonObject.fightWins);
 		this.alphaBreeds = web3.utils.toNumber(seasonObject.alphaBreeds);
 		this.bettaBreeds = web3.utils.toNumber(seasonObject.bettaBreeds);

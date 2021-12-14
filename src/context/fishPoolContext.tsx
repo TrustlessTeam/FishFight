@@ -7,6 +7,7 @@ import axios from 'axios';
 import FishFight from '../FishFightSDK';
 import { hexToNumber } from '@harmony-js/utils';
 import { useUnity } from './unityContext';
+import { FishSeasonStats } from '../utils/season';
 
 const MAX_FISH = 42;
 const serverURL = `http://198.199.79.15:5000`;
@@ -22,6 +23,7 @@ interface FishPoolProviderContext {
 	areOceanFishLoaded: boolean
 	areFightingFishLoaded: boolean
 	areUserFightingFishLoaded: boolean
+  createUserFish: (tokenId: number) => void
   refreshFish: (tokenId: number) => void
 	addUserFish: (fish: Fish) => void
 	depositUserFightingFish: (fish: Fish) => void
@@ -82,6 +84,23 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
       console.log(data)
       if(data.returnValues.tokenId) {
         removeFightingFishById(data.returnValues.tokenId)
+      }
+    })
+
+    var depositedBreeder = FishFight.listenBreedingWaters.events.Deposit()
+    depositedBreeder.on("data", function(data: any){
+      console.log(data)
+      console.log(data.returnValues.user)
+      if(data.returnValues.tokenId) {
+        addBreedingFishById(data.returnValues.tokenId)
+      }
+    })
+
+    var withdrawBreeder = FishFight.listenBreedingWaters.events.Withdraw()
+    withdrawBreeder.on("data", function(data: any){
+      console.log(data)
+      if(data.returnValues.tokenId) {
+        removeBreedingFishById(data.returnValues.tokenId)
       }
     })
   }, [])
@@ -177,6 +196,8 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
         if(!userFightingFish.some(fish => fish.tokenId == tokenId)) {
           const fishData = await getFish(FishFight, web3.utils.toNumber(tokenId))
           if(fishData != null) {
+            const stakedFish = await FishFight.readFightingWaters.methods.getPoolInfo(tokenId).call();
+            fishData.expireTime = web3.utils.toNumber(stakedFish.lockedExpire);
             setUserFightingFish(prevData => [...prevData, fishData])
           }
         }
@@ -252,6 +273,14 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
     }
   }
 
+  const createUserFish = async (tokenId: number) => {
+    const fishData = await getFish(FishFight, web3.utils.toNumber(tokenId))
+    if(fishData != null) {
+      setUserFish(prevTokens => [...prevTokens, fishData])
+      return fishData;
+    }
+  };
+
   const addUserFish = (fish: Fish) => {
     setUserFish(prevTokens => [...prevTokens, fish])
   };
@@ -275,7 +304,7 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
   }
 
   const depositUserBreedingFish = (fish: Fish) => {
-    setUserFightingFish(prevTokens => [...prevTokens, fish])
+    setUserBreedingFish(prevTokens => [...prevTokens, fish])
     // Remove the fish from the UserFish array
     setUserFish(prevFish => (
       prevFish.filter(f => f.tokenId !== fish.tokenId)
@@ -285,10 +314,10 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
   // When user withdraws a fish remove from UserBreedingFish and BreedingFish
   // Add back to UserFish
   const withdrawUserBreedingFish = (fish: Fish) => {
-    setUserFightingFish(prevFish => (
+    setUserBreedingFish(prevFish => (
       prevFish.filter(f => f.tokenId !== fish.tokenId)
     ));
-    removeFightingFishById(fish.tokenId);
+    removeBreedingFishById(fish.tokenId);
     addUserFish(fish);
   }
 
@@ -338,7 +367,7 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
   }
 
   const removeBreedingFishById = (tokenId: number) => {
-    setFightingFish(prevFish => (
+    setBreedingFish(prevFish => (
       prevFish.filter(f => f.tokenId !== tokenId)
     ));
   }
@@ -407,6 +436,7 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
 		areFightingFishLoaded: areFightingFishLoaded,
 		areUserFightingFishLoaded: areUserFightingFishLoaded,
     refreshFish: refreshFish,
+    createUserFish: createUserFish,
 		addUserFish: addUserFish,
 		depositUserFightingFish: depositUserFightingFish,
     withdrawUserFightingFish: withdrawUserFightingFish,
@@ -437,6 +467,7 @@ const getFish = async (fishFightInstance: FishFight, tokenId: number) : Promise<
   try {
     console.log(`Loading Fish ${tokenId} from blockchain`)
     const fishInfo = await fishFightInstance.readFishFactory.methods.getFishInfo(tokenId).call();
+    const fishSeasonStats = await fishFightInstance.readSeasons.methods.getFishSeasonStats(tokenId).call();
     // console.log(fishInfo)
     // load image url from metadata
     let tokenURI = "";
@@ -450,6 +481,8 @@ const getFish = async (fishFightInstance: FishFight, tokenId: number) : Promise<
     if(tokenURI) {
       imgSrc = `${serverURL}/tokens/${tokenId}.png`
     }
+    let seasonStats = new FishSeasonStats(fishSeasonStats);
+
     let fish = new Fish(
       fishInfo.tokenId,
       fishInfo.birthTime,
@@ -468,7 +501,8 @@ const getFish = async (fishFightInstance: FishFight, tokenId: number) : Promise<
       fishInfo.breedKey,
       fishInfo.deathTime,
       imgSrc,
-      tokenURI
+      tokenURI,
+      seasonStats
     );
     // console.log(fish)
     return fish;

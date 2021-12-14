@@ -346,7 +346,7 @@
       ]
     },
     "BreedingWaters": {
-      "address": "0x14B3e44f74CBAD1588FE387213fAd03e1dA263eC",
+      "address": "0x9C19De764cb448f3ec7247910666309c4f4BAEc1",
       "abi": [
         {
           "inputs": [
@@ -422,6 +422,25 @@
             }
           ],
           "name": "ApprovalForAll",
+          "type": "event"
+        },
+        {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "user",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "tokenId",
+              "type": "uint256"
+            }
+          ],
+          "name": "BreedingResult",
           "type": "event"
         },
         {
@@ -1830,7 +1849,7 @@
       ]
     },
     "FightingWaters": {
-      "address": "0x68cE4F1c8a51215aB888E579c0d39559BE13E896",
+      "address": "0x3030296a5A1cC7Fcf610653e3a81b4B032c2E43A",
       "abi": [
         {
           "inputs": [
@@ -4710,7 +4729,7 @@
       ]
     },
     "FishingWaters": {
-      "address": "0xCe01fc1aeF3EEbb2264e1f680Ca6d70DDa14D970",
+      "address": "0xe6056218cAb912FbCe83797C21ba8438f5Da83A0",
       "abi": [
         {
           "inputs": [
@@ -5196,8 +5215,32 @@
         }
       ]
     },
+    "Multicall": {
+      "address": "0x494AC4A2d898E1aB82e405b9ea6bA50ADa426bCb",
+      "abi": [
+        {
+          "inputs": [
+            {
+              "internalType": "bytes[]",
+              "name": "data",
+              "type": "bytes[]"
+            }
+          ],
+          "name": "multicall",
+          "outputs": [
+            {
+              "internalType": "bytes[]",
+              "name": "results",
+              "type": "bytes[]"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        }
+      ]
+    },
     "Seasons": {
-      "address": "0x28c08e6D24CB2327410643a0629701837F03c337",
+      "address": "0x2db74260C1439ba3Ff0d56d787AcCAC406Aa62f3",
       "abi": [
         {
           "inputs": [
@@ -5603,11 +5646,6 @@
           "outputs": [
             {
               "components": [
-                {
-                  "internalType": "uint256",
-                  "name": "seasonIndex",
-                  "type": "uint256"
-                },
                 {
                   "internalType": "uint256",
                   "name": "fightWins",

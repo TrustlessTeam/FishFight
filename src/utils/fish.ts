@@ -1,4 +1,5 @@
 import web3 from 'web3'
+import { FishSeasonStats } from './season';
 
 export class Fish {
   tokenId: number;
@@ -21,6 +22,8 @@ export class Fish {
 	visualTraits: VisualTraits;
   imgSrc: string | null;
   ipfsLink: string | null;
+  seasonStats?: FishSeasonStats;
+  expireTime: number;
 
   constructor(
     tokenId: any,
@@ -40,7 +43,8 @@ export class Fish {
     breedKey: any,
     deathTime: any,
     imgSrc?: string | null,
-    ipfsLink?: string | null
+    ipfsLink?: string | null,
+    seasonStats?: FishSeasonStats
   ) 
   {
     this.tokenId = web3.utils.toNumber(tokenId);
@@ -63,6 +67,8 @@ export class Fish {
     this.visualTraits = this.parseTraits();
     this.imgSrc = imgSrc ? imgSrc : null;
     this.ipfsLink = ipfsLink ? ipfsLink : null;
+    this.seasonStats = seasonStats;
+    this.expireTime = 0;
   };
 
   parseTraits(): VisualTraits {

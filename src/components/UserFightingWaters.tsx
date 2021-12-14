@@ -10,7 +10,15 @@ import { useFishPool } from '../context/fishPoolContext';
 import FishViewer from './FishViewer';
 import Menu, { MenuItem } from './Menu';
 import StakedStatus from './StakedStatus';
-import { BaseContainer, ContainerControls } from './BaseStyles';
+import { BaseContainer, BaseOverlayContainer, ContainerControls } from './BaseStyles';
+import LoadingOverlay from 'react-loading-overlay';
+
+import {
+  Multicall,
+  ContractCallResults,
+  ContractCallContext,
+} from 'ethereum-multicall';
+import web3 from 'web3';
 
 enum FishSelectionEnum {
   UserFightingFish,
@@ -22,6 +30,7 @@ const UserFightingWaters = () => {
 	const { userFish, userFightingFish, fightingFish, depositUserFightingFish, withdrawUserFightingFish } = useFishPool()
 	const [fishSelectionToShow, setFishSelectionToShow] = useState<number>(FishSelectionEnum.UserFightingFish);
 	const [renderedFish, setRenderedFish] = useState<number[]>([]);
+	const [pendingTransaction, setPendingTransaction] = useState<boolean>(false);
 
 	// Fish selected for fight
 	const [mySelectedFish, setMySelectedFish] = useState<Fish | null>(null);
@@ -78,20 +87,49 @@ const UserFightingWaters = () => {
 	const depositFish = async (fish : Fish) => {
 		if (account && mySelectedFish != null) {
 			try {
-				const approve = await FishFight.fishFactory?.methods.approve(FishFight.readFightingWaters.options.address, fish.tokenId).send({
-					from: account,
-					gasPrice: 1000000000,
-					gasLimit: 500000,
-				})
-				console.log(approve)
-				unityContext.addFishFight1(fish)
-				const addToFightingWaters = await FishFight.fightingWaters?.methods.deposit(fish.tokenId).send({
-					from: account,
-					gasPrice: 1000000000,
-					gasLimit: 800000,
-				})
-				console.log(addToFightingWaters)
-				depositUserFightingFish(fish);
+				if(FishFight.type === 'web3') {
+					const web3WalletProvider = FishFight.providerWallet as web3;
+					const approveAndDeposit = new web3WalletProvider.BatchRequest();
+					approveAndDeposit.add(
+						FishFight.fishFactory?.methods.approve(FishFight.readFightingWaters.options.address, fish.tokenId).send({
+							from: account,
+							gasPrice: 1000000000,
+							gasLimit: 500000,
+						})
+					);
+					approveAndDeposit.add(
+						FishFight.fightingWaters?.methods.deposit(fish.tokenId).send({
+							from: account,
+							gasPrice: 1000000000,
+							gasLimit: 800000,
+						}).on('transactionHash', () => {
+							setPendingTransaction(true);
+						}).on('receipt', () => {
+							setPendingTransaction(false);
+							depositUserFightingFish(fish);
+							setFishSelectionToShow(FishSelectionEnum.UserFightingFish)
+						})
+					);
+					console.log("Batch call execute")
+					approveAndDeposit.execute();
+				} else {
+					const approve = await FishFight.fishFactory?.methods.approve(FishFight.readFightingWaters.options.address, fish.tokenId).send({
+						from: account,
+						gasPrice: 1000000000,
+						gasLimit: 500000,
+					})
+					console.log(approve)
+					unityContext.addFishFight1(fish)
+					const addToFightingWaters = await FishFight.fightingWaters?.methods.deposit(fish.tokenId).send({
+						from: account,
+						gasPrice: 1000000000,
+						gasLimit: 800000,
+					})
+					console.log(addToFightingWaters)
+					depositUserFightingFish(fish);
+				}
+				
+				
 				toast.success('Transaction done', {
 					onClose: async () => {
 						refetchBalance()
@@ -108,6 +146,13 @@ const UserFightingWaters = () => {
 	}
 
 	const withdrawFish = async (fish : Fish) => {
+		const secondsSinceEpoch = Math.round(Date.now() / 1000)
+		if(fish.expireTime > secondsSinceEpoch) {
+			const expireTime = (fish.expireTime - secondsSinceEpoch) / 60;
+			const lockedFor = (Math.round(expireTime * 10) / 10).toFixed(1);
+			toast.error(`Fish Locked for ${lockedFor} minutes`)
+			return;
+		}
 		if (account && mySelectedFish != null) {
 			try {
 				// const approve = await FishFight.fishFactory?.methods.approve(FishFight.readFightingWaters.options.address, fish.tokenId).send({
@@ -117,13 +162,18 @@ const UserFightingWaters = () => {
 				// })
 				// console.log(approve)
 				// unityContext.addFishFight1(fish)
-				const withdrawFightingWaters = await FishFight.fightingWaters?.methods.withdraw(fish.tokenId).send({
+				await FishFight.fightingWaters?.methods.withdraw(fish.tokenId).send({
 					from: account,
 					gasPrice: 1000000000,
 					gasLimit: 800000,
+				}).on('transactionHash', () => {
+					setPendingTransaction(true);
+				}).on('receipt', (data: any) => {
+					setPendingTransaction(false);
+					withdrawUserFightingFish(fish);
+					setFishSelectionToShow(FishSelectionEnum.UserFish)
+					console.log(data)
 				})
-				console.log(withdrawFightingWaters)
-				withdrawUserFightingFish(fish);
 				toast.success('Transaction done', {
 					onClose: async () => {
 						refetchBalance()
@@ -141,7 +191,11 @@ const UserFightingWaters = () => {
 
 
 	return (
-		<BaseContainer>
+		<BaseOverlayContainer
+			active={pendingTransaction}
+			spinner
+			text='Waiting for confirmation...'
+			>
 			{mySelectedFish != null &&
 			<OptionsContainer>
 				{fishSelectionToShow === FishSelectionEnum.UserFightingFish ?
@@ -163,7 +217,7 @@ const UserFightingWaters = () => {
 				:
 				<FishViewer selectedFish={mySelectedFish} fishCollection={userFish} onClick={setUserFish}></FishViewer>
 			}
-		</BaseContainer>
+		</BaseOverlayContainer>
 	);
 };
 

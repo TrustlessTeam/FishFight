@@ -4,6 +4,12 @@ import { Contract as HarmonyContract } from "@harmony-js/contract"
 import { Contract } from "web3-eth-contract";
 import { getProvider, getWebSocketProvider } from "../utils/provider";
 
+import {
+    Multicall,
+    ContractCallResults,
+    ContractCallContext,
+  } from 'ethereum-multicall';
+
 // Contracts
 // import Contracts from '@fishfight-one/contracts/FishFightContracts/testnet/contracts.json'
 import Contracts from '../contracts/contracts.json';
@@ -13,6 +19,7 @@ class FishFight {
     provider: Web3
     listener: Web3
     providerWallet: HarmonyExtension | Web3 | null
+    multicall: Multicall | null;
     type: "web3" | "harmony" | null
     readFishFactory: Contract
     readFishingWaters: Contract
@@ -39,6 +46,7 @@ class FishFight {
     constructor(){
         this.provider = new Web3(getProvider().url);
         this.listener = new Web3(getWebSocketProvider().url)
+        this.multicall = null;
         this.type = null
         
         this.readFishFactory = this.setFishFactoryContract(this.provider, "web3")
@@ -69,14 +77,15 @@ class FishFight {
 
     setProviderWallet = (providerWallet: HarmonyExtension | Web3, type: "web3" | "harmony") => {
         this.providerWallet = providerWallet;
+        this.multicall = new Multicall({ web3Instance: providerWallet, multicallCustomContractAddress: Contracts.contracts.Multicall.address });
         this.type = type;
         this.fishFactory = this.setFishFactoryContract(this.providerWallet, type)
         this.fishingWaters = this.setFishingWatersContract(this.providerWallet, type)
         this.fightingWaters = this.setFightingWatersContract(this.providerWallet, type)
         this.breedingWaters = this.setBreedingWatersContract(this.providerWallet, type)
         this.seasons = this.setSeasonsContract(this.providerWallet, type)
-        this.fishFood = this.setFishFoodContract(this.provider, type)
-        this.deadFishFactory = this.setDeadFishFactoryContract(this.provider, type)
+        this.fishFood = this.setFishFoodContract(this.providerWallet, type)
+        this.deadFishFactory = this.setDeadFishFactoryContract(this.providerWallet, type)
     }
 
     setFishFactoryContract = (provider: any, type: "web3" | "harmony" | "default") => {

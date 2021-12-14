@@ -160,7 +160,7 @@ const UserBreedingWaters = () => {
 			{fishSelectionToShow === FishSelectionEnum.UserBreedingFish ?
 				<FishViewer selectedFish={mySelectedFish} fishCollection={userBreedingFish} onClick={setUserFish}></FishViewer>
 				:
-				<FishViewer selectedFish={mySelectedFish} fishCollection={userFish.filter((fish) => fish.lifetimeWins > 0)} onClick={setUserFish}></FishViewer>
+				<FishViewer selectedFish={mySelectedFish} fishCollection={userFish.filter((fish) => fish.seasonStats != null ? fish.seasonStats?.fightWins > 0 : false)} onClick={setUserFish}></FishViewer>
 			}
 		</BaseContainer>
 	);

@@ -1,9 +1,20 @@
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
+import LoadingOverlay from 'react-loading-overlay';
+
 
 interface DefaultOptions {
 	position?: string;
 }
+
+export const BaseOverlayContainer = styled(LoadingOverlay)`
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-end;
+	width: 100%;
+	height: 100%;
+	/* pointer-events: auto; */
+`;
 
 export const BaseContainer = styled.div`
 	display: flex;
