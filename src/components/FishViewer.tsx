@@ -83,7 +83,8 @@ interface GridProps {
 const FishGrid = styled.div<GridProps>`
 	display: flex;
 	flex-direction: row nowrap;
-	justify-content: space-between;
+	/* justify-content: space-between; */
+	/* justify-content: space-between; */
 	overflow-y: hidden;
 	overflow-x: hidden;
 	pointer-events: auto;

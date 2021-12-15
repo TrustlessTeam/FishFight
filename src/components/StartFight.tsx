@@ -7,11 +7,13 @@ import { Fish } from '../utils/fish'
 import { Fight} from '../utils/fight'
 import { useFishFight } from '../context/fishFightContext';
 import { useUnity } from '../context/unityContext';
+import { Unit } from '@harmony-js/utils';
 import FishNFT from './FishNFT';
 import { useFishPool } from '../context/fishPoolContext';
-import { BaseContainer, ContainerControls,  BaseButton } from './BaseStyles';
+import { BaseContainer, ContainerControls,  BaseButton, BaseOverlayContainer } from './BaseStyles';
 import FishViewer from './FishViewer';
 import Menu, { MenuItem } from './Menu';
+import web3 from 'web3';
 
 enum FishSelectionEnum {
   UserFightingFish,
@@ -25,7 +27,7 @@ enum FighterSelectionEnum {
 
 const StartFight = () => {
 	const { FishFight, refetchBalance } = useFishFight()
-	const { userFish, fightingFish, userFightingFish, refreshFish } = useFishPool()
+	const { userFish, fightingFish, userFightingFish, depositUserFightingFish, refreshFish } = useFishPool()
 
 	// Fish selected for fight
 	const [mySelectedFish, setMySelectedFish] = useState<Fish | null>(null);
@@ -35,6 +37,8 @@ const StartFight = () => {
 	const [fightResult, setFightResult] = useState<Fight | null>();
 	const [showFightResult, setShowFightResult] = useState(false);
 	const [isFighting, setIsFighting] = useState<boolean>(false);
+	const [pendingTransaction, setPendingTransaction] = useState<boolean>(false);
+
 
 	// Context
 	const { account } = useWeb3React();
@@ -94,6 +98,7 @@ const StartFight = () => {
 		unityContext.sendRound(3, newFight.round3.value);
 		if(newFight.winner == mySelectedFish?.tokenId) {
 			unityContext.sendWinner(mySelectedFish);
+			depositUserFightingFish(mySelectedFish);
 		}
 		else if(newFight.winner == opponentFish?.tokenId) {
 			unityContext.sendWinner(opponentFish);
@@ -132,82 +137,114 @@ const StartFight = () => {
 		return owner == FishFight.readFightingWaters.options.address;
 	}
 
+	const contractApprove = (fish: Fish) => {
+		return FishFight.fishFactory?.methods.approve(FishFight.readFightingWaters.options.address, fish.tokenId).send({
+			from: account,
+			gasPrice: 1000000000,
+			gasLimit: 500000,
+		}).on('transactionHash', () => {
+			setPendingTransaction(true);
+		})
+	}
+
+	const contractDepositAndFight = (myFish: Fish, opponentFish: Fish) => {
+		return FishFight.fightingWaters?.methods.depositAndDeathFight(myFish.tokenId, opponentFish.tokenId).send({
+			from: account,
+			gasPrice: 1000000000,
+			gasLimit: 5000000,
+			value: new Unit(1).asOne().toWei()
+		}).on('transactionHash', () => {
+			setPendingTransaction(true);
+			setIsFighting(true);
+		}).on('receipt', (result: any) => {
+			// console.log(result)
+			setIsFighting(false)
+			const fightIndex = web3.utils.toNumber(result.events.FightCompleted.returnValues._fightIndex);
+			getUserFight(fightIndex);
+			setPendingTransaction(false);
+			toast.success('Fight Commpleted!', {
+				onClose: async () => {
+					refetchBalance()
+				},
+			});
+		})
+	}
+
 	const fightFish = async () => {
-		if (account && mySelectedFish != null && opponentFish != null) {
+		if(!account) {
+			toast.error('Connect your wallet');
+			return;
+		}
+		if(mySelectedFish == null) {
+			toast.error('Select your Fighter');
+			return;
+		}
+		if(opponentFish == null) {
+			toast.error('Select your opponent');
+			return;
+		}
+
+		try {
 			const deposited = await isDeposited(mySelectedFish.tokenId);
 			// Must approve not deposited fish before fighting, then trigger depositAndDeathFight
 			if(!deposited) {
-				try {
-					const approve = await FishFight.fishFactory?.methods.approve(FishFight.readFightingWaters.options.address, mySelectedFish.tokenId).send({
-						from: account,
-						gasPrice: 1000000000,
-						gasLimit: 500000,
-					})
-					console.log(approve)
-
-					setIsFighting(true);
-					const result = await FishFight.fightingWaters?.methods.depositAndDeathFight(mySelectedFish.tokenId, opponentFish.tokenId).send({
-						from: account,
-						gasPrice: 1000000000,
-						gasLimit: 5000000,
-					})
-					console.log(result)
-					const fightIndex = new BN(result.events.FightCompleted.returnValues._fightIndex).toNumber()
-					getUserFight(fightIndex);
-					setIsFighting(false);
-					toast.success('Transaction done', {
-						onClose: async () => {
-							refetchBalance()
-							// refetchFightingFish()
-						},
-					});
-				} catch (error: any) {
-					console.log(error)
-					toast.error(error);
-					setIsFighting(false)
-					setMySelectedFish(null)
-					setOpponentFish(null)
+				if(FishFight.type === 'web3') { // batch requests for metamask wallet
+					const web3WalletProvider = FishFight.providerWallet as web3;
+					const approveAndFight = new web3WalletProvider.BatchRequest();
+					approveAndFight.add(
+						contractApprove(mySelectedFish)
+					);
+					approveAndFight.add(
+						contractDepositAndFight(mySelectedFish, opponentFish)
+					);
+					console.log("Batch call execute")
+					approveAndFight.execute();
+				} else { // harmony wallet, can't batch
+					await contractApprove(mySelectedFish);
+					await contractDepositAndFight(mySelectedFish, opponentFish);
 				}
 			}
 			else { // If User selected fish is already deposited, we can just fight them
-				try {
+
+				// FishFight.fightingWaters?.methods.deathFight(mySelectedFish.tokenId, opponentFish.tokenId).estimateGas({gas: 5000000}, function(error: any, gasAmount: any){
+				// 	console.log(gasAmount)
+				// 	if(gasAmount == 5000000)
+				// 		console.log('Method ran out of gas');
+				// });
+				// const estimateGas = await FishFight.fightingWaters?.methods.deathFight(mySelectedFish.tokenId, opponentFish.tokenId).estimateGas({
+				// 	from: account,
+				// 	gas: 1000000,
+				// });
+				// console.log(Web3.utils.toNumber(estimateGas))
+				await FishFight.fightingWaters?.methods.deathFight(mySelectedFish.tokenId, opponentFish.tokenId).send({
+					from: account,
+					gasPrice: 1000000000,
+					gasLimit: 5000000,
+					value: new Unit(1).asOne().toWei()
+				}).on('transactionHash', () => {
+					setPendingTransaction(true);
 					setIsFighting(true);
-					// FishFight.fightingWaters?.methods.deathFight(mySelectedFish.tokenId, opponentFish.tokenId).estimateGas({gas: 5000000}, function(error: any, gasAmount: any){
-					// 	console.log(gasAmount)
-					// 	if(gasAmount == 5000000)
-					// 		console.log('Method ran out of gas');
-					// });
-					// const estimateGas = await FishFight.fightingWaters?.methods.deathFight(mySelectedFish.tokenId, opponentFish.tokenId).estimateGas({
-					// 	from: account,
-					// 	gas: 1000000,
-					// });
-					// console.log(Web3.utils.toNumber(estimateGas))
-					const result = await FishFight.fightingWaters?.methods.deathFight(mySelectedFish.tokenId, opponentFish.tokenId).send({
-						from: account,
-						gasPrice: 1000000000,
-						gasLimit: 5000000,
-					});
-					console.log(result)
-					const fightIndex = new BN(result.events.FightCompleted.returnValues._fightIndex).toNumber()
+				}).on('receipt', (result: any) => {
+					// console.log(result)
+					setIsFighting(false)
+					const fightIndex = web3.utils.toNumber(result.events.FightCompleted.returnValues._fightIndex);
 					getUserFight(fightIndex);
-					setIsFighting(false);
-					toast.success('Transaction done', {
+					setPendingTransaction(false);
+					toast.success('Fight Commpleted!', {
 						onClose: async () => {
 							refetchBalance()
-							// refetchFightingFish()
 						},
 					});
-				} catch (error: any) {
-					toast.error(error);
-					setIsFighting(false)
-					setMySelectedFish(null)
-					setOpponentFish(null)
-				}
+				})
 			}
-		} else {
-			toast.error('Connect your wallet');
+		} catch (error: any) {
+			console.log(error);
+			// toast.error(error);
+			// setIsFighting(false);
+			// setMySelectedFish(null);
+			// setOpponentFish(null);
+			// setPendingTransaction(false);
 		}
-		return null
 	};
 
 	const fightAgain = () => {
@@ -215,14 +252,17 @@ const StartFight = () => {
 		setIsFighting(false)
 		setMySelectedFish(null)
 		setOpponentFish(null)
-		setShowFightResult(false);		
+		setShowFightResult(false);
 	}
 
 	return (
 		<>
 		{/* Select Fish to Fight */}
 		{!fightResult && !isFighting &&
-			<BaseContainer>
+			<BaseOverlayContainer
+			active={pendingTransaction}
+			spinner
+			text='Waiting for confirmation...'>
 				{
 					<FightGrid>
 						{mySelectedFish &&
@@ -244,9 +284,9 @@ const StartFight = () => {
 					</FightGrid>
 				}
 				<ContainerControls>
-					<Menu name={FighterSelectionEnum[fighterSelectionToShow]} items={FighterSelectionOptions}></Menu>
+					<Menu name={FighterSelectionOptions[fighterSelectionToShow].name} items={FighterSelectionOptions}></Menu>
 					{fighterSelectionToShow === FighterSelectionEnum.MyFighter &&
-						<Menu name={FishSelectionEnum[fishSelectionToShow]} items={FishViewOptions}></Menu>
+						<Menu name={FishViewOptions[fishSelectionToShow].name} items={FishViewOptions}></Menu>
 					}
 				</ContainerControls>
 				{fighterSelectionToShow === FighterSelectionEnum.MyFighter &&
@@ -255,12 +295,15 @@ const StartFight = () => {
 				{fighterSelectionToShow === FighterSelectionEnum.OpponentFighter &&
 					<FishViewer selectedOpponent={opponentFish} fishCollection={fightingFish} onClick={setOpponent}></FishViewer>
 				}
-			</BaseContainer>
+			</BaseOverlayContainer>
 		}
 
 		{/* Fish are Fighting */}
 		{isFighting && mySelectedFish && opponentFish &&
-			<BaseContainer>
+			<BaseOverlayContainer
+			active={pendingTransaction}
+			spinner
+			text='Waiting for confirmation...'>
 				<FightGrid >
 					<FishNFT selectedUser={true} fish={mySelectedFish}></FishNFT>
 					<VersusContainer>
@@ -269,7 +312,7 @@ const StartFight = () => {
 					</VersusContainer>
 					<FishNFT selectedOpponent={true} fish={opponentFish}></FishNFT>
 				</FightGrid>
-			</BaseContainer>
+			</BaseOverlayContainer>
 		}
 
 		{/* Show Fight Results */}

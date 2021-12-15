@@ -153,9 +153,9 @@ const UserBreedingWaters = () => {
 			}
 			<ContainerControls>
 				<Menu name={FishViewOptions[fishSelectionToShow].name} items={FishViewOptions}></Menu>
-				{fishSelectionToShow === FishSelectionEnum.UserBreedingFish &&
+				{/* {fishSelectionToShow === FishSelectionEnum.UserBreedingFish &&
 					<StakedBreedStatus></StakedBreedStatus>
-				}
+				} */}
 			</ContainerControls>
 			{fishSelectionToShow === FishSelectionEnum.UserBreedingFish ?
 				<FishViewer selectedFish={mySelectedFish} fishCollection={userBreedingFish} onClick={setUserFish}></FishViewer>

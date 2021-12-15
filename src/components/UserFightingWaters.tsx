@@ -84,64 +84,64 @@ const UserFightingWaters = () => {
 		// unityContext.showFight(); // switch to FightingWaters view
 	}
 
+	const contractApprove = (fish: Fish) => {
+		return FishFight.fishFactory?.methods.approve(FishFight.readFightingWaters.options.address, fish.tokenId).send({
+			from: account,
+			gasPrice: 1000000000,
+			gasLimit: 500000,
+		}).on('transactionHash', () => {
+			setPendingTransaction(true);
+		})
+	}
+
+	const contractDeposit = (fish: Fish) => {
+		return FishFight.fightingWaters?.methods.deposit(fish.tokenId).send({
+			from: account,
+			gasPrice: 1000000000,
+			gasLimit: 800000,
+		}).on('transactionHash', () => {
+			setPendingTransaction(true);
+		}).on('receipt', () => {
+			setPendingTransaction(false);
+			depositUserFightingFish(fish);
+			setFishSelectionToShow(FishSelectionEnum.UserFightingFish)
+			toast.success('Fish Deposited', {
+				onClose: async () => {
+					refetchBalance()
+				},
+			});
+		})
+	}
+
 	const depositFish = async (fish : Fish) => {
-		if (account && mySelectedFish != null) {
-			try {
-				if(FishFight.type === 'web3') {
-					const web3WalletProvider = FishFight.providerWallet as web3;
-					const approveAndDeposit = new web3WalletProvider.BatchRequest();
-					approveAndDeposit.add(
-						FishFight.fishFactory?.methods.approve(FishFight.readFightingWaters.options.address, fish.tokenId).send({
-							from: account,
-							gasPrice: 1000000000,
-							gasLimit: 500000,
-						})
-					);
-					approveAndDeposit.add(
-						FishFight.fightingWaters?.methods.deposit(fish.tokenId).send({
-							from: account,
-							gasPrice: 1000000000,
-							gasLimit: 800000,
-						}).on('transactionHash', () => {
-							setPendingTransaction(true);
-						}).on('receipt', () => {
-							setPendingTransaction(false);
-							depositUserFightingFish(fish);
-							setFishSelectionToShow(FishSelectionEnum.UserFightingFish)
-						})
-					);
-					console.log("Batch call execute")
-					approveAndDeposit.execute();
-				} else {
-					const approve = await FishFight.fishFactory?.methods.approve(FishFight.readFightingWaters.options.address, fish.tokenId).send({
-						from: account,
-						gasPrice: 1000000000,
-						gasLimit: 500000,
-					})
-					console.log(approve)
-					unityContext.addFishFight1(fish)
-					const addToFightingWaters = await FishFight.fightingWaters?.methods.deposit(fish.tokenId).send({
-						from: account,
-						gasPrice: 1000000000,
-						gasLimit: 800000,
-					})
-					console.log(addToFightingWaters)
-					depositUserFightingFish(fish);
-				}
-				
-				
-				toast.success('Transaction done', {
-					onClose: async () => {
-						refetchBalance()
-						// call to refresh userFish and userFightingWaters Fish
-					},
-				});
-			} catch (error: any) {
-				toast.error(error);
-			}
-		} else {
+		if(!account) {
 			toast.error('Connect your wallet');
+			return;
 		}
+		if(mySelectedFish == null) {
+			toast.error('Select a Fish');
+			return;
+		}
+		try {
+			if(FishFight.type === 'web3') { // batch requests for metamask wallet
+				const web3WalletProvider = FishFight.providerWallet as web3;
+				const approveAndDeposit = new web3WalletProvider.BatchRequest();
+				approveAndDeposit.add(
+					contractApprove(fish)
+				);
+				approveAndDeposit.add(
+					contractDeposit(fish)
+				);
+				console.log("Batch call execute")
+				approveAndDeposit.execute();
+			} else { // harmony wallet, can't batch
+				await contractApprove(fish);
+				await contractDeposit(fish);
+			}
+		} catch (error: any) {
+			toast.error(error);
+		}
+
 		setMySelectedFish(null)
 	}
 
@@ -153,39 +153,36 @@ const UserFightingWaters = () => {
 			toast.error(`Fish Locked for ${lockedFor} minutes`)
 			return;
 		}
-		if (account && mySelectedFish != null) {
-			try {
-				// const approve = await FishFight.fishFactory?.methods.approve(FishFight.readFightingWaters.options.address, fish.tokenId).send({
-				// 	from: account,
-				// 	gasPrice: 1000000000,
-				// 	gasLimit: 500000,
-				// })
-				// console.log(approve)
-				// unityContext.addFishFight1(fish)
-				await FishFight.fightingWaters?.methods.withdraw(fish.tokenId).send({
-					from: account,
-					gasPrice: 1000000000,
-					gasLimit: 800000,
-				}).on('transactionHash', () => {
-					setPendingTransaction(true);
-				}).on('receipt', (data: any) => {
-					setPendingTransaction(false);
-					withdrawUserFightingFish(fish);
-					setFishSelectionToShow(FishSelectionEnum.UserFish)
-					console.log(data)
-				})
+		if(!account) {
+			toast.error('Connect your wallet');
+			return;
+		}
+		if(mySelectedFish == null) {
+			toast.error('Select a Fish');
+		}
+
+		try {
+			await FishFight.fightingWaters?.methods.withdraw(fish.tokenId).send({
+				from: account,
+				gasPrice: 1000000000,
+				gasLimit: 800000,
+			}).on('transactionHash', () => {
+				setPendingTransaction(true);
+			}).on('receipt', (data: any) => {
+				setPendingTransaction(false);
+				withdrawUserFightingFish(fish);
+				setFishSelectionToShow(FishSelectionEnum.UserFish)
 				toast.success('Transaction done', {
 					onClose: async () => {
 						refetchBalance()
-						// call to refresh userFish and userFightingWaters Fish
 					},
 				});
-			} catch (error: any) {
-				toast.error(error);
-			}
-		} else {
-			toast.error('Connect your wallet');
+			})
+			
+		} catch (error: any) {
+			toast.error(error);
 		}
+
 		setMySelectedFish(null)
 	}
 
@@ -220,11 +217,6 @@ const UserFightingWaters = () => {
 		</BaseOverlayContainer>
 	);
 };
-
-interface GridProps {
-	ref?: any;
-}
-
 
 const OptionsContainer = styled.div`
 	display: flex;

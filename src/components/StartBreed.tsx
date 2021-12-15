@@ -33,7 +33,7 @@ const StartBreed = () => {
 	const [myBettaFish, setMyBettaFish] = useState<Fish | null>(null);
 	const [alphaFish, setAlphaFish] = useState<Fish | null>(null);
 	const [breederSelectionToShow, setBreederSelectionToShow] = useState<number>(BreedingSelectionEnum.MyFishToBreed);
-	const [fishSelectionToShow, setFishSelectionToShow] = useState<number>(FishSelectionEnum.UserBreedingFish);
+	const [fishSelectionToShow, setFishSelectionToShow] = useState<number>(FishSelectionEnum.UserFish);
 	const [breedResult, setBreedResult] = useState<Fish | null>();
 	const [showBreedResult, setShowBreedResult] = useState(false);
 	const [isBreeding, setIsBreeding] = useState<boolean>(false);
@@ -45,23 +45,23 @@ const StartBreed = () => {
 	const unityContext = useUnity();
 
 	const FishViewOptions: MenuItem[] = [
+		// {
+		// 	name: 'My Fighting Fish',
+		// 	onClick: () => setFishSelectionToShow(FishSelectionEnum.UserBreedingFish)
+		// },
 		{
-			name: 'My Fighting Fish',
-			onClick: () => setFishSelectionToShow(FishSelectionEnum.UserBreedingFish)
-		},
-		{
-			name: 'My Fish',
+			name: 'My Betta Fish',
 			onClick: () => setFishSelectionToShow(FishSelectionEnum.UserFish)
 		}
 	]
 
 	const BreederSelectionOptions: MenuItem[] = [
 		{
-			name: 'Select Fighter',
+			name: 'Select Fish to Breed',
 			onClick: () => setBreederSelectionToShow(BreedingSelectionEnum.MyFishToBreed)
 		},
 		{
-			name: 'Select Opponent',
+			name: 'Select Alpha to Breed with',
 			onClick: () => setBreederSelectionToShow(BreedingSelectionEnum.FishToBreedWith)
 		}
 	]
@@ -101,6 +101,41 @@ const StartBreed = () => {
 		unityContext.addFishFight1(fish)
 	}
 
+	const contractApprove = () => {
+		return FishFight.fishFood?.methods.approve(FishFight.readBreedingWaters.options.address, new Unit(100).asOne().toWei()).send({
+			from: account,
+			gasPrice: 1000000000,
+			gasLimit: 300000,
+		}).on('transactionHash', () => {
+			setPendingTransaction(true);
+		})
+	}
+
+	const contractBreed = (fishAlpha: Fish, fishBetta: Fish) => {
+		return FishFight.breedingWaters?.methods.breedFish(fishAlpha.tokenId, fishBetta.tokenId).send({
+			from: account,
+			gasPrice: 1000000000,
+			gasLimit: 1500000,
+			value: new Unit(50).asOne().toWei()
+		}).on('transactionHash', () => {
+			setPendingTransaction(true);
+		}).on('receipt', async (data: any) => {
+			console.log(data)
+			setPendingTransaction(false);
+			setFishSelectionToShow(FishSelectionEnum.UserFish)
+			const fish = await createUserFish(web3.utils.toNumber(data.events.BreedingResult.returnValues.tokenId));
+			if(fish != null) {
+				unityContext.showFish(fish);
+			}
+			toast.success('Transaction done', {
+				onClose: async () => {
+					refetchBalance()
+				},
+			});
+			setIsBreeding(false);
+		})
+	}
+
 	const breedFish = async () => {
 		if(!account) {
 			toast.error('Connect your wallet');
@@ -120,74 +155,27 @@ const StartBreed = () => {
 				const web3WalletProvider = FishFight.providerWallet as web3;
 				const approveAndBreed = new web3WalletProvider.BatchRequest();
 				approveAndBreed.add(
-					FishFight.fishFood?.methods.approve(FishFight.readBreedingWaters.options.address, new Unit(100).asOne().toWei()).send({
-						from: account,
-						gasPrice: 1000000000,
-						gasLimit: 300000,
-					})
+					contractApprove()
 				);
 				approveAndBreed.add(
-					FishFight.breedingWaters?.methods.breedFish(alphaFish.tokenId, myBettaFish.tokenId).send({
-						from: account,
-						gasPrice: 1000000000,
-						gasLimit: 1200000,
-						value: new Unit(50).asOne().toWei()
-					}).on('transactionHash', () => {
-						setPendingTransaction(true);
-					}).on('receipt', async (data: any) => {
-						console.log(data)
-						setPendingTransaction(false);
-						setFishSelectionToShow(FishSelectionEnum.UserFish)
-						const fish = await createUserFish(web3.utils.toNumber(data.events.BreedingResult.returnValues.tokenId));
-						if(fish != null) {
-							unityContext.showFish(fish);
-						}
-						setIsBreeding(false);
-					})
+					contractBreed(alphaFish, myBettaFish)
 				);
 				console.log("Batch call execute")
 				approveAndBreed.execute();
 			} else {
-				const approve = await FishFight.fishFood?.methods.approve(FishFight.readBreedingWaters.options.address, new Unit(100).asOne().toWei()).send({
-					from: account,
-					gasPrice: 1000000000,
-					gasLimit: 300000,
-				})
-				console.log(approve)
-				FishFight.breedingWaters?.methods.breedFish(alphaFish.tokenId, myBettaFish.tokenId).send({
-					from: account,
-					gasPrice: 1000000000,
-					gasLimit: 1200000,
-					value: new Unit(50).asOne().toWei()
-				}).on('transactionHash', () => {
-					setPendingTransaction(true);
-				}).on('receipt', async (data: any) => {
-					console.log(data)
-					setPendingTransaction(false);
-					setFishSelectionToShow(FishSelectionEnum.UserFish)
-					const fish = await createUserFish(web3.utils.toNumber(data.events.BreedingResult.returnValues.tokenId));
-					if(fish != null) {
-						unityContext.showFish(fish);
-					}
-					setIsBreeding(false);
-				})
+				await contractApprove()
+				await contractBreed(alphaFish, myBettaFish)
 			}
-			toast.success('Transaction done', {
-				onClose: async () => {
-					refetchBalance()
-					// refetchFightingFish()
-				},
-			});
 		} catch (error: any) {
 			console.log(error)
-			toast.error(error);
-			setIsBreeding(false)
-			setMyBettaFish(null)
-			setAlphaFish(null)
+			// toast.error(error);
+			// setIsBreeding(false)
+			// setMyBettaFish(null)
+			// setAlphaFish(null)
 		}
 	};
 
-	const fightAgain = () => {
+	const breedAgain = () => {
 		setBreedResult(null)
 		setIsBreeding(false)
 		setMyBettaFish(null)
@@ -199,7 +187,10 @@ const StartBreed = () => {
 		<>
 		{/* Select Fish to Fight */}
 		{!breedResult && !isBreeding &&
-			<BaseOverlayContainer>
+			<BaseOverlayContainer
+			active={pendingTransaction}
+			spinner
+			text='Waiting for confirmation...'>
 				{
 					<FightGrid>
 						{myBettaFish &&
@@ -237,24 +228,30 @@ const StartBreed = () => {
 
 		{/* Fish are Fighting */}
 		{isBreeding && myBettaFish && alphaFish &&
-			<BaseOverlayContainer>
+			<BaseOverlayContainer
+			active={pendingTransaction}
+			spinner
+			text='Waiting for confirmation...'>
 				<FightGrid >
 					<FishNFT selectedUser={true} fish={myBettaFish}></FishNFT>
 					<VersusContainer>
 						<Text>with</Text>
-						<Text>Awaiting results from blockchain...</Text>
+						<Text>Awaiting breeding results from blockchain...</Text>
 					</VersusContainer>
 					<FishNFT selectedOpponent={true} fish={alphaFish}></FishNFT>
 				</FightGrid>
 			</BaseOverlayContainer>
 		}
 
-		{/* Show Fight Results */}
+		{/* Show Breed Results */}
 		{breedResult && myBettaFish && alphaFish &&
-			<BaseOverlayContainer>
+			<BaseOverlayContainer
+			active={pendingTransaction}
+			spinner
+			text='Waiting for confirmation...'>
 				<ContainerControls>
-					<BaseButton onClick={() => fightAgain()}>
-						Fight Another Fish!
+					<BaseButton onClick={() => breedAgain()}>
+						Breed More Fish!
 					</BaseButton>
 				</ContainerControls>
 				<FightGrid>
@@ -264,7 +261,7 @@ const StartBreed = () => {
 						<ResultData>New Fish</ResultData>
 					</ResultContainer>
 					:
-					<VersusContainer><Text>Fight Starting!</Text></VersusContainer>
+					<VersusContainer><Text>Breed Results</Text></VersusContainer>
 					}
 					
 					<FishNFT selectedOpponent={true} fish={alphaFish}></FishNFT>

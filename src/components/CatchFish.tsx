@@ -10,6 +10,8 @@ import { useFishFight } from '../context/fishFightContext';
 import { useUnity } from '../context/unityContext';
 import { useFishPool } from '../context/fishPoolContext';
 import web3 from 'web3';
+import { BaseContainer, BaseOverlayContainer, ContainerControls } from './BaseStyles';
+
 
 // const catchRates = [
 // 	{value: 1000, chance: "100%"},
@@ -27,11 +29,19 @@ const CatchFish = () => {
 	const [caughtFishHash, setCaughtFishHash] = useState<string | null>(null);
 	const [noCatch, setNoCatch] = useState<boolean>(false);
 	const [currentPhase, setCurrentPhase] = useState<string>('');
+	const [pendingTransaction, setPendingTransaction] = useState<boolean>(false);
+	const [diceRoll, setDiceRoll] = useState<number>(0);
+	
+
 
 	useEffect(() => {
 		unityContext.showFishing();
 		getSeason()
 	}, [unityContext.isFishPoolReady]);
+
+	useEffect(() => {
+		console.log(account)
+	}, [account]);
 
 	useEffect(() => {
 		unityContext.clearFishPool('ShowFishing');
@@ -41,10 +51,25 @@ const CatchFish = () => {
 		unityContext.UnityInstance.on('UISelectionConfirm', function (data: any) {
 			console.log('UI changed catch fish');
 			console.log(data)
-			mintFish(100);
-			return;
+			switch (data) {
+				case 'mint_fish_2.5percent':
+					catchFish();
+					return;
+				case 'mint_fish_5percent':
+					catchFish();
+					return;
+				case 'mint_fish_10percent':
+					catchFish();
+					return;
+				case 'mint_fish_100percent':
+					catchFish();
+					return;
+				default:
+					return;
+			}
+			
 		});
-	}, [unityContext.isFishPoolReady]);
+	}, [unityContext.isFishPoolReady, account]);
 
 	const getUserFish = async (tokenId: number) => {
 		console.log(tokenId)
@@ -75,53 +100,59 @@ const CatchFish = () => {
 	}
 
 
-	const mintFish = async (value: number) => {
-		console.log(account)
+	const catchFish = async () => {
+		if(!account) {
+			toast.error('Connect your wallet');
+			return;
+		}
 		
-		if (account) {
-			if(FishFight.type == 'web3') {
-				const provider = FishFight.provider as web3;
-				if(await provider.eth.getChainId() != 1666700000) {
-					toast.error('Wrong Network');
-					return;
-				}
+		if(FishFight.type == 'web3') {
+			const provider = FishFight.provider as web3;
+			if(await provider.eth.getChainId() != 1666700000) {
+				toast.error('Wrong Network');
+				return;
 			}
-			console.log("catch fish")
-			setNoCatch(false);
-			setCaughtFish(null);
-			setCaughtFishHash(null);
-			unityContext.clearFishPool('ShowFishing');
-			try {
-				const currentBlockNum = await FishFight.provider.eth.getBlockNumber();
-				console.log(currentBlockNum)
-				
-				const fish = await FishFight.fishingWaters?.methods.goFishing().send({
-					from: account,
-					gasPrice: 1000000000,
-					gasLimit: 500000,
-					value: new Unit(value).asOne().toWei()
-				});
-				console.log(fish)
-				if(fish.events.FishingResult.returnValues.index == 0) {
+		}
+		console.log("catch fish")
+		setNoCatch(false);
+		setCaughtFish(null);
+		setCaughtFishHash(null);
+		unityContext.clearFishPool('ShowFishing');
+		try {
+			await FishFight.fishingWaters?.methods.goFishing().send({
+				from: account,
+				gasPrice: 1000000000,
+				gasLimit: 500000,
+				value: new Unit(10).asOne().toWei()
+			}).on('transactionHash', () => {
+				setPendingTransaction(true);
+			}).on('receipt', (result: any) => {
+				console.log(result)
+				if(result.events.FishingResult.returnValues.index == 0) {
 					console.log("set no catch")
 					setNoCatch(true);
-				} else {
-					setCaughtFishHash(fish.transactionHash)
-					// const returnedTokenId = new BN().toNumber()
-					getUserFish(fish.events.FishingResult.returnValues.index);
+					setDiceRoll(result.events.FishingResult.returnValues.roll)
+					setPendingTransaction(false);
+					toast.success('Missed `Em!', {
+						onClose: async () => {
+							refetchBalance()
+						},
+					});
+					return;
 				}
 
-				toast.success('Transaction done', {
+				setCaughtFishHash(result.transactionHash)
+				getUserFish(result.events.FishingResult.returnValues.index);
+				setPendingTransaction(false);
+				toast.success('Fish Caught!', {
 					onClose: async () => {
 						refetchBalance()
 					},
 				});
-			} catch (error: any) {
-				toast.error(error);
-				console.log(error)
-			}
-		} else {
-			toast.error('Connect your wallet');
+			})
+		} catch (error: any) {
+			toast.error(error);
+			console.log(error)
 		}
 	};
 
@@ -146,10 +177,12 @@ const CatchFish = () => {
 
 
 	return (
-		<>
-		<h1>{currentPhase}</h1>
+		<BaseOverlayContainer
+			active={pendingTransaction}
+			spinner
+			text='Fishing from the blockchain...'>
 		{caughtFish && caughtFishHash &&
-			<>
+			<ContainerControls>
 				<CaughtFish>
 					<FishData><b>Token ID: {caughtFish.tokenId}</b></FishData>
 					<FishData>Strength: {caughtFish.strength}</FishData>
@@ -166,13 +199,15 @@ const CatchFish = () => {
 				}}>
 					Catch another fish!
 				</GameButton>
-			</>
+			</ContainerControls>
 		}
 		
 		{noCatch &&
+		<ContainerControls>
 			<MissedCatchContainer>
 				<CaughtFish>
 					<Text>Sorry... It got away!</Text>
+					<Text>You rolled a {diceRoll}</Text>
 				</CaughtFish>
 
 				<GameButton onClick={() => {
@@ -184,9 +219,10 @@ const CatchFish = () => {
 					Try again!
 				</GameButton>
 			</MissedCatchContainer>
+		</ContainerControls>
 		}
 		
-		</>
+		</BaseOverlayContainer>
 	);
 };
 

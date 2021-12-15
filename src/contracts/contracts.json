@@ -346,7 +346,7 @@
       ]
     },
     "BreedingWaters": {
-      "address": "0x9C19De764cb448f3ec7247910666309c4f4BAEc1",
+      "address": "0xd0ab1824622AE4d35cf5c9ca8227cF9227B8A6D9",
       "abi": [
         {
           "inputs": [
@@ -750,6 +750,25 @@
               "type": "uint256"
             }
           ],
+          "name": "getFishOffspring",
+          "outputs": [
+            {
+              "internalType": "uint256[]",
+              "name": "",
+              "type": "uint256[]"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "uint256",
+              "name": "tokenId",
+              "type": "uint256"
+            }
+          ],
           "name": "getPoolInfo",
           "outputs": [
             {
@@ -884,7 +903,7 @@
               "type": "uint256"
             }
           ],
-          "name": "pendingAward",
+          "name": "pendingAwardFish",
           "outputs": [
             {
               "internalType": "uint256",
@@ -1825,11 +1844,6 @@
               "type": "uint256"
             },
             {
-              "internalType": "uint8",
-              "name": "fightType",
-              "type": "uint8"
-            },
-            {
               "internalType": "bytes32",
               "name": "randomNumbers",
               "type": "bytes32"
@@ -1849,7 +1863,7 @@
       ]
     },
     "FightingWaters": {
-      "address": "0x3030296a5A1cC7Fcf610653e3a81b4B032c2E43A",
+      "address": "0x68cE4F1c8a51215aB888E579c0d39559BE13E896",
       "abi": [
         {
           "inputs": [
@@ -1881,6 +1895,11 @@
             {
               "internalType": "uint256",
               "name": "fishFoodPerBlock",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "fightFee",
               "type": "uint256"
             },
             {
@@ -2115,6 +2134,19 @@
         },
         {
           "inputs": [],
+          "name": "_fightFee",
+          "outputs": [
+            {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [],
           "name": "_fish",
           "outputs": [
             {
@@ -2142,6 +2174,19 @@
         {
           "inputs": [],
           "name": "_fishFoodPerBlock",
+          "outputs": [
+            {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [],
+          "name": "_fishFoodPerWin",
           "outputs": [
             {
               "internalType": "uint256",
@@ -2262,7 +2307,7 @@
           ],
           "name": "deathFight",
           "outputs": [],
-          "stateMutability": "nonpayable",
+          "stateMutability": "payable",
           "type": "function"
         },
         {
@@ -2432,9 +2477,9 @@
             {
               "components": [
                 {
-                  "internalType": "address",
-                  "name": "owner",
-                  "type": "address"
+                  "internalType": "uint256",
+                  "name": "earnedFishFood",
+                  "type": "uint256"
                 },
                 {
                   "internalType": "bool",
@@ -2567,6 +2612,25 @@
             }
           ],
           "name": "pendingAward",
+          "outputs": [
+            {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "uint256",
+              "name": "tokenId",
+              "type": "uint256"
+            }
+          ],
+          "name": "pendingAwardFish",
           "outputs": [
             {
               "internalType": "uint256",
@@ -4729,7 +4793,7 @@
       ]
     },
     "FishingWaters": {
-      "address": "0xe6056218cAb912FbCe83797C21ba8438f5Da83A0",
+      "address": "0xCe01fc1aeF3EEbb2264e1f680Ca6d70DDa14D970",
       "abi": [
         {
           "inputs": [
@@ -4771,6 +4835,12 @@
               "internalType": "address",
               "name": "owner",
               "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "roll",
+              "type": "uint256"
             }
           ],
           "name": "FishingResult",
@@ -4920,6 +4990,19 @@
               "internalType": "contract Seasons",
               "name": "",
               "type": "address"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [],
+          "name": "getAvailableFish",
+          "outputs": [
+            {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
             }
           ],
           "stateMutability": "view",
@@ -5240,7 +5323,7 @@
       ]
     },
     "Seasons": {
-      "address": "0x2db74260C1439ba3Ff0d56d787AcCAC406Aa62f3",
+      "address": "0x28c08e6D24CB2327410643a0629701837F03c337",
       "abi": [
         {
           "inputs": [
@@ -5866,6 +5949,13 @@
             }
           ],
           "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [],
+          "name": "ownerPhaseOverride",
+          "outputs": [],
+          "stateMutability": "nonpayable",
           "type": "function"
         },
         {

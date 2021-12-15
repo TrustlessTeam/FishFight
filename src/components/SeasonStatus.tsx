@@ -10,11 +10,22 @@ import foodImg from "../img/icons/food.svg"
 
 
 const SeasonStatus = () => {
-	const { currentSeason, currentPhaseEndTime } = useFishFight();
+	const { currentSeason, currentPhaseEndTime, FishFight, refetchSeason } = useFishFight();
+	const { account } = useWeb3React();
 
 	if (!currentSeason) return null;
 	console.log(currentPhaseEndTime)
 	console.log(currentSeason)
+
+	const nextPhase = async () => {
+		if(!account) return;
+		await FishFight.seasons?.methods.ownerPhaseOverride().send({
+			from: account,
+			gasPrice: 1000000000,
+			gasLimit: 500000,
+		})
+		refetchSeason();
+	}
 
 	return (
 		<SeasonStatusContainer>
@@ -33,6 +44,7 @@ const SeasonStatus = () => {
 				<StatusText>{`Phase End ${currentPhaseEndTime?.toLocaleString()}`}</StatusText>
 				{/* <LogoImg src={foodImg} alt="FISHFOOD"></LogoImg> */}
 			</StatusComponent>
+			<button onClick={nextPhase}>Next</button>
 		</SeasonStatusContainer>
 		
 	);
