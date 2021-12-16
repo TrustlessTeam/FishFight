@@ -10,7 +10,7 @@ import { useFishPool } from '../context/fishPoolContext';
 import FishViewer from './FishViewer';
 import Menu, { MenuItem } from './Menu';
 import StakedStatus from './StakedStatus';
-import { BaseContainer, ContainerControls } from './BaseStyles';
+import { BaseContainer, ContainerControls, BaseOverlayContainer } from './BaseStyles';
 import StakedBreedStatus from './StakedBreedStatus';
 
 enum FishSelectionEnum {
@@ -23,6 +23,8 @@ const UserBreedingWaters = () => {
 	const { userFish, userBreedingFish, breedingFish, depositUserBreedingFish, withdrawUserBreedingFish } = useFishPool()
 	const [fishSelectionToShow, setFishSelectionToShow] = useState<number>(FishSelectionEnum.UserBreedingFish);
 	const [renderedFish, setRenderedFish] = useState<number[]>([]);
+	const [pendingTransaction, setPendingTransaction] = useState<boolean>(false);
+
 
 	// Fish selected for fight
 	const [mySelectedFish, setMySelectedFish] = useState<Fish | null>(null);
@@ -48,8 +50,11 @@ const UserBreedingWaters = () => {
 	}, [unityContext.isFishPoolReady]);
 
 	useEffect(() => {
-		console.log("Fightintg Fish Changed")
+		console.log("Breeding Fish Changed")
 		console.log(userFish)
+		console.log(userBreedingFish)
+		console.log(breedingFish)
+
 		if(!unityContext.isFishPoolReady) return;
 		let i = 0;
 		breedingFish.forEach(fish => {
@@ -74,6 +79,16 @@ const UserBreedingWaters = () => {
 		// unityContext.showFight(); // switch to FightingWaters view
 	}
 
+	const contractApprove = (fish: Fish) => {
+		return FishFight.fishFactory?.methods.approve(FishFight.readBreedingWaters.options.address, fish.tokenId).send({
+			from: account,
+			gasPrice: 1000000000,
+			gasLimit: 500000,
+		}).on('transactionHash', () => {
+			setPendingTransaction(true);
+		})
+	}
+
 	const depositFish = async (fish : Fish) => {
 		if (account && mySelectedFish != null) {
 			try {
@@ -90,7 +105,7 @@ const UserBreedingWaters = () => {
 					gasLimit: 800000,
 				})
 				console.log(addToBreedingWaters)
-				depositUserBreedingFish(fish);
+				await depositUserBreedingFish(fish);
 				toast.success('Transaction done', {
 					onClose: async () => {
 						refetchBalance()
@@ -122,7 +137,7 @@ const UserBreedingWaters = () => {
 					gasLimit: 800000,
 				})
 				console.log(withdrawBreedingWaters)
-				withdrawUserBreedingFish(fish);
+				await withdrawUserBreedingFish(fish);
 				toast.success('Transaction done', {
 					onClose: async () => {
 						refetchBalance()

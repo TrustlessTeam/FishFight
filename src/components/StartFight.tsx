@@ -107,7 +107,7 @@ const StartFight = () => {
 			unityContext.sendTie()
 		}
 		setFightResult(newFight)
-		refreshFish(newFight.winner)
+		refreshFish(newFight.winner, true, false);
 	}
 
 	const setOpponent = (fish : Fish) => {
@@ -156,12 +156,12 @@ const StartFight = () => {
 		}).on('transactionHash', () => {
 			setPendingTransaction(true);
 			setIsFighting(true);
-		}).on('receipt', (result: any) => {
+		}).on('receipt', async (result: any) => {
 			// console.log(result)
 			setIsFighting(false)
 			const fightIndex = web3.utils.toNumber(result.events.FightCompleted.returnValues._fightIndex);
-			getUserFight(fightIndex);
 			setPendingTransaction(false);
+			await getUserFight(fightIndex);
 			toast.success('Fight Commpleted!', {
 				onClose: async () => {
 					refetchBalance()

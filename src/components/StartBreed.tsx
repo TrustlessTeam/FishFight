@@ -91,8 +91,8 @@ const StartBreed = () => {
 		unityContext.addFishFight2(fish)
 	}
 
-	const setUserFish = async (fish : Fish) => {
-		console.log("UserSelected Fish: " + fish.tokenId)
+	const setUserBetta = async (fish : Fish) => {
+		console.log("Betta Fish: " + fish.tokenId)
 		//unityContext.clearFishPool('ShowFight');
 		if(alphaFish != null) {
 			unityContext.addFishFight1(alphaFish);
@@ -112,6 +112,8 @@ const StartBreed = () => {
 	}
 
 	const contractBreed = (fishAlpha: Fish, fishBetta: Fish) => {
+		console.log(fishAlpha)
+		console.log(fishBetta)
 		return FishFight.breedingWaters?.methods.breedFish(fishAlpha.tokenId, fishBetta.tokenId).send({
 			from: account,
 			gasPrice: 1000000000,
@@ -212,13 +214,10 @@ const StartBreed = () => {
 					</FightGrid>
 				}
 				<ContainerControls>
-					<Menu name={BreedingSelectionEnum[breederSelectionToShow]} items={BreederSelectionOptions}></Menu>
-					{breederSelectionToShow === BreedingSelectionEnum.MyFishToBreed &&
-						<Menu name={FishSelectionEnum[fishSelectionToShow]} items={FishViewOptions}></Menu>
-					}
+					<Menu name={BreederSelectionOptions[breederSelectionToShow].name} items={BreederSelectionOptions}></Menu>
 				</ContainerControls>
 				{breederSelectionToShow === BreedingSelectionEnum.MyFishToBreed &&
-					<FishViewer selectedFish={myBettaFish} fishCollection={fishSelectionToShow === FishSelectionEnum.UserBreedingFish ? userBreedingFish : userFish} onClick={setUserFish}></FishViewer>
+					<FishViewer selectedFish={myBettaFish} fishCollection={userFish} onClick={setUserBetta}></FishViewer>
 				}
 				{breederSelectionToShow === BreedingSelectionEnum.FishToBreedWith &&
 					<FishViewer selectedOpponent={alphaFish} fishCollection={breedingFish} onClick={setAlpha}></FishViewer>

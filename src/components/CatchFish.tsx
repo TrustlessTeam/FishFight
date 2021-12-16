@@ -24,7 +24,7 @@ const CatchFish = () => {
 	const unityContext = useUnity()
 	const { account } = useWeb3React();
 	const { FishFight, refetchBalance } = useFishFight()
-	const { addUserFish} = useFishPool();
+	const { createUserFish } = useFishPool();
 	const [caughtFish, setCaughtFish] = useState<Fish | null>(null);
 	const [caughtFishHash, setCaughtFishHash] = useState<string | null>(null);
 	const [noCatch, setNoCatch] = useState<boolean>(false);
@@ -73,30 +73,12 @@ const CatchFish = () => {
 
 	const getUserFish = async (tokenId: number) => {
 		console.log(tokenId)
-		const fishInfo = await FishFight.readFishFactory.methods.getFishInfo(tokenId).call();
-		console.log(fishInfo)
-		const newFish = new Fish(
-			fishInfo.tokenId,
-      fishInfo.birthTime,
-      fishInfo.genes,
-      fishInfo.fishType,
-      fishInfo.rarity,
-      fishInfo.strength,
-      fishInfo.intelligence,
-      fishInfo.agility,
-      fishInfo.cooldownMultiplier,
-      fishInfo.lifetimeWins,
-      fishInfo.lifetimeAlphaBreeds,
-      fishInfo.lifetimeBettaBreeds,
-      fishInfo.parentA,
-      fishInfo.parentB,
-      fishInfo.breedKey,
-      fishInfo.deathTime
-		);
-		console.log(newFish)
-		setCaughtFish(newFish)
-		unityContext.addFishFishing(newFish);
-		addUserFish(newFish)
+		const newFish = await createUserFish(tokenId)
+		if(newFish != null) {
+			console.log(newFish)
+			setCaughtFish(newFish)
+			unityContext.addFishFishing(newFish);
+		}
 	}
 
 

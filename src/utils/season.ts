@@ -42,20 +42,3 @@ export class Season {
 		this.fishBreed = web3.utils.toNumber(seasonObject.fishBreed);
   };
 }
-
-export class FishSeasonStats {
-	fightWins: number;
-	alphaBreeds: number;
-	bettaBreeds: number;
-	challenges: number;
-
-  constructor(
-    seasonObject: any
-  ) 
-  {
-		this.fightWins = web3.utils.toNumber(seasonObject.fightWins);
-		this.alphaBreeds = web3.utils.toNumber(seasonObject.alphaBreeds);
-		this.bettaBreeds = web3.utils.toNumber(seasonObject.bettaBreeds);
-		this.challenges = web3.utils.toNumber(seasonObject.challenges);
-	}
-}

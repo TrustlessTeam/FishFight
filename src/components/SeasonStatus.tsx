@@ -14,8 +14,8 @@ const SeasonStatus = () => {
 	const { account } = useWeb3React();
 
 	if (!currentSeason) return null;
-	console.log(currentPhaseEndTime)
-	console.log(currentSeason)
+	// console.log(currentPhaseEndTime)
+	// console.log(currentSeason)
 
 	const nextPhase = async () => {
 		if(!account) return;

@@ -27,7 +27,7 @@ enum FishSelectionEnum {
 
 const UserFightingWaters = () => {
 	const { FishFight, refetchBalance } = useFishFight()
-	const { userFish, userFightingFish, fightingFish, depositUserFightingFish, withdrawUserFightingFish } = useFishPool()
+	const { userFish, userFightingFish, fightingFish, depositUserFightingFish, withdrawUserFightingFish, refreshFish } = useFishPool()
 	const [fishSelectionToShow, setFishSelectionToShow] = useState<number>(FishSelectionEnum.UserFightingFish);
 	const [renderedFish, setRenderedFish] = useState<number[]>([]);
 	const [pendingTransaction, setPendingTransaction] = useState<boolean>(false);
@@ -101,13 +101,14 @@ const UserFightingWaters = () => {
 			gasLimit: 800000,
 		}).on('transactionHash', () => {
 			setPendingTransaction(true);
-		}).on('receipt', () => {
+		}).on('receipt', async () => {
 			setPendingTransaction(false);
 			depositUserFightingFish(fish);
 			setFishSelectionToShow(FishSelectionEnum.UserFightingFish)
 			toast.success('Fish Deposited', {
 				onClose: async () => {
 					refetchBalance()
+					refreshFish(fish.tokenId, true, false)
 				},
 			});
 		})
@@ -147,8 +148,8 @@ const UserFightingWaters = () => {
 
 	const withdrawFish = async (fish : Fish) => {
 		const secondsSinceEpoch = Math.round(Date.now() / 1000)
-		if(fish.expireTime > secondsSinceEpoch) {
-			const expireTime = (fish.expireTime - secondsSinceEpoch) / 60;
+		if(fish.stakedFighting != null && fish.stakedFighting.lockedExpire > secondsSinceEpoch) {
+			const expireTime = (fish.stakedFighting.lockedExpire - secondsSinceEpoch) / 60;
 			const lockedFor = (Math.round(expireTime * 10) / 10).toFixed(1);
 			toast.error(`Fish Locked for ${lockedFor} minutes`)
 			return;
@@ -168,13 +169,14 @@ const UserFightingWaters = () => {
 				gasLimit: 800000,
 			}).on('transactionHash', () => {
 				setPendingTransaction(true);
-			}).on('receipt', (data: any) => {
+			}).on('receipt', async (data: any) => {
 				setPendingTransaction(false);
 				withdrawUserFightingFish(fish);
 				setFishSelectionToShow(FishSelectionEnum.UserFish)
 				toast.success('Transaction done', {
 					onClose: async () => {
 						refetchBalance()
+						refreshFish(fish.tokenId, true, false)
 					},
 				});
 			})

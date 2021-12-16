@@ -1,5 +1,45 @@
 import web3 from 'web3'
-import { FishSeasonStats } from './season';
+
+export class FightingStake {
+  lockedExpire: number;
+  earnedFishFood: string;
+  constructor(
+    stakedFightFishObject: any,
+  ) {
+    this.lockedExpire = web3.utils.toNumber(stakedFightFishObject.lockedExpire);
+    this.earnedFishFood = web3.utils.fromWei(stakedFightFishObject.earnedFishFood);
+  }
+}
+
+export class BreedingStake {
+  breedCooldown: number;
+  earnedFishFood: string;
+  
+  constructor(
+    stakedBreedFishObject: any,
+    breedsForFishObject: any
+  ) {
+    this.breedCooldown = web3.utils.toNumber(stakedBreedFishObject.breedCooldown);
+    this.earnedFishFood = web3.utils.fromWei(stakedBreedFishObject.earnedFishFood);
+  }
+}
+
+export class FishSeasonStats {
+	fightWins: number;
+	alphaBreeds: number;
+	bettaBreeds: number;
+	challenges: number;
+
+  constructor(
+    seasonObject: any
+  ) 
+  {
+		this.fightWins = web3.utils.toNumber(seasonObject.fightWins);
+		this.alphaBreeds = web3.utils.toNumber(seasonObject.alphaBreeds);
+		this.bettaBreeds = web3.utils.toNumber(seasonObject.bettaBreeds);
+		this.challenges = web3.utils.toNumber(seasonObject.challenges);
+	}
+}
 
 export class Fish {
   tokenId: number;
@@ -22,53 +62,49 @@ export class Fish {
 	visualTraits: VisualTraits;
   imgSrc: string | null;
   ipfsLink: string | null;
-  seasonStats?: FishSeasonStats;
-  expireTime: number;
+  seasonStats: FishSeasonStats;
+  offspringHistory: number[] | null;
+  fightingHistory: number[] | null;
+  stakedFighting: FightingStake | null;
+  stakedBreeding: BreedingStake | null;
 
   constructor(
-    tokenId: any,
-    birthTime: any,
-    genes: any,
-    fishType: any,
-    rarity: any,
-    strength: any,
-    intelligence: any,
-    agility: any,
-    cooldownMultiplier: any,
-    lifetimeWins: any,
-    lifetimeAlphaBreeds: any,
-    lifetimeBettaBreeds: any,
-    parentA: any,
-    parentB: any,
-    breedKey: any,
-    deathTime: any,
-    imgSrc?: string | null,
-    ipfsLink?: string | null,
-    seasonStats?: FishSeasonStats
+    fishInfo: any,
+    fishSeasonStats: any,
+    imgSrc: string | null,
+    ipfsLink: string | null,
+    // offspringHistory: number[] | null,
+    // fightingHistory: number[] | null,
+    // fightingWaters: FightingWatersData | null,
+    // breedingWaters: BreedingWatersData | null,
+    
   ) 
   {
-    this.tokenId = web3.utils.toNumber(tokenId);
-    this.birthTime = web3.utils.toNumber(birthTime);
-    this.genes = genes;
-    this.fishType = web3.utils.toNumber(fishType);
-    this.rarity = web3.utils.toNumber(rarity);
-    this.strength = web3.utils.toNumber(strength);
-    this.intelligence = web3.utils.toNumber(intelligence);
-    this.agility = web3.utils.toNumber(agility);
-    this.cooldownMultiplier = web3.utils.toNumber(cooldownMultiplier);
-    this.lifetimeWins = web3.utils.toNumber(lifetimeWins);
-    this.lifetimeAlphaBreeds = web3.utils.toNumber(lifetimeAlphaBreeds);
-    this.lifetimeBettaBreeds = web3.utils.toNumber(lifetimeBettaBreeds);
-    this.parentA = parentA;
-    this.parentB = parentB;
-    this.breedKey = breedKey;
-    this.deathTime = web3.utils.toNumber(deathTime);
+    this.tokenId = web3.utils.toNumber(fishInfo.tokenId);
+    this.birthTime = web3.utils.toNumber(fishInfo.birthTime);
+    this.genes = fishInfo.genes;
+    this.fishType = web3.utils.toNumber(fishInfo.fishType);
+    this.rarity = web3.utils.toNumber(fishInfo.rarity);
+    this.strength = web3.utils.toNumber(fishInfo.strength);
+    this.intelligence = web3.utils.toNumber(fishInfo.intelligence);
+    this.agility = web3.utils.toNumber(fishInfo.agility);
+    this.cooldownMultiplier = web3.utils.toNumber(fishInfo.cooldownMultiplier);
+    this.lifetimeWins = web3.utils.toNumber(fishInfo.lifetimeWins);
+    this.lifetimeAlphaBreeds = web3.utils.toNumber(fishInfo.lifetimeAlphaBreeds);
+    this.lifetimeBettaBreeds = web3.utils.toNumber(fishInfo.lifetimeBettaBreeds);
+    this.parentA = web3.utils.toNumber(fishInfo.parentA);
+    this.parentB = web3.utils.toNumber(fishInfo.parentB);
+    this.breedKey = fishInfo.breedKey;
+    this.deathTime = web3.utils.toNumber(fishInfo.deathTime);
     this.genesArray = this.parseGenes(this.genes);
     this.visualTraits = this.parseTraits();
-    this.imgSrc = imgSrc ? imgSrc : null;
-    this.ipfsLink = ipfsLink ? ipfsLink : null;
-    this.seasonStats = seasonStats;
-    this.expireTime = 0;
+    this.imgSrc = imgSrc;
+    this.ipfsLink = ipfsLink;
+    this.seasonStats = new FishSeasonStats(fishSeasonStats);
+    this.offspringHistory = null;
+    this.fightingHistory = null;
+    this.stakedFighting = null;
+    this.stakedBreeding = null;
   };
 
   parseTraits(): VisualTraits {
@@ -348,3 +384,5 @@ const fishTypes = [
   //   }
   // }
 ];
+
+export default Fish;
