@@ -12,6 +12,8 @@ import Menu, { MenuItem } from './Menu';
 import StakedStatus from './StakedStatus';
 import { BaseContainer, ContainerControls, BaseOverlayContainer } from './BaseStyles';
 import StakedBreedStatus from './StakedBreedStatus';
+import web3 from 'web3';
+
 
 enum FishSelectionEnum {
   UserBreedingFish,
@@ -35,11 +37,11 @@ const UserBreedingWaters = () => {
 
 	const FishViewOptions: MenuItem[] = [
 		{
-			name: 'My Breeding Fish',
+			name: 'My Staked Alpha Fish',
 			onClick: () => setFishSelectionToShow(FishSelectionEnum.UserBreedingFish)
 		},
 		{
-			name: 'My Fish',
+			name: 'My Alpha Fish',
 			onClick: () => setFishSelectionToShow(FishSelectionEnum.UserFish)
 		}
 	]
@@ -79,6 +81,33 @@ const UserBreedingWaters = () => {
 		// unityContext.showFight(); // switch to FightingWaters view
 	}
 
+	const handleDeposit = (fish: Fish) => {
+		FishFight.fishFactory?.methods.isApprovedForAll(account, FishFight.readBreedingWaters.options.address).call()
+		.then((isApproved: boolean) => {
+			if(isApproved) {
+				contractDeposit(fish);
+			} else {
+				FishFight.fishFactory?.methods.setApprovalForAll(FishFight.readBreedingWaters.options.address, true).send({
+					from: account,
+					gasPrice: 1000000000,
+					gasLimit: 500000,
+				})
+				.on('error', (error: any) => {
+					console.log(error)
+					toast.error('Approval Failed');
+					setPendingTransaction(false);
+				})
+				.on('transactionHash', () => {
+					setPendingTransaction(true);
+				})
+				.on('receipt', () => {
+					console.log('Approval completed')
+					contractDeposit(fish);
+				})
+			}
+		})
+	}
+
 	const contractApprove = (fish: Fish) => {
 		return FishFight.fishFactory?.methods.approve(FishFight.readBreedingWaters.options.address, fish.tokenId).send({
 			from: account,
@@ -89,73 +118,89 @@ const UserBreedingWaters = () => {
 		})
 	}
 
+	const contractDeposit = (fish: Fish) => {
+		return FishFight.breedingWaters?.methods.deposit(fish.tokenId).send({
+			from: account,
+			gasPrice: 1000000000,
+			gasLimit: 800000,
+		})
+		.on('error', (error: any) => {
+			console.log(error)
+			toast.error('Deposit Failed');
+			setPendingTransaction(false);
+		})
+		.on('transactionHash', () => {
+			setPendingTransaction(true);
+		})
+		.on('receipt', async () => {
+			setPendingTransaction(false);
+			depositUserBreedingFish(fish);
+			setFishSelectionToShow(FishSelectionEnum.UserBreedingFish)
+			setMySelectedFish(null)
+			toast.success('Fish Deposited', {
+				onClose: async () => {
+					refetchBalance()
+				},
+			});
+		})
+	}
+
 	const depositFish = async (fish : Fish) => {
-		if (account && mySelectedFish != null) {
-			try {
-				const approve = await FishFight.fishFactory?.methods.approve(FishFight.readBreedingWaters.options.address, fish.tokenId).send({
-					from: account,
-					gasPrice: 1000000000,
-					gasLimit: 500000,
-				})
-				console.log(approve)
-				unityContext.addFishFight1(fish)
-				const addToBreedingWaters = await FishFight.breedingWaters?.methods.deposit(fish.tokenId).send({
-					from: account,
-					gasPrice: 1000000000,
-					gasLimit: 800000,
-				})
-				console.log(addToBreedingWaters)
-				await depositUserBreedingFish(fish);
-				toast.success('Transaction done', {
-					onClose: async () => {
-						refetchBalance()
-						// call to refresh userFish and userFightingWaters Fish
-					},
-				});
-			} catch (error: any) {
-				toast.error(error);
-			}
-		} else {
+		if(!account) {
 			toast.error('Connect your wallet');
+			return;
 		}
-		setMySelectedFish(null)
+		if(mySelectedFish == null) {
+			toast.error('Select a Fish');
+			return;
+		}
+		try {
+			handleDeposit(fish);
+		} catch (error: any) {
+			console.log(error)
+		}
 	}
 
 	const withdrawFish = async (fish : Fish) => {
-		if (account && mySelectedFish != null) {
-			try {
-				// const approve = await FishFight.fishFactory?.methods.approve(FishFight.readFightingWaters.options.address, fish.tokenId).send({
-				// 	from: account,
-				// 	gasPrice: 1000000000,
-				// 	gasLimit: 500000,
-				// })
-				// console.log(approve)
-				// unityContext.addFishFight1(fish)
-				const withdrawBreedingWaters = await FishFight.breedingWaters?.methods.withdraw(fish.tokenId).send({
-					from: account,
-					gasPrice: 1000000000,
-					gasLimit: 800000,
-				})
-				console.log(withdrawBreedingWaters)
-				await withdrawUserBreedingFish(fish);
+		if(!account) {
+			toast.error('Connect your wallet');
+			return;
+		}
+		if(mySelectedFish == null) {
+			toast.error('Select a Fish');
+		}
+		try {
+			await FishFight.breedingWaters?.methods.withdraw(fish.tokenId).send({
+				from: account,
+				gasPrice: 1000000000,
+				gasLimit: 800000,
+			}).on('transactionHash', () => {
+				setPendingTransaction(true);
+			}).on('receipt', async (data: any) => {
+				setPendingTransaction(false);
+				withdrawUserBreedingFish(fish);
+				setFishSelectionToShow(FishSelectionEnum.UserFish)
 				toast.success('Transaction done', {
 					onClose: async () => {
 						refetchBalance()
-						// call to refresh userFish and userFightingWaters Fish
+						// refreshFish(fish.tokenId, false, false)
 					},
 				});
-			} catch (error: any) {
-				toast.error(error);
-			}
-		} else {
-			toast.error('Connect your wallet');
+			})
+		} catch (error: any) {
+			toast.error(error);
 		}
+
 		setMySelectedFish(null)
 	}
 
 
 	return (
-		<BaseContainer>
+		<BaseOverlayContainer
+			active={pendingTransaction}
+			spinner
+			text='Waiting for confirmation...'
+		>
 			{mySelectedFish != null &&
 			<OptionsContainer>
 				{fishSelectionToShow === FishSelectionEnum.UserBreedingFish ?
@@ -177,7 +222,7 @@ const UserBreedingWaters = () => {
 				:
 				<FishViewer selectedFish={mySelectedFish} fishCollection={userFish.filter((fish) => fish.seasonStats != null ? fish.seasonStats?.fightWins > 0 : false)} onClick={setUserFish}></FishViewer>
 			}
-		</BaseContainer>
+		</BaseOverlayContainer>
 	);
 };
 

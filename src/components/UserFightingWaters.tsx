@@ -27,7 +27,7 @@ enum FishSelectionEnum {
 
 const UserFightingWaters = () => {
 	const { FishFight, refetchBalance } = useFishFight()
-	const { userFish, userFightingFish, fightingFish, depositUserFightingFish, withdrawUserFightingFish, refreshFish } = useFishPool()
+	const { userFish, userFightingFish, fightingFish, depositUserFightingFish, withdrawUserFightingFish } = useFishPool()
 	const [fishSelectionToShow, setFishSelectionToShow] = useState<number>(FishSelectionEnum.UserFightingFish);
 	const [renderedFish, setRenderedFish] = useState<number[]>([]);
 	const [pendingTransaction, setPendingTransaction] = useState<boolean>(false);
@@ -84,31 +84,55 @@ const UserFightingWaters = () => {
 		// unityContext.showFight(); // switch to FightingWaters view
 	}
 
-	const contractApprove = (fish: Fish) => {
-		return FishFight.fishFactory?.methods.approve(FishFight.readFightingWaters.options.address, fish.tokenId).send({
-			from: account,
-			gasPrice: 1000000000,
-			gasLimit: 500000,
-		}).on('transactionHash', () => {
-			setPendingTransaction(true);
+	const handleDeposit = (fish: Fish) => {
+		FishFight.fishFactory?.methods.isApprovedForAll(account, FishFight.readFightingWaters.options.address).call()
+		.then((isApproved: boolean) => {
+			if(isApproved) {
+				contractDeposit(fish);
+			} else {
+				FishFight.fishFactory?.methods.setApprovalForAll(FishFight.readFightingWaters.options.address, true).send({
+					from: account,
+					gasPrice: 1000000000,
+					gasLimit: 500000,
+				})
+				.on('error', (error: any) => {
+					console.log(error)
+					toast.error('Approval Failed');
+					setPendingTransaction(false);
+				})
+				.on('transactionHash', () => {
+					setPendingTransaction(true);
+				})
+				.on('receipt', () => {
+					console.log('Approval completed')
+					contractDeposit(fish);
+				})
+			}
 		})
 	}
 
 	const contractDeposit = (fish: Fish) => {
-		return FishFight.fightingWaters?.methods.deposit(fish.tokenId).send({
+		FishFight.fightingWaters?.methods.deposit(fish.tokenId).send({
 			from: account,
 			gasPrice: 1000000000,
 			gasLimit: 800000,
-		}).on('transactionHash', () => {
+		})
+		.on('error', (error: any) => {
+			console.log(error)
+			toast.error('Deposit Failed');
+			setPendingTransaction(false);
+		})
+		.on('transactionHash', () => {
 			setPendingTransaction(true);
-		}).on('receipt', async () => {
+		})
+		.on('receipt', async () => {
 			setPendingTransaction(false);
 			depositUserFightingFish(fish);
-			setFishSelectionToShow(FishSelectionEnum.UserFightingFish)
+			setFishSelectionToShow(FishSelectionEnum.UserFightingFish);
+			setMySelectedFish(null);
 			toast.success('Fish Deposited', {
 				onClose: async () => {
 					refetchBalance()
-					refreshFish(fish.tokenId, true, false)
 				},
 			});
 		})
@@ -124,26 +148,10 @@ const UserFightingWaters = () => {
 			return;
 		}
 		try {
-			if(FishFight.type === 'web3') { // batch requests for metamask wallet
-				const web3WalletProvider = FishFight.providerWallet as web3;
-				const approveAndDeposit = new web3WalletProvider.BatchRequest();
-				approveAndDeposit.add(
-					contractApprove(fish)
-				);
-				approveAndDeposit.add(
-					contractDeposit(fish)
-				);
-				console.log("Batch call execute")
-				approveAndDeposit.execute();
-			} else { // harmony wallet, can't batch
-				await contractApprove(fish);
-				await contractDeposit(fish);
-			}
+			handleDeposit(fish);
 		} catch (error: any) {
-			toast.error(error);
+			console.log(error)
 		}
-
-		setMySelectedFish(null)
 	}
 
 	const withdrawFish = async (fish : Fish) => {
@@ -176,7 +184,7 @@ const UserFightingWaters = () => {
 				toast.success('Transaction done', {
 					onClose: async () => {
 						refetchBalance()
-						refreshFish(fish.tokenId, true, false)
+						// refreshFish(fish.tokenId, false, false)
 					},
 				});
 			})

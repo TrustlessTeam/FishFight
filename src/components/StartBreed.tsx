@@ -57,11 +57,11 @@ const StartBreed = () => {
 
 	const BreederSelectionOptions: MenuItem[] = [
 		{
-			name: 'Select Fish to Breed',
+			name: 'Select Your Betta Fish to Breed',
 			onClick: () => setBreederSelectionToShow(BreedingSelectionEnum.MyFishToBreed)
 		},
 		{
-			name: 'Select Alpha to Breed with',
+			name: 'Select Alpha Fish to Breed',
 			onClick: () => setBreederSelectionToShow(BreedingSelectionEnum.FishToBreedWith)
 		}
 	]
@@ -102,10 +102,10 @@ const StartBreed = () => {
 	}
 
 	const contractApprove = () => {
-		return FishFight.fishFood?.methods.approve(FishFight.readBreedingWaters.options.address, new Unit(100).asOne().toWei()).send({
+		return FishFight.fishFood?.methods.approve(FishFight.readBreedingWaters.options.address, web3.utils.toWei(web3.utils.toBN(100))).send.request({
 			from: account,
 			gasPrice: 1000000000,
-			gasLimit: 300000,
+			gasLimit: 500000,
 		}).on('transactionHash', () => {
 			setPendingTransaction(true);
 		})
@@ -114,10 +114,10 @@ const StartBreed = () => {
 	const contractBreed = (fishAlpha: Fish, fishBetta: Fish) => {
 		console.log(fishAlpha)
 		console.log(fishBetta)
-		return FishFight.breedingWaters?.methods.breedFish(fishAlpha.tokenId, fishBetta.tokenId).send({
+		return FishFight.breedingWaters?.methods.breedFish(fishAlpha.tokenId, fishBetta.tokenId).send.request({
 			from: account,
 			gasPrice: 1000000000,
-			gasLimit: 1500000,
+			gasLimit: 5000000,
 			value: new Unit(50).asOne().toWei()
 		}).on('transactionHash', () => {
 			setPendingTransaction(true);
@@ -125,13 +125,15 @@ const StartBreed = () => {
 			console.log(data)
 			setPendingTransaction(false);
 			setFishSelectionToShow(FishSelectionEnum.UserFish)
-			const fish = await createUserFish(web3.utils.toNumber(data.events.BreedingResult.returnValues.tokenId));
-			if(fish != null) {
-				unityContext.showFish(fish);
-			}
-			toast.success('Transaction done', {
+			toast.success('Breeding completed!', {
 				onClose: async () => {
+					const fish = await createUserFish(web3.utils.toNumber(data.events.BreedingResult.returnValues.tokenId));
+					if(fish != null) {
+						unityContext.showFish(fish);
+					}
 					refetchBalance()
+					refreshFish(fishAlpha.tokenId, false, true);
+					refreshFish(fishBetta.tokenId, false, false);
 				},
 			});
 			setIsBreeding(false);
@@ -169,7 +171,9 @@ const StartBreed = () => {
 				await contractBreed(alphaFish, myBettaFish)
 			}
 		} catch (error: any) {
+			toast.error("Transaction Failed")
 			console.log(error)
+			setPendingTransaction(false);
 			// toast.error(error);
 			// setIsBreeding(false)
 			// setMyBettaFish(null)
