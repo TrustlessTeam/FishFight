@@ -24,7 +24,7 @@ const SeasonStatus = () => {
 			gasPrice: 1000000000,
 			gasLimit: 500000,
 		})
-		refetchSeason();
+		// refetchSeason();
 	}
 
 	return (

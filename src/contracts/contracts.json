@@ -1145,6 +1145,13 @@
           "outputs": [],
           "stateMutability": "nonpayable",
           "type": "function"
+        },
+        {
+          "inputs": [],
+          "name": "withdrawONE",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
         }
       ]
     },
@@ -1904,12 +1911,12 @@
             },
             {
               "internalType": "uint256",
-              "name": "startBlock",
+              "name": "inSeasonMultiplier",
               "type": "uint256"
             },
             {
               "internalType": "uint256",
-              "name": "bonusEndBlock",
+              "name": "lockTime",
               "type": "uint256"
             }
           ],
@@ -2069,33 +2076,7 @@
         },
         {
           "inputs": [],
-          "name": "BONUS_MULTIPLIER",
-          "outputs": [
-            {
-              "internalType": "uint256",
-              "name": "",
-              "type": "uint256"
-            }
-          ],
-          "stateMutability": "view",
-          "type": "function"
-        },
-        {
-          "inputs": [],
           "name": "_accFoodPerShare",
-          "outputs": [
-            {
-              "internalType": "uint256",
-              "name": "",
-              "type": "uint256"
-            }
-          ],
-          "stateMutability": "view",
-          "type": "function"
-        },
-        {
-          "inputs": [],
-          "name": "_bonusEndBlock",
           "outputs": [
             {
               "internalType": "uint256",
@@ -2199,7 +2180,33 @@
         },
         {
           "inputs": [],
+          "name": "_inSeasonMultiplier",
+          "outputs": [
+            {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [],
           "name": "_lastRewardBlock",
+          "outputs": [
+            {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [],
+          "name": "_lockTime",
           "outputs": [
             {
               "internalType": "uint256",
@@ -2218,19 +2225,6 @@
               "internalType": "contract Seasons",
               "name": "",
               "type": "address"
-            }
-          ],
-          "stateMutability": "view",
-          "type": "function"
-        },
-        {
-          "inputs": [],
-          "name": "_startBlock",
-          "outputs": [
-            {
-              "internalType": "uint256",
-              "name": "",
-              "type": "uint256"
             }
           ],
           "stateMutability": "view",
@@ -2303,6 +2297,11 @@
               "internalType": "uint256",
               "name": "opponentTokenId",
               "type": "uint256"
+            },
+            {
+              "internalType": "bool",
+              "name": "depositRequired",
+              "type": "bool"
             }
           ],
           "name": "deathFight",
@@ -2321,24 +2320,6 @@
           "name": "deposit",
           "outputs": [],
           "stateMutability": "nonpayable",
-          "type": "function"
-        },
-        {
-          "inputs": [
-            {
-              "internalType": "uint256",
-              "name": "tokenIdToDeposit",
-              "type": "uint256"
-            },
-            {
-              "internalType": "uint256",
-              "name": "tokenIdToFight",
-              "type": "uint256"
-            }
-          ],
-          "name": "depositAndDeathFight",
-          "outputs": [],
-          "stateMutability": "payable",
           "type": "function"
         },
         {
@@ -2435,30 +2416,6 @@
               "internalType": "uint256[]",
               "name": "",
               "type": "uint256[]"
-            }
-          ],
-          "stateMutability": "view",
-          "type": "function"
-        },
-        {
-          "inputs": [
-            {
-              "internalType": "uint256",
-              "name": "_from",
-              "type": "uint256"
-            },
-            {
-              "internalType": "uint256",
-              "name": "_to",
-              "type": "uint256"
-            }
-          ],
-          "name": "getMultiplier",
-          "outputs": [
-            {
-              "internalType": "uint256",
-              "name": "",
-              "type": "uint256"
             }
           ],
           "stateMutability": "view",
@@ -2876,6 +2833,13 @@
             }
           ],
           "name": "withdraw",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        },
+        {
+          "inputs": [],
+          "name": "withdrawONE",
           "outputs": [],
           "stateMutability": "nonpayable",
           "type": "function"
@@ -5345,15 +5309,9 @@
           "anonymous": false,
           "inputs": [
             {
-              "indexed": true,
-              "internalType": "address",
-              "name": "_from",
-              "type": "address"
-            },
-            {
               "indexed": false,
               "internalType": "uint8",
-              "name": "_currentPhase",
+              "name": "newPhase",
               "type": "uint8"
             }
           ],
@@ -5383,15 +5341,9 @@
           "anonymous": false,
           "inputs": [
             {
-              "indexed": true,
-              "internalType": "address",
-              "name": "_from",
-              "type": "address"
-            },
-            {
               "indexed": false,
               "internalType": "uint256",
-              "name": "_seasonIndex",
+              "name": "seasonIndex",
               "type": "uint256"
             }
           ],
@@ -5726,6 +5678,52 @@
             }
           ],
           "name": "getFishSeasonStats",
+          "outputs": [
+            {
+              "components": [
+                {
+                  "internalType": "uint256",
+                  "name": "fightWins",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "alphaBreeds",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "bettaBreeds",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "challenges",
+                  "type": "uint256"
+                }
+              ],
+              "internalType": "struct Seasons.FishSeasonStats",
+              "name": "",
+              "type": "tuple"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "uint256",
+              "name": "tokenId",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "seasonIndex",
+              "type": "uint256"
+            }
+          ],
+          "name": "getFishSeasonStatsByIndex",
           "outputs": [
             {
               "components": [

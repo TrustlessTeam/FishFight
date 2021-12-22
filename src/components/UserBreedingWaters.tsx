@@ -81,40 +81,23 @@ const UserBreedingWaters = () => {
 		// unityContext.showFight(); // switch to FightingWaters view
 	}
 
-	const handleDeposit = (fish: Fish) => {
-		FishFight.fishFactory?.methods.isApprovedForAll(account, FishFight.readBreedingWaters.options.address).call()
-		.then((isApproved: boolean) => {
-			if(isApproved) {
-				contractDeposit(fish);
-			} else {
-				FishFight.fishFactory?.methods.setApprovalForAll(FishFight.readBreedingWaters.options.address, true).send({
-					from: account,
-					gasPrice: 1000000000,
-					gasLimit: 500000,
-				})
-				.on('error', (error: any) => {
-					console.log(error)
-					toast.error('Approval Failed');
-					setPendingTransaction(false);
-				})
-				.on('transactionHash', () => {
-					setPendingTransaction(true);
-				})
-				.on('receipt', () => {
-					console.log('Approval completed')
-					contractDeposit(fish);
-				})
-			}
-		})
-	}
-
-	const contractApprove = (fish: Fish) => {
-		return FishFight.fishFactory?.methods.approve(FishFight.readBreedingWaters.options.address, fish.tokenId).send({
+	const contractApproveAll = () => {
+		return FishFight.fishFactory?.methods.setApprovalForAll(FishFight.readBreedingWaters.options.address, true).send({
 			from: account,
 			gasPrice: 1000000000,
 			gasLimit: 500000,
-		}).on('transactionHash', () => {
+		})
+		.on('error', (error: any) => {
+			console.log(error)
+			toast.error('Approval Failed');
+			setPendingTransaction(false);
+		})
+		.on('transactionHash', () => {
 			setPendingTransaction(true);
+		})
+		.on('receipt', () => {
+			console.log('Breeding Approval completed')
+			toast.success('Breeding Approval completed')
 		})
 	}
 
@@ -155,7 +138,17 @@ const UserBreedingWaters = () => {
 			return;
 		}
 		try {
-			handleDeposit(fish);
+			FishFight.fishFactory?.methods.isApprovedForAll(account, FishFight.readBreedingWaters.options.address).call()
+			.then((isApproved: boolean) => {
+				if(isApproved) {
+					contractDeposit(fish);
+				} else {
+					contractApproveAll()
+					.on('receipt', () => {
+						contractDeposit(fish);
+					})
+				}
+			})
 		} catch (error: any) {
 			console.log(error)
 		}
@@ -174,9 +167,11 @@ const UserBreedingWaters = () => {
 				from: account,
 				gasPrice: 1000000000,
 				gasLimit: 800000,
-			}).on('transactionHash', () => {
+			})
+			.on('transactionHash', () => {
 				setPendingTransaction(true);
-			}).on('receipt', async (data: any) => {
+			})
+			.on('receipt', async (data: any) => {
 				setPendingTransaction(false);
 				withdrawUserBreedingFish(fish);
 				setFishSelectionToShow(FishSelectionEnum.UserFish)

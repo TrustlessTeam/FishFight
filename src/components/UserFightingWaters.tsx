@@ -84,35 +84,28 @@ const UserFightingWaters = () => {
 		// unityContext.showFight(); // switch to FightingWaters view
 	}
 
-	const handleDeposit = (fish: Fish) => {
-		FishFight.fishFactory?.methods.isApprovedForAll(account, FishFight.readFightingWaters.options.address).call()
-		.then((isApproved: boolean) => {
-			if(isApproved) {
-				contractDeposit(fish);
-			} else {
-				FishFight.fishFactory?.methods.setApprovalForAll(FishFight.readFightingWaters.options.address, true).send({
-					from: account,
-					gasPrice: 1000000000,
-					gasLimit: 500000,
-				})
-				.on('error', (error: any) => {
-					console.log(error)
-					toast.error('Approval Failed');
-					setPendingTransaction(false);
-				})
-				.on('transactionHash', () => {
-					setPendingTransaction(true);
-				})
-				.on('receipt', () => {
-					console.log('Approval completed')
-					contractDeposit(fish);
-				})
-			}
+	const contractApproveAll = () => {
+		return FishFight.fishFactory?.methods.setApprovalForAll(FishFight.readFightingWaters.options.address, true).send({
+			from: account,
+			gasPrice: 1000000000,
+			gasLimit: 500000,
+		})
+		.on('error', (error: any) => {
+			console.log(error)
+			toast.error('Approval Failed');
+			setPendingTransaction(false);
+		})
+		.on('transactionHash', () => {
+			setPendingTransaction(true);
+		})
+		.on('receipt', () => {
+			console.log('Fighting Approval completed')
+			toast.success('Fighting Approval completed')
 		})
 	}
 
 	const contractDeposit = (fish: Fish) => {
-		FishFight.fightingWaters?.methods.deposit(fish.tokenId).send({
+		return FishFight.fightingWaters?.methods.deposit(fish.tokenId).send({
 			from: account,
 			gasPrice: 1000000000,
 			gasLimit: 800000,
@@ -148,7 +141,17 @@ const UserFightingWaters = () => {
 			return;
 		}
 		try {
-			handleDeposit(fish);
+			FishFight.fishFactory?.methods.isApprovedForAll(account, FishFight.readFightingWaters.options.address).call()
+			.then((isApproved: boolean) => {
+				if(isApproved) {
+					contractDeposit(fish);
+				} else {
+					contractApproveAll()
+					.on('receipt', () => {
+						contractDeposit(fish);
+					})
+				}
+			})
 		} catch (error: any) {
 			console.log(error)
 		}

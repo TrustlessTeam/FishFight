@@ -137,18 +137,28 @@ const StartFight = () => {
 		return owner == FishFight.readFightingWaters.options.address;
 	}
 
-	const contractApprove = (fish: Fish) => {
-		return FishFight.fishFactory?.methods.approve(FishFight.readFightingWaters.options.address, fish.tokenId).send({
+	const contractApproveAll = () => {
+		return FishFight.fishFactory?.methods.setApprovalForAll(FishFight.readFightingWaters.options.address, true).send({
 			from: account,
 			gasPrice: 1000000000,
 			gasLimit: 500000,
-		}).on('transactionHash', () => {
+		})
+		.on('error', (error: any) => {
+			console.log(error)
+			toast.error('Approval Failed');
+			setPendingTransaction(false);
+		})
+		.on('transactionHash', () => {
 			setPendingTransaction(true);
+		})
+		.on('receipt', () => {
+			console.log('Approval completed')
+			toast.success('Approval Completed')
 		})
 	}
 
-	const contractDepositAndFight = (myFish: Fish, opponentFish: Fish) => {
-		return FishFight.fightingWaters?.methods.depositAndDeathFight(myFish.tokenId, opponentFish.tokenId).send({
+	const contractDeathFight = (myFish: Fish, opponentFish: Fish, isDeposited: boolean) => {
+		return FishFight.fightingWaters?.methods.deathFight(myFish.tokenId, opponentFish.tokenId, isDeposited).send({
 			from: account,
 			gasPrice: 1000000000,
 			gasLimit: 5000000,
@@ -186,55 +196,21 @@ const StartFight = () => {
 
 		try {
 			const deposited = await isDeposited(mySelectedFish.tokenId);
-			// Must approve not deposited fish before fighting, then trigger depositAndDeathFight
-			if(!deposited) {
-				if(FishFight.type === 'web3') { // batch requests for metamask wallet
-					const web3WalletProvider = FishFight.providerWallet as web3;
-					const approveAndFight = new web3WalletProvider.BatchRequest();
-					approveAndFight.add(
-						contractApprove(mySelectedFish)
-					);
-					approveAndFight.add(
-						contractDepositAndFight(mySelectedFish, opponentFish)
-					);
-					console.log("Batch call execute")
-					approveAndFight.execute();
-				} else { // harmony wallet, can't batch
-					await contractApprove(mySelectedFish);
-					await contractDepositAndFight(mySelectedFish, opponentFish);
-				}
+			// Must approve not deposited fish before fighting, then trigger death fight with deposit flag = true
+			if(deposited) {
+				contractDeathFight(mySelectedFish, opponentFish, false);
 			}
 			else { // If User selected fish is already deposited, we can just fight them
-
-				// FishFight.fightingWaters?.methods.deathFight(mySelectedFish.tokenId, opponentFish.tokenId).estimateGas({gas: 5000000}, function(error: any, gasAmount: any){
-				// 	console.log(gasAmount)
-				// 	if(gasAmount == 5000000)
-				// 		console.log('Method ran out of gas');
-				// });
-				// const estimateGas = await FishFight.fightingWaters?.methods.deathFight(mySelectedFish.tokenId, opponentFish.tokenId).estimateGas({
-				// 	from: account,
-				// 	gas: 1000000,
-				// });
-				// console.log(Web3.utils.toNumber(estimateGas))
-				await FishFight.fightingWaters?.methods.deathFight(mySelectedFish.tokenId, opponentFish.tokenId).send({
-					from: account,
-					gasPrice: 1000000000,
-					gasLimit: 5000000,
-					value: new Unit(1).asOne().toWei()
-				}).on('transactionHash', () => {
-					setPendingTransaction(true);
-					setIsFighting(true);
-				}).on('receipt', (result: any) => {
-					// console.log(result)
-					setIsFighting(false)
-					const fightIndex = web3.utils.toNumber(result.events.FightCompleted.returnValues._fightIndex);
-					getUserFight(fightIndex);
-					setPendingTransaction(false);
-					toast.success('Fight Commpleted!', {
-						onClose: async () => {
-							refetchBalance()
-						},
-					});
+				FishFight.fishFactory?.methods.isApprovedForAll(account, FishFight.readFightingWaters.options.address).call()
+				.then((isApproved: boolean) => {
+					if(isApproved) {
+						contractDeathFight(mySelectedFish, opponentFish, true);
+					} else {
+						contractApproveAll()
+						.on('receipt', () => {
+							contractDeathFight(mySelectedFish, opponentFish, true);
+						})
+					}
 				})
 			}
 		} catch (error: any) {

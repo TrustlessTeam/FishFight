@@ -77,6 +77,10 @@ class FishFight {
 
     setProviderWallet = (providerWallet: HarmonyExtension | Web3, type: "web3" | "harmony") => {
         this.providerWallet = providerWallet;
+        if(type === "web3") {
+            this.providerWallet = this.providerWallet as Web3
+            this.providerWallet.eth.handleRevert = true;
+        }
         this.multicall = new Multicall({ web3Instance: providerWallet, multicallCustomContractAddress: Contracts.contracts.Multicall.address });
         this.type = type;
         this.fishFactory = this.setFishFactoryContract(this.providerWallet, type)

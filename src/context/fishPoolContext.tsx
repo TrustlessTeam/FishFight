@@ -54,7 +54,7 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
 	const [userBreedingFish, setUserBreedingFish] = useState<Fish[]>([]);
 
   const { account } = useWeb3React();
-  const { FishFight } = useFishFight();
+  const { FishFight, refetchSeason } = useFishFight();
 	const unityContext = useUnity();
 
   useEffect(() => {
@@ -99,6 +99,23 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
       console.log(data)
       if(data.returnValues.tokenId) {
         removeBreedingFishById(data.returnValues.tokenId)
+      }
+    })
+
+    var nextPhase = FishFight.listenSeasons.events.NewPhase()
+    nextPhase.on("data", function(data: any){
+      console.log(data)
+      if(data.returnValues.newPhase) {
+        refetchSeason();
+      }
+    })
+
+    var seasonCompleted = FishFight.listenSeasons.events.SeasonCompleted()
+    seasonCompleted.on("data", function(data: any){
+      console.log(data)
+      if(data.returnValues.seasonIndex) {
+        refetchSeason();
+        refetchSeasonStats()
       }
     })
   }, [])
@@ -418,51 +435,78 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
   }
 
 
-  // const refreshOceanFish = async (tokenId: number) => {
-  //   const fishData = await getFish(FishFight, tokenId, false, false)
-  //   if(fishData != null && oceanFish.some(fish => fish.tokenId == tokenId)) {
-  //     setOceanFish(prevFish => [...prevFish.filter(f => f.tokenId !== tokenId), fishData]);
-  //   }
-  // }
+  const refreshOceanFish = async (tokenId: number) => {
+    const fishData = await getFish(FishFight, tokenId, false, false)
+    if(fishData != null && oceanFish.some(fish => fish.tokenId == tokenId)) {
+      setOceanFish(prevFish => [...prevFish.filter(f => f.tokenId !== tokenId), fishData]);
+    }
+  }
 
-  // const refreshUserFish = async (tokenId: number) => {
-  //   const fishData = await getFish(FishFight, tokenId, false, false)
-  //   if(fishData != null && userFish.some(fish => fish.tokenId == tokenId)) {
-  //     setUserFish(prevFish => [...prevFish.filter(f => f.tokenId !== tokenId), fishData]);
-  //   }
-  // }
+  const refreshUserFish = async (tokenId: number) => {
+    const fishData = await getFish(FishFight, tokenId, false, false)
+    if(fishData != null && userFish.some(fish => fish.tokenId == tokenId)) {
+      setUserFish(prevFish => [...prevFish.filter(f => f.tokenId !== tokenId), fishData]);
+    }
+  }
 
-  // const refreshUserFightingFish = async (tokenId: number) => {
-  //   const fishData = await getFish(FishFight, tokenId, true, false)
-  //   if(fishData != null && userFightingFish.some(fish => fish.tokenId == tokenId)) {
-  //     setUserFightingFish(prevFish => [...prevFish.filter(f => f.tokenId !== tokenId), fishData]);
-  //   }
-  // }
+  const refreshUserFightingFish = async (tokenId: number) => {
+    const fishData = await getFish(FishFight, tokenId, true, false)
+    if(fishData != null && userFightingFish.some(fish => fish.tokenId == tokenId)) {
+      setUserFightingFish(prevFish => [...prevFish.filter(f => f.tokenId !== tokenId), fishData]);
+    }
+  }
 
-  // const refreshFightingFish = async (tokenId: number) => {
-  //   const fishData = await getFish(FishFight, tokenId, true, false)
-  //   if(fishData != null && fightingFish.some(fish => fish.tokenId == tokenId)) {
-  //     setFightingFish(prevFish => [...prevFish.filter(f => f.tokenId !== tokenId), fishData]);
-  //   }
-  // }
+  const refreshFightingFish = async (tokenId: number) => {
+    const fishData = await getFish(FishFight, tokenId, true, false)
+    if(fishData != null && fightingFish.some(fish => fish.tokenId == tokenId)) {
+      setFightingFish(prevFish => [...prevFish.filter(f => f.tokenId !== tokenId), fishData]);
+    }
+  }
 
-  // const refreshUserBreedingFish = async (tokenId: number) => {
-  //   const fishData = await getFish(FishFight, tokenId, false, true)
-  //   if(fishData != null && userBreedingFish.some(fish => fish.tokenId == tokenId)) {
-  //     setUserBreedingFish(prevFish => [...prevFish.filter(f => f.tokenId !== tokenId), fishData]);
-  //   }
-  // }
+  const refreshUserBreedingFish = async (tokenId: number) => {
+    const fishData = await getFish(FishFight, tokenId, false, true)
+    if(fishData != null && userBreedingFish.some(fish => fish.tokenId == tokenId)) {
+      setUserBreedingFish(prevFish => [...prevFish.filter(f => f.tokenId !== tokenId), fishData]);
+    }
+  }
 
-  // const refreshBreedingFish = async (tokenId: number) => {
-  //   const fishData = await getFish(FishFight, tokenId, false, true)
-  //   if(fishData != null && breedingFish.some(fish => fish.tokenId == tokenId)) {
-  //     setBreedingFish(prevFish => [...prevFish.filter(f => f.tokenId !== tokenId), fishData]);
-  //   }
-  // }
+  const refreshBreedingFish = async (tokenId: number) => {
+    const fishData = await getFish(FishFight, tokenId, false, true)
+    if(fishData != null && breedingFish.some(fish => fish.tokenId == tokenId)) {
+      setBreedingFish(prevFish => [...prevFish.filter(f => f.tokenId !== tokenId), fishData]);
+    }
+  }
 
-	const resetPublicFish = () => {
+	const refetchSeasonStats = () => {
+		if(userFish.length > 0) {
+      userFish.forEach(fish => {
+        refreshUserFish(fish.tokenId)
+      });
+    }
 
-		// setPublicFish([]);
+    if(userFightingFish.length > 0) {
+      userFightingFish.forEach(fish => {
+        refreshUserFightingFish(fish.tokenId)
+      });
+    }
+
+    if(fightingFish.length > 0) {
+      fightingFish.forEach(fish => {
+        refreshFightingFish(fish.tokenId)
+      });
+    }
+
+    if(userBreedingFish.length > 0) {
+      userBreedingFish.forEach(fish => {
+        refreshUserBreedingFish(fish.tokenId)
+      });
+    }
+
+    if(breedingFish.length > 0) {
+      breedingFish.forEach(fish => {
+        refreshBreedingFish(fish.tokenId)
+      });
+    }
 	};
 
 	const value: FishPoolProviderContext = {
