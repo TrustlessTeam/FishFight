@@ -54,25 +54,6 @@ const App = () => {
 			{/* <Router> */}
 				<Wrapper>
 					<Container>
-						<Topbar>
-							{/* <Logo to={"/"}>
-								<LogoImg src={logo}></LogoImg>
-							</Logo> */}
-					
-							{/* <Nav></Nav>
-
-							<StatsContainer>
-								<SeasonStatus></SeasonStatus>
-								<Account/>
-								<Stats>
-								{account &&
-									<Balance />
-								}
-								</Stats>
-							</StatsContainer> */}
-							
-						</Topbar>
-
 						<Routes>
 							<Route element={<UnityWindow />}>
 								<Route element={<UILayout />}>

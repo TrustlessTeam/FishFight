@@ -9,8 +9,8 @@ import deadImg from "../img/icons/dead.svg"
 import foodImg from "../img/icons/food.svg"
 
 
-const SeasonStatus = () => {
-	const { currentSeason, currentPhaseEndTime, FishFight } = useFishFight();
+const FishingStatus = () => {
+	const { currentSeason, currentPhaseEndTime, FishFight, maxSupply, totalSupply } = useFishFight();
 	const { account } = useWeb3React();
 
 	if (!currentSeason) return null;
@@ -33,22 +33,8 @@ const SeasonStatus = () => {
 				<b>{balance.split('.')[0]}</b> <span>ONE</span>
 			</StatusComponent> */}
 			<StatusComponent title="">
-				<StatusText>{`Season: `}</StatusText>
-				<StatusText>{`${currentSeason.index}`}</StatusText>
-				{/* <LogoImg src={fishImg} alt="FISH" ></LogoImg> */}
+				<StatusText>{`Fish Available: ${maxSupply - totalSupply}`}</StatusText>
 			</StatusComponent>
-			<StatusComponent title="">
-				<StatusText>{`Phase: `}</StatusText>
-				<StatusText>{`${currentSeason.phaseString}`}</StatusText>
-
-				{/* <LogoImg src={deadImg} alt="DEADFISH"></LogoImg> */}
-			</StatusComponent>
-			<StatusComponent title="">
-				<StatusText>{`Next:`}</StatusText>
-				<StatusText>{`${currentPhaseEndTime?.toLocaleString()}`}</StatusText>
-				{/* <LogoImg src={foodImg} alt="FISHFOOD"></LogoImg> */}
-			</StatusComponent>
-			<button onClick={nextPhase}>Next</button>
 		</SeasonStatusContainer>
 		
 	);
@@ -90,4 +76,4 @@ const LogoImg = styled.img`
 	height: 100%;
 `;
 
-export default SeasonStatus;
+export default FishingStatus;

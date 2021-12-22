@@ -10,7 +10,7 @@ import foodImg from "../img/icons/food.svg"
 
 
 const Balance = () => {
-	const { balance, balanceFish, balanceDeadFish, balanceFood  } = useFishFight();
+	const { balance, balanceFish, balanceDeadFish, balanceFood, balanceFightFish, balanceBreedFish  } = useFishFight();
 
 	if (!balance) return null;
 
@@ -29,11 +29,22 @@ const Balance = () => {
 					{balanceDeadFish}<LogoImg src={deadImg} alt="DEADFISH"></LogoImg>
 				</BalanceText>
 			</BalanceComponent>
+			<BalanceComponent title="FIGHTFISH Balance">
+				<BalanceText>
+					{balanceFightFish}<LogoImg src={deadImg} alt="FIGHTFISH"></LogoImg>
+				</BalanceText>
+			</BalanceComponent>
+			<BalanceComponent title="BREEDFISH Balance">
+				<BalanceText>
+					{balanceBreedFish}<LogoImg src={deadImg} alt="BREEDFISH"></LogoImg>
+				</BalanceText>
+			</BalanceComponent>
 			<BalanceComponent title="FISHFOOD Balance">
 				<BalanceText>
 					{parseFloat(balanceFood ? balanceFood : '0').toFixed(2)}<LogoImg src={foodImg} alt="FISHFOOD"></LogoImg>
 				</BalanceText>
 			</BalanceComponent>
+			
 		</Balances>
 		
 	);

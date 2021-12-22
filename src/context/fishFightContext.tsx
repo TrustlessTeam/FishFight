@@ -17,9 +17,13 @@ interface FishFightProviderContext {
     balanceFood: string | undefined
     balanceFish: string | undefined
     balanceDeadFish: string | undefined
+    balanceFightFish: string | undefined
+    balanceBreedFish: string | undefined
     currentBlock: number
     currentSeason: Season | undefined
     currentPhaseEndTime: Date | undefined
+    maxSupply: number
+    totalSupply: number
     refetchBalance: () => void
 	  resetBalance: () => void
     refetchSeason: () => void
@@ -119,6 +123,8 @@ const useBalance = () => {
 	const [balanceFood, setBalanceFood] = useState<string>();
 	const [balanceFish, setBalanceFish] = useState<string>();
 	const [balanceDeadFish, setBalanceDeadFish] = useState<string>();
+	const [balanceFightFish, setBalanceFightFish] = useState<string>();
+	const [balanceBreedFish, setBalanceBreedFish] = useState<string>();
 
 	const fetchBalance = useCallback(
 		async (account: string, FishFight: FishFight) => {
@@ -136,10 +142,15 @@ const useBalance = () => {
       setBalanceFish(parsedFish);
 
       const deadfish = await FishFight.readDeadFishFactory.methods.balanceOf(account).call();
-      const parsedDeadFish = deadfish
-      setBalanceDeadFish(parsedDeadFish);
+      setBalanceDeadFish(deadfish);
+
+      const fightfish = await FishFight.readFightingWaters.methods.balanceOf(account).call();
+      setBalanceFightFish(fightfish);
+
+      const breedfish = await FishFight.readBreedingWaters.methods.balanceOf(account).call();
+      setBalanceBreedFish(breedfish);
 		},
-		[setBalance, setBalanceFish, setBalanceFood, setBalanceDeadFish],
+		[setBalance, setBalanceFish, setBalanceFood, setBalanceDeadFish, setBalanceFightFish, setBalanceBreedFish],
 	);
 
 	const resetBalance = () => {
@@ -154,6 +165,8 @@ const useBalance = () => {
     balanceFood,
     balanceFish,
     balanceDeadFish,
+    balanceFightFish,
+    balanceBreedFish,
 		fetchBalance,
 		resetBalance,
 	};
@@ -162,17 +175,29 @@ const useBalance = () => {
 // Account balance utilities that will be included in FishFightContext
 const useSeasons = () => {
 	const [currentSeason, setCurrentSeason] = useState<Season | undefined>(undefined);
+	const [maxSupply, setMaxSupply] = useState<number>(0);
+  const [maxCaught, setMaxCaught] = useState<number>(0);
+  const [maxKilled, setMaxKilled] = useState<number>(0);
+  const [maxBred, setMaxBred] = useState<number>(0);
+	const [totalSupply, setTotalSupply] = useState<number>(0);
+
 	const [currentPhaseEndTime, setCurrentPhaseEndTime] = useState<Date | undefined>(undefined);
+
 
 	const fetchSeason = useCallback(
 		async (FishFight: FishFight) => {
       // when account is connected get balances - uses default and read only providers
       const season = await FishFight.readSeasons.methods.getCurrentSeason().call();
+      const totalSupply = await FishFight.readFishFactory.methods.totalSupply().call();
+      const maxSupply = await FishFight.readSeasons.methods._maxSupply().call();
       const phaseEndTime = await FishFight.readSeasons.methods._phaseEndTime().call();
       const endTimeDate = new Date(Web3.utils.toNumber(phaseEndTime) * 1000)
       console.log(season)
       setCurrentSeason(new Season(season));
       setCurrentPhaseEndTime(endTimeDate);
+      setTotalSupply(Web3.utils.toNumber(totalSupply));
+      setMaxSupply(Web3.utils.toNumber(maxSupply));
+
 		},
 		[setCurrentSeason, setCurrentPhaseEndTime],
 	);
@@ -180,6 +205,8 @@ const useSeasons = () => {
 	return {
 		currentSeason,
     currentPhaseEndTime,
+    maxSupply,
+    totalSupply,
 		fetchSeason,
 	};
 };

@@ -2,7 +2,9 @@
 // React
 import {
   Link,
-	Outlet
+	Outlet,
+	Route,
+	Routes
 } from "react-router-dom";
 
 // React web3
@@ -27,6 +29,7 @@ import Blockchain from './BlockchainStatus';
 
 import SeasonStatus from './SeasonStatus';
 import UnityWindow from "./UnityWindow";
+import FishingStatus from "./FishingStatus";
 
 
 
@@ -38,16 +41,38 @@ const UILayout = () => {
 			<Container>
 				<Topbar>
 
-					<SeasonStatus></SeasonStatus>
+					
 			
 					<Nav></Nav>
 
-					<AccountContainer>
-						{account &&
-							<Balance />
-						}
-						<Account/>
-					</AccountContainer>
+					<StatsContainer>
+						<Stats>
+							<SeasonStatus></SeasonStatus>
+							<Account/>
+						</Stats>
+						
+						<ExtraStats>
+							{account && 
+								<Balance></Balance>
+							}
+						</ExtraStats>
+
+						<ExtraStats>
+							<Routes>
+								<Route path="/fishing" element={<FishingStatus />} />
+								{/* <Route path="/ocean" element={<Ocean />} />
+								
+								<Route path="/fighting" element={<FightingWaters />}>
+									<Route path="/fighting/user" element={<UserFightingWaters />} />
+									<Route path="/fighting/start" element={<StartFight />} />
+								</Route>
+								<Route path="/breeding" element={<BreedingWaters />}>
+									<Route path="/breeding/user" element={<UserBreedingWaters />} />
+									<Route path="/breeding/start" element={<StartBreed />} />
+								</Route> */}
+							</Routes>	
+						</ExtraStats>
+					</StatsContainer>
 					
 				</Topbar>
 				
@@ -68,6 +93,17 @@ const UILayout = () => {
 		</Wrapper>
 	);
 };
+
+const Stats = styled.div`
+	display: flex;
+	flex-flow: row;
+	align-items: center;
+`;
+
+const ExtraStats = styled.div`
+	display: flex;
+	flex-flow: column;
+`;
 
 const Wrapper = styled.div`
 	display: flex;
@@ -104,10 +140,10 @@ const Topbar = styled.div`
 	pointer-events: auto;
 `;
 
-const AccountContainer = styled.div`
+const StatsContainer = styled.div`
 	display: flex;
-	flex-flow: row nowrap;
-	align-items: center;
+	flex-flow: column;
+	align-items: flex-end;
 	justify-content: space-evenly;
 	width: 30%;
 `;
