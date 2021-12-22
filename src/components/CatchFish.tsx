@@ -1,24 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { toast } from 'react-toastify';
 import { useWeb3React } from '@web3-react/core';
-import BN from 'bn.js';
-import { hexToNumber, Unit } from '@harmony-js/utils';
-
 import { Fish } from '../utils/fish'
 import { useFishFight } from '../context/fishFightContext';
 import { useUnity } from '../context/unityContext';
 import { useFishPool } from '../context/fishPoolContext';
 import web3 from 'web3';
-import { BaseContainer, BaseOverlayContainer, ContainerControls } from './BaseStyles';
+import { BaseOverlayContainer, ContainerControls } from './BaseStyles';
 
-
-// const catchRates = [
-// 	{value: 1000, chance: "100%"},
-// 	{value: 100, chance: "~10%"},
-// 	{value: 50, chance: "~5%"},
-// 	{value: 25, chance: "~2.5%"}
-// ];
+const COSTPERCASTONE = web3.utils.toBN(1);
 
 const CatchFish = () => {
 	const unityContext = useUnity()
@@ -28,15 +19,11 @@ const CatchFish = () => {
 	const [caughtFish, setCaughtFish] = useState<Fish | null>(null);
 	const [caughtFishHash, setCaughtFishHash] = useState<string | null>(null);
 	const [noCatch, setNoCatch] = useState<boolean>(false);
-	const [currentPhase, setCurrentPhase] = useState<string>('');
 	const [pendingTransaction, setPendingTransaction] = useState<boolean>(false);
 	const [diceRoll, setDiceRoll] = useState<number>(0);
-	
-
 
 	useEffect(() => {
 		unityContext.showFishing();
-		getSeason()
 	}, [unityContext.isFishPoolReady]);
 
 	useEffect(() => {
@@ -105,7 +92,7 @@ const CatchFish = () => {
 				from: account,
 				gasPrice: 1000000000,
 				gasLimit: 500000,
-				value: new Unit(10).asOne().toWei()
+				value: web3.utils.toWei(COSTPERCASTONE)
 			}).on('transactionHash', () => {
 				setPendingTransaction(true);
 			}).on('receipt', (result: any) => {
@@ -137,26 +124,6 @@ const CatchFish = () => {
 			console.log(error)
 		}
 	};
-
-	const getSeason = async () => {
-		let seasonPhase = await FishFight.readSeasons.methods.getCurrentSeasonPhase().call();
-		console.log(seasonPhase)
-		switch (web3.utils.toNumber(seasonPhase)) {
-			case 1:
-				setCurrentPhase('FISHING')
-				break;
-			case 2:
-				setCurrentPhase('FIGHTING')
-				break;
-			case 3:
-				setCurrentPhase('BREEDING')
-				break;
-			default:
-				break;
-		}
-		
-	}
-
 
 	return (
 		<BaseOverlayContainer

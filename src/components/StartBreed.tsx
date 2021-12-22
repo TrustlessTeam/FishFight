@@ -25,6 +25,9 @@ enum BreedingSelectionEnum {
 	FishToBreedWith
 }
 
+const BREEDCOSTONE = web3.utils.toBN(1);
+const BREEDCOSTFISHFOOD = web3.utils.toBN(100);
+
 const StartBreed = () => {
 	const { FishFight, refetchBalance } = useFishFight()
 	const { userFish, breedingFish, userBreedingFish, refreshFish, createUserFish } = useFishPool()
@@ -109,12 +112,10 @@ const StartBreed = () => {
 	}
 
 	const contractApprove = () => {
-		console.log("Approve for: ")
-		console.log(new Unit(100).asOne().toWei())
-		return FishFight.fishFood?.methods.approve(FishFight.readBreedingWaters.options.address, new Unit(100).asOne().toWei()).send({
+		return FishFight.fishFood?.methods.approve(FishFight.readBreedingWaters.options.address, web3.utils.toWei(BREEDCOSTFISHFOOD)).send({
 			from: account,
 			gasPrice: 1000000000,
-			gasLimit: 500000,
+			gasLimit: 500000
 		})
 		.on('error', (error: any) => {
 			console.log(error)
@@ -137,7 +138,7 @@ const StartBreed = () => {
 			from: account,
 			gasPrice: 1000000000,
 			gasLimit: 6000000,
-			value: new Unit(50).asOne().toWei()
+			value: web3.utils.toWei(BREEDCOSTONE)
 		})
 		.on('error', (error: any) => {
 			console.log(error)

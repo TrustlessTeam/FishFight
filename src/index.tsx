@@ -11,23 +11,27 @@ import { getLibraryProvider } from './utils/provider';
 import { FishFightProvider } from './context/fishFightContext';
 import { UnityProvider } from './context/unityContext';
 import { FishPoolProvider } from './context/fishPoolContext';
+import { BrowserRouter as Router } from 'react-router-dom';
 
 
 ReactDOM.render(
 	<React.StrictMode>
-		<CookiesProvider>
-			<Web3ReactProvider getLibrary={getLibraryProvider}>
-				<HarmonyProvider>
-					<UnityProvider>
-						<FishFightProvider>
-							<FishPoolProvider>
-								<App />
-							</FishPoolProvider>
-						</FishFightProvider>
-					</UnityProvider>
-				</HarmonyProvider>
-			</Web3ReactProvider>
-		</CookiesProvider>
+		<Router>
+			<CookiesProvider>
+				<Web3ReactProvider getLibrary={getLibraryProvider}>
+					<HarmonyProvider>
+						<UnityProvider>
+							<FishFightProvider>
+								<FishPoolProvider>
+									<App />
+								</FishPoolProvider>
+							</FishFightProvider>
+						</UnityProvider>
+					</HarmonyProvider>
+				</Web3ReactProvider>
+			</CookiesProvider>
+		</Router>
+		
 	</React.StrictMode>,
 	document.getElementById('root'),
 );

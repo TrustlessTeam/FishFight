@@ -51,24 +51,25 @@ const App = () => {
 
 	return (
 		<ThemeProvider theme={BaseTheme}>
-			<Router>
+			{/* <Router> */}
 				<Wrapper>
 					<Container>
 						<Topbar>
 							{/* <Logo to={"/"}>
 								<LogoImg src={logo}></LogoImg>
 							</Logo> */}
-
-							<SeasonStatus></SeasonStatus>
 					
-							<Nav></Nav>
+							{/* <Nav></Nav>
 
-							<AccountContainer>
+							<StatsContainer>
+								<SeasonStatus></SeasonStatus>
+								<Account/>
+								<Stats>
 								{account &&
 									<Balance />
 								}
-								<Account/>
-							</AccountContainer>
+								</Stats>
+							</StatsContainer> */}
 							
 						</Topbar>
 
@@ -101,11 +102,16 @@ const App = () => {
 						rtl={false}
 					/>
 				</Wrapper>
-			</Router>
+			{/* </Router> */}
 		</ThemeProvider>
 			
 	);
 };
+
+const Stats = styled.div`
+	display: flex;
+	flex-flow: column;
+`;
 
 const Wrapper = styled.div`
 	display: flex;
@@ -142,7 +148,7 @@ const Topbar = styled.div`
 	pointer-events: auto;
 `;
 
-const AccountContainer = styled.div`
+const StatsContainer = styled.div`
 	display: flex;
 	flex-flow: row nowrap;
 	align-items: center;

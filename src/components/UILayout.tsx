@@ -26,24 +26,17 @@ import Blockchain from './BlockchainStatus';
 
 
 import SeasonStatus from './SeasonStatus';
+import UnityWindow from "./UnityWindow";
 
 
 
-const App = () => {
-	// const {FishFight} = useFishFight()
-	// Will all remain undefined until user logs in
-	// If user is using harmony wallet, library will only contain blockchain
-	// If user is using other wallet, library will have a web3Provider
+const UILayout = () => {
 	const { account } = useWeb3React();
 	
-
 	return (
 		<Wrapper>
 			<Container>
 				<Topbar>
-					{/* <Logo to={"/"}>
-						<LogoImg src={logo}></LogoImg>
-					</Logo> */}
 
 					<SeasonStatus></SeasonStatus>
 			
@@ -57,8 +50,10 @@ const App = () => {
 					</AccountContainer>
 					
 				</Topbar>
+				
 
 				<Outlet />
+
 
 				<Blockchain></Blockchain>
 
@@ -79,7 +74,7 @@ const Wrapper = styled.div`
 	flex-flow: row wrap;
 	width: 100vw;
 	max-height: 100vh;
-	background-color: none;
+	/* background-color: darkblue; */
 	background-image: none;
 	font-size: 1rem;
 `;
@@ -117,89 +112,5 @@ const AccountContainer = styled.div`
 	width: 30%;
 `;
 
-const GameButton = styled(Link)`
-	text-align: center;
-	padding: 2.2vmin;
-	border-radius: 50%;
-	background-color: white;
-	opacity: 0.7;
-	box-shadow: 1px 2px 4px 4px rgba(0, 0, 0, 0.25);
-	color: black;
-	margin-left: ${props => props.theme.spacing.gapSmall};
-	transition: opacity 0.3s ease, box-shadow 0.25s ease-in-out;
-	text-transform: uppercase;
-	font-weight: bolder;
-	text-decoration: none;
-	font-size: ${props => props.theme.font.large}vmin;
 
-	&:hover {
-		opacity: 1;
-		box-shadow: 1px 2px 2px 2px rgba(0, 0, 0, 0.2);
-		cursor: pointer;
-	}
-`;
-
-const Text = styled.p`
-	display: flex;
-	flex-flow: column;
-	justify-content: center;
-	padding: ${props => props.theme.spacing.gap};
-	margin: 0;
-	background-color: white;
-	font-size: ${props => props.theme.font.large}vmin;
-	border-radius: 25px;
-	margin-left: ${props => props.theme.spacing.gapSmall};
-`;
-
-const Logo = styled(Link)`
-	display: none;
-	height: 100%;
-	@media ${props => props.theme.device.tablet} {
-    display: flex;
-		flex-flow: row nowrap;
-		justify-content: center;
-		align-items: center;
-		width: 20%;
-  }
-`;
-
-const LogoImg = styled.img`
-	height: 100%;
-	border: 3px solid white;
-	border-radius: 50%;
-`;
-
-
-
-
-
-// const baseSize = 
-
-const BubbleButton = styled(Link)`
-	transition: opacity 0.3s ease, box-shadow 0.25s ease-in-out;
-	font-weight: bolder;
-	text-decoration: none;
-	color: white;
-	padding: 2.2vmin;
-	border-radius: 50%;
-	box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2), inset 0px 5px 15px 2.5px rgba(255, 255, 255, 1);
-	height: 50px;
-	width: 50px;
-	/* position: absolute; */
-	position: relative;
-	/* width: 100px; */
-	/* top: 500px; */
-
-	&:after {
-		background: radial-gradient(ellipse at center,  rgba(255,255,255,0.5) 0%,rgba(255,255,255,0) 70%); /* W3C */
-		border-radius: 50%;
-		box-shadow: inset 0 10px 15px rgba(255, 255, 255, 0.3);
-		content: "";
-		/* height: 90px; */
-		left: 5px;
-		position: absolute;
-		/* width: 90px; */
-	}
-`; 
-
-export default App;
+export default UILayout;
