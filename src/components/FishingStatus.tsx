@@ -10,31 +10,32 @@ import foodImg from "../img/icons/food.svg"
 
 
 const FishingStatus = () => {
-	const { currentSeason, currentPhaseEndTime, FishFight, maxSupply, totalSupply } = useFishFight();
+	const { currentSeason, maxSupply, totalSupply } = useFishFight();
 	const { account } = useWeb3React();
 
 	if (!currentSeason) return null;
 	// console.log(currentPhaseEndTime)
 	// console.log(currentSeason)
 
-	const nextPhase = async () => {
-		if(!account) return;
-		await FishFight.seasons?.methods.ownerPhaseOverride().send({
-			from: account,
-			gasPrice: 1000000000,
-			gasLimit: 500000,
-		})
-		// refetchSeason();
-	}
-
 	return (
 		<SeasonStatusContainer>
-			{/* <StatusComponent>
-				<b>{balance.split('.')[0]}</b> <span>ONE</span>
-			</StatusComponent> */}
+			<Title>Fishing Waters</Title>
+			<StatusComponent title="">
+				<StatusText>{`Phase Catches Left: ${currentSeason.fishCatch}`}</StatusText>
+			</StatusComponent>
 			<StatusComponent title="">
 				<StatusText>{`Fish Available: ${maxSupply - totalSupply}`}</StatusText>
 			</StatusComponent>
+			{currentSeason.phaseString === 'Fishing' ? 
+				<StatusComponent title="">
+					<StatusText>{`Chance: ${((maxSupply - totalSupply) / maxSupply) * 100}%`}</StatusText>
+				</StatusComponent>
+				:
+				<StatusComponent title="">
+					<StatusText>{`Chance: ${((maxSupply - totalSupply) / maxSupply * 2) * 100}%`}</StatusText>
+				</StatusComponent>
+			}
+			
 		</SeasonStatusContainer>
 		
 	);
@@ -42,8 +43,14 @@ const FishingStatus = () => {
 
 const SeasonStatusContainer = styled.div`
 	display: flex;
-	flex-flow: row;
+	flex-flow: column;
+	align-items: flex-start;
+`;
 
+const Title = styled.h1`
+	font-size: ${props => props.theme.font.small}vmin;
+	text-decoration: underline;
+	color: white;
 `;
 
 const StatusText = styled.b`
@@ -51,7 +58,7 @@ const StatusText = styled.b`
 	/* flex-flow: column;
 	justify-content: center;
 	align-items: center; */
-	margin-right: ${props => props.theme.spacing.gapSmall};
+	/* margin-right: ${props => props.theme.spacing.gapSmall}; */
 	cursor: default;
 `;
 
@@ -60,7 +67,7 @@ const StatusComponent = styled.div`
 	flex-flow: row;
 	justify-content: center;
 	font-size: ${props => props.theme.font.small}vmin;
-	margin-left: ${props => props.theme.spacing.gap};
+	/* margin-left: ${props => props.theme.spacing.gap}; */
 	/* padding: ${props => props.theme.spacing.gap} ${props => props.theme.spacing.gap}; */
 	/* background-color: white; */
 	color: white;

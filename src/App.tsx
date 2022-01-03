@@ -35,11 +35,13 @@ import UnityWindow from './components/UnityWindow';
 import Ocean from './components/Ocean';
 import FightingWaters from './components/FightingWaters';
 import UserFightingWaters from './components/UserFightingWaters';
-import UILayout from './components/UILayout';
+import UILayout from './components/MenuOverlay';
 import StartFight from './components/StartFight';
 import BreedingWaters from './components/BreedingWaters';
 import UserBreedingWaters from './components/UserBreedingWaters';
 import StartBreed from './components/StartBreed';
+import { isMobile } from 'react-device-detect';
+import MenuOverlay from './components/MenuOverlay';
 
 const App = () => {
 	// const {FishFight} = useFishFight()
@@ -52,11 +54,12 @@ const App = () => {
 	return (
 		<ThemeProvider theme={BaseTheme}>
 			{/* <Router> */}
+				
 				<Wrapper>
 					<Container>
+						<MenuOverlay></MenuOverlay>
 						<Routes>
 							<Route element={<UnityWindow />}>
-								<Route element={<UILayout />}>
 									<Route path="/ocean" element={<Ocean />} />
 									<Route path="/fishing" element={<CatchFish />} />
 									<Route path="/fighting" element={<FightingWaters />}>
@@ -67,7 +70,7 @@ const App = () => {
 										<Route path="/breeding/user" element={<UserBreedingWaters />} />
 										<Route path="/breeding/start" element={<StartBreed />} />
 									</Route>
-								</Route>
+
 							</Route>
           	</Routes>	
 	
@@ -83,7 +86,6 @@ const App = () => {
 						rtl={false}
 					/>
 				</Wrapper>
-			{/* </Router> */}
 		</ThemeProvider>
 			
 	);

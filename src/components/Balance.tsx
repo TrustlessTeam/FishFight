@@ -16,9 +16,9 @@ const Balance = () => {
 
 	return (
 		<Balances>
-			{/* <BalanceComponent>
+			<BalanceComponent>
 				<b>{balance.split('.')[0]}</b> <span>ONE</span>
-			</BalanceComponent> */}
+			</BalanceComponent>
 			<BalanceComponent title="FISH Balance">
 				<BalanceText>
 					{balanceFish}<LogoImg src={fishImg} alt="FISH" ></LogoImg>
@@ -29,22 +29,21 @@ const Balance = () => {
 					{balanceDeadFish}<LogoImg src={deadImg} alt="DEADFISH"></LogoImg>
 				</BalanceText>
 			</BalanceComponent>
-			<BalanceComponent title="FIGHTFISH Balance">
-				<BalanceText>
-					{balanceFightFish}<LogoImg src={deadImg} alt="FIGHTFISH"></LogoImg>
-				</BalanceText>
-			</BalanceComponent>
-			<BalanceComponent title="BREEDFISH Balance">
-				<BalanceText>
-					{balanceBreedFish}<LogoImg src={deadImg} alt="BREEDFISH"></LogoImg>
-				</BalanceText>
-			</BalanceComponent>
 			<BalanceComponent title="FISHFOOD Balance">
 				<BalanceText>
 					{parseFloat(balanceFood ? balanceFood : '0').toFixed(2)}<LogoImg src={foodImg} alt="FISHFOOD"></LogoImg>
 				</BalanceText>
 			</BalanceComponent>
-			
+			<BalanceComponent title="FIGHTFISH Balance">
+				<BalanceText>
+					{balanceFightFish}<LogoImg src={fishImg} alt="FIGHTFISH"></LogoImg>F
+				</BalanceText>
+			</BalanceComponent>
+			<BalanceComponent title="BREEDFISH Balance">
+				<BalanceText>
+					{balanceBreedFish}<LogoImg src={fishImg} alt="BREEDFISH"></LogoImg>B
+				</BalanceText>
+			</BalanceComponent>
 		</Balances>
 		
 	);
@@ -52,8 +51,8 @@ const Balance = () => {
 
 const Balances = styled.div`
 	display: flex;
-	flex-flow: row;
-
+	flex-flow: column;
+	align-items: flex-end;
 `;
 
 const BalanceText = styled.b`

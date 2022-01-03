@@ -43,12 +43,11 @@ const SeasonStatus = () => {
 
 				{/* <LogoImg src={deadImg} alt="DEADFISH"></LogoImg> */}
 			</StatusComponent>
-			<StatusComponent title="">
+			<StatusComponent onClick={nextPhase} title="">
 				<StatusText>{`Next:`}</StatusText>
 				<StatusText>{`${currentPhaseEndTime?.toLocaleString()}`}</StatusText>
 				{/* <LogoImg src={foodImg} alt="FISHFOOD"></LogoImg> */}
 			</StatusComponent>
-			<button onClick={nextPhase}>Next</button>
 		</SeasonStatusContainer>
 		
 	);
@@ -56,8 +55,9 @@ const SeasonStatus = () => {
 
 const SeasonStatusContainer = styled.div`
 	display: flex;
-	flex-flow: row;
-
+	flex-flow: column;
+	align-items: flex-start;
+	justify-content: center;
 `;
 
 const StatusText = styled.b`
@@ -84,6 +84,7 @@ const StatusComponent = styled.div`
 	& > span {
 		margin-left: 4px;
 	}
+	pointer-events: auto;
 `;
 
 const LogoImg = styled.img`

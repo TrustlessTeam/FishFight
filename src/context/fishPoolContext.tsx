@@ -67,6 +67,13 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
       }
     })
 
+    var fishCaught = FishFight.listenFishFactory.events.FishMinted()
+    fishCaught.on("data", function(data: any){
+      if(data.returnValues.tokenId) {
+        refetchSeason();
+      }
+    })
+
     var depositedFighter = FishFight.listenFightingWaters.events.Deposit()
     depositedFighter.on("data", function(data: any){
       console.log(data)

@@ -93,11 +93,15 @@ const Logo = styled(Link)`
 `;
 
 const LogoImg = styled.img<ActiveProps>`
-	height: 100%;
-	border: 3px solid white;
+	height: 35px;
+	/* border: 2px solid white;s */
 	border-radius: 50%;
   &.active {
-    background-color: ${props => props.active ? "rgba(255, 255, 255, 0.5);" : "rgba(255, 255, 255, 0);"};
+    background-color: rgba(255, 255, 255, 0.5);
+  }
+
+  @media ${props => props.theme.device.tablet} {
+		height: 70px;
   }
 `;
 
@@ -106,7 +110,7 @@ const NavMenu = styled.nav`
 	flex-flow: row nowrap;
 	justify-content: space-evenly;
 	align-items: center;
-	width: 100%;
+	width: 50%;
 	height: 100%;
   pointer-events: auto;
 `;
@@ -122,7 +126,7 @@ const SubContainer = styled.div<ActiveProps>`
   position: absolute;
   flex-flow: row nowrap;
   /* background-color: rgba(255, 255, 255, 0.5); */
-	border: 2px solid white;
+	/* border: 2px solid white; */
 
   border-radius: 20px;
   left: 51%;
@@ -131,13 +135,16 @@ const SubContainer = styled.div<ActiveProps>`
 
 const Option = styled(NavLink)<ActiveProps>`
 	color: white;
-  margin: ${props => props.theme.spacing.gapSmall};
+  padding: ${props => props.theme.spacing.gapSmall};
   display: flex;
   flex-flow: row nowrap;
   white-space: nowrap;
   overflow: hidden;
+  text-decoration: none;
   &.active {
     font-weight: bold;
+    background-color: rgba(255, 255, 255, 0.5);
+    border-radius: 25px;
   }
 `;
 
