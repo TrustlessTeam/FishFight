@@ -61,7 +61,7 @@ const Account = () => {
 const AccountComponent = styled.div`
 	display: flex;
 	justify-content: center;
-	font-size: ${props => props.theme.font.medium}vmin;
+	font-size: ${props => props.theme.font.medium}vmax;
 	padding: ${props => props.theme.spacing.gapSmall} ${props => props.theme.spacing.gapSmall};
 	border-radius: 25px;
 	background-color: white;
@@ -77,6 +77,9 @@ const AccountComponent = styled.div`
 		cursor: pointer;
 	}
 	z-index: 5;
+	@media ${props => props.theme.device.tablet} {
+	  font-size: ${props => props.theme.font.medium}vmin;
+  }
 `;
 
 const Span = styled.span`

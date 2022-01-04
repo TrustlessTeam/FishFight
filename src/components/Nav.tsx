@@ -48,6 +48,9 @@ const Nav = () => {
         <NavImg className={({isActive}) => isActive ? 'active' : ''} to="/fishing">
           <LogoImg active={location === 'fishing'} src={fishingImg} alt="Fishing"></LogoImg>
         </NavImg>
+        <SubContainer>
+          <Option className={({isActive}) => isActive ? 'active' : ''} to='/fishing' end>Fishing Waters</Option>
+        </SubContainer>
       </NavItem>
       <NavItem>
         <NavImg className={({isActive}) => isActive ? 'active' : ''} to="/breeding">
@@ -93,7 +96,7 @@ const Logo = styled(Link)`
 `;
 
 const LogoImg = styled.img<ActiveProps>`
-	height: 35px;
+	height: 50px;
 	/* border: 2px solid white;s */
 	border-radius: 50%;
   &.active {
@@ -109,28 +112,46 @@ const NavMenu = styled.nav`
 	display: flex;
 	flex-flow: row nowrap;
 	justify-content: space-evenly;
-	align-items: center;
-	width: 50%;
+	align-items: flex-start;
+	width: 100%;
 	height: 100%;
   pointer-events: auto;
+
+  order: 0;
+	@media ${props => props.theme.device.tablet} {
+		order: 1;
+	  width: 50%;
+	  align-items: center;
+
+  }
 `;
 
 const NavItem = styled.div`
-  height: 100%;
-  position: relative;
-  display: inline-block;
+  /* height: 100%; */
+  /* position: relative; */
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+  @media ${props => props.theme.device.tablet} {
+		height: 100%;
+    position: relative;
+    display: inline-block;
+  }
 `;
 
 const SubContainer = styled.div<ActiveProps>`
   display: none;
-  position: absolute;
-  flex-flow: row nowrap;
-  /* background-color: rgba(255, 255, 255, 0.5); */
-	/* border: 2px solid white; */
+  flex-flow: column;
+  align-items: center;
 
-  border-radius: 20px;
-  left: 51%;
-  transform: translateX(-51%);
+  @media ${props => props.theme.device.tablet} {
+		display: none;
+    position: absolute;
+    flex-flow: row nowrap;
+    border-radius: 20px;
+    left: 51%;
+    transform: translateX(-51%);
+  }
 `;
 
 const Option = styled(NavLink)<ActiveProps>`
@@ -138,9 +159,15 @@ const Option = styled(NavLink)<ActiveProps>`
   padding: ${props => props.theme.spacing.gapSmall};
   display: flex;
   flex-flow: row nowrap;
+	font-size: ${props => props.theme.font.medium}vmax;
   white-space: nowrap;
   overflow: hidden;
   text-decoration: none;
+
+  @media ${props => props.theme.device.tablet} {
+	  font-size: ${props => props.theme.font.medium}vmin;
+  }
+
   &.active {
     font-weight: bold;
     background-color: rgba(255, 255, 255, 0.5);

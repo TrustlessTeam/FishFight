@@ -7,48 +7,43 @@ import { useFishFight } from '../context/fishFightContext';
 import fishImg from "../img/icons/fish.svg"
 import deadImg from "../img/icons/dead.svg"
 import foodImg from "../img/icons/food.svg"
+import { useFishPool } from '../context/fishPoolContext';
+import web3 from 'web3';
 
 
-const SeasonStatus = () => {
-	const { currentSeason, currentPhaseEndTime, FishFight } = useFishFight();
+
+const BreedingStatus = () => {
+	const { currentSeason, maxBred, breedingWatersSupply } = useFishFight();
+	const { userBreedingFish } = useFishPool();
 	const { account } = useWeb3React();
 
 	if (!currentSeason) return null;
 	// console.log(currentPhaseEndTime)
 	// console.log(currentSeason)
 
-	const nextPhase = async () => {
-		if(!account) return;
-		await FishFight.seasons?.methods.ownerPhaseOverride().send({
-			from: account,
-			gasPrice: 1000000000,
-			gasLimit: 500000,
-		})
-		// refetchSeason();
-	}
-
 	return (
 		<Container>
+			<Title>Breeding Waters</Title>
 			<StatusContainer>
-				{/* <StatusComponent>
-					<b>{balance.split('.')[0]}</b> <span>ONE</span>
-				</StatusComponent> */}
 				<StatusComponent title="">
-					<StatusText>{`Season: `}</StatusText>
-					<StatusText>{`${currentSeason.index}`}</StatusText>
-					{/* <LogoImg src={fishImg} alt="FISH" ></LogoImg> */}
+					<StatusText>{`Season Births: ${currentSeason.fishBreed} / ${maxBred}`}</StatusText>
 				</StatusComponent>
 				<StatusComponent title="">
-					<StatusText>{`Phase: `}</StatusText>
-					<StatusText>{`${currentSeason.phaseString}`}</StatusText>
-
-					{/* <LogoImg src={deadImg} alt="DEADFISH"></LogoImg> */}
+					<StatusText>{`Breeding Fish: ${breedingWatersSupply}`}</StatusText>
 				</StatusComponent>
-				<StatusComponent onClick={nextPhase} title="">
-					<StatusText>{`Next:`}</StatusText>
-					<StatusText>{`${currentPhaseEndTime?.toLocaleString()}`}</StatusText>
-					{/* <LogoImg src={foodImg} alt="FISHFOOD"></LogoImg> */}
+				<StatusComponent title="">
+					<StatusText>{`Pending FISHFOOD: ${userBreedingFish.map(fish => fish.stakedBreeding != null ? web3.utils.toNumber(fish.stakedBreeding.earnedFishFood) : 0).reduce((x,y) => x + y, 0)}`}</StatusText>
 				</StatusComponent>
+				{/* {currentSeason.phaseString === 'Fishing' ? 
+					<StatusComponent title="">
+						<StatusText>{`Chance: ${((maxSupply - totalSupply) / maxSupply) * 100}%`}</StatusText>
+					</StatusComponent>
+					:
+					<StatusComponent title="">
+						<StatusText>{`Chance: ${((maxSupply - totalSupply) / maxSupply * 2) * 100}%`}</StatusText>
+					</StatusComponent>
+				} */}
+				
 			</StatusContainer>
 		</Container>
 	);
@@ -59,7 +54,6 @@ const Container = styled.div`
 		display: flex;
 		flex-flow: column;
 		align-items: center;
-		justify-content: center;
   }
 `;
 
@@ -74,6 +68,7 @@ const StatusContainer = styled.div`
 		display: flex;
 		flex-flow: column;
 		align-items: center;
+		flex-flow: column;
 		justify-content: center;
 		padding: 0;
   }
@@ -122,4 +117,4 @@ const LogoImg = styled.img`
 	height: 100%;
 `;
 
-export default SeasonStatus;
+export default BreedingStatus;

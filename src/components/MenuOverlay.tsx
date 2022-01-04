@@ -33,33 +33,45 @@ import Blockchain from './BlockchainStatus';
 import SeasonStatus from './SeasonStatus';
 import UnityWindow from "./UnityWindow";
 import FishingStatus from "./FishingStatus";
+import FightingStatus from "./FightingStatus";
+import BreedingStatus from "./BreedingStatus";
+import { useState } from "react";
 
 
 
 const MenuOverlay = () => {
 	const { account } = useWeb3React();
+	const [open, setOpen] = useState(false);
 	
 	return (
 		<>
-			<Wrapper>
-				<Container>
+			<Wrapper open={open}>
+				<MenuButton open={open} onClick={() => setOpen(!open)}>Menu</MenuButton>
+				<MenuCloseButton open={open} onClick={() => setOpen(!open)}>Close</MenuCloseButton>
+
+				<Container open={open}>
 					<StatsContainer>
 						<Routes>
-							<Route path="/fishing" element={<FishingStatus />} />
+							<Route path="fishing" element={<FishingStatus />} />
+							<Route path="fishing/:id" element={<FishingStatus />} />
+							<Route path="fighting" element={<FightingStatus />} />
+							<Route path="fighting/:id" element={<FightingStatus />} />
+							<Route path="breeding" element={<BreedingStatus />} />
+							<Route path="breeding/:id" element={<BreedingStatus />} />
 						</Routes>
 					</StatsContainer>
-					<Nav></Nav>
+					<StyledNav></StyledNav>
 					<StatsContainer>
 						<SeasonStatus></SeasonStatus>
 					</StatsContainer>
 				</Container>
 
-				<UserWrapper>
+				<UserWrapper open={open}>
 					<UserContainer>
-					<Account/>
-					{account && 
-						<Balance></Balance>
-					}
+						<Account/>
+						{account && 
+							<Balance></Balance>
+						}
 					</UserContainer>
 				</UserWrapper>
 					
@@ -69,57 +81,96 @@ const MenuOverlay = () => {
 	);
 };
 
+interface Props {
+	open?: boolean;
+}
+
+const MenuButton = styled.button<{open: boolean}>`
+	display: ${p => (p.open ? "none" : "block")};
+	@media ${props => props.theme.device.tablet} {
+		display: none;
+  }
+`;
+
+const MenuCloseButton = styled.button<{open: boolean}>`
+	display: ${p => (p.open ? "block" : "none")};
+	@media ${props => props.theme.device.tablet} {
+		display: none;
+  }
+`;
+
+const StyledNav = styled(Nav)`
+	order: 0;
+	@media ${props => props.theme.device.tablet} {
+		order: 1;
+  }
+`;
+
 const UserContainer = styled.div`
 	display: flex;
 	flex-flow: column;
-	align-items: flex-end;
+	align-items: center;
 	/* background-color: rgba(0, 0, 0, 0.5); */
 	/* background-color: rgba(0, 0, 0, 0.5);
 	width: 100%; */
-
-	/* @media ${props => props.theme.device.tablet} {
-		width: 10%;
-  } */
-
 	padding: ${props => props.theme.spacing.gapSmall};
+
+	@media ${props => props.theme.device.tablet} {
+		flex-flow: column;
+		align-items: flex-end;
+  }
 `;
 
-const UserWrapper = styled.div`
-	display: flex;
+const UserWrapper = styled.div<{open: boolean}>`
+	display: ${p => (p.open ? "flex" : "none")};
 	flex-flow: row;
-	justify-content: flex-end;
-`;
-
-
-const Container = styled.div`
-	display: flex;
-	padding: ${props => props.theme.spacing.gapSmall};
-	flex-flow: row wrap;
 	justify-content: center;
 
 	@media ${props => props.theme.device.tablet} {
-		flex-flow: row nowrap;
-		justify-content: space-between;
+		display: flex;
+		flex-flow: row;
+		justify-content: flex-end;
   }
-	/* background-color: rgba(0, 0, 0, 0.5); */
-
 `;
 
 
-const Wrapper = styled.div`
+const Container = styled.div<{open: boolean}>`
+	display: ${p => (p.open ? "flex" : "none")};
+	padding: ${props => props.theme.spacing.gapSmall};
+	flex-flow: column;
+	justify-content: center;
+
+	@media ${props => props.theme.device.tablet} {
+		display: flex;
+		flex-flow: row nowrap;
+		justify-content: space-between;
+  }
+`;
+
+
+const Wrapper = styled.div<{open: boolean}>`
 	position: absolute;
 	top: 0;
 	width: 100%;
 	z-index: 5;
 	pointer-events: auto;
+	background-color: ${p => (p.open ? "rgba(0, 0, 0, 0.6)" : "none")};
+
+	@media ${props => props.theme.device.tablet} {
+		background-color: none;
+  }
 `;
 
 const StatsContainer = styled.div`
-	display: flex;
-	flex-flow: row nowrap;
-	align-items: center;
-	justify-content: center;
-	width: 25%;
+	width: 100%;
+	order: 1;
+	&:nth-child(2n) {
+		order: 2;
+	}
+
+	@media ${props => props.theme.device.tablet} {
+		width: 25%;
+  }
 `;
 
 

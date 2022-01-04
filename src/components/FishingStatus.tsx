@@ -10,7 +10,7 @@ import foodImg from "../img/icons/food.svg"
 
 
 const FishingStatus = () => {
-	const { currentSeason, maxSupply, totalSupply } = useFishFight();
+	const { currentSeason, maxSupply, totalSupply, maxCaught } = useFishFight();
 	const { account } = useWeb3React();
 
 	if (!currentSeason) return null;
@@ -18,56 +18,79 @@ const FishingStatus = () => {
 	// console.log(currentSeason)
 
 	return (
-		<SeasonStatusContainer>
+		<Container>
 			<Title>Fishing Waters</Title>
-			<StatusComponent title="">
-				<StatusText>{`Phase Catches Left: ${currentSeason.fishCatch}`}</StatusText>
-			</StatusComponent>
-			<StatusComponent title="">
-				<StatusText>{`Fish Available: ${maxSupply - totalSupply}`}</StatusText>
-			</StatusComponent>
-			{currentSeason.phaseString === 'Fishing' ? 
+			<StatusContainer>
 				<StatusComponent title="">
-					<StatusText>{`Chance: ${((maxSupply - totalSupply) / maxSupply) * 100}%`}</StatusText>
+					<StatusText>{`Season Catches: ${currentSeason.fishCatch} / ${maxCaught}`}</StatusText>
 				</StatusComponent>
-				:
 				<StatusComponent title="">
-					<StatusText>{`Chance: ${((maxSupply - totalSupply) / maxSupply * 2) * 100}%`}</StatusText>
+					<StatusText>{`Fish Available: ${maxSupply - totalSupply}`}</StatusText>
 				</StatusComponent>
-			}
-			
-		</SeasonStatusContainer>
-		
+				{currentSeason.phaseString === 'Fishing' ? 
+					<StatusComponent title="">
+						<StatusText>{`Chance to Catch: ${((maxSupply - totalSupply) / maxSupply) * 100}%`}</StatusText>
+					</StatusComponent>
+					:
+					<StatusComponent title="">
+						<StatusText>{`Chance to Catch: ${((maxSupply - totalSupply) / maxSupply * 2) * 100}%`}</StatusText>
+					</StatusComponent>
+				}
+				
+			</StatusContainer>
+		</Container>
 	);
 };
 
-const SeasonStatusContainer = styled.div`
+const Container = styled.div`
+	@media ${props => props.theme.device.tablet} {
+		display: flex;
+		flex-flow: column;
+		align-items: center;
+  }
+`;
+
+const StatusContainer = styled.div`
 	display: flex;
-	flex-flow: column;
+	flex-flow: row wrap;
+	justify-content: space-evenly;
 	align-items: flex-start;
+	padding: ${props => props.theme.spacing.gap} ${props => props.theme.spacing.gapSmall};
+
+	@media ${props => props.theme.device.tablet} {
+		display: flex;
+		flex-flow: column;
+		align-items: center;
+		flex-flow: column;
+		justify-content: center;
+		padding: 0;
+  }
 `;
 
 const Title = styled.h1`
-	font-size: ${props => props.theme.font.small}vmin;
+	display: none;
+	@media ${props => props.theme.device.tablet} {
+		display: block;
+	  font-size: ${props => props.theme.font.small}vmin;
+  }
 	text-decoration: underline;
 	color: white;
 `;
 
 const StatusText = styled.b`
 	display: flex;
-	/* flex-flow: column;
-	justify-content: center;
-	align-items: center; */
-	/* margin-right: ${props => props.theme.spacing.gapSmall}; */
 	cursor: default;
+	font-size: ${props => props.theme.font.medium}vmax;
+	@media ${props => props.theme.device.tablet} {
+	  font-size: ${props => props.theme.font.small}vmin;
+  }
 `;
 
 const StatusComponent = styled.div`
 	display: flex;
 	flex-flow: row;
 	justify-content: center;
-	font-size: ${props => props.theme.font.small}vmin;
-	/* margin-left: ${props => props.theme.spacing.gap}; */
+	margin-top: ${props => props.theme.spacing.gapSmall};
 	/* padding: ${props => props.theme.spacing.gap} ${props => props.theme.spacing.gap}; */
 	/* background-color: white; */
 	color: white;
@@ -77,6 +100,10 @@ const StatusComponent = styled.div`
 	& > span {
 		margin-left: 4px;
 	}
+
+	@media ${props => props.theme.device.tablet} {
+		margin: 0;
+  }
 `;
 
 const LogoImg = styled.img`

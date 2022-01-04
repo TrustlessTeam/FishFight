@@ -17,7 +17,7 @@ const Balance = () => {
 	return (
 		<Balances>
 			<BalanceComponent>
-				<b>{balance.split('.')[0]}</b> <span>ONE</span>
+				<BalanceText>{balance.split('.')[0]} ONE</BalanceText>
 			</BalanceComponent>
 			<BalanceComponent title="FISH Balance">
 				<BalanceText>
@@ -51,8 +51,13 @@ const Balance = () => {
 
 const Balances = styled.div`
 	display: flex;
-	flex-flow: column;
-	align-items: flex-end;
+	flex-flow: row wrap;
+	align-items: space-evenly;
+
+	@media ${props => props.theme.device.tablet} {
+	  flex-flow: column;
+		align-items: flex-end;
+  }
 `;
 
 const BalanceText = styled.b`
@@ -60,15 +65,18 @@ const BalanceText = styled.b`
 	flex-flow: row nowrap;
 	justify-content: center;
 	align-items: center;
+	font-size: ${props => props.theme.font.medium}vmax;
 	/* margin-right: ${props => props.theme.spacing.gapSmall}; */
 	cursor: default;
+	@media ${props => props.theme.device.tablet} {
+		font-size: ${props => props.theme.font.medium}vmin;
+  }
 `;
 
 const BalanceComponent = styled.div`
 	display: flex;
 	flex-flow: row;
 	justify-content: center;
-	font-size: ${props => props.theme.font.large}vmin;
 	margin-left: ${props => props.theme.spacing.gap};
 	/* padding: ${props => props.theme.spacing.gap} ${props => props.theme.spacing.gap}; */
 	/* background-color: white; */
@@ -82,8 +90,12 @@ const BalanceComponent = styled.div`
 `;
 
 const LogoImg = styled.img`
-	height: 30px;
+	height: 25px;
 	margin-left: ${props => props.theme.spacing.gapSmall};
+
+	@media ${props => props.theme.device.tablet} {
+	  height: 30px;
+  }
 `;
 
 export default Balance;

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { useWeb3React } from '@web3-react/core';
 
@@ -7,48 +7,59 @@ import { useFishFight } from '../context/fishFightContext';
 import fishImg from "../img/icons/fish.svg"
 import deadImg from "../img/icons/dead.svg"
 import foodImg from "../img/icons/food.svg"
+import { useFishPool } from '../context/fishPoolContext';
+import web3 from 'web3';
 
 
-const SeasonStatus = () => {
-	const { currentSeason, currentPhaseEndTime, FishFight } = useFishFight();
+const FightingStatus = () => {
+	const { currentSeason, maxKilled, fightingWatersSupply, FishFight } = useFishFight();
+	const { userFightingFish } = useFishPool();
+	const [pendingAward, setPendingAward] = useState<string>();
+
+
 	const { account } = useWeb3React();
+
+	useEffect(() => {
+		const loadData = async (account: any) => {
+      if(!account) return;
+			getPendingFood();
+    }
+		loadData(account);
+	}, [account, userFightingFish]);
+
+	const getPendingFood = async () => {
+		if(!account) return;
+		const result = await FishFight.readFightingWaters.methods.pendingAward(account).call();
+		setPendingAward(web3.utils.fromWei(result));
+	}
 
 	if (!currentSeason) return null;
 	// console.log(currentPhaseEndTime)
 	// console.log(currentSeason)
 
-	const nextPhase = async () => {
-		if(!account) return;
-		await FishFight.seasons?.methods.ownerPhaseOverride().send({
-			from: account,
-			gasPrice: 1000000000,
-			gasLimit: 500000,
-		})
-		// refetchSeason();
-	}
-
 	return (
 		<Container>
+			<Title>Fighting Waters</Title>
 			<StatusContainer>
-				{/* <StatusComponent>
-					<b>{balance.split('.')[0]}</b> <span>ONE</span>
-				</StatusComponent> */}
 				<StatusComponent title="">
-					<StatusText>{`Season: `}</StatusText>
-					<StatusText>{`${currentSeason.index}`}</StatusText>
-					{/* <LogoImg src={fishImg} alt="FISH" ></LogoImg> */}
+					<StatusText>{`Season Deaths: ${currentSeason.fishDeath} / ${maxKilled}`}</StatusText>
 				</StatusComponent>
 				<StatusComponent title="">
-					<StatusText>{`Phase: `}</StatusText>
-					<StatusText>{`${currentSeason.phaseString}`}</StatusText>
-
-					{/* <LogoImg src={deadImg} alt="DEADFISH"></LogoImg> */}
+					<StatusText>{`Fighting Fish: ${fightingWatersSupply}`}</StatusText>
 				</StatusComponent>
-				<StatusComponent onClick={nextPhase} title="">
-					<StatusText>{`Next:`}</StatusText>
-					<StatusText>{`${currentPhaseEndTime?.toLocaleString()}`}</StatusText>
-					{/* <LogoImg src={foodImg} alt="FISHFOOD"></LogoImg> */}
-				</StatusComponent>
+				{account &&
+				<>
+					<StatusComponent title="">
+						<StatusText>{`Pending Fight Rewards: ${userFightingFish.map(fish => fish.stakedFighting != null ? web3.utils.toNumber(fish.stakedFighting.earnedFishFood) : 0).reduce((x,y) => x + y, 0)} FISHFOOD`}</StatusText>
+					</StatusComponent>
+					<StatusComponent title="">
+						<StatusText>{`Pending Staking Rewards: ${pendingAward} FISHFOOD`}</StatusText>
+					</StatusComponent>
+				</>
+					
+				}
+				
+				
 			</StatusContainer>
 		</Container>
 	);
@@ -59,7 +70,6 @@ const Container = styled.div`
 		display: flex;
 		flex-flow: column;
 		align-items: center;
-		justify-content: center;
   }
 `;
 
@@ -74,6 +84,7 @@ const StatusContainer = styled.div`
 		display: flex;
 		flex-flow: column;
 		align-items: center;
+		flex-flow: column;
 		justify-content: center;
 		padding: 0;
   }
@@ -122,4 +133,4 @@ const LogoImg = styled.img`
 	height: 100%;
 `;
 
-export default SeasonStatus;
+export default FightingStatus;
