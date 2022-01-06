@@ -33,9 +33,10 @@ import Blockchain from './BlockchainStatus';
 import SeasonStatus from './SeasonStatus';
 import UnityWindow from "./UnityWindow";
 import FishingStatus from "./FishingStatus";
-import FightingStatus from "./FightingStatus";
+import FightingStatus from "./WatersStatus";
 import BreedingStatus from "./BreedingStatus";
 import { useState } from "react";
+import WatersStatus from "./WatersStatus";
 
 
 
@@ -52,12 +53,12 @@ const MenuOverlay = () => {
 				<Container open={open}>
 					<StatsContainer>
 						<Routes>
-							<Route path="fishing" element={<FishingStatus />} />
-							<Route path="fishing/:id" element={<FishingStatus />} />
-							<Route path="fighting" element={<FightingStatus />} />
-							<Route path="fighting/:id" element={<FightingStatus />} />
-							<Route path="breeding" element={<BreedingStatus />} />
-							<Route path="breeding/:id" element={<BreedingStatus />} />
+							<Route path="fishing" element={<WatersStatus type="Fishing"/>} />
+							<Route path="fishing/:id" element={<WatersStatus type="Fishing" />} />
+							<Route path="fighting" element={<WatersStatus type="Fighting" />} />
+							<Route path="fighting/:id" element={<WatersStatus type="Fighting" />} />
+							<Route path="breeding" element={<WatersStatus type="Breeding" />} />
+							<Route path="breeding/:id" element={<WatersStatus type="Breeding" />} />
 						</Routes>
 					</StatsContainer>
 					<StyledNav></StyledNav>

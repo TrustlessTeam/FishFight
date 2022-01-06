@@ -22,9 +22,6 @@ const FishingStatus = () => {
 			<Title>Fishing Waters</Title>
 			<StatusContainer>
 				<StatusComponent title="">
-					<StatusText>{`Season Catches: ${currentSeason.fishCatch} / ${maxCaught}`}</StatusText>
-				</StatusComponent>
-				<StatusComponent title="">
 					<StatusText>{`Fish Available: ${maxSupply - totalSupply}`}</StatusText>
 				</StatusComponent>
 				{currentSeason.phaseString === 'Fishing' ? 
@@ -33,7 +30,7 @@ const FishingStatus = () => {
 					</StatusComponent>
 					:
 					<StatusComponent title="">
-						<StatusText>{`Chance to Catch: ${((maxSupply - totalSupply) / maxSupply * 2) * 100}%`}</StatusText>
+						<StatusText>{`Chance to Catch: ${((maxSupply - totalSupply) / (maxSupply * 2)) * 100}%`}</StatusText>
 					</StatusComponent>
 				}
 				

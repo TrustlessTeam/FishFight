@@ -31,7 +31,7 @@ interface FishFightProviderContext {
     breedingWatersSupply: number
     refetchBalance: () => void
 	  resetBalance: () => void
-    refetchSeason: () => void
+    refetchStats: () => void
     // seasonNumber: number
     // seasonPhase: string
 }
@@ -82,14 +82,14 @@ export const FishFightProvider = ({ children }: FishFightProviderProps ) => {
         // setFishFightInstance(new FishFight())
         setUserConnected(true);
         refetchBalance();
-        refetchSeason();
+        refetchStats();
         console.log(FishFightInstance)
       })
     }
     if(!account) {
       console.log("account not connected");
       setUserConnected(false);
-      refetchSeason();
+      refetchStats();
     }
   }, [connector, library])
 
@@ -104,7 +104,7 @@ export const FishFightProvider = ({ children }: FishFightProviderProps ) => {
     }) : contextBalance.resetBalance()
   }
 
-  const refetchSeason = () => {
+  const refetchStats = () => {
     contextSeasons.fetchStats(FishFightInstance);
   }
 
@@ -115,7 +115,7 @@ export const FishFightProvider = ({ children }: FishFightProviderProps ) => {
     refetchBalance,
     ...contextBalance,
     ...contextSeasons,
-    refetchSeason
+    refetchStats
   }
   return (
       <FishFightContext.Provider value={value}>{children}</FishFightContext.Provider>

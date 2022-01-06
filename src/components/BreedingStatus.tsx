@@ -25,25 +25,12 @@ const BreedingStatus = () => {
 		<Container>
 			<Title>Breeding Waters</Title>
 			<StatusContainer>
-				<StatusComponent title="">
-					<StatusText>{`Season Births: ${currentSeason.fishBreed} / ${maxBred}`}</StatusText>
-				</StatusComponent>
-				<StatusComponent title="">
+				<StatusComponent>
 					<StatusText>{`Breeding Fish: ${breedingWatersSupply}`}</StatusText>
 				</StatusComponent>
-				<StatusComponent title="">
+				<StatusComponent>
 					<StatusText>{`Pending FISHFOOD: ${userBreedingFish.map(fish => fish.stakedBreeding != null ? web3.utils.toNumber(fish.stakedBreeding.earnedFishFood) : 0).reduce((x,y) => x + y, 0)}`}</StatusText>
 				</StatusComponent>
-				{/* {currentSeason.phaseString === 'Fishing' ? 
-					<StatusComponent title="">
-						<StatusText>{`Chance: ${((maxSupply - totalSupply) / maxSupply) * 100}%`}</StatusText>
-					</StatusComponent>
-					:
-					<StatusComponent title="">
-						<StatusText>{`Chance: ${((maxSupply - totalSupply) / maxSupply * 2) * 100}%`}</StatusText>
-					</StatusComponent>
-				} */}
-				
 			</StatusContainer>
 		</Container>
 	);

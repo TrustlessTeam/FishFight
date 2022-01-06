@@ -4,13 +4,14 @@ import { useWeb3React } from '@web3-react/core';
 
 import { useHarmony } from '../context/harmonyContext';
 import { useFishFight } from '../context/fishFightContext';
+import Countdown from 'react-countdown';
 import fishImg from "../img/icons/fish.svg"
 import deadImg from "../img/icons/dead.svg"
 import foodImg from "../img/icons/food.svg"
 
 
 const SeasonStatus = () => {
-	const { currentSeason, currentPhaseEndTime, FishFight } = useFishFight();
+	const { currentSeason, currentPhaseEndTime, FishFight, maxCaught, maxKilled, maxBred } = useFishFight();
 	const { account } = useWeb3React();
 
 	if (!currentSeason) return null;
@@ -34,20 +35,35 @@ const SeasonStatus = () => {
 					<b>{balance.split('.')[0]}</b> <span>ONE</span>
 				</StatusComponent> */}
 				<StatusComponent title="">
-					<StatusText>{`Season: `}</StatusText>
-					<StatusText>{`${currentSeason.index}`}</StatusText>
-					{/* <LogoImg src={fishImg} alt="FISH" ></LogoImg> */}
+					<StatusText>{`Season ${currentSeason.index}`}</StatusText>
+					<StatusText>{`${currentSeason.phaseString} Phase`}</StatusText>
+				</StatusComponent>
+				<StatusComponent><StatusText>➜</StatusText></StatusComponent>
+				<StatusComponent onClick={nextPhase} title="">
+					{currentSeason.phase == 1 &&
+						<StatusText>Fighting Phase in</StatusText>
+					}
+					{currentSeason.phase == 2 &&
+						<StatusText>Breeding Phase in</StatusText>
+					}
+					{currentSeason.phase == 3 &&
+						<StatusText>New Season in</StatusText>
+					}
+						<StatusTextContainer>
+							<StatusText><Countdown date={currentPhaseEndTime}></Countdown></StatusText>							
+							<StatusText>or</StatusText>
+							{currentSeason.phase == 1 &&
+								<StatusText>{`${currentSeason.fishCatch} / ${maxCaught} Catches`}</StatusText>
+							}
+							{currentSeason.phase == 2 &&
+								<StatusText>{`${currentSeason.fishDeath} / ${maxKilled} Deaths`}</StatusText>
+							}
+							{currentSeason.phase == 3 &&
+								<StatusText>{`${currentSeason.fishBreed} / ${maxBred} Births`}</StatusText>
+							}
+						</StatusTextContainer>
 				</StatusComponent>
 				<StatusComponent title="">
-					<StatusText>{`Phase: `}</StatusText>
-					<StatusText>{`${currentSeason.phaseString}`}</StatusText>
-
-					{/* <LogoImg src={deadImg} alt="DEADFISH"></LogoImg> */}
-				</StatusComponent>
-				<StatusComponent onClick={nextPhase} title="">
-					<StatusText>{`Next:`}</StatusText>
-					<StatusText>{`${currentPhaseEndTime?.toLocaleString()}`}</StatusText>
-					{/* <LogoImg src={foodImg} alt="FISHFOOD"></LogoImg> */}
 				</StatusComponent>
 			</StatusContainer>
 		</Container>
@@ -72,7 +88,7 @@ const StatusContainer = styled.div`
 
 	@media ${props => props.theme.device.tablet} {
 		display: flex;
-		flex-flow: column;
+		flex-flow: row;
 		align-items: center;
 		justify-content: center;
 		padding: 0;
@@ -80,38 +96,43 @@ const StatusContainer = styled.div`
 `;
 
 const Title = styled.h1`
-	display: none;
+	font-size: ${props => props.theme.font.medium}vmax;
 	@media ${props => props.theme.device.tablet} {
-		display: block;
-	  font-size: ${props => props.theme.font.small}vmin;
+		/* display: block; */
+	  font-size: ${props => props.theme.font.medium}vmin;
+		text-transform: uppercase;
+		margin-right: ${props => props.theme.spacing.gap};
   }
-	text-decoration: underline;
 	color: white;
 `;
 
 const StatusText = styled.b`
-	display: flex;
 	cursor: default;
+	margin-right: ${props => props.theme.spacing.gapSmall};
 	font-size: ${props => props.theme.font.medium}vmax;
 	@media ${props => props.theme.device.tablet} {
 	  font-size: ${props => props.theme.font.small}vmin;
+		text-transform: uppercase;
+		margin-right: ${props => props.theme.spacing.gapSmall};
   }
+`;
+
+const StatusTextContainer = styled.div`
+	display: flex;
+	flex-flow: row;
+	align-items: center;
 `;
 
 const StatusComponent = styled.div`
 	display: flex;
-	flex-flow: row;
-	justify-content: center;
-	margin-top: ${props => props.theme.spacing.gapSmall};
+	flex-flow: column;
+	/* justify-content: center; */
+	/* margin-top: ${props => props.theme.spacing.gapSmall}; */
 	/* padding: ${props => props.theme.spacing.gap} ${props => props.theme.spacing.gap}; */
 	/* background-color: white; */
 	color: white;
 	/* border: 2px solid white; */
 	border-radius: 50%;
-
-	& > span {
-		margin-left: 4px;
-	}
 
 	@media ${props => props.theme.device.tablet} {
 		margin: 0;

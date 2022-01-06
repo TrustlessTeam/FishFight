@@ -54,7 +54,7 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
 	const [userBreedingFish, setUserBreedingFish] = useState<Fish[]>([]);
 
   const { account } = useWeb3React();
-  const { FishFight, refetchSeason } = useFishFight();
+  const { FishFight, refetchStats, refetchBalance } = useFishFight();
 	const unityContext = useUnity();
 
   useEffect(() => {
@@ -70,7 +70,9 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
     var fishCaught = FishFight.listenFishFactory.events.FishMinted()
     fishCaught.on("data", function(data: any){
       if(data.returnValues.tokenId) {
-        refetchSeason();
+        console.log("Fish Caught - refetching data")
+        refetchStats();
+        refetchBalance();
       }
     })
 
@@ -113,7 +115,7 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
     nextPhase.on("data", function(data: any){
       console.log(data)
       if(data.returnValues.newPhase) {
-        refetchSeason();
+        refetchStats();
       }
     })
 
@@ -121,7 +123,7 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
     seasonCompleted.on("data", function(data: any){
       console.log(data)
       if(data.returnValues.seasonIndex) {
-        refetchSeason();
+        refetchStats();
         refetchSeasonStats()
       }
     })

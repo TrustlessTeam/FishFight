@@ -92,6 +92,7 @@ const CatchFish = () => {
 				from: account,
 				gasPrice: 1000000000,
 				gasLimit: 500000,
+				// gasLimit: await FishFight.fishingWaters?.methods.goFishing().estimateGas({from: account, value: web3.utils.toWei(COSTPERCASTONE)}),
 				value: web3.utils.toWei(COSTPERCASTONE)
 			}).on('transactionHash', () => {
 				setPendingTransaction(true);
