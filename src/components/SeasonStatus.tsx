@@ -15,7 +15,7 @@ const SeasonStatus = () => {
 	const { account } = useWeb3React();
 
 	if (!currentSeason) return null;
-	// console.log(currentPhaseEndTime)
+	console.log(currentPhaseEndTime)
 	// console.log(currentSeason)
 
 	const nextPhase = async () => {
@@ -27,6 +27,8 @@ const SeasonStatus = () => {
 		})
 		// refetchSeason();
 	}
+
+	const Completed = () => <StatusText>00:00:00</StatusText>;
 
 	return (
 		<Container>
@@ -50,7 +52,12 @@ const SeasonStatus = () => {
 						<StatusText>New Season in</StatusText>
 					}
 						<StatusTextContainer>
-							<StatusText><Countdown date={currentPhaseEndTime}></Countdown></StatusText>							
+							{currentPhaseEndTime != undefined &&
+								<Countdown date={new Date(currentPhaseEndTime)} />
+
+							}
+							
+
 							<StatusText>or</StatusText>
 							{currentSeason.phase == 1 &&
 								<StatusText>{`${currentSeason.fishCatch} / ${maxCaught} Catches`}</StatusText>

@@ -85,7 +85,7 @@ const PhaseStatus = ({type}: Props) => {
 					<>
 					<Title>Pending Rewards</Title>
 						<StatusComponent>
-							<StatusText>{`Fights: ${userFightingFish.map(fish => fish.stakedFighting != null ? web3.utils.toNumber(fish.stakedFighting.earnedFishFood) : 0).reduce((x,y) => x + y, 0)} FISHFOOD`}</StatusText>
+							{/* <StatusText>{`Fights: ${userFightingFish.map(fish => fish.stakedFighting != null ? web3.utils.toNumber(fish.stakedFighting.earnedFishFood) : 0).reduce((x,y) => x + y, 0)} FISHFOOD`}</StatusText> */}
 						</StatusComponent>
 						<StatusComponent>
 							<StatusText>{`Staking: ${pendingAward} FISHFOOD`}</StatusText>
@@ -110,7 +110,7 @@ const PhaseStatus = ({type}: Props) => {
 						<StatusText>{`Breeding Fish: ${breedingWatersSupply}`}</StatusText>
 					</StatusComponent>
 					<StatusComponent>
-						<StatusText>{`Pending FISHFOOD: ${userBreedingFish.map(fish => fish.stakedBreeding != null ? web3.utils.toNumber(fish.stakedBreeding.earnedFishFood) : 0).reduce((x,y) => x + y, 0)}`}</StatusText>
+						{/* <StatusText>{`Pending FISHFOOD: ${userBreedingFish.map(fish => fish.stakedBreeding != null ? web3.utils.toBN(fish.stakedBreeding.earnedFishFood) : web3.utils.toBN(0)).reduce((x: BN, y: web3.utils.BN) => x.add(y))}`}</StatusText> */}
 					</StatusComponent>
 				</StatusContainer>
 			</Container>

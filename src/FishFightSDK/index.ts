@@ -14,6 +14,34 @@ import {
 // import Contracts from '@fishfight-one/contracts/FishFightContracts/testnet/contracts.json'
 import Contracts from '../contracts/contracts.json';
 import Web3 from "web3"
+// import { WebsocketProvider } from 'web3-providers-ws';
+
+const wsOptions = {
+    timeout: 30000, // ms
+
+    // // Useful for credentialed urls, e.g: ws://username:password@localhost:8546
+    // headers: {
+    //     authorization: 'Basic username:password'
+    // },
+
+    clientConfig: {
+        // Useful if requests are large
+        maxReceivedFrameSize: 100000000,   // bytes - default: 1MiB
+        maxReceivedMessageSize: 100000000, // bytes - default: 8MiB
+
+        // Useful to keep a connection alive
+        keepalive: true,
+        keepaliveInterval: 60000 // ms
+    },
+
+    // Enable auto reconnection
+    reconnect: {
+        auto: true,
+        delay: 5000, // ms
+        maxAttempts: 5,
+        onTimeout: false
+    }
+};
 
 class FishFight {
     provider: Web3
@@ -45,7 +73,7 @@ class FishFight {
 
     constructor(){
         this.provider = new Web3(getProvider().url);
-        this.listener = new Web3(getWebSocketProvider().url)
+        this.listener = new Web3(new Web3.providers.WebsocketProvider(getWebSocketProvider().url, wsOptions)); 
         this.multicall = null;
         this.type = null
         

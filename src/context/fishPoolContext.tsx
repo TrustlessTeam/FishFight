@@ -69,6 +69,7 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
 
     var fishCaught = FishFight.listenFishFactory.events.FishMinted()
     fishCaught.on("data", function(data: any){
+      console.log(data)
       if(data.returnValues.tokenId) {
         console.log("Fish Caught - refetching data")
         refetchStats();
@@ -82,6 +83,7 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
       console.log(data.returnValues.user)
       console.log("FIGHITNG DEPOSIT LISTENER")
       if(data.returnValues.tokenId) {
+        refetchStats();
         addFightingFishById(data.returnValues.tokenId)
       }
     })
@@ -90,6 +92,7 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
     withdrawFighter.on("data", function(data: any){
       console.log(data)
       if(data.returnValues.tokenId) {
+        refetchStats();
         removeFightingFishById(data.returnValues.tokenId)
       }
     })
@@ -99,6 +102,7 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
       console.log(data)
       console.log("BREEDING DEPOSIT LISTENER")
       if(data.returnValues.tokenId) {
+        refetchStats();
         addBreedingFishById(data.returnValues.tokenId)
       }
     })
@@ -107,6 +111,7 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
     withdrawBreeder.on("data", function(data: any){
       console.log(data)
       if(data.returnValues.tokenId) {
+        refetchStats();
         removeBreedingFishById(data.returnValues.tokenId)
       }
     })
@@ -166,7 +171,9 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
     try {
       const randomFish: string[] = await FishFight.readFishFactory.methods.getRandomFish().call();
       console.log(randomFish)
-      let oceanIds = [...new Set(randomFish)];
+      let oceanIds = [...new Set(randomFish)].filter((val) => {
+        return val !== '0';
+      });
       // const totalFishSupply = web3.utils.toBN(fishSupply).toNumber();
 
       // const allTokenIds = [...Array(totalFishSupply+1).keys()].slice(1);
@@ -372,6 +379,7 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
   const addUserFightingFishById = async (tokenId: number) => {
     console.log("Add FightingFish By Id")
     const fishData = await getFish(FishFight, tokenId, true, false)
+    console.log(fishData)
     if(fishData != null) {
       setUserFightingFish(prevTokens => [...prevTokens, fishData])
     }

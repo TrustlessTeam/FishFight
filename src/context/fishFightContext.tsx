@@ -21,7 +21,7 @@ interface FishFightProviderContext {
     balanceBreedFish: string | undefined
     currentBlock: number
     currentSeason: Season | undefined
-    currentPhaseEndTime: Date | undefined
+    currentPhaseEndTime: number | undefined
     maxSupply: number
     maxCaught: number
     maxKilled: number
@@ -188,7 +188,7 @@ const useStats = () => {
 	const [fightingWatersSupply, setFightingWatersSupply] = useState<number>(0);
 	const [breedingWatersSupply, setBreedingWatersSupply] = useState<number>(0);
 
-	const [currentPhaseEndTime, setCurrentPhaseEndTime] = useState<Date | undefined>(undefined);
+	const [currentPhaseEndTime, setCurrentPhaseEndTime] = useState<number | undefined>(undefined);
 
 
 	const fetchStats = useCallback(
@@ -201,10 +201,10 @@ const useStats = () => {
       const maxDeath = await FishFight.readSeasons.methods._maxFishCaught().call();
       const maxBirths = await FishFight.readSeasons.methods._maxFishCaught().call();
       const phaseEndTime = await FishFight.readSeasons.methods._phaseEndTime().call();
-      const endTimeDate = new Date(Web3.utils.toNumber(phaseEndTime) * 1000)
+      const endTimeDate = Web3.utils.toNumber(phaseEndTime) * 1000
       const fightingSupply = await FishFight.readFishFactory.methods.balanceOf(FishFight.readFightingWaters.options.address).call();
       const breedingSupply = await FishFight.readFishFactory.methods.balanceOf(FishFight.readBreedingWaters.options.address).call();
-      console.log(season)
+      console.log(endTimeDate)
       setCurrentSeason(new Season(season));
       setCurrentPhaseEndTime(endTimeDate);
       setTotalSupply(Web3.utils.toNumber(totalSupply));
