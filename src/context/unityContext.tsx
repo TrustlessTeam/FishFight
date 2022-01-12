@@ -24,6 +24,7 @@ interface UnityProviderContext {
 	showOcean: () => void;
 	showFight: () => void;
 	showHome: () => void;
+	showTank: () => void;
 	addFishOcean: (fish: Fish) => void,
 	addFishFight1: (fish: Fish) => void;
 	addFishFight2: (fish: Fish) => void;
@@ -145,7 +146,7 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
 	const showFight = () => {
 		// console.log("ShowFight Called")
     if(!isLoaded || !fishPoolReady) return;
-		UnityInstance.send('Camera', 'SetAnimState', 'ShowFight');
+		UnityInstance.send('Camera', 'SetAnimState', 'ShowFighting');
 		// console.log("ShowFight Completed")
 	};
 	const showBreeding = () => {
@@ -190,20 +191,57 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
 		UnityInstance.send('FishPool', 'AddFish_OceanView', JSON.stringify(fish));
 		// console.log("AddFish Completed")
 	};
+	const addFishFightingPool = (fish: Fish) => {
+		// console.log("AddFish Called")
+    if(!isLoaded || !fishPoolReady) return;
+		console.log(fish)
+		UnityInstance.send('FishPool', 'AddFish_FightingView', JSON.stringify(fish));
+		// console.log("AddFish Completed")
+	};
 	const addFishFight1 = (fish: Fish) => {
 		// console.log("AddFish Called")
     if(!isLoaded || !fishPoolReady) return;
 		console.log(fish)
-		UnityInstance.send('FishPool', 'AddFish1_FightView', JSON.stringify(fish));
+		UnityInstance.send('FishPool', 'AddFish1_FightingView', JSON.stringify(fish));
 		// console.log("AddFish Completed")
 	};
 	const addFishFight2 = (fish: Fish) => {
 		// console.log("AddFish Called")
     if(!isLoaded || !fishPoolReady) return;
 		console.log(fish)
-		UnityInstance.send('FishPool', 'AddFish2_FightView', JSON.stringify(fish));
+		UnityInstance.send('FishPool', 'AddFish2_FightingView', JSON.stringify(fish));
 		// console.log("AddFish Completed")
 	};
+
+	const addFishBreedingPool = (fish: Fish) => {
+		// console.log("AddFish Called")
+    if(!isLoaded || !fishPoolReady) return;
+		console.log(fish)
+		UnityInstance.send('FishPool', 'AddFish_FightingView', JSON.stringify(fish));
+		// console.log("AddFish Completed")
+	};
+	const addFishBreed1 = (fish: Fish) => {
+		// console.log("AddFish Called")
+    if(!isLoaded || !fishPoolReady) return;
+		console.log(fish)
+		UnityInstance.send('FishPool', 'AddFish1_BreedingView', JSON.stringify(fish));
+		// console.log("AddFish Completed")
+	};
+	const addFishBreed2 = (fish: Fish) => {
+		// console.log("AddFish Called")
+    if(!isLoaded || !fishPoolReady) return;
+		console.log(fish)
+		UnityInstance.send('FishPool', 'AddFish2_BreedingView', JSON.stringify(fish));
+		// console.log("AddFish Completed")
+	};
+	const addFishBreed3 = (fish: Fish) => {
+		// console.log("AddFish Called")
+    if(!isLoaded || !fishPoolReady) return;
+		console.log(fish)
+		UnityInstance.send('FishPool', 'AddFish3_BreedingView', JSON.stringify(fish));
+		// console.log("AddFish Completed")
+	};
+	
 	const addFishFishing = (fish: Fish) => {
 		console.log("AddFish Called")
     if(!isLoaded || !fishPoolReady) return;
@@ -264,6 +302,7 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
     showOcean: showOcean,
     showFight: showFight,
 		showHome: showHome,
+		showTank: showTank,
     addFishOcean: addFishOcean,
 		addFishFight1: addFishFight1,
 		addFishFight2: addFishFight2,

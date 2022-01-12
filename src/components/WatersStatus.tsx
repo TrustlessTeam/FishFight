@@ -9,6 +9,8 @@ import deadImg from "../img/icons/dead.svg"
 import foodImg from "../img/icons/food.svg"
 import { useFishPool } from '../context/fishPoolContext';
 import web3 from 'web3';
+import BN from 'bn.js'
+import { FightingStake } from '../utils/fish';
 
 type Props = {
   type: string
@@ -34,6 +36,26 @@ const PhaseStatus = ({type}: Props) => {
 		if(!account) return;
 		const result = await FishFight.readFightingWaters.methods.pendingAward(account).call();
 		setPendingAward(web3.utils.fromWei(result));
+	}
+
+	const getFoodFromFights = () => {
+		let total = web3.utils.toBN(0);
+		for(let i = 0; i < userFightingFish.length; i++) {
+			if(userFightingFish[i].stakedFighting) {
+				total = total.add(web3.utils.toBN(userFightingFish[i].stakedFighting!.earnedFishFood))
+			}
+		}
+		return web3.utils.fromWei(total);
+	}
+
+	const getFoodFromBreeds = () => {
+		let total = web3.utils.toBN(0);
+		for(let i = 0; i < userBreedingFish.length; i++) {
+			if(userBreedingFish[i].stakedFighting) {
+				total = total.add(web3.utils.toBN(userBreedingFish[i].stakedBreeding!.earnedFishFood))
+			}
+		}
+		return web3.utils.fromWei(total);
 	}
 
 	// console.log(currentPhaseEndTime)
@@ -83,15 +105,15 @@ const PhaseStatus = ({type}: Props) => {
 					
 					{account &&
 					<>
-					<Title>Pending Rewards</Title>
+					<Title>My Pending $FISHFOOD</Title>
 						<StatusComponent>
-							{/* <StatusText>{`Fights: ${userFightingFish.map(fish => fish.stakedFighting != null ? web3.utils.toNumber(fish.stakedFighting.earnedFishFood) : 0).reduce((x,y) => x + y, 0)} FISHFOOD`}</StatusText> */}
+							<StatusText>{`Fights: ${getFoodFromFights()}`}</StatusText>
 						</StatusComponent>
 						<StatusComponent>
-							<StatusText>{`Staking: ${pendingAward} FISHFOOD`}</StatusText>
+							<StatusText>{`Staking: ${pendingAward}`}</StatusText>
 						</StatusComponent>
 						<StatusComponent>
-							<StatusText>{`Breeds: ${pendingAward} FISHFOOD`}</StatusText>
+							<StatusText>{`Breeds: ${getFoodFromBreeds()}`}</StatusText>
 						</StatusComponent>
 					</>
 						

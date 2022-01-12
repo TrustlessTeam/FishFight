@@ -9,19 +9,24 @@ const Drop = styled.div`
 `;
 
 const Dropbtn = styled.div`
-  border: 2px solid white;
-  border-radius: ${props => props.theme.spacing.gapSmall};
-  color: white;
+  /* border: 2px solid white; */
+  border-radius: ${props => props.theme.spacing.gap};
+  color: black;
+  background-color: white;
   text-align: center;
   padding: 14px 16px;
   text-decoration: none;
+  box-shadow: 
+    0 0 20px 3px #fff;  /* inner white */
+    //0 0 50px 30px #f0f, /* middle magenta */
+    //0 0 70px 45px #0ff; /* outer cyan */
   /* min-width: 20%; */
 `;
 
 const DropContent = styled.div<DropdownProps>`
   display: ${props => props.open ? "block" : "none"};
   position: absolute;
-  background-color: #f9f9f9;
+  background-color: white;
   /* min-width: 20%; */
   box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
   z-index: 1;

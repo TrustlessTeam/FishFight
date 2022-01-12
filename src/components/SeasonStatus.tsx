@@ -53,11 +53,8 @@ const SeasonStatus = () => {
 					}
 						<StatusTextContainer>
 							{currentPhaseEndTime != undefined &&
-								<Countdown date={new Date(currentPhaseEndTime)} />
-
+								<StatusText><Countdown date={new Date(currentPhaseEndTime)} /></StatusText>
 							}
-							
-
 							<StatusText>or</StatusText>
 							{currentSeason.phase == 1 &&
 								<StatusText>{`${currentSeason.fishCatch} / ${maxCaught} Catches`}</StatusText>

@@ -65,7 +65,7 @@ export class Fish {
   seasonStats: FishSeasonStats;
   offspringHistory: number[] | null;
   fightingHistory: number[] | null;
-  stakedFighting: FightingStake | null;
+  stakedFighting: FightingStake | undefined;
   stakedBreeding: BreedingStake | null;
 
   constructor(
@@ -103,7 +103,7 @@ export class Fish {
     this.seasonStats = new FishSeasonStats(fishSeasonStats);
     this.offspringHistory = null;
     this.fightingHistory = null;
-    this.stakedFighting = null;
+    this.stakedFighting = undefined;
     this.stakedBreeding = null;
   };
 
