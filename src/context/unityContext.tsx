@@ -21,11 +21,14 @@ interface UnityProviderContext {
 	toggleIsUnityMounted: () => void;
 	fishCaught: (fish: Fish) => void;
 	showFishing: () => void;
+	showBreeding: () => void;
 	showOcean: () => void;
 	showFight: () => void;
 	showHome: () => void;
 	showTank: () => void;
 	addFishOcean: (fish: Fish) => void,
+	addFishFightingPool: (fish: Fish) => void,
+	addFishBreedingPool: (fish: Fish) => void,
 	addFishFight1: (fish: Fish) => void;
 	addFishFight2: (fish: Fish) => void;
 	addFishFishing: (fish: Fish) => void;
@@ -250,7 +253,7 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
 		console.log("AddFish Completed")
 	};
 	const showFish = (fish: Fish) => {
-		// console.log("ShowFish Called")
+		console.log(fish)
     if(!isLoaded || !fishPoolReady) return;
 		UnityInstance.send('Camera', 'SetAnimState', 'ShowFish');
 		UnityInstance.send('FishPool', 'AddFish_FishView', JSON.stringify(fish));
@@ -299,11 +302,14 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
 		toggleIsUnityMounted: toggleIsUnityMounted,
 		fishCaught: fishCaught,
     showFishing: showFishing,
+		showBreeding: showBreeding,
     showOcean: showOcean,
     showFight: showFight,
 		showHome: showHome,
 		showTank: showTank,
     addFishOcean: addFishOcean,
+		addFishFightingPool: addFishFightingPool,
+		addFishBreedingPool: addFishBreedingPool,
 		addFishFight1: addFishFight1,
 		addFishFight2: addFishFight2,
 		addFishFishing: addFishFishing,

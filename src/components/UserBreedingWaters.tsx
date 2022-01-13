@@ -48,7 +48,7 @@ const UserBreedingWaters = () => {
 
 	useEffect(() => {
 		console.log("UserBreedingFish")
-		unityContext.showFight();
+		unityContext.showBreeding();
 	}, [unityContext.isFishPoolReady]);
 
 	useEffect(() => {
@@ -59,9 +59,9 @@ const UserBreedingWaters = () => {
 
 		if(!unityContext.isFishPoolReady) return;
 		let i = 0;
-		breedingFish.forEach(fish => {
+		userFish.forEach(fish => {
 			if(!renderedFish.includes(fish.tokenId)) {
-				unityContext.addFishOcean(fish);
+				unityContext.addFishBreedingPool(fish);
 				setRenderedFish(prevData => [...prevData, fish.tokenId])
 				i++;
 			}

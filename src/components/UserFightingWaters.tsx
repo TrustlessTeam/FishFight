@@ -13,13 +13,6 @@ import StakedStatus from './StakedStatus';
 import { BaseContainer, BaseOverlayContainer, ContainerControls } from './BaseStyles';
 import LoadingOverlay from 'react-loading-overlay';
 
-import {
-  Multicall,
-  ContractCallResults,
-  ContractCallContext,
-} from 'ethereum-multicall';
-import web3 from 'web3';
-
 enum FishSelectionEnum {
   UserFightingFish,
   UserFish
@@ -64,7 +57,7 @@ const UserFightingWaters = () => {
 		let i = 0;
 		fightingFish.forEach(fish => {
 			if(!renderedFish.includes(fish.tokenId)) {
-				unityContext.addFishOcean(fish);
+				unityContext.addFishFightingPool(fish);
 				setRenderedFish(prevData => [...prevData, fish.tokenId])
 				i++;
 			}
@@ -208,7 +201,7 @@ const UserFightingWaters = () => {
 			>
 			{mySelectedFish != null &&
 			<OptionsContainer>
-				{fishSelectionToShow === FishSelectionEnum.UserFightingFish ?
+				{mySelectedFish.stakedFighting ?
 					<GameButton onClick={() => withdrawFish(mySelectedFish)}>{'Withdraw'}</GameButton>
 					:
 					<GameButton onClick={() => depositFish(mySelectedFish)}>{'Deposit'}</GameButton>
@@ -216,17 +209,13 @@ const UserFightingWaters = () => {
 				<GameButton onClick={() => selectAnother()}>{'Back to Fish'}</GameButton>
 			</OptionsContainer>
 			}
-			<ContainerControls>
+			{/* <ContainerControls>
 				<Menu name={FishViewOptions[fishSelectionToShow].name} items={FishViewOptions}></Menu>
 				{fishSelectionToShow === FishSelectionEnum.UserFightingFish &&
 					<StakedStatus></StakedStatus>
 				}
-			</ContainerControls>
-			{fishSelectionToShow === FishSelectionEnum.UserFightingFish ?
-				<FishViewer selectedFish={mySelectedFish} fishCollection={userFightingFish} onClick={setUserFish}></FishViewer>
-				:
+			</ContainerControls> */}
 				<FishViewer selectedFish={mySelectedFish} fishCollection={userFish} onClick={setUserFish}></FishViewer>
-			}
 		</BaseOverlayContainer>
 	);
 };

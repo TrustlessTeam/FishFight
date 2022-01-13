@@ -3,6 +3,12 @@ import { Fish } from '../utils/fish';
 import defaultImage from '../img/default.png'
 import { useState } from 'react';
 
+import fishingImg from "../img/icons/fishing.svg"
+import breedingImg from "../img/icons/breeding.svg"
+import fightingImg from "../img/icons/fighting.svg"
+import oceanImg from "../img/icons/ocean.svg"
+import fishImg from "../img/icons/fish.svg"
+
 type Props = {
   fish: Fish;
 	onClick?: () => void;
@@ -30,10 +36,19 @@ const FishNFT = ({ fish, onClick, selectedOpponent, selectedUser }: Props) => {
 				<FishImg selectedOpponent={selectedOpponent} selectedUser={selectedUser} onClick={onClick} src={defaultImage}></FishImg>
 			}
 			<FishStats>
-				<FishData>ID: {fish.tokenId}</FishData>
-				<ToggleButton onClick={() => toggleStats()}>info</ToggleButton>
+				{!fish.stakedFighting && !fish.stakedBreeding &&
+					<LogoSmallImg src={fishImg} alt="$FISH"></LogoSmallImg>
+				}
+				{fish.stakedFighting &&
+					<LogoImg src={fightingImg} alt="$FIGHTFISH"></LogoImg>
+				}
 			</FishStats>
-			{showStats &&
+			<FishId>
+				<FishData>{fish.tokenId}</FishData>
+				{/* <ToggleButton onClick={() => toggleStats()}>info</ToggleButton> */}
+			</FishId>
+
+			{/* {showStats &&
 				<FishStatsOverlay>
 					<FishData>Str:{fish.strength}</FishData>
 					<FishData>Int:{fish.intelligence}</FishData>
@@ -43,7 +58,7 @@ const FishNFT = ({ fish, onClick, selectedOpponent, selectedUser }: Props) => {
 					<FishData><a target="_blank" href={fish.ipfsLink}>IPFS</a></FishData>
 					}
 				</FishStatsOverlay>
-			}
+			} */}
 			
 		</FishContainer>
 	);
@@ -56,8 +71,15 @@ const ToggleButton = styled.button`
 	font-size: ${props => props.theme.font.small}vmin;
 	font-weight: bold;
 	color: black;
-	background-color: rgba(255, 255, 255, 0.7);
+	background-color: white;
 	cursor: pointer; 
+`;
+
+const LogoImg = styled.img`
+	width: 50px;
+`;
+const LogoSmallImg = styled.img`
+	width: 40px;
 `;
 
 const FishContainer = styled.div`
@@ -82,7 +104,7 @@ const FishImg = styled.img<ImgProps>`
   `}
 `;
 
-const FishStats = styled.div`
+const FishId = styled.div`
 	position: absolute;
 	display: flex;
 	flex-flow: row wrap;
@@ -90,6 +112,16 @@ const FishStats = styled.div`
 	width: 100%;
 	bottom: 0;
 	padding: ${props => props.theme.spacing.gapSmall};
+`;
+
+const FishStats = styled.div`
+	position: absolute;
+	display: flex;
+	flex-flow: row wrap;
+	justify-content: flex-end;
+	width: 100%;
+	top: 0;
+	/* padding: ${props => props.theme.spacing.gapSmall}; */
 `;
 
 const FishStatsOverlay = styled.div`
@@ -112,7 +144,8 @@ const FishData = styled.p`
 	color: ${"black"};
 	text-align: center;
 	font-size: ${props => props.theme.font.medium}vmin;
-	background-color: rgba(255, 255, 255, 0.7);
+	font-weight: bold;
+	background-color: white;
 	margin: 0 ${props => props.theme.spacing.gapSmall};
 	padding: ${props => props.theme.spacing.gapSmall};
 	border-radius: 50%;

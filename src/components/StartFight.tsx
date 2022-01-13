@@ -57,11 +57,11 @@ const StartFight = () => {
 
 	const FighterSelectionOptions: MenuItem[] = [
 		{
-			name: 'Select Fighter',
+			name: 'My $FISH',
 			onClick: () => setFighterSelectionToShow(FighterSelectionEnum.MyFighter)
 		},
 		{
-			name: 'Select Opponent',
+			name: 'Opponent $FISH',
 			onClick: () => setFighterSelectionToShow(FighterSelectionEnum.OpponentFighter)
 		}
 	]
@@ -261,9 +261,9 @@ const StartFight = () => {
 				}
 				<ContainerControls>
 					<Menu name={FighterSelectionOptions[fighterSelectionToShow].name} items={FighterSelectionOptions}></Menu>
-					{fighterSelectionToShow === FighterSelectionEnum.MyFighter &&
+					{/* {fighterSelectionToShow === FighterSelectionEnum.MyFighter &&
 						<Menu name={FishViewOptions[fishSelectionToShow].name} items={FishViewOptions}></Menu>
-					}
+					} */}
 				</ContainerControls>
 				{fighterSelectionToShow === FighterSelectionEnum.MyFighter &&
 					<FishViewer selectedFish={mySelectedFish} fishCollection={fishSelectionToShow === FishSelectionEnum.UserFightingFish ? userFightingFish : userFish} onClick={setUserFish}></FishViewer>

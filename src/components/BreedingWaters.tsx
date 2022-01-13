@@ -8,7 +8,7 @@ const BreedingWaters = () => {
 
 	useEffect(() => {
 		console.log("Breeding Fish")
-		unityContext.showFight();
+		unityContext.showBreeding();
 		// unityContext.showBreed() ?
 	}, [unityContext.isFishPoolReady]);
 
