@@ -34,7 +34,6 @@ import SeasonStatus from './components/SeasonStatus';
 import UnityWindow from './components/UnityWindow';
 import Ocean from './components/Ocean';
 import FightingWaters from './components/FightingWaters';
-import UserFightingWaters from './components/UserFightingWaters';
 import UILayout from './components/MenuOverlay';
 import StartFight from './components/StartFight';
 import BreedingWaters from './components/BreedingWaters';
@@ -63,8 +62,8 @@ const App = () => {
 									<Route path="/ocean" element={<Ocean />} />
 									<Route path="/fishing" element={<CatchFish />} />
 									<Route path="/fighting" element={<FightingWaters />}>
-										<Route path="/fighting/user" element={<UserFightingWaters />} />
-										<Route path="/fighting/start" element={<StartFight />} />
+										{/* <Route path="/fighting/user" element={<FightingWaters />} /> */}
+										<Route path="/fighting/start" element={<FightingWaters />} />
 									</Route>
 									<Route path="/breeding" element={<BreedingWaters />}>
 										<Route path="/breeding/user" element={<UserBreedingWaters />} />
