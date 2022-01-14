@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { useWeb3React } from '@web3-react/core';
+import Modal from 'react-modal';
+
 
 import { useHarmony } from '../context/harmonyContext';
 import { useFishFight } from '../context/fishFightContext';
@@ -13,9 +15,11 @@ import Countdown from 'react-countdown';
 import BN from 'bn.js'
 import { FightingStake } from '../utils/fish';
 import { Route, Routes } from 'react-router-dom';
+import infoImg from "../img/icons/info.svg"
+
 
 type Props = {
-  // type: string
+  // open: boolean;
 };
 
 const StatusModal = ({}: Props) => {
@@ -33,7 +37,8 @@ const StatusModal = ({}: Props) => {
 				} = useFishFight();
 	const { userFightingFish, userBreedingFish } = useFishPool();
 	const [pendingAward, setPendingAward] = useState<string>();
-
+	const [modalIsOpen, setModalIsOpen] = useState(false);
+	
 	const { account } = useWeb3React();
 
 	useEffect(() => {
@@ -43,6 +48,14 @@ const StatusModal = ({}: Props) => {
     }
 		loadData(account);
 	}, [account, userFightingFish]);
+
+	const openModal = () => {
+		setModalIsOpen(true);
+	};
+
+	const closeModal = () => {
+		setModalIsOpen(false);
+	};
 
 	const getPendingFood = async () => {
 		if(!account) return;
@@ -154,74 +167,93 @@ const StatusModal = ({}: Props) => {
 
 		return (
 			<DataContainer>
-				{/* <DataItem>
-					<b>{balance.split('.')[0]}</b> <span>ONE</span>
-				</DataItem> */}
+				<Title>{`Season ${currentSeason.index}`}</Title>
 				<DataItem title="">
-					<StatusText>{`Season ${currentSeason.index}`}</StatusText>
-					<StatusText>{`${currentSeason.phaseString} Phase`}</StatusText>
+					<StatusText></StatusText>
+					<StatusText>{`Current Phase: ${currentSeason.phaseString}`}</StatusText>
 				</DataItem>
-				<DataItem><StatusText>➜</StatusText></DataItem>
 				<DataItem title="">
 					{currentSeason.phase == 1 &&
-						<StatusText>Fighting Phase in</StatusText>
+						<StatusText>Next Phase: Fighting</StatusText>
 					}
 					{currentSeason.phase == 2 &&
-						<StatusText>Breeding Phase in</StatusText>
+						<StatusText>Next Phase: Breeding</StatusText>
 					}
 					{currentSeason.phase == 3 &&
-						<StatusText>New Season in</StatusText>
+						<StatusText>Next Phase: Season Change</StatusText>
 					}
-						<StatusContainer>
-							{currentPhaseEndTime != undefined &&
-								<StatusText><Countdown date={new Date(currentPhaseEndTime)} /></StatusText>
-							}
-							<StatusText>or</StatusText>
-							{currentSeason.phase == 1 &&
-								<StatusText>{`${currentSeason.fishCatch} / ${maxCaught} Catches`}</StatusText>
-							}
-							{currentSeason.phase == 2 &&
-								<StatusText>{`${currentSeason.fishDeath} / ${maxKilled} Deaths`}</StatusText>
-							}
-							{currentSeason.phase == 3 &&
-								<StatusText>{`${currentSeason.fishBreed} / ${maxBred} Births`}</StatusText>
-							}
-						</StatusContainer>
+				</DataItem>
+
+				<DataItem>
+				{currentPhaseEndTime != undefined &&
+					<StatusText>Time Limit: <Countdown date={new Date(currentPhaseEndTime)} /></StatusText>
+				}
+				</DataItem>
+				<DataItem>
+				{currentSeason.phase == 1 &&
+					<StatusText>{`Limit: ${currentSeason.fishCatch} / ${maxCaught} Catches`}</StatusText>
+				}
+				{currentSeason.phase == 2 &&
+					<StatusText>{`Limit: ${currentSeason.fishDeath} / ${maxKilled} Deaths`}</StatusText>
+				}
+				{currentSeason.phase == 3 &&
+					<StatusText>{`Limit: ${currentSeason.fishBreed} / ${maxBred} Births`}</StatusText>
+				}
 				</DataItem>
 			</DataContainer>
 		)
 	}
 
-	return (
-		<StatusModalContainer>
-			{seasonData()}
-			<Routes>
-				<Route path="fishing" element={fishingData()} />
-				<Route path="fishing/:id" element={fishingData()} />
-				<Route path="fighting" element={fightingData()} />
-				<Route path="fighting/:id" element={fightingData()} />
-				<Route path="breeding" element={breedingData()} />
-				<Route path="breeding/:id" element={breedingData()} />
-			</Routes>
-		</StatusModalContainer>
-	)
+
+		return (
+			<>
+				<LogoImg src={infoImg} open={modalIsOpen} onClick={openModal}></LogoImg>
+				<Modal
+					isOpen={modalIsOpen}
+					className="Modal"
+					overlayClassName="Overlay"
+					onRequestClose={closeModal}
+					shouldCloseOnOverlayClick
+				>
+					{/* {active ? <SignOut account={parsedAccount} closeModal={closeModal} /> : <Wallets closeModal={closeModal} />} */}
+					<StatusModalContainer>
+					{seasonData()}
+					<Routes>
+						<Route path="fishing" element={fishingData()} />
+						<Route path="fishing/:id" element={fishingData()} />
+						<Route path="fighting" element={fightingData()} />
+						<Route path="fighting/:id" element={fightingData()} />
+						<Route path="breeding" element={breedingData()} />
+						<Route path="breeding/:id" element={breedingData()} />
+					</Routes>
+				</StatusModalContainer>
+				</Modal>
+			</>
+			
+			
+		)
 	
 };
 
 const StatusModalContainer = styled.div`
 	display: flex;
 	flex-flow: column;
+	background-color: white;
+	padding: ${props => props.theme.spacing.gap};
 	/* justify-content: space-evenly;
 	align-items: flex-start; */
 `;
 
 const DataContainer = styled.div`
-	@media ${props => props.theme.device.tablet} {
+	display: flex;
+	flex-flow: column;
+	align-items: center;
+	/* @media ${props => props.theme.device.tablet} {
 		display: flex;
 		flex-flow: row nowrap;
 		justify-content: space-evenly;
 		align-items: flex-start;
-  }
+  } */
 `;
 
 const StatusContainer = styled.div`
@@ -242,14 +274,15 @@ const StatusContainer = styled.div`
 `;
 
 const Title = styled.h1`
-	display: none;
+	color: black;
+	font-size: ${props => props.theme.font.large}vmax;
+
 	@media ${props => props.theme.device.tablet} {
 		display: block;
-	  font-size: ${props => props.theme.font.small}vmin;
+	  font-size: ${props => props.theme.font.large}vmin;
   }
 	/* text-decoration: underline; */
 	text-transform: uppercase;
-	color: white;
 `;
 
 const StatusText = styled.b`
@@ -257,11 +290,12 @@ const StatusText = styled.b`
 	flex-flow: row nowrap;
 	justify-content: center;
 	align-items: center;
+	color: black;
 	font-size: ${props => props.theme.font.medium}vmax;
 	/* margin-right: ${props => props.theme.spacing.gapSmall}; */
 	cursor: default;
 	@media ${props => props.theme.device.tablet} {
-		font-size: ${props => props.theme.font.small}vmin;
+		font-size: ${props => props.theme.font.medium}vmin;
   }
 `;
 
@@ -286,12 +320,15 @@ const DataItem = styled.div`
   }
 `;
 
-const LogoImg = styled.img`
+const LogoImg = styled.img<{open: boolean}>`
+	background-color: ${p => (p.open ? "gray" : "white")};
+	padding: ${props => props.theme.spacing.gapSmall};
 	height: 25px;
-	margin: 0 ${props => props.theme.spacing.gapSmall};
+	margin-left: ${props => props.theme.spacing.gapSmall};
+	border-radius: 50%;
 
 	@media ${props => props.theme.device.tablet} {
-	  height: 25px;
+	  height: 30px;
   }
 `;
 

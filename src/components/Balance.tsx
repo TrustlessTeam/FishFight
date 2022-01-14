@@ -15,9 +15,14 @@ const Balance = () => {
 	if (!balance) return null;
 
 	return (
-		<Balances>
+		<>
 			<BalanceComponent>
 				<BalanceText>{balance.split('.')[0]} ONE</BalanceText>
+			</BalanceComponent>
+			<BalanceComponent title="FISHFOOD Balance">
+				<BalanceText>
+					{parseFloat(balanceFood ? balanceFood : '0').toFixed(2)}<LogoImg src={foodImg} alt="FISHFOOD"></LogoImg>
+				</BalanceText>
 			</BalanceComponent>
 			<BalanceComponent title="FISH Balance">
 				<BalanceText>
@@ -29,11 +34,7 @@ const Balance = () => {
 					{balanceDeadFish}<LogoImg src={deadImg} alt="DEADFISH"></LogoImg>
 				</BalanceText>
 			</BalanceComponent>
-			<BalanceComponent title="FISHFOOD Balance">
-				<BalanceText>
-					{parseFloat(balanceFood ? balanceFood : '0').toFixed(2)}<LogoImg src={foodImg} alt="FISHFOOD"></LogoImg>
-				</BalanceText>
-			</BalanceComponent>
+			
 			<BalanceComponent title="FIGHTFISH Balance">
 				<BalanceText>
 					{balanceFightFish}<LogoImg src={fishImg} alt="FIGHTFISH"></LogoImg>F
@@ -44,7 +45,7 @@ const Balance = () => {
 					{balanceBreedFish}<LogoImg src={fishImg} alt="BREEDFISH"></LogoImg>B
 				</BalanceText>
 			</BalanceComponent>
-		</Balances>
+		</>
 		
 	);
 };
@@ -54,10 +55,10 @@ const Balances = styled.div`
 	flex-flow: row wrap;
 	align-items: space-evenly;
 
-	@media ${props => props.theme.device.tablet} {
+	/* @media ${props => props.theme.device.tablet} {
 	  flex-flow: column;
 		align-items: flex-end;
-  }
+  } */
 `;
 
 const BalanceText = styled.b`

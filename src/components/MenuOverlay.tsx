@@ -49,20 +49,20 @@ const MenuOverlay = () => {
 	return (
 		<Wrapper open={open}>
 			<MenuContainer>
-				<>
-					<LogoImg src={infoImg} open={open} onClick={() => setOpen(!open)}></LogoImg>
-				</>
-				
+				{/* <LogoImg src={infoImg} open={open} onClick={() => setOpen(!open)}></LogoImg> */}
+				<StatusModal/>
 				<StyledNav></StyledNav>
+				<User open={open}>
+					<Account ></Account>
+					{/* <Balance></Balance> */}
+				</User>
 				
 				
-				<InfoContainer open={open}>
-					<Account/>
-					{account && 
-						<Balance></Balance>
-					}
-					<StatusModal />
-				</InfoContainer>
+				
+				
+				{/* <InfoContainer open={open}>
+					
+				</InfoContainer> */}
 			</MenuContainer>
 		</Wrapper>
 	);
@@ -91,7 +91,7 @@ const MenuContainer = styled.div`
 	/* flex-flow: column; */
 	/* justify-content: center; */
 	flex-flow: row wrap;
-		justify-content: space-between;
+	justify-content: space-between;
 	background-color: rgba(0, 0, 0, 0.8);
 
 	@media ${props => props.theme.device.tablet} {
@@ -101,18 +101,22 @@ const MenuContainer = styled.div`
   }
 `;
 
-const MenuButton = styled.button<{open: boolean}>`
-	display: ${p => (p.open ? "none" : "block")};
-	@media ${props => props.theme.device.tablet} {
+const User = styled.div<{open: boolean}>`
+	display: flex;
+	flex-flow: row wrap;
+	width: 40%;
+	
+	/* @media ${props => props.theme.device.tablet} {
 		display: none;
-  }
+  } */
 `;
 
-const MenuCloseButton = styled.button<{open: boolean}>`
-	display: ${p => (p.open ? "block" : "none")};
+const Status = styled(StatusModal)<{open: boolean}>`
+	display	
 	@media ${props => props.theme.device.tablet} {
 		display: none;
   }
+	color: red;
 `;
 
 const StyledNav = styled(Nav)`

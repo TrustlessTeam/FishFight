@@ -116,10 +116,7 @@ const NavMenu = styled.nav`
 	width: 100%;
 	height: 100%;
   pointer-events: auto;
-
-  order: 0;
 	@media ${props => props.theme.device.tablet} {
-		order: 1;
 	  width: 50%;
 	  align-items: center;
 
