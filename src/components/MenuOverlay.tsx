@@ -104,6 +104,7 @@ const MenuContainer = styled.div`
 const User = styled.div<{open: boolean}>`
 	display: flex;
 	flex-flow: row wrap;
+	justify-content: flex-end;
 	width: 40%;
 	
 	/* @media ${props => props.theme.device.tablet} {

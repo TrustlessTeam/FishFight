@@ -48,14 +48,19 @@ const Account = ({ children }: Props) => {
 	return (
 		<Container>
 		<Group>
-			<BalanceComponent>
-				<BalanceText>{balance?.split('.')[0]} ONE</BalanceText>
-			</BalanceComponent>
-			<BalanceComponent title="FISHFOOD Balance">
-				<BalanceText>
-					{parseFloat(balanceFood ? balanceFood : '0').toFixed(2)}<LogoImg src={foodImg} alt="FISHFOOD"></LogoImg>
-				</BalanceText>
-			</BalanceComponent>
+			{account &&
+			<>
+				<BalanceComponent>
+					<BalanceText>{balance?.split('.')[0]} ONE</BalanceText>
+				</BalanceComponent>
+				<BalanceComponent title="FISHFOOD Balance">
+					<BalanceText>
+						{parseFloat(balanceFood ? balanceFood : '0').toFixed(2)}<LogoImg src={foodImg} alt="FISHFOOD"></LogoImg>
+					</BalanceText>
+				</BalanceComponent>
+			</>
+			}
+			
 			<AccountComponent onClick={openModal}>
 				{parsedAccount ? (
 					<span>
@@ -66,31 +71,34 @@ const Account = ({ children }: Props) => {
 				)}
 			</AccountComponent>
 		</Group>
-		
-		<Group>
-			<BalanceComponent title="FISH Balance">
-				<BalanceText>
-					{balanceFish}<LogoImg src={fishImg} alt="FISH" ></LogoImg>
-				</BalanceText>
-			</BalanceComponent>
-			<BalanceComponent title="DEADFISH Balance">
-				<BalanceText>
-					{balanceDeadFish}<LogoImg src={deadImg} alt="DEADFISH"></LogoImg>
-				</BalanceText>
-			</BalanceComponent>
-			
-			<BalanceComponent title="FIGHTFISH Balance">
-				<BalanceText>
-					{balanceFightFish}<LogoImg src={fishImg} alt="FIGHTFISH"></LogoImg>F
-				</BalanceText>
-			</BalanceComponent>
-			<BalanceComponent title="BREEDFISH Balance">
-				<BalanceText>
-					{balanceBreedFish}<LogoImg src={fishImg} alt="BREEDFISH"></LogoImg>B
-				</BalanceText>
-			</BalanceComponent>
-		</Group>
-			
+		{account &&
+			<>
+				<Group>
+					<BalanceComponent title="FISH Balance">
+						<BalanceText>
+							{balanceFish}<LogoImg src={fishImg} alt="FISH" ></LogoImg>
+						</BalanceText>
+					</BalanceComponent>
+					<BalanceComponent title="DEADFISH Balance">
+						<BalanceText>
+							{balanceDeadFish}<LogoImg src={deadImg} alt="DEADFISH"></LogoImg>
+						</BalanceText>
+					</BalanceComponent>
+					
+					<BalanceComponent title="FIGHTFISH Balance">
+						<BalanceText>
+							{balanceFightFish}<LogoImg src={fishImg} alt="FIGHTFISH"></LogoImg>F
+						</BalanceText>
+					</BalanceComponent>
+					<BalanceComponent title="BREEDFISH Balance">
+						<BalanceText>
+							{balanceBreedFish}<LogoImg src={fishImg} alt="BREEDFISH"></LogoImg>B
+						</BalanceText>
+					</BalanceComponent>
+				</Group>
+			</>
+		}
+	
 			{children}
 			<Modal
 				isOpen={modalIsOpen}
@@ -110,13 +118,14 @@ const Container = styled.div`
 	flex-flow: row nowrap;
 	@media ${props => props.theme.device.tablet} {
 		flex-flow: row wrap;
+		justify-content: flex-end;
   }
 `;
 
 const Group = styled.div`
 	display: flex;
 	flex-flow: row nowrap;
-	justify-content: flex-start;
+	justify-content: flex-end;
 	width: 100%;
 `;
 
