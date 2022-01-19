@@ -50,7 +50,7 @@ const MenuOverlay = () => {
 		<Wrapper open={open}>
 			<MenuContainer>
 				{/* <LogoImg src={infoImg} open={open} onClick={() => setOpen(!open)}></LogoImg> */}
-				<StatusModal/>
+				<StatusModal />
 				
 				<StyledNav></StyledNav>
 				<User open={open}>
@@ -92,14 +92,16 @@ const MenuContainer = styled.div`
 	/* flex-flow: column; */
 	justify-content: center;
 	flex-flow: row nowrap;
-	align-items: flex-start;
+	align-items: center;
 	/* justify-content: space-between; */
 	background-color: rgba(0, 0, 0, 0.8);
 
 	@media ${props => props.theme.device.tablet} {
 		display: flex;
 		flex-flow: row nowrap;
+		align-items: center;
 		justify-content: space-between;
+		/* width: 100%; */
   }
 `;
 
@@ -121,16 +123,9 @@ const UserMobile = styled.div<{open: boolean}>`
   }
 `;
 
-const Status = styled(StatusModal)<{open: boolean}>`
-	display	
-	@media ${props => props.theme.device.tablet} {
-		display: none;
-  }
-	color: red;
-`;
 
 const StyledNav = styled(Nav)`
-	width: 80%;
+	width: 100%;
 	/* order: 0;
 	@media ${props => props.theme.device.tablet} {
 		order: 1;
@@ -139,30 +134,6 @@ const StyledNav = styled(Nav)`
 
 
 
-const InfoContainer = styled.div<{open: boolean}>`
-	display: ${p => (p.open ? "flex" : "none")};
-	flex-flow: row;
-	justify-content: center;
-
-	@media ${props => props.theme.device.tablet} {
-		display: flex;
-		flex-flow: row;
-		justify-content: flex-end;
-  }
-`;
-
-
-const LogoImg = styled.img<{open: boolean}>`
-	background-color: ${p => (p.open ? "gray" : "white")};
-	padding: ${props => props.theme.spacing.gapSmall};
-	height: 25px;
-	margin-left: ${props => props.theme.spacing.gapSmall};
-	border-radius: 50%;
-
-	@media ${props => props.theme.device.tablet} {
-	  height: 30px;
-  }
-`;
 
 
 export default MenuOverlay;

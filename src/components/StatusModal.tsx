@@ -261,6 +261,14 @@ const ImgContainer = styled.div`
 	/* padding: ${props => props.theme.spacing.gap}; */
 	/* justify-content: space-evenly;
 	align-items: flex-start; */
+
+	@media ${props => props.theme.device.tablet} {
+		display: flex;
+		flex-flow: row nowrap;
+		justify-content: flex-start;
+		align-items: center;
+		width: 33%;
+  }
 `;
 
 const StatusModalContainer = styled.div`

@@ -564,7 +564,7 @@ export const useFishPool = () => {
 
 
 // Gets fish data from smart contract and builds Fish object
-const getFish = async (fishFightInstance: FishFight, tokenId: number, isFighting: boolean, isBreeding: boolean) : Promise<Fish | null> => {
+const getFish = async (fishFightInstance: FishFight, tokenId: number, isFighting: boolean, isBreeding: boolean, isParent?: boolean) : Promise<Fish | null> => {
   try {
     console.log(`Loading Fish ${tokenId} from blockchain`)
     const fishInfo = await fishFightInstance.readFishFactory.methods.getFishInfo(tokenId).call();
@@ -608,7 +608,11 @@ const getFish = async (fishFightInstance: FishFight, tokenId: number, isFighting
       console.log(stakedBreeding)
       fish.stakedBreeding = stakedBreeding;
     }
-
+    if(!isParent && fish.parentA !== 0 && fish.parentB !== 0) {
+      fish.parentAFish = await getFish(fishFightInstance, fish.parentA, false, false, true);
+      fish.parentBFish = await getFish(fishFightInstance, fish.parentB, false, false, true);
+    }
+    
     // console.log(fish)
     return fish;
 

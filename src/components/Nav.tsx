@@ -111,15 +111,13 @@ const LogoImg = styled.img<ActiveProps>`
 const NavMenu = styled.nav`
 	display: flex;
 	flex-flow: row nowrap;
-	justify-content: space-evenly;
+	justify-content: center;
 	align-items: flex-start;
 	width: 100%;
 	height: 100%;
   pointer-events: auto;
 	@media ${props => props.theme.device.tablet} {
-	  width: 50%;
 	  align-items: center;
-
   }
 `;
 
@@ -130,12 +128,14 @@ const NavItem = styled.div`
   flex-flow: column;
   align-items: center; */
   height: 100%;
-    position: relative;
-    display: inline-block;
+  position: relative;
+  display: inline-block;
+  padding: 0 ${props => props.theme.spacing.gap};
   @media ${props => props.theme.device.tablet} {
 		height: 100%;
     position: relative;
     display: inline-block;
+    padding: 0 ${props => props.theme.spacing.gap};
   }
 `;
 

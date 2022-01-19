@@ -19,7 +19,7 @@ import { ToggleGroup, ToggleOption } from './ToggleButton';
 
 enum FishSelectionEnum {
   MyFish,
-  FightFish
+  AlphaFish
 }
 
 const BREEDCOSTONE = web3.utils.toBN(1);
@@ -32,11 +32,8 @@ const BreedingWaters = () => {
 	const { userFish, breedingFish, userBreedingFish, refreshFish, createUserFish } = useFishPool()
 	const { FishFight, refetchBalance } = useFishFight()
 
-	const [showOpponentSelection, setShowOpponentSelection] = useState<boolean>(false);
-	const [mySelectedFish, setMySelectedFish] = useState<Fish | null>(null);
-	const [opponentFish, setOpponentFish] = useState<Fish | null>(null);
 	// const [fighterSelectionToShow, setFighterSelectionToShow] = useState<number>(FishViewOptions.MyFish);
-	const [fishSelectionToShow, setFishSelectionToShow] = useState<number>(FishSelectionEnum.FightFish);
+	const [fishSelectionToShow, setFishSelectionToShow] = useState<number>(FishSelectionEnum.AlphaFish);
 	const [fightResult, setFightResult] = useState<Fight | null>();
 	const [showFightResult, setShowFightResult] = useState(false);
 	const [isFighting, setIsFighting] = useState<boolean>(false);
@@ -56,10 +53,6 @@ const BreedingWaters = () => {
 		console.log("Breeding Fish")
 		unityContext.showBreeding();
 		// unityContext.showBreed() ?
-	}, [unityContext.isFishPoolReady]);
-
-	useEffect(() => {
-		unityContext.showFight();
 	}, [unityContext.isFishPoolReady]);
 
 	useEffect(() => {
@@ -98,6 +91,116 @@ const BreedingWaters = () => {
 		}
 		setMyBettaFish(fish);
 		unityContext.addFishFight1(fish)
+	}
+
+	const withdrawFightingFish = async (fish : Fish) => {
+		const secondsSinceEpoch = Math.round(Date.now() / 1000)
+		if(fish.stakedFighting != null && fish.stakedFighting.lockedExpire > secondsSinceEpoch) {
+			const expireTime = (fish.stakedFighting.lockedExpire - secondsSinceEpoch) / 60;
+			const lockedFor = (Math.round(expireTime * 10) / 10).toFixed(1);
+			toast.error(`Fish Locked for ${lockedFor} minutes`)
+			return;
+		}
+		if(!account) {
+			toast.error('Connect your wallet');
+			return;
+		}
+		if(myBettaFish == null) {
+			toast.error('Select a Fish');
+		}
+
+		try {
+			await FishFight.fightingWaters?.methods.withdraw(fish.tokenId).send({
+				from: account,
+				gasPrice: 1000000000,
+				gasLimit: 800000,
+			}).on('transactionHash', () => {
+				setPendingTransaction(true);
+			}).on('receipt', async (data: any) => {
+				setPendingTransaction(false);
+				// withdrawUserFightingFish(fish);
+				// setFishSelectionToShow(FishSelectionEnum.FightFish)
+				toast.success('Transaction done', {
+					onClose: async () => {
+						refetchBalance()
+						// refreshFish(fish.tokenId, false, false)
+					},
+				});
+			})
+			
+		} catch (error: any) {
+			toast.error(error);
+		}
+	}
+
+	const contractApproveAll = () => {
+		return FishFight.fishFactory?.methods.setApprovalForAll(FishFight.readBreedingWaters.options.address, true).send({
+			from: account,
+			gasPrice: 1000000000,
+			gasLimit: 500000,
+		})
+		.on('error', (error: any) => {
+			console.log(error)
+			toast.error('Approval Failed');
+			setPendingTransaction(false);
+		})
+		.on('transactionHash', () => {
+			setPendingTransaction(true);
+		})
+		.on('receipt', () => {
+			console.log('Breeding Approval completed')
+			toast.success('Breeding Approval completed')
+		})
+	}
+
+	const contractDeposit = (fish: Fish) => {
+		return FishFight.breedingWaters?.methods.deposit(fish.tokenId).send({
+			from: account,
+			gasPrice: 1000000000,
+			gasLimit: 800000,
+		})
+		.on('error', (error: any) => {
+			console.log(error)
+			toast.error('Deposit Failed');
+			setPendingTransaction(false);
+		})
+		.on('transactionHash', () => {
+			setPendingTransaction(true);
+		})
+		.on('receipt', async () => {
+			setPendingTransaction(false);
+			toast.success('Fish Deposited', {
+				onClose: async () => {
+					refetchBalance()
+				},
+			});
+		})
+	}
+
+	const depositFish = async (fish : Fish) => {
+		if(!account) {
+			toast.error('Connect your wallet');
+			return;
+		}
+		if(myBettaFish == null) {
+			toast.error('Select a Fish');
+			return;
+		}
+		try {
+			FishFight.fishFactory?.methods.isApprovedForAll(account, FishFight.readBreedingWaters.options.address).call()
+			.then((isApproved: boolean) => {
+				if(isApproved) {
+					contractDeposit(fish);
+				} else {
+					contractApproveAll()
+					.on('receipt', () => {
+						contractDeposit(fish);
+					})
+				}
+			})
+		} catch (error: any) {
+			console.log(error)
+		}
 	}
 
 	const contractApprove = () => {
@@ -216,14 +319,15 @@ const BreedingWaters = () => {
 			spinner
 			text='Waiting for confirmation...'
 			>
-			{mySelectedFish != null &&
+			{myBettaFish != null &&
 			<OptionsContainer>
-				{/* {mySelectedFish.stakedFighting ?
-					<GameButton onClick={() => withdrawFish(mySelectedFish)}>{'Withdraw'}</GameButton>
-					:
-					<GameButton onClick={() => depositFish(mySelectedFish)}>{'Deposit'}</GameButton>
+				{myBettaFish.stakedFighting &&
+					<GameButton onClick={() => withdrawFightingFish(myBettaFish)}>{'Withdraw Fighter'}</GameButton>
 				}
-				{!showOpponentSelection &&
+				{myBettaFish.seasonStats.fightWins > 0 && !myBettaFish.stakedFighting &&
+					<GameButton onClick={() => depositFish(myBettaFish)}>{'Deposit'}</GameButton>
+				}
+				{/* {!showOpponentSelection &&
 					<GameButton onClick={() => setShowOpponentSelection(true)}>{'Start Fight'}</GameButton>
 				} */}
 				{/* <GameButton onClick={() => selectAnother()}>{'Back to Fish'}</GameButton> */}
@@ -232,8 +336,8 @@ const BreedingWaters = () => {
 			<ContainerControls>
 				{account &&
 					<ToggleGroup>
-						<ToggleOption className={fishSelectionToShow === FishSelectionEnum.MyFish ? 'active' : ''} onClick={() => setFishSelectionToShow(FishSelectionEnum.MyFish)}>My $FISH</ToggleOption>
-						<ToggleOption className={fishSelectionToShow === FishSelectionEnum.FightFish ? 'active' : ''} onClick={() => setFishSelectionToShow(FishSelectionEnum.FightFish)}>Opponent $FISH</ToggleOption>
+						<ToggleOption className={fishSelectionToShow === FishSelectionEnum.MyFish ? 'active' : ''} onClick={() => setFishSelectionToShow(FishSelectionEnum.MyFish)}>My Betta $FISH</ToggleOption>
+						<ToggleOption className={fishSelectionToShow === FishSelectionEnum.AlphaFish ? 'active' : ''} onClick={() => setFishSelectionToShow(FishSelectionEnum.AlphaFish)}>Alpha $FISH</ToggleOption>
 					</ToggleGroup>
 				}
 				{/* <ToggleButton nameA={'My $FISH'} nameB={'Fight $FISH'} toggle={() => setShowOpponentSelection(!showOpponentSelection)} selectedOption={showOpponentSelection} /> */}
@@ -242,13 +346,13 @@ const BreedingWaters = () => {
 				} */}
 			</ContainerControls>
 			{account && userFish.length > 0 && fishSelectionToShow === FishSelectionEnum.MyFish && 
-				<FishViewer selectedFish={mySelectedFish} fishCollection={userFish} onClick={setUserBetta} />
+				<FishViewer selectedFish={myBettaFish} fishCollection={userFish} onClick={setUserBetta} />
 			}
 			{account && userFish.length === 0 && fishSelectionToShow === FishSelectionEnum.MyFish &&
 				<BaseLinkButton to={'/catch'}>Catch a Fish!</BaseLinkButton>
 			}
-			{(fishSelectionToShow === FishSelectionEnum.FightFish || !account ) &&
-				<FishViewer selectedOpponent={opponentFish} fishCollection={breedingFish} onClick={setAlpha} />
+			{(fishSelectionToShow === FishSelectionEnum.AlphaFish || !account ) &&
+				<FishViewer selectedOpponent={alphaFish} fishCollection={breedingFish} onClick={setAlpha} />
 			}
 		</BaseOverlayContainer>
 	);
@@ -259,6 +363,32 @@ const OptionsContainer = styled.div`
 	flex-flow: row nowrap;
 	justify-content: center;
 	align-items: center;
+`;
+
+const GameButton = styled.button`
+	display: flex;
+	flex-flow: column;
+	justify-content: center;
+	padding: 2.2vmin;
+	border-radius: 25px;
+	background-color: white;
+	border: none;
+	opacity: 0.7;
+	box-shadow: 1px 2px 4px 4px rgba(0, 0, 0, 0.25);
+	color: black;
+	margin-left: ${props => props.theme.spacing.gapSmall};
+	transition: opacity 0.3s ease, box-shadow 0.25s ease-in-out;
+	text-transform: uppercase;
+	font-weight: bolder;
+	text-decoration: none;
+	font-size: ${props => props.theme.font.medium};
+	pointer-events: auto;
+
+	&:hover {
+		opacity: 1;
+		box-shadow: 1px 2px 2px 2px rgba(0, 0, 0, 0.2);
+		cursor: pointer;
+	}
 `;
 
 

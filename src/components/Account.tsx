@@ -21,6 +21,8 @@ import fishImg from "../img/icons/fish.svg"
 import deadImg from "../img/icons/dead.svg"
 import foodImg from "../img/icons/food.svg"
 import walletImg from "../img/icons/wallet.svg"
+import breedingImg from "../img/icons/breeding.svg"
+import fightingImg from "../img/icons/fighting.svg"
 
 
 // ?
@@ -74,26 +76,28 @@ const Account = ({ children, mobile }: Props) => {
 									</BalanceText>
 								</BalanceComponent>
 								<BalanceComponent title="FISH Balance">
-										<BalanceText>
-											{balanceFish}<LogoImg src={fishImg} alt="FISH" ></LogoImg>
-										</BalanceText>
-									</BalanceComponent>
-									<BalanceComponent title="DEADFISH Balance">
-										<BalanceText>
-											{balanceDeadFish}<LogoImg src={deadImg} alt="DEADFISH"></LogoImg>
-										</BalanceText>
-									</BalanceComponent>
+									<BalanceText>
+										{balanceFish}<LogoImg src={fishImg} alt="FISH" ></LogoImg>
+									</BalanceText>
+								</BalanceComponent>
+
+								<BalanceComponent title="FIGHTFISH Balance">
+									<BalanceText>
+										{balanceFightFish}<LogoImg src={fightingImg} alt="FIGHTFISH"></LogoImg>
+									</BalanceText>
+								</BalanceComponent>
+								<BalanceComponent title="BREEDFISH Balance">
+									<BalanceText>
+										{balanceBreedFish}<LogoImg src={breedingImg} alt="BREEDFISH"></LogoImg>
+									</BalanceText>
+								</BalanceComponent>
+								<BalanceComponent title="DEADFISH Balance">
+									<BalanceText>
+										{balanceDeadFish}<LogoImg src={deadImg} alt="DEADFISH"></LogoImg>
+									</BalanceText>
+								</BalanceComponent>
 									
-									<BalanceComponent title="FIGHTFISH Balance">
-										<BalanceText>
-											{balanceFightFish}<LogoImg src={fishImg} alt="FIGHTFISH"></LogoImg>F
-										</BalanceText>
-									</BalanceComponent>
-									<BalanceComponent title="BREEDFISH Balance">
-										<BalanceText>
-											{balanceBreedFish}<LogoImg src={fishImg} alt="BREEDFISH"></LogoImg>B
-										</BalanceText>
-									</BalanceComponent>
+									
 							</>
 							}
 						</Group>
@@ -137,20 +141,19 @@ const Account = ({ children, mobile }: Props) => {
 							{balanceFish}<LogoImg src={fishImg} alt="FISH" ></LogoImg>
 						</BalanceText>
 					</BalanceComponent>
-					<BalanceComponent title="DEADFISH Balance">
-						<BalanceText>
-							{balanceDeadFish}<LogoImg src={deadImg} alt="DEADFISH"></LogoImg>
-						</BalanceText>
-					</BalanceComponent>
-					
 					<BalanceComponent title="FIGHTFISH Balance">
 						<BalanceText>
-							{balanceFightFish}<LogoImg src={fishImg} alt="FIGHTFISH"></LogoImg>F
+							{balanceFightFish}<LogoImg src={fightingImg} alt="FIGHTFISH"></LogoImg>
 						</BalanceText>
 					</BalanceComponent>
 					<BalanceComponent title="BREEDFISH Balance">
 						<BalanceText>
-							{balanceBreedFish}<LogoImg src={fishImg} alt="BREEDFISH"></LogoImg>B
+							{balanceBreedFish}<LogoImg src={breedingImg} alt="BREEDFISH"></LogoImg>
+						</BalanceText>
+					</BalanceComponent>
+					<BalanceComponent title="DEADFISH Balance">
+						<BalanceText>
+							{balanceDeadFish}<LogoImg src={deadImg} alt="DEADFISH"></LogoImg>
 						</BalanceText>
 					</BalanceComponent>
 				</Group>
@@ -185,6 +188,7 @@ const Container = styled.div`
 		display: flex;
 		flex-flow: row wrap;
 		justify-content: flex-end;
+		width: 100%;
   }
 `;
 
@@ -248,7 +252,7 @@ const BalanceText = styled.b`
 	flex-flow: row nowrap;
 	justify-content: center;
 	align-items: center;
-	font-size: ${props => props.theme.font.medium}vmax;
+	font-size: ${props => props.theme.font.medium};
 	/* margin-right: ${props => props.theme.spacing.gapSmall}; */
 	cursor: default;
 	color: black;

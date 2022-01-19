@@ -35,7 +35,8 @@ const Ocean = () => {
 	]
 
 	useEffect(() => {
-		setRenderedFish(prevData => []);
+		// setRenderedFish(prevData => []);
+		unityContext.clearFishPool("Ocean")
 		if(fishToShow === FishView.User) {
 			console.log("Show Tank")
 			// console.log(oceanFish)

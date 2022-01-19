@@ -55,7 +55,9 @@ export class Fish {
   lifetimeAlphaBreeds: number;
   lifetimeBettaBreeds: number;
   parentA: number;
+  parentAFish: Fish | null;
   parentB: number;
+  parentBFish: Fish | null;
   breedKey: string;
   deathTime: number;
   genesArray: Array<number>;
@@ -93,7 +95,9 @@ export class Fish {
     this.lifetimeAlphaBreeds = web3.utils.toNumber(fishInfo.lifetimeAlphaBreeds);
     this.lifetimeBettaBreeds = web3.utils.toNumber(fishInfo.lifetimeBettaBreeds);
     this.parentA = web3.utils.toNumber(fishInfo.parentA);
+    this.parentAFish = null;
     this.parentB = web3.utils.toNumber(fishInfo.parentB);
+    this.parentBFish = null;
     this.breedKey = fishInfo.breedKey;
     this.deathTime = web3.utils.toNumber(fishInfo.deathTime);
     this.genesArray = this.parseGenes(this.genes);
