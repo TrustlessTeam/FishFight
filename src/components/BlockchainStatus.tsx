@@ -21,7 +21,7 @@ const Block = styled.div`
 	right: 0;
 	flex-flow: row;
 	justify-content: center;
-	font-size: ${props => props.theme.font.medium}vmin;
+	font-size: ${props => props.theme.font.medium};
 	margin-left: ${props => props.theme.spacing.gapSmall};
 	padding: ${props => props.theme.spacing.gapSmall} ${props => props.theme.spacing.gapSmall};
 	border-radius: 25px;

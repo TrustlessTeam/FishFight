@@ -8,10 +8,11 @@ import Account from './Account';
 import FishViewer from './FishViewer';
 import Menu, { MenuItem } from './Menu';
 import { BaseContainer, ContainerControls, BaseLinkButton } from './BaseStyles';
+import { ToggleGroup, ToggleOption } from './ToggleButton';
 
 enum FishView {
-	'Ocean',
-	'User'
+	Ocean,
+	User
 }
 
 const Ocean = () => {
@@ -34,6 +35,40 @@ const Ocean = () => {
 	]
 
 	useEffect(() => {
+		setRenderedFish(prevData => []);
+		if(fishToShow === FishView.User) {
+			console.log("Show Tank")
+			// console.log(oceanFish)
+			if(!unityContext.isFishPoolReady) return;
+			let i = 0;
+			userFish.forEach(fish => {
+				if(!renderedFish.includes(fish.tokenId)) {
+					unityContext.addFishTank(fish);
+					setRenderedFish(prevData => [...prevData, fish.tokenId])
+					i++;
+				}
+			})
+			console.log(i)
+			unityContext.showTank();
+		}
+		if(fishToShow === FishView.Ocean) {
+			console.log("Show Ocean")
+			// console.log(oceanFish)
+			if(!unityContext.isFishPoolReady) return;
+			let i = 0;
+			oceanFish.forEach(fish => {
+				if(!renderedFish.includes(fish.tokenId)) {
+					unityContext.addFishOcean(fish);
+					setRenderedFish(prevData => [...prevData, fish.tokenId])
+					i++;
+				}
+			})
+			console.log(i)
+			unityContext.showOcean();
+		}
+	}, [unityContext.isFishPoolReady, fishToShow, oceanFish, userFish]);
+
+	useEffect(() => {
 		console.log("CLEAR OCEAN")
 		unityContext.clearFishPool('ShowOcean')
 	}, []);
@@ -47,32 +82,36 @@ const Ocean = () => {
 		}
 	}, [account]);
 
-	useEffect(() => {
-		console.log("Ocean Fish Changed")
-		// console.log(oceanFish)
-		if(!unityContext.isFishPoolReady) return;
-		let i = 0;
-		oceanFish.forEach(fish => {
-			if(!renderedFish.includes(fish.tokenId)) {
-				unityContext.addFishOcean(fish);
-				setRenderedFish(prevData => [...prevData, fish.tokenId])
-				i++;
-			}
-		})
-		console.log(i)
-	}, [oceanFish, unityContext.isFishPoolReady]);
+	// useEffect(() => {
+	// 	console.log("Ocean Fish Changed")
+	// 	// console.log(oceanFish)
+	// 	if(!unityContext.isFishPoolReady) return;
+	// 	let i = 0;
+	// 	oceanFish.forEach(fish => {
+	// 		if(!renderedFish.includes(fish.tokenId)) {
+	// 			unityContext.addFishOcean(fish);
+	// 			setRenderedFish(prevData => [...prevData, fish.tokenId])
+	// 			i++;
+	// 		}
+	// 	})
+	// 	console.log(i)
+	// }, [oceanFish, unityContext.isFishPoolReady]);
 
-	useEffect(() => {
-		unityContext.showOcean();
-	}, [unityContext.isFishPoolReady]);
+	// useEffect(() => {
+	// 	unityContext.showOcean();
+	// }, [unityContext.isFishPoolReady]);
 
 	return (
 
 		<BaseContainer>
 				<ContainerControls>
-					<Menu name={FishView[fishToShow]} items={FishViewOptions}></Menu>
+					<ToggleGroup>
+						<ToggleOption className={fishToShow === FishView.Ocean ? 'active' : ''} onClick={() => setFishToShow(FishView.Ocean)}>Ocean Fish</ToggleOption>
+						<ToggleOption className={fishToShow === FishView.User ? 'active' : ''} onClick={() => setFishToShow(FishView.User)}>My Fish</ToggleOption>
+					</ToggleGroup>
+					{/* <Menu name={FishView[fishToShow]} items={FishViewOptions}></Menu> */}
 					{!account && fishToShow === FishView.User &&
-						<Account/>
+						<Account mobile={false}/>
 					}
 					{fishToShow === FishView.User && account && userFish?.length === 0 &&
 						<BaseLinkButton to={'/catch'}>Catch a Fish!</BaseLinkButton>

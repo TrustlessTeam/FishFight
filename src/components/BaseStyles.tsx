@@ -42,7 +42,7 @@ export const BaseText = styled.p`
 	padding: ${props => props.theme.spacing.gap};
 	margin: 0;
 	background-color: white;
-	font-size: ${props => props.theme.font.large}vmin;
+	font-size: ${props => props.theme.font.large};
 	border-radius: 25px;
 	margin-left: ${props => props.theme.spacing.gapSmall};
 `;
@@ -65,7 +65,7 @@ export const BaseButton = styled.button`
 	text-transform: uppercase;
 	font-weight: bolder;
 	text-decoration: none;
-	font-size: ${props => props.theme.font.medium}vmin;
+	font-size: ${props => props.theme.font.medium};
 
 	&:hover {
 		opacity: 1;
@@ -92,7 +92,7 @@ export const BaseLinkButton = styled(Link)`
 	text-transform: uppercase;
 	font-weight: bolder;
 	text-decoration: none;
-	font-size: ${props => props.theme.font.medium}vmin;
+	font-size: ${props => props.theme.font.medium};
 
 	&:hover {
 		opacity: 1;

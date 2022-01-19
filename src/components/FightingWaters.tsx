@@ -15,7 +15,7 @@ import { BaseContainer, BaseLinkButton, BaseOverlayContainer, ContainerControls 
 import LoadingOverlay from 'react-loading-overlay';
 import web3 from 'web3';
 import BN from 'bn.js';
-import ToggleButton from './ToggleButton';
+import { ToggleGroup, ToggleOption } from './ToggleButton';
 
 
 enum FishSelectionEnum {
@@ -30,7 +30,7 @@ const FightingWaters = () => {
 	const [mySelectedFish, setMySelectedFish] = useState<Fish | null>(null);
 	const [opponentFish, setOpponentFish] = useState<Fish | null>(null);
 	// const [fighterSelectionToShow, setFighterSelectionToShow] = useState<number>(FishViewOptions.MyFish);
-	const [fishSelectionToShow, setFishSelectionToShow] = useState<number>(FishSelectionEnum.MyFish);
+	const [fishSelectionToShow, setFishSelectionToShow] = useState<number>(FishSelectionEnum.FightFish);
 	const [fightResult, setFightResult] = useState<Fight | null>();
 	const [showFightResult, setShowFightResult] = useState(false);
 	const [isFighting, setIsFighting] = useState<boolean>(false);
@@ -51,6 +51,14 @@ const FightingWaters = () => {
 			onClick: () => setFishSelectionToShow(FishSelectionEnum.FightFish)
 		}
 	]
+
+	useEffect(() => {
+		if(account) {
+			setFishSelectionToShow(FishSelectionEnum.MyFish)
+		} else {
+			setFishSelectionToShow(FishSelectionEnum.FightFish)
+		}
+	}, [account]);
 
 	useEffect(() => {
 		console.log("MyFish")
@@ -373,28 +381,33 @@ const FightingWaters = () => {
 					:
 					<GameButton onClick={() => depositFish(mySelectedFish)}>{'Deposit'}</GameButton>
 				}
-				{!showOpponentSelection &&
-					<GameButton onClick={() => setShowOpponentSelection(true)}>{'Start Fight'}</GameButton>
+				{mySelectedFish && opponentFish &&
+					<GameButton onClick={fightFish}>{'Start Fight'}</GameButton>
 				}
 				{/* <GameButton onClick={() => selectAnother()}>{'Back to Fish'}</GameButton> */}
 			</OptionsContainer>
 			}
 			<ContainerControls>
-				<ToggleButton nameA={'My $FISH'} nameB={'Fight $FISH'} toggle={() => setShowOpponentSelection(!showOpponentSelection)} selectedOption={showOpponentSelection} />
+				{account &&
+					<ToggleGroup>
+						<ToggleOption className={fishSelectionToShow === FishSelectionEnum.MyFish ? 'active' : ''} onClick={() => setFishSelectionToShow(FishSelectionEnum.MyFish)}>My $FISH</ToggleOption>
+						<ToggleOption className={fishSelectionToShow === FishSelectionEnum.FightFish ? 'active' : ''} onClick={() => setFishSelectionToShow(FishSelectionEnum.FightFish)}>Opponent $FISH</ToggleOption>
+					</ToggleGroup>
+				}
+				{/* <ToggleButton nameA={'My $FISH'} nameB={'Fight $FISH'} toggle={() => setShowOpponentSelection(!showOpponentSelection)} selectedOption={showOpponentSelection} /> */}
 				{/* {fishSelectionToShow === FishSelectionEnum.MyFish &&
 					<StakedStatus></StakedStatus>
 				} */}
 			</ContainerControls>
-			{account && userFish.length > 0 && !showOpponentSelection && 
+			{account && userFish.length > 0 && fishSelectionToShow === FishSelectionEnum.MyFish && 
 				<FishViewer selectedFish={mySelectedFish} fishCollection={userFish} onClick={setUserFighter} />
 			}
-			{account && userFish.length === 0 && !showOpponentSelection &&
+			{account && userFish.length === 0 && fishSelectionToShow === FishSelectionEnum.MyFish &&
 				<BaseLinkButton to={'/catch'}>Catch a Fish!</BaseLinkButton>
 			}
-			{(showOpponentSelection || !account ) &&
+			{(fishSelectionToShow === FishSelectionEnum.FightFish || !account ) &&
 				<FishViewer selectedOpponent={opponentFish} fishCollection={fightingFish} onClick={setOpponentFighter} />
 			}
-				{/* <FishViewer selectedFish={mySelectedFish} fishCollection={userFish} onClick={setUserFighter}></FishViewer> */}
 		</BaseOverlayContainer>
 	);
 };
@@ -422,7 +435,7 @@ const GameButton = styled.button`
 	text-transform: uppercase;
 	font-weight: bolder;
 	text-decoration: none;
-	font-size: ${props => props.theme.font.medium}vmin;
+	font-size: ${props => props.theme.font.medium};
 	pointer-events: auto;
 
 	&:hover {

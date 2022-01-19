@@ -70,7 +70,7 @@ const BalanceText = styled.b`
 	/* margin-right: ${props => props.theme.spacing.gapSmall}; */
 	cursor: default;
 	@media ${props => props.theme.device.tablet} {
-		font-size: ${props => props.theme.font.medium}vmin;
+		font-size: ${props => props.theme.font.medium};
   }
 `;
 

@@ -56,3 +56,12 @@ code {
   bottom: 0;
   background-color: rgba(0, 0, 0, 0.6);
 }
+
+@import url('https://fonts.googleapis.com/css2?family=Fjalla+One&display=swap');
+
+
+body, html, button, div, h1, h2, h3, p {
+    font-family: 'Fjalla One', sans-serif;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
+}

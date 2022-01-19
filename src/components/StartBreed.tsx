@@ -331,14 +331,14 @@ const Text = styled.p`
 	padding: ${props => props.theme.spacing.gap};
 	margin: 0;
 	background-color: white;
-	font-size: ${props => props.theme.font.large}vmin;
+	font-size: ${props => props.theme.font.large};
 	border-radius: 25px;
 	margin-left: ${props => props.theme.spacing.gapSmall};
 `;
 
 const ResultData = styled.p`
 	color: ${"black"};
-	font-size: ${props => props.theme.font.medium}vmin;
+	font-size: ${props => props.theme.font.medium};
 	margin: 0;
 `;
 

@@ -13,7 +13,7 @@ const ConnectWallet = () => {
 
 	return (
 		<ConnectContainer>
-			<Account />
+			<Account mobile={false}/>
 			<Text>To Catch A Fish Connect Your Wallet</Text>
 		</ConnectContainer>
 	);
@@ -34,7 +34,7 @@ const Text = styled.p`
 	margin: 0;
 	margin-top: ${props => props.theme.spacing.gap};
 	background-color: white;
-	font-size: ${props => props.theme.font.large}vmin;
+	font-size: ${props => props.theme.font.large};
 	border-radius: 25px;
 	margin-left: ${props => props.theme.spacing.gapSmall};
 `;

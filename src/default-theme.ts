@@ -26,9 +26,9 @@ const gap = spacingBase + `vmin`;
 const gapMedium = spacingBase * 2 + `vmin`;
 const gapLarge = spacingBase * 3 + `vmin`
 
-const fontSmall = 1;
-const fontMedium = 1.5;
-const fontLarge = 1.8;
+const fontSmall = "12px";
+const fontMedium = "16px";
+const fontLarge = "24px";
 
 const size = {
   mobileS: '320px',

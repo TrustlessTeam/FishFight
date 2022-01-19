@@ -1,5 +1,7 @@
 import { useState } from "react";
 import styled from "styled-components";
+import dropdownImg from "../img/icons/dropdown.svg"
+
 
 const Drop = styled.div`
   position: relative;
@@ -8,19 +10,24 @@ const Drop = styled.div`
   cursor: pointer;
 `;
 
-const Dropbtn = styled.div`
+const Dropbtn = styled.button`
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
   /* border: 2px solid white; */
-  border-radius: ${props => props.theme.spacing.gap};
+  border-radius: 10px;
+  border: 2px solid white;
   color: black;
-  background-color: white;
+  background-color: #f0f1eb;
   text-align: center;
-  padding: 14px 16px;
+  padding: 10px 24px;
+	font-size: ${props => props.theme.font.small};
   text-decoration: none;
-  box-shadow: 
-    0 0 20px 3px #fff;  /* inner white */
-    //0 0 50px 30px #f0f, /* middle magenta */
-    //0 0 70px 45px #0ff; /* outer cyan */
-  /* min-width: 20%; */
+  text-transform: uppercase;
+
+  @media ${props => props.theme.device.tablet} {
+		font-size: ${props => props.theme.font.medium};
+  }
 `;
 
 const DropContent = styled.div<DropdownProps>`
@@ -39,10 +46,20 @@ const DropItem= styled.a`
   color: black;
   padding: 12px 16px;
   text-decoration: none;
+  text-transform: uppercase;
   display: block;
   text-align: left;
   &:hover {
     background-color: #f1f1f1;
+  }
+`;
+
+const LogoImg = styled.img<{open: boolean}>`
+  transform: ${p => (p.open ? "rotate(180deg)" : "rotate(0deg)")};
+	height: 15px;
+
+	@media ${props => props.theme.device.tablet} {
+	  height: 20px;
   }
 `;
 
@@ -74,6 +91,7 @@ const Menu = ({name, items} : Props) => {
     <Drop>
       <Dropbtn onClick={() => toggleDropdown()}>
         {name}
+        <LogoImg open={open} src={dropdownImg} alt={"Dropdown arrow"}></LogoImg>
         <DropContent open={open}>
         {items.map((selection: MenuItem, index) => {
           return (

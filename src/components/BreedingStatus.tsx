@@ -65,7 +65,7 @@ const Title = styled.h1`
 	display: none;
 	@media ${props => props.theme.device.tablet} {
 		display: block;
-	  font-size: ${props => props.theme.font.small}vmin;
+	  font-size: ${props => props.theme.font.small};
   }
 	text-decoration: underline;
 	color: white;
@@ -76,7 +76,7 @@ const StatusText = styled.b`
 	cursor: default;
 	font-size: ${props => props.theme.font.medium}vmax;
 	@media ${props => props.theme.device.tablet} {
-	  font-size: ${props => props.theme.font.small}vmin;
+	  font-size: ${props => props.theme.font.small};
   }
 `;
 

@@ -72,7 +72,7 @@ const Tank = () => {
 				<ContainerControls>
 					<Menu name={FishView[fishToShow]} items={FishViewOptions}></Menu>
 					{!account && fishToShow === FishView.User &&
-						<Account/>
+						<Account mobile={false} />
 					}
 					{fishToShow === FishView.User && account && userFish?.length === 0 &&
 						<BaseLinkButton to={'/catch'}>Catch a Fish!</BaseLinkButton>

@@ -20,6 +20,7 @@ import { useFishFight } from '../context/fishFightContext';
 import fishImg from "../img/icons/fish.svg"
 import deadImg from "../img/icons/dead.svg"
 import foodImg from "../img/icons/food.svg"
+import walletImg from "../img/icons/wallet.svg"
 
 
 // ?
@@ -27,9 +28,10 @@ if (process.env.NODE_ENV !== 'test') Modal.setAppElement('#root');
 
 type Props = {
   children?: React.ReactNode;
+	mobile: boolean;
 };
 
-const Account = ({ children }: Props) => {
+const Account = ({ children, mobile }: Props) => {
 	const [modalIsOpen, setModalIsOpen] = useState(false);
 	const { account, active } = useWeb3React();
 	const { balance, balanceFish, balanceDeadFish, balanceFood, balanceFightFish, balanceBreedFish  } = useFishFight();
@@ -44,6 +46,62 @@ const Account = ({ children }: Props) => {
 	const closeModal = () => {
 		setModalIsOpen(false);
 	};
+
+	if(mobile) {
+		return (
+			<MobileContainer>
+				<WalletImg open={modalIsOpen} onClick={openModal} src={walletImg} alt="User Wallet"></WalletImg>
+				{children}
+				<Modal
+					isOpen={modalIsOpen}
+					className="Modal"
+					overlayClassName="Overlay"
+					onRequestClose={closeModal}
+					shouldCloseOnOverlayClick
+				>
+					<ModalContainer>
+						{active ? <SignOut account={parsedAccount} closeModal={closeModal} /> : <Wallets closeModal={closeModal} />}
+
+						<Group>
+							{account &&
+							<>
+								<BalanceComponent>
+									<BalanceText>{balance?.split('.')[0]} ONE</BalanceText>
+								</BalanceComponent>
+								<BalanceComponent title="FISHFOOD Balance">
+									<BalanceText>
+										{parseFloat(balanceFood ? balanceFood : '0').toFixed(2)}<LogoImg src={foodImg} alt="FISHFOOD"></LogoImg>
+									</BalanceText>
+								</BalanceComponent>
+								<BalanceComponent title="FISH Balance">
+										<BalanceText>
+											{balanceFish}<LogoImg src={fishImg} alt="FISH" ></LogoImg>
+										</BalanceText>
+									</BalanceComponent>
+									<BalanceComponent title="DEADFISH Balance">
+										<BalanceText>
+											{balanceDeadFish}<LogoImg src={deadImg} alt="DEADFISH"></LogoImg>
+										</BalanceText>
+									</BalanceComponent>
+									
+									<BalanceComponent title="FIGHTFISH Balance">
+										<BalanceText>
+											{balanceFightFish}<LogoImg src={fishImg} alt="FIGHTFISH"></LogoImg>F
+										</BalanceText>
+									</BalanceComponent>
+									<BalanceComponent title="BREEDFISH Balance">
+										<BalanceText>
+											{balanceBreedFish}<LogoImg src={fishImg} alt="BREEDFISH"></LogoImg>B
+										</BalanceText>
+									</BalanceComponent>
+							</>
+							}
+						</Group>
+					</ModalContainer>
+				</Modal>
+			</MobileContainer>
+		);
+	}
 
 	return (
 		<Container>
@@ -113,20 +171,45 @@ const Account = ({ children }: Props) => {
 	);
 };
 
-const Container = styled.div`
+const MobileContainer = styled.div`
 	display: flex;
 	flex-flow: row nowrap;
 	@media ${props => props.theme.device.tablet} {
+		display: none;
+  }
+`;
+
+const Container = styled.div`
+	display: none;
+	@media ${props => props.theme.device.tablet} {
+		display: flex;
 		flex-flow: row wrap;
 		justify-content: flex-end;
   }
 `;
 
+const ModalContainer = styled.div`
+	display: flex;
+	flex-flow: column;
+	/* @media ${props => props.theme.device.tablet} {
+		display: flex;
+		flex-flow: row wrap;
+		justify-content: flex-end;
+  } */
+`;
+
 const Group = styled.div`
 	display: flex;
-	flex-flow: row nowrap;
-	justify-content: flex-end;
-	width: 100%;
+	flex-flow: row wrap;
+	padding: ${props => props.theme.spacing.gap};
+
+	@media ${props => props.theme.device.tablet} {
+		flex-flow: row nowrap;
+		justify-content: flex-end;
+		width: 100%;
+		padding: 0;
+
+  }
 `;
 
 const AccountComponent = styled.div`
@@ -149,7 +232,7 @@ const AccountComponent = styled.div`
 	}
 	z-index: 5;
 	@media ${props => props.theme.device.tablet} {
-	  font-size: ${props => props.theme.font.medium}vmin;
+	  font-size: ${props => props.theme.font.medium};
   }
 `;
 
@@ -168,8 +251,10 @@ const BalanceText = styled.b`
 	font-size: ${props => props.theme.font.medium}vmax;
 	/* margin-right: ${props => props.theme.spacing.gapSmall}; */
 	cursor: default;
+	color: black;
 	@media ${props => props.theme.device.tablet} {
-		font-size: ${props => props.theme.font.medium}vmin;
+		font-size: ${props => props.theme.font.medium};
+		color: white;
   }
 `;
 
@@ -195,6 +280,18 @@ const LogoImg = styled.img`
 
 	@media ${props => props.theme.device.tablet} {
 	  height: 30px;
+  }
+`;
+
+const WalletImg = styled.img<{open: boolean}>`
+	background-color: ${p => (p.open ? "gray" : "white")};
+	padding: ${props => props.theme.spacing.gapSmall};
+	height: 25px;
+	margin-left: ${props => props.theme.spacing.gapSmall};
+	border-radius: 50%;
+
+	@media ${props => props.theme.device.tablet} {
+	  height: 20px;
   }
 `;
 

@@ -27,6 +27,7 @@ interface UnityProviderContext {
 	showHome: () => void;
 	showTank: () => void;
 	addFishOcean: (fish: Fish) => void,
+	addFishTank: (fish: Fish) => void,
 	addFishFightingPool: (fish: Fish) => void,
 	addFishBreedingPool: (fish: Fish) => void,
 	addFishFight1: (fish: Fish) => void;
@@ -194,6 +195,13 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
 		UnityInstance.send('FishPool', 'AddFish_OceanView', JSON.stringify(fish));
 		// console.log("AddFish Completed")
 	};
+	const addFishTank = (fish: Fish) => {
+		console.log(`AddFish Tank${fish.tokenId}`)
+    if(!isLoaded || !fishPoolReady) return;
+		// console.log(fish)
+		UnityInstance.send('FishPool', 'AddFish_TankView', JSON.stringify(fish));
+		// console.log("AddFish Completed")
+	};
 	const addFishFightingPool = (fish: Fish) => {
 		// console.log("AddFish Called")
     if(!isLoaded || !fishPoolReady) return;
@@ -244,6 +252,24 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
 		UnityInstance.send('FishPool', 'AddFish3_BreedingView', JSON.stringify(fish));
 		// console.log("AddFish Completed")
 	};
+
+	const addFish1 = (fish: Fish) => {
+		console.log(fish)
+    if(!isLoaded || !fishPoolReady) return;
+		UnityInstance.send('FishPool', 'AddFish1', JSON.stringify(fish));
+	}
+
+	const addFish2 = (fish: Fish) => {
+		console.log(fish)
+    if(!isLoaded || !fishPoolReady) return;
+		UnityInstance.send('FishPool', 'AddFish2', JSON.stringify(fish));
+	}
+
+	const addFish3 = (fish: Fish) => {
+		console.log(fish)
+    if(!isLoaded || !fishPoolReady) return;
+		UnityInstance.send('FishPool', 'AddFish3', JSON.stringify(fish));
+	}
 	
 	const addFishFishing = (fish: Fish) => {
 		console.log("AddFish Called")
@@ -256,7 +282,9 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
 		console.log(fish)
     if(!isLoaded || !fishPoolReady) return;
 		UnityInstance.send('Camera', 'SetAnimState', 'ShowFish');
-		UnityInstance.send('FishPool', 'AddFish_FishView', JSON.stringify(fish));
+		UnityInstance.send('FishPool', 'AddFish1', JSON.stringify(fish));
+
+		// UnityInstance.send('FishPool', 'AddFish_FishView', JSON.stringify(fish));
 		// console.log("ShowFish Completed")
 	};
 	const sendRound = (round: number, roundStat: number) => {
@@ -308,6 +336,7 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
 		showHome: showHome,
 		showTank: showTank,
     addFishOcean: addFishOcean,
+    addFishTank: addFishTank,
 		addFishFightingPool: addFishFightingPool,
 		addFishBreedingPool: addFishBreedingPool,
 		addFishFight1: addFishFight1,

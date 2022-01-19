@@ -49,8 +49,8 @@ const StatusModal = ({}: Props) => {
 		loadData(account);
 	}, [account, userFightingFish]);
 
-	const openModal = () => {
-		setModalIsOpen(true);
+	const toggleModel = () => {
+		setModalIsOpen(!modalIsOpen);
 	};
 
 	const closeModal = () => {
@@ -81,6 +81,22 @@ const StatusModal = ({}: Props) => {
 			}
 		}
 		return web3.utils.fromWei(total);
+	}
+
+	const oceanData = () => {
+		return (
+			<DataContainer>
+				<SubTitle>Ocean Stats</SubTitle>
+				<StatusContainer>
+					<DataItem title="">
+						<StatusText>{`Total Supply: ${totalSupply}`}</StatusText>
+					</DataItem>
+					<DataItem title="">
+						<StatusText>{`Current Max Supply: ${maxSupply - totalSupply}`}</StatusText>
+					</DataItem>
+				</StatusContainer>
+			</DataContainer>
+		);
 	}
 
 	const fishingData = () => {
@@ -168,36 +184,37 @@ const StatusModal = ({}: Props) => {
 		return (
 			<DataContainer>
 				<Title>{`Season ${currentSeason.index}`}</Title>
+				<SubTitle>{`Phase Stats`}</SubTitle>
 				<DataItem title="">
 					<StatusText></StatusText>
-					<StatusText>{`Current Phase: ${currentSeason.phaseString}`}</StatusText>
+					<StatusText>{`Current: ${currentSeason.phaseString}`}</StatusText>
 				</DataItem>
 				<DataItem title="">
 					{currentSeason.phase == 1 &&
-						<StatusText>Next Phase: Fighting</StatusText>
+						<StatusText>Next: Fighting</StatusText>
 					}
 					{currentSeason.phase == 2 &&
-						<StatusText>Next Phase: Breeding</StatusText>
+						<StatusText>Next: Breeding</StatusText>
 					}
 					{currentSeason.phase == 3 &&
-						<StatusText>Next Phase: Season Change</StatusText>
+						<StatusText>Next: Fishing + Season {currentSeason.index + 1}</StatusText>
 					}
 				</DataItem>
-
 				<DataItem>
 				{currentPhaseEndTime != undefined &&
-					<StatusText>Time Limit: <Countdown date={new Date(currentPhaseEndTime)} /></StatusText>
+					<StatusText>{`Time Left: `}<Countdown date={new Date(currentPhaseEndTime)} /></StatusText>
 				}
 				</DataItem>
+				{/* <StatusText>OR</StatusText> */}
 				<DataItem>
 				{currentSeason.phase == 1 &&
-					<StatusText>{`Limit: ${currentSeason.fishCatch} / ${maxCaught} Catches`}</StatusText>
+					<StatusText>{`Catches Left: ${currentSeason.fishCatch} / ${maxCaught}`}</StatusText>
 				}
 				{currentSeason.phase == 2 &&
-					<StatusText>{`Limit: ${currentSeason.fishDeath} / ${maxKilled} Deaths`}</StatusText>
+					<StatusText>{`Deaths Left: ${currentSeason.fishDeath} / ${maxKilled}`}</StatusText>
 				}
 				{currentSeason.phase == 3 &&
-					<StatusText>{`Limit: ${currentSeason.fishBreed} / ${maxBred} Births`}</StatusText>
+					<StatusText>{`Births Left: ${currentSeason.fishBreed} / ${maxBred}`}</StatusText>
 				}
 				</DataItem>
 			</DataContainer>
@@ -206,8 +223,8 @@ const StatusModal = ({}: Props) => {
 
 
 		return (
-			<>
-				<LogoImg src={infoImg} open={modalIsOpen} onClick={openModal}></LogoImg>
+			<ImgContainer>
+				<LogoImg src={infoImg} open={modalIsOpen} onClick={toggleModel}></LogoImg>
 				<Modal
 					isOpen={modalIsOpen}
 					className="Modal"
@@ -219,6 +236,8 @@ const StatusModal = ({}: Props) => {
 					<StatusModalContainer>
 					{seasonData()}
 					<Routes>
+						<Route path="ocean" element={oceanData()} />
+						<Route path="ocean:id" element={oceanData()} />
 						<Route path="fishing" element={fishingData()} />
 						<Route path="fishing/:id" element={fishingData()} />
 						<Route path="fighting" element={fightingData()} />
@@ -228,18 +247,27 @@ const StatusModal = ({}: Props) => {
 					</Routes>
 				</StatusModalContainer>
 				</Modal>
-			</>
+			</ImgContainer>
 			
 			
 		)
 	
 };
 
+const ImgContainer = styled.div`
+	display: flex;
+	flex-flow: column;
+	justify-content: center;
+	/* padding: ${props => props.theme.spacing.gap}; */
+	/* justify-content: space-evenly;
+	align-items: flex-start; */
+`;
+
 const StatusModalContainer = styled.div`
 	display: flex;
 	flex-flow: column;
 	background-color: white;
-	padding: ${props => props.theme.spacing.gap};
+	padding: ${props => props.theme.spacing.gapMedium};
 	/* justify-content: space-evenly;
 	align-items: flex-start; */
 `;
@@ -247,7 +275,7 @@ const StatusModalContainer = styled.div`
 const DataContainer = styled.div`
 	display: flex;
 	flex-flow: column;
-	align-items: center;
+	align-items: flex-start;
 	/* @media ${props => props.theme.device.tablet} {
 		display: flex;
 		flex-flow: row nowrap;
@@ -258,18 +286,13 @@ const DataContainer = styled.div`
 
 const StatusContainer = styled.div`
 	display: flex;
-	flex-flow: row wrap;
-	justify-content: space-evenly;
-	align-items: flex-start;
-	padding: ${props => props.theme.spacing.gap} ${props => props.theme.spacing.gapSmall};
+		flex-flow: column;
+		align-items: flex-start;
+		flex-flow: column;
+		/* justify-content: center; */
 
 	@media ${props => props.theme.device.tablet} {
-		display: flex;
-		flex-flow: column;
-		/* align-items: center; */
-		flex-flow: column;
-		justify-content: center;
-		padding: 0;
+
   }
 `;
 
@@ -279,7 +302,20 @@ const Title = styled.h1`
 
 	@media ${props => props.theme.device.tablet} {
 		display: block;
-	  font-size: ${props => props.theme.font.large}vmin;
+	  font-size: ${props => props.theme.font.large};
+  }
+	/* text-decoration: underline; */
+	text-transform: uppercase;
+`;
+
+const SubTitle = styled.h2`
+	color: black;
+	font-size: ${props => props.theme.font.medium}vmax;
+	text-decoration: underline;
+
+	@media ${props => props.theme.device.tablet} {
+		display: block;
+	  font-size: ${props => props.theme.font.medium};
   }
 	/* text-decoration: underline; */
 	text-transform: uppercase;
@@ -292,10 +328,10 @@ const StatusText = styled.b`
 	align-items: center;
 	color: black;
 	font-size: ${props => props.theme.font.medium}vmax;
-	/* margin-right: ${props => props.theme.spacing.gapSmall}; */
+	margin-bottom: ${props => props.theme.spacing.gapSmall};
 	cursor: default;
 	@media ${props => props.theme.device.tablet} {
-		font-size: ${props => props.theme.font.medium}vmin;
+		font-size: ${props => props.theme.font.medium};
   }
 `;
 
@@ -328,7 +364,7 @@ const LogoImg = styled.img<{open: boolean}>`
 	border-radius: 50%;
 
 	@media ${props => props.theme.device.tablet} {
-	  height: 30px;
+	  height: 20px;
   }
 `;
 

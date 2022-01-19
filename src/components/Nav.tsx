@@ -38,19 +38,19 @@ const Nav = () => {
         <NavImg className={({isActive}) => isActive ? 'active' : ''} to="/ocean">
           <LogoImg src={oceanImg} alt="Ocean"></LogoImg>
         </NavImg>
-        <SubContainer>
+        {/* <SubContainer>
           <Option className={({isActive}) => isActive ? 'active' : ''} to='/ocean'>Ocean View</Option>
           <Option className={({isActive}) => isActive ? 'active' : ''} to='/ocean/tank'>Tank View</Option>
           <Option className={({isActive}) => isActive ? 'active' : ''} to='/ocean/swim'>Go Swimming!</Option>
-        </SubContainer>
+        </SubContainer> */}
       </NavItem>
       <NavItem>
         <NavImg className={({isActive}) => isActive ? 'active' : ''} to="/fishing">
           <LogoImg active={location === 'fishing'} src={fishingImg} alt="Fishing"></LogoImg>
         </NavImg>
-        <SubContainer>
+        {/* <SubContainer>
           <Option className={({isActive}) => isActive ? 'active' : ''} to='/fishing' end>Fishing Waters</Option>
-        </SubContainer>
+        </SubContainer> */}
       </NavItem>
       <NavItem>
         <NavImg className={({isActive}) => isActive ? 'active' : ''} to="/breeding">
@@ -126,9 +126,12 @@ const NavMenu = styled.nav`
 const NavItem = styled.div`
   /* height: 100%; */
   /* position: relative; */
-  display: flex;
+  /* display: flex;
   flex-flow: column;
-  align-items: center;
+  align-items: center; */
+  height: 100%;
+    position: relative;
+    display: inline-block;
   @media ${props => props.theme.device.tablet} {
 		height: 100%;
     position: relative;
@@ -137,17 +140,17 @@ const NavItem = styled.div`
 `;
 
 const SubContainer = styled.div<ActiveProps>`
-  display: none;
+  /* display: none;
   flex-flow: column;
-  align-items: center;
-
-  @media ${props => props.theme.device.tablet} {
-		display: none;
+  align-items: center; */
+  display: none;
     position: absolute;
     flex-flow: row nowrap;
     border-radius: 20px;
     left: 51%;
     transform: translateX(-51%);
+  @media ${props => props.theme.device.tablet} {
+		
   }
 `;
 
@@ -162,7 +165,7 @@ const Option = styled(NavLink)<ActiveProps>`
   text-decoration: none;
 
   @media ${props => props.theme.device.tablet} {
-	  font-size: ${props => props.theme.font.medium}vmin;
+	  font-size: ${props => props.theme.font.medium};
   }
 
   &.active {

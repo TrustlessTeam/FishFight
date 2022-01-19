@@ -46,9 +46,9 @@ declare module 'styled-components' {
     };
 
     font: {
-      small: number;
-      medium: number;
-      large: number;
+      small: string;
+      medium: string;
+      large: string;
     }
   }
 }

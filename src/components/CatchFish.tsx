@@ -201,7 +201,7 @@ const FishData = styled.p`
 	justify-content: center;
 	color: ${"black"};
 	text-align: center;
-	font-size: ${props => props.theme.font.medium}vmin;
+	font-size: ${props => props.theme.font.medium};
 	background-color: rgba(255, 255, 255, 0.7);
 	margin: 0 ${props => props.theme.spacing.gapSmall};
 	padding: ${props => props.theme.spacing.gapSmall};
@@ -223,7 +223,7 @@ const Text = styled.p`
 	padding: ${props => props.theme.spacing.gap};
 	margin: 0;
 	background-color: white;
-	font-size: ${props => props.theme.font.large}vmin;
+	font-size: ${props => props.theme.font.large};
 	border-radius: 25px;
 	margin-left: ${props => props.theme.spacing.gapSmall};
 `;
@@ -242,7 +242,7 @@ const GameButton = styled.button`
 	text-transform: uppercase;
 	font-weight: bolder;
 	text-decoration: none;
-	font-size: ${props => props.theme.font.large}vmin;
+	font-size: ${props => props.theme.font.large};
 
 	&:hover {
 		opacity: 1;

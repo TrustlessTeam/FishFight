@@ -245,7 +245,7 @@ const GameButton = styled.button`
 	text-transform: uppercase;
 	font-weight: bolder;
 	text-decoration: none;
-	font-size: ${props => props.theme.font.medium}vmin;
+	font-size: ${props => props.theme.font.medium};
 	pointer-events: auto;
 
 	&:hover {

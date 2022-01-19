@@ -17,7 +17,6 @@ const SignOut = ({ account, closeModal }: Props) => {
 
 	return (
 		<SignOutComponent>
-			<p>You are connected:</p>
 			<span>{account}</span>
 			<SignOutBtn onClick={handleClick}>Sign out</SignOutBtn>
 		</SignOutComponent>
@@ -28,10 +27,9 @@ const SignOutComponent = styled.div`
 	display: flex;
 	align-items: center;
 	padding: 20px 40px;
-	justify-content: space-around;
+	/* justify-content: space-around; */
 	flex-direction: column;
 	overflow: hidden;
-	height: 25vh;
 
 	& p {
 		margin: 0;
@@ -39,16 +37,17 @@ const SignOutComponent = styled.div`
 	}
 
 	& span {
-		font-size: 1.5rem;
-		color: #4c7909;
+		font-size: ${props => props.theme.font.medium}vmax;
+		font-weight: bold;
+		color: black;
 	}
 `;
 
 const SignOutBtn = styled.div`
 	margin-top: 20px;
-	padding: 10px 30px;
+	padding: ${props => props.theme.spacing.gap} ${props => props.theme.spacing.gap};
 	border-radius: 10px;
-	background-color: rgb(248, 80, 80);
+	background-color: rgb(182, 35, 35);
 	color: white;
 	cursor: pointer;
 `;

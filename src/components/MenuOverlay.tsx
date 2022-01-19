@@ -51,12 +51,13 @@ const MenuOverlay = () => {
 			<MenuContainer>
 				{/* <LogoImg src={infoImg} open={open} onClick={() => setOpen(!open)}></LogoImg> */}
 				<StatusModal/>
+				
 				<StyledNav></StyledNav>
 				<User open={open}>
-					<Account ></Account>
+					<Account mobile={false}></Account>
 					{/* <Balance></Balance> */}
 				</User>
-				
+				<Account mobile={true}></Account>
 				
 				
 				
@@ -89,9 +90,10 @@ const MenuContainer = styled.div`
 	display: flex;
 	padding: ${props => props.theme.spacing.gapSmall};
 	/* flex-flow: column; */
-	/* justify-content: center; */
-	flex-flow: row wrap;
-	justify-content: space-between;
+	justify-content: center;
+	flex-flow: row nowrap;
+	align-items: flex-start;
+	/* justify-content: space-between; */
 	background-color: rgba(0, 0, 0, 0.8);
 
 	@media ${props => props.theme.device.tablet} {
@@ -102,14 +104,21 @@ const MenuContainer = styled.div`
 `;
 
 const User = styled.div<{open: boolean}>`
+	display: none;
+	@media ${props => props.theme.device.tablet} {
+		display: flex;
+		flex-flow: row wrap;
+		justify-content: flex-end;
+		width: 40%;
+  }
+`;
+
+const UserMobile = styled.div<{open: boolean}>`
 	display: flex;
-	flex-flow: row wrap;
-	justify-content: flex-end;
-	width: 40%;
-	
-	/* @media ${props => props.theme.device.tablet} {
+	@media ${props => props.theme.device.tablet} {
+		
 		display: none;
-  } */
+  }
 `;
 
 const Status = styled(StatusModal)<{open: boolean}>`
@@ -121,6 +130,7 @@ const Status = styled(StatusModal)<{open: boolean}>`
 `;
 
 const StyledNav = styled(Nav)`
+	width: 80%;
 	/* order: 0;
 	@media ${props => props.theme.device.tablet} {
 		order: 1;

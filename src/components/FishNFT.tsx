@@ -68,7 +68,7 @@ const ToggleButton = styled.button`
 	padding: ${props => props.theme.spacing.gapSmall};
 	border: none;
 	border-radius: 50%;
-	font-size: ${props => props.theme.font.small}vmin;
+	font-size: ${props => props.theme.font.small};
 	font-weight: bold;
 	color: black;
 	background-color: white;
@@ -143,7 +143,7 @@ const FishData = styled.p`
 	justify-content: center;
 	color: ${"black"};
 	text-align: center;
-	font-size: ${props => props.theme.font.medium}vmin;
+	font-size: ${props => props.theme.font.medium};
 	font-weight: bold;
 	background-color: white;
 	margin: 0 ${props => props.theme.spacing.gapSmall};

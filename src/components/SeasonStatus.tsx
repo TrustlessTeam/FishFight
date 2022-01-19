@@ -103,7 +103,7 @@ const Title = styled.h1`
 	font-size: ${props => props.theme.font.medium}vmax;
 	@media ${props => props.theme.device.tablet} {
 		/* display: block; */
-	  font-size: ${props => props.theme.font.medium}vmin;
+	  font-size: ${props => props.theme.font.medium};
 		text-transform: uppercase;
 		margin-right: ${props => props.theme.spacing.gap};
   }
@@ -115,7 +115,7 @@ const StatusText = styled.b`
 	margin-right: ${props => props.theme.spacing.gapSmall};
 	font-size: ${props => props.theme.font.medium}vmax;
 	@media ${props => props.theme.device.tablet} {
-	  font-size: ${props => props.theme.font.small}vmin;
+	  font-size: ${props => props.theme.font.small};
 		text-transform: uppercase;
 		margin-right: ${props => props.theme.spacing.gapSmall};
   }
