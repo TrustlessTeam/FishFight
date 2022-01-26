@@ -26,11 +26,14 @@ type Props = {
 	onClick?: (fish: Fish) => void;
 	selectedFish?: Fish | null;
 	selectedOpponent?: Fish | null;
+	depositFighter?: boolean;
+	depositAlpha?: boolean;
 };
 
-const FishViewer = ({ fishCollection, onClick, selectedFish, selectedOpponent }: Props) => {
+const FishViewer = ({ fishCollection, onClick, selectedFish, selectedOpponent, depositAlpha, depositFighter }: Props) => {
 	const [showStats, setShowStats] = useState<boolean>(false);
 	const [sortOption, setSortOption] = useState<number>(SortSelection.Id);
+	const [searchId, setSearchId] = useState<string>('');
 
 	const SortOptions = [
 		{
@@ -62,9 +65,28 @@ const FishViewer = ({ fishCollection, onClick, selectedFish, selectedOpponent }:
 		{fishCollection.length > 0 &&
 			<SortMenu>
 				<Menu name={`Sort by: ${SortSelection[sortOption]}`} items={SortOptions}></Menu>
+				<Search>
+					<TextLabel>
+						VIEW ID:
+						<SearchInput
+							type="text"
+							value={searchId}
+							onChange={(
+								ev: React.ChangeEvent<HTMLInputElement>,
+							): void => setSearchId(ev.target.value)}
+        		/>
+					</TextLabel>
+					<input type="submit" value="GO" />
+				</Search>
 			</SortMenu>
 		}
 			<FishGrid ref={scrollRef}>
+			{depositAlpha && 
+				<AddButton to="/ocean">Add to Breed Pool</AddButton>
+			}
+			{depositFighter && 
+				<AddButton to="/ocean">Add to Fight Pool</AddButton>
+			}
 			{
 				fishCollection.sort(SortOptions[sortOption].sortFn)?.map((fish, index) => (
 					<FishNFT selectedOpponent={selectedOpponent?.tokenId === fish.tokenId} selectedUser={selectedFish?.tokenId === fish.tokenId} onClick={onClick ? () => onClick(fish) : undefined} fish={fish} key={index}></FishNFT>
@@ -80,6 +102,44 @@ interface GridProps {
 	ref?: any;
 }
 
+const Search = styled.form`
+	display: flex;
+	flex-flow: row nowrap;
+	align-items: center;
+	background-color: #f0f1eb;
+  padding: 8px 10px;
+	border-radius: 10px;
+	margin-left: ${props => props.theme.spacing.gapSmall};
+  border: 2px solid white;
+  color: black;
+`;
+
+const SearchInput = styled.input`
+	width: 40px;
+	margin-left: 5px;
+	border: 2px solid black;
+	border-radius: 5px;
+	padding: 2px;
+	font-size: ${props => props.theme.font.small};
+  text-decoration: none;
+  text-transform: uppercase;
+
+  @media ${props => props.theme.device.tablet} {
+		font-size: ${props => props.theme.font.medium};
+  }
+`;
+
+const TextLabel = styled.label`
+	font-size: ${props => props.theme.font.small};
+  text-decoration: none;
+  text-transform: uppercase;
+	padding: 0;
+
+  @media ${props => props.theme.device.tablet} {
+		font-size: ${props => props.theme.font.medium};
+  }
+`;
+
 const FishGrid = styled.div<GridProps>`
 	display: flex;
 	flex-direction: row nowrap;
@@ -91,14 +151,36 @@ const FishGrid = styled.div<GridProps>`
 `;
 
 const SortMenu = styled.div`
+	display: flex;
+	flex-flow: row nowrap;
 	position: absolute;
 	bottom: 12vh;
-	right: ${props => props.theme.spacing.gap};;
+	right: ${props => props.theme.spacing.gap};
 	/* width: 100px; */
 	padding: ${props => props.theme.spacing.gap};
 	pointer-events: auto;
-	
-	
 `;
 
+const AddButton = styled(Link)`
+	display: flex;
+  flex-flow: row wrap;
+  align-items: center;
+	justify-content: center;
+  /* border: 2px solid white; */
+	height: 12vh;
+	width: 12vh;
+  border-radius: 50%;
+  border: 2px solid white;
+  color: black;
+  background-color: #f0f1eb;
+  text-align: center;
+  /* padding: 10px 24px; */
+	font-size: ${props => props.theme.font.small};
+  text-decoration: none;
+  text-transform: uppercase;
+
+  @media ${props => props.theme.device.tablet} {
+		font-size: ${props => props.theme.font.medium};
+  }
+`;
 export default FishViewer;

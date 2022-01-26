@@ -35,44 +35,29 @@ const Ocean = () => {
 	]
 
 	useEffect(() => {
-		// setRenderedFish(prevData => []);
-		unityContext.clearFishPool("Ocean")
-		if(fishToShow === FishView.User) {
-			console.log("Show Tank")
-			// console.log(oceanFish)
-			if(!unityContext.isFishPoolReady) return;
-			let i = 0;
-			userFish.forEach(fish => {
-				if(!renderedFish.includes(fish.tokenId)) {
-					unityContext.addFishTank(fish);
-					setRenderedFish(prevData => [...prevData, fish.tokenId])
-					i++;
-				}
-			})
-			console.log(i)
-			unityContext.showTank();
-		}
-		if(fishToShow === FishView.Ocean) {
-			console.log("Show Ocean")
-			// console.log(oceanFish)
-			if(!unityContext.isFishPoolReady) return;
-			let i = 0;
-			oceanFish.forEach(fish => {
-				if(!renderedFish.includes(fish.tokenId)) {
-					unityContext.addFishOcean(fish);
-					setRenderedFish(prevData => [...prevData, fish.tokenId])
-					i++;
-				}
-			})
-			console.log(i)
-			unityContext.showOcean();
-		}
-	}, [unityContext.isFishPoolReady, fishToShow, oceanFish, userFish]);
-
-	useEffect(() => {
 		console.log("CLEAR OCEAN")
 		unityContext.clearFishPool('ShowOcean')
-	}, []);
+		unityContext.showOcean();
+	}, [unityContext.isFishPoolReady]);
+
+	useEffect(() => {
+		if(!unityContext.isFishPoolReady) return;
+
+		let fishToRender = fishToShow === FishView.Ocean ? oceanFish : userFish;
+		unityContext.clearFishPool("Ocean")
+		fishToRender.forEach(fish => {
+			unityContext.addFishOcean(fish);
+		})
+
+	}, [unityContext.isFishPoolReady, fishToShow, oceanFish, userFish]);
+
+	
+
+	// useEffect(() => {
+	// 	console.log("CLEAR OCEAN")
+	// 	unityContext.clearFishPool('ShowOcean')
+	// 	unityContext.showOcean();
+	// }, []);
 
 	useEffect(() => {
 		console.log("Account changed")

@@ -32,6 +32,8 @@ interface UnityProviderContext {
 	addFishBreedingPool: (fish: Fish) => void,
 	addFishFight1: (fish: Fish) => void;
 	addFishFight2: (fish: Fish) => void;
+	addFishBreed1: (fish: Fish) => void;
+	addFishBreed2: (fish: Fish) => void;
 	addFishFishing: (fish: Fish) => void;
 	showFish: (fish: Fish) => void;
 	clearFishPool: (pool: string) => void;
@@ -345,6 +347,8 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
 		addFishBreedingPool: addFishBreedingPool,
 		addFishFight1: addFishFight1,
 		addFishFight2: addFishFight2,
+		addFishBreed1: addFishBreed1,
+		addFishBreed2: addFishBreed2,
 		addFishFishing: addFishFishing,
 		showFish: showFish,
 		clearFishPool: clearFishPool,

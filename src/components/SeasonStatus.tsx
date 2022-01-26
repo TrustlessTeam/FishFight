@@ -22,7 +22,7 @@ const SeasonStatus = () => {
 		if(!account) return;
 		await FishFight.seasons?.methods.ownerPhaseOverride().send({
 			from: account,
-			gasPrice: 1000000000,
+			gasPrice: 30000000000,
 			gasLimit: 500000,
 		})
 		// refetchSeason();

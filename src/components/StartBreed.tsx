@@ -114,7 +114,7 @@ const StartBreed = () => {
 	const contractApprove = () => {
 		return FishFight.fishFood?.methods.approve(FishFight.readBreedingWaters.options.address, web3.utils.toWei(BREEDCOSTFISHFOOD)).send({
 			from: account,
-			gasPrice: 1000000000,
+			gasPrice: 30000000000,
 			gasLimit: 500000
 		})
 		.on('error', (error: any) => {
@@ -136,7 +136,7 @@ const StartBreed = () => {
 		console.log(fishBetta)
 		return FishFight.breedingWaters?.methods.breedFish(fishAlpha.tokenId, fishBetta.tokenId).send({
 			from: account,
-			gasPrice: 1000000000,
+			gasPrice: 30000000000,
 			gasLimit: 6000000,
 			value: web3.utils.toWei(BREEDCOSTONE)
 		})

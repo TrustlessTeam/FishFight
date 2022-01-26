@@ -84,7 +84,7 @@ const UserBreedingWaters = () => {
 	const contractApproveAll = () => {
 		return FishFight.fishFactory?.methods.setApprovalForAll(FishFight.readBreedingWaters.options.address, true).send({
 			from: account,
-			gasPrice: 1000000000,
+			gasPrice: 30000000000,
 			gasLimit: 500000,
 		})
 		.on('error', (error: any) => {
@@ -104,7 +104,7 @@ const UserBreedingWaters = () => {
 	const contractDeposit = (fish: Fish) => {
 		return FishFight.breedingWaters?.methods.deposit(fish.tokenId).send({
 			from: account,
-			gasPrice: 1000000000,
+			gasPrice: 30000000000,
 			gasLimit: 800000,
 		})
 		.on('error', (error: any) => {
@@ -165,7 +165,7 @@ const UserBreedingWaters = () => {
 		try {
 			await FishFight.breedingWaters?.methods.withdraw(fish.tokenId).send({
 				from: account,
-				gasPrice: 1000000000,
+				gasPrice: 30000000000,
 				gasLimit: 800000,
 			})
 			.on('transactionHash', () => {

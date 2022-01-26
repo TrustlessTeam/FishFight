@@ -26,10 +26,8 @@ enum FishSelectionEnum {
 const FightingWaters = () => {
 	const { FishFight, refetchBalance } = useFishFight()
 	const { userFish, fightingFish, depositUserFightingFish, withdrawUserFightingFish, refreshFish } = useFishPool()
-	const [showOpponentSelection, setShowOpponentSelection] = useState<boolean>(false);
 	const [mySelectedFish, setMySelectedFish] = useState<Fish | null>(null);
 	const [opponentFish, setOpponentFish] = useState<Fish | null>(null);
-	// const [fighterSelectionToShow, setFighterSelectionToShow] = useState<number>(FishViewOptions.MyFish);
 	const [fishSelectionToShow, setFishSelectionToShow] = useState<number>(FishSelectionEnum.FightFish);
 	const [fightResult, setFightResult] = useState<Fight | null>();
 	const [showFightResult, setShowFightResult] = useState(false);
@@ -40,17 +38,6 @@ const FightingWaters = () => {
 	// Context
 	const { account } = useWeb3React();
 	const unityContext = useUnity();
-
-	const FishViewOptions: MenuItem[] = [
-		{
-			name: 'My $FISH',
-			onClick: () => setFishSelectionToShow(FishSelectionEnum.MyFish)
-		},
-		{
-			name: 'Fight Pool $FISH',
-			onClick: () => setFishSelectionToShow(FishSelectionEnum.FightFish)
-		}
-	]
 
 	useEffect(() => {
 		if(account) {
@@ -84,20 +71,12 @@ const FightingWaters = () => {
 
 	const setUserFighter = async (fish : Fish) => {
 		console.log("User Selected Fish: " + fish.tokenId)
-		//unityContext.clearFishPool('ShowFight');
-		// if(opponentFish != null) {
-		// 	unityContext.addFishFight1(opponentFish);
-		// }
 		setMySelectedFish(fish);
 		unityContext.addFishFight1(fish)
 	}
 
 	const setOpponentFighter = (fish : Fish) => {
 		console.log("Opponent Fish: " + fish.tokenId)
-		//unityContext.clearFishPool('ShowFight');
-		// if(mySelectedFish != null) {
-		// 	unityContext.addFishFight2(mySelectedFish);
-		// }
 		setOpponentFish(fish);
 		unityContext.addFishFight2(fish)
 	}
@@ -147,10 +126,6 @@ const FightingWaters = () => {
 		refreshFish(newFight.winner, true, false);
 	}
 
-	
-
-	
-
 	const isDeposited = async (tokenId: number) => {
 		const owner = await FishFight.readFishFactory.methods.ownerOf(tokenId).call();
 		console.log(owner)
@@ -158,30 +133,12 @@ const FightingWaters = () => {
 		return owner == FishFight.readFightingWaters.options.address;
 	}
 
-	// const contractApproveAll = () => {
-	// 	return FishFight.fishFactory?.methods.setApprovalForAll(FishFight.readFightingWaters.options.address, true).send({
-	// 		from: account,
-	// 		gasPrice: 1000000000,
-	// 		gasLimit: 500000,
-	// 	})
-	// 	.on('error', (error: any) => {
-	// 		console.log(error)
-	// 		toast.error('Approval Failed');
-	// 		setPendingTransaction(false);
-	// 	})
-	// 	.on('transactionHash', () => {
-	// 		setPendingTransaction(true);
-	// 	})
-	// 	.on('receipt', () => {
-	// 		console.log('Approval completed')
-	// 		toast.success('Approval Completed')
-	// 	})
-	// }
+
 
 	const contractDeathFight = (myFish: Fish, opponentFish: Fish, isDeposited: boolean) => {
 		return FishFight.fightingWaters?.methods.deathFight(myFish.tokenId, opponentFish.tokenId, isDeposited).send({
 			from: account,
-			gasPrice: 1000000000,
+			gasPrice: 30000000000,
 			gasLimit: 5000000,
 			value: web3.utils.toWei('1')
 		}).on('transactionHash', () => {
@@ -255,7 +212,7 @@ const FightingWaters = () => {
 	const contractApproveAll = () => {
 		return FishFight.fishFactory?.methods.setApprovalForAll(FishFight.readFightingWaters.options.address, true).send({
 			from: account,
-			gasPrice: 1000000000,
+			gasPrice: 30000000000,
 			gasLimit: 500000,
 		})
 		.on('error', (error: any) => {
@@ -275,7 +232,7 @@ const FightingWaters = () => {
 	const contractDeposit = (fish: Fish) => {
 		return FishFight.fightingWaters?.methods.deposit(fish.tokenId).send({
 			from: account,
-			gasPrice: 1000000000,
+			gasPrice: 30000000000,
 			gasLimit: 800000,
 		})
 		.on('error', (error: any) => {
@@ -344,7 +301,7 @@ const FightingWaters = () => {
 		try {
 			await FishFight.fightingWaters?.methods.withdraw(fish.tokenId).send({
 				from: account,
-				gasPrice: 1000000000,
+				gasPrice: 30000000000,
 				gasLimit: 800000,
 			}).on('transactionHash', () => {
 				setPendingTransaction(true);
@@ -367,6 +324,42 @@ const FightingWaters = () => {
 		setMySelectedFish(null)
 	}
 
+	const FighterSelection = () => {
+		return (
+			<>
+				{mySelectedFish != null &&
+				<OptionsContainer>
+					{mySelectedFish.stakedFighting ?
+						<GameButton onClick={() => withdrawFish(mySelectedFish)}>{'Withdraw'}</GameButton>
+						:
+						<GameButton onClick={() => depositFish(mySelectedFish)}>{'Deposit'}</GameButton>
+					}
+					{mySelectedFish && opponentFish &&
+						<GameButton onClick={fightFish}>{'Start Fight'}</GameButton>
+					}
+					{/* <GameButton onClick={() => selectAnother()}>{'Back to Fish'}</GameButton> */}
+				</OptionsContainer>
+				}
+				<ContainerControls>
+					{account &&
+						<ToggleGroup>
+							<ToggleOption className={fishSelectionToShow === FishSelectionEnum.MyFish ? 'active' : ''} onClick={() => setFishSelectionToShow(FishSelectionEnum.MyFish)}>My $FISH</ToggleOption>
+							<ToggleOption className={fishSelectionToShow === FishSelectionEnum.FightFish ? 'active' : ''} onClick={() => setFishSelectionToShow(FishSelectionEnum.FightFish)}>Opponent $FISH</ToggleOption>
+						</ToggleGroup>
+					}
+				</ContainerControls>
+				{account && userFish.length > 0 && fishSelectionToShow === FishSelectionEnum.MyFish && 
+					<FishViewer selectedFish={mySelectedFish} fishCollection={userFish} onClick={setUserFighter} />
+				}
+				{account && userFish.length === 0 && fishSelectionToShow === FishSelectionEnum.MyFish &&
+					<BaseLinkButton to={'/catch'}>Catch a Fish!</BaseLinkButton>
+				}
+				{(fishSelectionToShow === FishSelectionEnum.FightFish || !account ) &&
+					<FishViewer depositFighter selectedOpponent={opponentFish} fishCollection={fightingFish} onClick={setOpponentFighter} />
+				}
+			</>
+		)
+	}
 
 	return (
 		<BaseOverlayContainer
@@ -374,39 +367,8 @@ const FightingWaters = () => {
 			spinner
 			text='Waiting for confirmation...'
 			>
-			{mySelectedFish != null &&
-			<OptionsContainer>
-				{mySelectedFish.stakedFighting ?
-					<GameButton onClick={() => withdrawFish(mySelectedFish)}>{'Withdraw'}</GameButton>
-					:
-					<GameButton onClick={() => depositFish(mySelectedFish)}>{'Deposit'}</GameButton>
-				}
-				{mySelectedFish && opponentFish &&
-					<GameButton onClick={fightFish}>{'Start Fight'}</GameButton>
-				}
-				{/* <GameButton onClick={() => selectAnother()}>{'Back to Fish'}</GameButton> */}
-			</OptionsContainer>
-			}
-			<ContainerControls>
-				{account &&
-					<ToggleGroup>
-						<ToggleOption className={fishSelectionToShow === FishSelectionEnum.MyFish ? 'active' : ''} onClick={() => setFishSelectionToShow(FishSelectionEnum.MyFish)}>My $FISH</ToggleOption>
-						<ToggleOption className={fishSelectionToShow === FishSelectionEnum.FightFish ? 'active' : ''} onClick={() => setFishSelectionToShow(FishSelectionEnum.FightFish)}>Opponent $FISH</ToggleOption>
-					</ToggleGroup>
-				}
-				{/* <ToggleButton nameA={'My $FISH'} nameB={'Fight $FISH'} toggle={() => setShowOpponentSelection(!showOpponentSelection)} selectedOption={showOpponentSelection} /> */}
-				{/* {fishSelectionToShow === FishSelectionEnum.MyFish &&
-					<StakedStatus></StakedStatus>
-				} */}
-			</ContainerControls>
-			{account && userFish.length > 0 && fishSelectionToShow === FishSelectionEnum.MyFish && 
-				<FishViewer selectedFish={mySelectedFish} fishCollection={userFish} onClick={setUserFighter} />
-			}
-			{account && userFish.length === 0 && fishSelectionToShow === FishSelectionEnum.MyFish &&
-				<BaseLinkButton to={'/catch'}>Catch a Fish!</BaseLinkButton>
-			}
-			{(fishSelectionToShow === FishSelectionEnum.FightFish || !account ) &&
-				<FishViewer selectedOpponent={opponentFish} fishCollection={fightingFish} onClick={setOpponentFighter} />
+			{!isFighting && !showFightResult && !fightResult &&
+				<FighterSelection />
 			}
 		</BaseOverlayContainer>
 	);

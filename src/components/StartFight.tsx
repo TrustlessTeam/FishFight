@@ -140,7 +140,7 @@ const StartFight = () => {
 	const contractApproveAll = () => {
 		return FishFight.fishFactory?.methods.setApprovalForAll(FishFight.readFightingWaters.options.address, true).send({
 			from: account,
-			gasPrice: 1000000000,
+			gasPrice: 30000000000,
 			gasLimit: 500000,
 		})
 		.on('error', (error: any) => {
@@ -160,7 +160,7 @@ const StartFight = () => {
 	const contractDeathFight = (myFish: Fish, opponentFish: Fish, isDeposited: boolean) => {
 		return FishFight.fightingWaters?.methods.deathFight(myFish.tokenId, opponentFish.tokenId, isDeposited).send({
 			from: account,
-			gasPrice: 1000000000,
+			gasPrice: 30000000000,
 			gasLimit: 5000000,
 			value: new Unit(1).asOne().toWei()
 		}).on('transactionHash', () => {

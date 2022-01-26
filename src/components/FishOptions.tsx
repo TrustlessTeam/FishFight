@@ -26,10 +26,10 @@ const BREEDCOSTONE = web3.utils.toBN(1);
 const BREEDCOSTFISHFOOD = web3.utils.toBN(100);
 
 
-const BreedingWaters = () => {
+const FishOptions = () => {
 	const unityContext = useUnity();
 	const { account } = useWeb3React();
-	const { userFish, breedingFish, userBreedingFish, refreshFish, createUserFish } = useFishPool()
+	const { userFish, breedingFish, fightingFish, refreshFish, createUserFish } = useFishPool()
 	const { FishFight, refetchBalance } = useFishFight()
 
 	// const [fighterSelectionToShow, setFighterSelectionToShow] = useState<number>(FishViewOptions.MyFish);
@@ -40,8 +40,8 @@ const BreedingWaters = () => {
 	const [pendingTransaction, setPendingTransaction] = useState<boolean>(false);
 	const [renderedFish, setRenderedFish] = useState<number[]>([]);
 
-	const [myBettaFish, setMyBettaFish] = useState<Fish | null>(null);
-	const [alphaFish, setAlphaFish] = useState<Fish | null>(null);
+	const [selectedUserFish, setSelectedUserFish] = useState<Fish | null>(null);
+	const [selectedPoolFish, setSelectedPoolFish] = useState<Fish | null>(null);
 	
 	
 	const [breedResult, setBreedResult] = useState<Fish | null>();
@@ -66,7 +66,9 @@ const BreedingWaters = () => {
 		});
 	}, [unityContext.isFishPoolReady]);
 
-	const setAlpha = (fish : Fish) => {
+	// On Click Set Selected Fish Functions
+
+	const setAlphaFish = (fish : Fish) => {
 		const secondsSinceEpoch = Math.round(Date.now() / 1000)
 		if(fish.stakedBreeding != null && fish.stakedBreeding.breedCooldown > secondsSinceEpoch) {
 			const expireTime = (fish.stakedBreeding.breedCooldown - secondsSinceEpoch) / 60;
@@ -75,22 +77,27 @@ const BreedingWaters = () => {
 			return;
 		}
 		console.log("Alpha Fish: " + fish.tokenId)
-		//unityContext.clearFishPool('ShowFight');
-		if(myBettaFish != null) {
-			unityContext.addFishFight2(myBettaFish);
-		}
-		setAlphaFish(fish);
-		unityContext.addFishFight2(fish)
+		setSelectedPoolFish(fish);
+		unityContext.addFishBreed2(fish)
 	}
 
-	const setUserBetta = async (fish : Fish) => {
+	const setBettaFish = async (fish : Fish) => {
+		// add check for no wins?
 		console.log("Betta Fish: " + fish.tokenId)
-		//unityContext.clearFishPool('ShowFight');
-		if(alphaFish != null) {
-			unityContext.addFishFight1(alphaFish);
-		}
-		setMyBettaFish(fish);
+		setSelectedUserFish(fish);
+		unityContext.addFishBreed1(fish)
+	}
+
+	const setUserFighter = async (fish : Fish) => {
+		console.log("User Selected Fish: " + fish.tokenId)
+		setSelectedUserFish(fish);
 		unityContext.addFishFight1(fish)
+	}
+
+	const setOpponentFighter = (fish : Fish) => {
+		console.log("Opponent Fish: " + fish.tokenId)
+		setSelectedPoolFish(fish);
+		unityContext.addFishFight2(fish)
 	}
 
 	const withdrawFightingFish = async (fish : Fish) => {
@@ -105,7 +112,7 @@ const BreedingWaters = () => {
 			toast.error('Connect your wallet');
 			return;
 		}
-		if(myBettaFish == null) {
+		if(selectedUserFish == null) {
 			toast.error('Select a Fish');
 		}
 
@@ -182,7 +189,7 @@ const BreedingWaters = () => {
 			toast.error('Connect your wallet');
 			return;
 		}
-		if(myBettaFish == null) {
+		if(selectedUserFish == null) {
 			toast.error('Select a Fish');
 			return;
 		}
@@ -265,11 +272,11 @@ const BreedingWaters = () => {
 			toast.error('Connect your wallet');
 			return;
 		}
-		if(myBettaFish == null) {
+		if(selectedUserFish == null) {
 			toast.error('Select Your Fish to Breed');
 			return;
 		}
-		if(alphaFish == null) {
+		if(selectedPoolFish == null) {
 			toast.error('Select Fish to Breed with');
 			return;
 		}
@@ -284,11 +291,11 @@ const BreedingWaters = () => {
 				console.log(approvedAmount)
 				console.log(web3.utils.fromWei(approvedAmount))
 				if(web3.utils.fromWei(approvedAmount) >= '100') {
-					contractBreed(alphaFish, myBettaFish)
+					contractBreed(selectedPoolFish, selectedUserFish)
 				} else {
 					contractApprove()
 					.on('receipt', () => {
-						contractBreed(alphaFish, myBettaFish)
+						contractBreed(selectedPoolFish, selectedUserFish)
 					})
 				}
 			})
@@ -299,16 +306,16 @@ const BreedingWaters = () => {
 			// setPendingTransaction(false);
 			// toast.error(error);
 			// setIsBreeding(false)
-			// setMyBettaFish(null)
-			// setAlphaFish(null)
+			// setSelectedUserFish(null)
+			// setSelectedPoolFish(null)
 		}
 	};
 
 	const breedAgain = () => {
 		setBreedResult(null)
 		setIsBreeding(false)
-		setMyBettaFish(null)
-		setAlphaFish(null)
+		setSelectedUserFish(null)
+		setSelectedPoolFish(null)
 		setShowBreedResult(false);
 		unityContext.showFight();
 	}
@@ -319,13 +326,13 @@ const BreedingWaters = () => {
 			spinner
 			text='Waiting for confirmation...'
 			>
-			{myBettaFish != null &&
+			{selectedUserFish != null &&
 			<OptionsContainer>
-				{myBettaFish.stakedFighting &&
-					<GameButton onClick={() => withdrawFightingFish(myBettaFish)}>{'Withdraw Fighter'}</GameButton>
+				{selectedUserFish.stakedFighting &&
+					<GameButton onClick={() => withdrawFightingFish(selectedUserFish)}>{'Withdraw Fighter'}</GameButton>
 				}
-				{myBettaFish.seasonStats.fightWins > 0 && !myBettaFish.stakedFighting &&
-					<GameButton onClick={() => depositFish(myBettaFish)}>{'Deposit'}</GameButton>
+				{selectedUserFish.seasonStats.fightWins > 0 && !selectedUserFish.stakedFighting &&
+					<GameButton onClick={() => depositFish(selectedUserFish)}>{'Deposit'}</GameButton>
 				}
 				{/* {!showOpponentSelection &&
 					<GameButton onClick={() => setShowOpponentSelection(true)}>{'Start Fight'}</GameButton>
@@ -346,13 +353,13 @@ const BreedingWaters = () => {
 				} */}
 			</ContainerControls>
 			{account && userFish.length > 0 && fishSelectionToShow === FishSelectionEnum.MyFish && 
-				<FishViewer selectedFish={myBettaFish} fishCollection={userFish} onClick={setUserBetta} />
+				<FishViewer selectedFish={selectedUserFish} fishCollection={userFish} onClick={setBettaFish} />
 			}
 			{account && userFish.length === 0 && fishSelectionToShow === FishSelectionEnum.MyFish &&
 				<BaseLinkButton to={'/catch'}>Catch a Fish!</BaseLinkButton>
 			}
 			{(fishSelectionToShow === FishSelectionEnum.AlphaFish || !account ) &&
-				<FishViewer depositAlpha={true} selectedOpponent={alphaFish} fishCollection={breedingFish} onClick={setAlpha} />
+				<FishViewer depositAlpha={true} selectedOpponent={selectedPoolFish} fishCollection={breedingFish} onClick={setAlphaFish} />
 			}
 		</BaseOverlayContainer>
 	);
@@ -392,4 +399,4 @@ const GameButton = styled.button`
 `;
 
 
-export default BreedingWaters;
+export default FishOptions;
