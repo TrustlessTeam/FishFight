@@ -23,7 +23,7 @@ const CatchFish = () => {
 	const [diceRoll, setDiceRoll] = useState<number>(0);
 
 	useEffect(() => {
-		unityContext.showFishing();
+		unityContext.showFishingLocation();
 	}, [unityContext.isFishPoolReady]);
 
 	useEffect(() => {
@@ -31,7 +31,7 @@ const CatchFish = () => {
 	}, [account]);
 
 	useEffect(() => {
-		unityContext.clearFishPool('ShowFishing');
+		unityContext.clearFishPool('showFishingLocation');
 	}, []);
 
 	useEffect(() => {
@@ -86,7 +86,7 @@ const CatchFish = () => {
 		setNoCatch(false);
 		setCaughtFish(null);
 		setCaughtFishHash(null);
-		unityContext.clearFishPool('ShowFishing');
+		unityContext.clearFishPool('showFishingLocation');
 		try {
 			await FishFight.fishingWaters?.methods.goFishing().send({
 				from: account,
@@ -145,7 +145,7 @@ const CatchFish = () => {
 				<GameButton onClick={() => {
 					setCaughtFish(null);
 					setCaughtFishHash(null);
-					unityContext.clearFishPool('ShowFishing');
+					unityContext.clearFishPool('showFishingLocation');
 				}}>
 					Catch another fish!
 				</GameButton>
@@ -164,7 +164,7 @@ const CatchFish = () => {
 					setCaughtFish(null);
 					setCaughtFishHash(null);
 					setNoCatch(false)
-					unityContext.clearFishPool('ShowFishing');
+					unityContext.clearFishPool('showFishingLocation');
 				}}>
 					Try again!
 				</GameButton>

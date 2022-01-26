@@ -70,7 +70,7 @@ const StartBreed = () => {
 	]
 
 	useEffect(() => {
-		unityContext.showFight();
+		unityContext.showFightingLocation();
 	}, [unityContext.isFishPoolReady]);
 
 	useEffect(() => {
@@ -93,7 +93,7 @@ const StartBreed = () => {
 			return;
 		}
 		console.log("Alpha Fish: " + fish.tokenId)
-		//unityContext.clearFishPool('ShowFight');
+		//unityContext.clearFishPool('showFightingLocation');
 		if(myBettaFish != null) {
 			unityContext.addFishFight2(myBettaFish);
 		}
@@ -103,7 +103,7 @@ const StartBreed = () => {
 
 	const setUserBetta = async (fish : Fish) => {
 		console.log("Betta Fish: " + fish.tokenId)
-		//unityContext.clearFishPool('ShowFight');
+		//unityContext.clearFishPool('showFightingLocation');
 		if(alphaFish != null) {
 			unityContext.addFishFight1(alphaFish);
 		}
@@ -218,7 +218,7 @@ const StartBreed = () => {
 		setMyBettaFish(null)
 		setAlphaFish(null)
 		setShowBreedResult(false);
-		unityContext.showFight();
+		unityContext.showFightingLocation();
 	}
 
 	return (

@@ -35,7 +35,7 @@ const Tank = () => {
 
 	useEffect(() => {
 		console.log("CLEAR OCEAN")
-		unityContext.clearFishPool('ShowOcean')
+		unityContext.clearFishPool('showOceanLocation')
 	}, []);
 
 	useEffect(() => {

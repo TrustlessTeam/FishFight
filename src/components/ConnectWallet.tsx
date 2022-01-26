@@ -8,7 +8,7 @@ const ConnectWallet = () => {
 	const unityContext = useUnity()
 
 	useEffect(() => {
-		unityContext.showFishing();
+		unityContext.showFishingLocation();
 	}, [unityContext.isFishPoolReady]);
 
 	return (

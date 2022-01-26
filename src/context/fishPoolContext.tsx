@@ -23,10 +23,10 @@ interface FishPoolProviderContext {
 	areUserFightingFishLoaded: boolean
   refreshFish: (tokenId: number, isFighting: boolean, isBreeding: boolean) => Promise<Fish | null>
   createUserFish: (tokenId: number) => Promise<Fish | null>;
-	depositUserFightingFish: (fish: Fish) => Promise<void>
-  withdrawUserFightingFish: (fish: Fish) => Promise<void>
-  depositUserBreedingFish: (fish: Fish) => Promise<void>
-  withdrawUserBreedingFish: (fish: Fish) => Promise<void>
+	// depositUserFightingFish: (fish: Fish) => Promise<void>
+  // withdrawUserFightingFish: (fish: Fish) => Promise<void>
+  // depositUserBreedingFish: (fish: Fish) => Promise<void>
+  // withdrawUserBreedingFish: (fish: Fish) => Promise<void>
 }
 
 type BlockchainItem = {
@@ -309,53 +309,49 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
     setUserFish(prevTokens => [...prevTokens, fish])
   };
 
-  const depositUserFightingFish = async (fish: Fish) => {
-    const fishData = await getFish(FishFight, fish.tokenId, true, false)
-    setUserFightingFish(prevTokens => [...prevTokens, fishData != null ? fishData : fish])
-    // Remove the fish from the UserFish array
-    setUserFish(prevFish => (
-      prevFish.filter(f => f.tokenId !== fish.tokenId)
-    ));
-  };
+  // const depositUserFightingFish = async (fish: Fish) => {
+  //   const fishData = await getFish(FishFight, fish.tokenId, true, false)
+  //   setUserFightingFish(prevTokens => [...prevTokens, fishData != null ? fishData : fish])
+  //   // Remove the fish from the UserFish array
+  //   setUserFish(prevFish => (
+  //     prevFish.filter(f => f.tokenId !== fish.tokenId)
+  //   ));
+  // };
 
   // When user withdraws a fish remove from UserFightingFish and FightingFish
   // Add back to UserFish
-  const withdrawUserFightingFish = async (fish: Fish) => {
-    const fishData = await getFish(FishFight, fish.tokenId, false, false)
-    setUserFightingFish(prevFish => (
-      prevFish.filter(f => f.tokenId !== fish.tokenId)
-    ));
-    removeFightingFishById(fish.tokenId);
-    addUserFish(fishData != null ? fishData : fish);
-  }
+  // const withdrawUserFightingFish = async (fish: Fish) => {
+  //   const fishData = await getFish(FishFight, fish.tokenId, false, false)
+  //   setUserFightingFish(prevFish => (
+  //     prevFish.filter(f => f.tokenId !== fish.tokenId)
+  //   ));
+  //   removeFightingFishById(fish.tokenId);
+  //   addUserFish(fishData != null ? fishData : fish);
+  // }
 
-  const depositUserBreedingFish = async (fish: Fish) => {
-    const fishData = await getFish(FishFight, fish.tokenId, false, true)
-    setUserBreedingFish(prevTokens => [...prevTokens, fishData != null ? fishData : fish])
-    // Remove the fish from the UserFish array
-    setUserFish(prevFish => (
-      prevFish.filter(f => f.tokenId !== fish.tokenId)
-    ));
-  };
+  // const depositUserBreedingFish = async (fish: Fish) => {
+  //   const fishData = await getFish(FishFight, fish.tokenId, false, true)
+  //   setUserBreedingFish(prevTokens => [...prevTokens, fishData != null ? fishData : fish])
+  //   // Remove the fish from the UserFish array
+  //   setUserFish(prevFish => (
+  //     prevFish.filter(f => f.tokenId !== fish.tokenId)
+  //   ));
+  // };
 
   // When user withdraws a fish remove from UserBreedingFish and BreedingFish
   // Add back to UserFish
-  const withdrawUserBreedingFish = async (fish: Fish) => {
-    const fishData = await getFish(FishFight, fish.tokenId, false, false)
-    setUserBreedingFish(prevFish => (
-      prevFish.filter(f => f.tokenId !== fish.tokenId)
-    ));
-    removeBreedingFishById(fish.tokenId);
-    addUserFish(fishData != null ? fishData : fish);
-  }
+  // const withdrawUserBreedingFish = async (fish: Fish) => {
+  //   const fishData = await getFish(FishFight, fish.tokenId, false, false)
+  //   setUserBreedingFish(prevFish => (
+  //     prevFish.filter(f => f.tokenId !== fish.tokenId)
+  //   ));
+  //   removeBreedingFishById(fish.tokenId);
+  //   addUserFish(fishData != null ? fishData : fish);
+  // }
 
   // Remove Burned Fish from all Fish arrays
   const fishBurned = (tokenId: number) => {
     setUserFish(prevFish => (
-      prevFish.filter(f => f.tokenId !== tokenId)
-    ));
-
-    setUserFightingFish(prevFish => (
       prevFish.filter(f => f.tokenId !== tokenId)
     ));
 
@@ -429,16 +425,8 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
       setUserFish(prevFish => [...prevFish.filter(f => f.tokenId !== tokenId), fishData]);
     }
 
-    if(userFightingFish.some(fish => fish.tokenId == tokenId)) {
-      setUserFightingFish(prevFish => [...prevFish.filter(f => f.tokenId !== tokenId), fishData]);
-    }
-
     if(fightingFish.some(fish => fish.tokenId == tokenId)) {
       setFightingFish(prevFish => [...prevFish.filter(f => f.tokenId !== tokenId), fishData]);
-    }
-
-    if(userBreedingFish.some(fish => fish.tokenId == tokenId)) {
-      setUserBreedingFish(prevFish => [...prevFish.filter(f => f.tokenId !== tokenId), fishData]);
     }
 
     if(breedingFish.some(fish => fish.tokenId == tokenId)) {
@@ -466,24 +454,10 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
     }
   }
 
-  const refreshUserFightingFish = async (tokenId: number) => {
-    const fishData = await getFish(FishFight, tokenId, true, false)
-    if(fishData != null && userFightingFish.some(fish => fish.tokenId == tokenId)) {
-      setUserFightingFish(prevFish => [...prevFish.filter(f => f.tokenId !== tokenId), fishData]);
-    }
-  }
-
   const refreshFightingFish = async (tokenId: number) => {
     const fishData = await getFish(FishFight, tokenId, true, false)
     if(fishData != null && fightingFish.some(fish => fish.tokenId == tokenId)) {
       setFightingFish(prevFish => [...prevFish.filter(f => f.tokenId !== tokenId), fishData]);
-    }
-  }
-
-  const refreshUserBreedingFish = async (tokenId: number) => {
-    const fishData = await getFish(FishFight, tokenId, false, true)
-    if(fishData != null && userBreedingFish.some(fish => fish.tokenId == tokenId)) {
-      setUserBreedingFish(prevFish => [...prevFish.filter(f => f.tokenId !== tokenId), fishData]);
     }
   }
 
@@ -501,21 +475,9 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
       });
     }
 
-    if(userFightingFish.length > 0) {
-      userFightingFish.forEach(fish => {
-        refreshUserFightingFish(fish.tokenId)
-      });
-    }
-
     if(fightingFish.length > 0) {
       fightingFish.forEach(fish => {
         refreshFightingFish(fish.tokenId)
-      });
-    }
-
-    if(userBreedingFish.length > 0) {
-      userBreedingFish.forEach(fish => {
-        refreshUserBreedingFish(fish.tokenId)
       });
     }
 
@@ -539,10 +501,10 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
 		areUserFightingFishLoaded: areUserFightingFishLoaded,
     refreshFish: refreshFish,
     createUserFish: createUserFish,
-		depositUserFightingFish: depositUserFightingFish,
-    withdrawUserFightingFish: withdrawUserFightingFish,
-    depositUserBreedingFish: depositUserBreedingFish,
-    withdrawUserBreedingFish: withdrawUserBreedingFish,
+		// depositUserFightingFish: depositUserFightingFish,
+    // withdrawUserFightingFish: withdrawUserFightingFish,
+    // depositUserBreedingFish: depositUserBreedingFish,
+    // withdrawUserBreedingFish: withdrawUserBreedingFish,
 	};
 	
 	return <FishPoolContext.Provider value={value}>{children}</FishPoolContext.Provider>;

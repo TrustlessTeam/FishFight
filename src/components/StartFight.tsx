@@ -27,7 +27,7 @@ enum FighterSelectionEnum {
 
 const StartFight = () => {
 	const { FishFight, refetchBalance } = useFishFight()
-	const { userFish, fightingFish, userFightingFish, depositUserFightingFish, refreshFish } = useFishPool()
+	const { userFish, fightingFish, userFightingFish, refreshFish } = useFishPool()
 
 	// Fish selected for fight
 	const [mySelectedFish, setMySelectedFish] = useState<Fish | null>(null);
@@ -35,7 +35,7 @@ const StartFight = () => {
 	const [fighterSelectionToShow, setFighterSelectionToShow] = useState<number>(FighterSelectionEnum.MyFighter);
 	const [fishSelectionToShow, setFishSelectionToShow] = useState<number>(FishSelectionEnum.UserFightingFish);
 	const [fightResult, setFightResult] = useState<Fight | null>();
-	const [showFightResult, setShowFightResult] = useState(false);
+	const [showFightingLocationResult, setshowFightingLocationResult] = useState(false);
 	const [isFighting, setIsFighting] = useState<boolean>(false);
 	const [pendingTransaction, setPendingTransaction] = useState<boolean>(false);
 
@@ -67,17 +67,17 @@ const StartFight = () => {
 	]
 
 	useEffect(() => {
-		unityContext.showFight();
+		unityContext.showFightingLocation();
 	}, [unityContext.isFishPoolReady]);
 
 	useEffect(() => {
 		unityContext.UnityInstance.on('FishPoolFightWinner', function () {
 			console.log('Confirm FishPoolFightWinner');
-			setShowFightResult(true);
+			setshowFightingLocationResult(true);
 		});
 		unityContext.UnityInstance.on('FishPoolFightTie', function () {
 			console.log('Confirm FishPoolFightTie');
-			setShowFightResult(true);
+			setshowFightingLocationResult(true);
 		});
 	}, [unityContext.isFishPoolReady]);
 
@@ -98,7 +98,7 @@ const StartFight = () => {
 		unityContext.sendRound(3, newFight.round3.value);
 		if(newFight.winner == mySelectedFish?.tokenId) {
 			unityContext.sendWinner(mySelectedFish);
-			depositUserFightingFish(mySelectedFish);
+			// depositUserFightingFish(mySelectedFish);
 		}
 		else if(newFight.winner == opponentFish?.tokenId) {
 			unityContext.sendWinner(opponentFish);
@@ -112,7 +112,7 @@ const StartFight = () => {
 
 	const setOpponent = (fish : Fish) => {
 		console.log("Opponent Fish: " + fish.tokenId)
-		//unityContext.clearFishPool('ShowFight');
+		//unityContext.clearFishPool('showFightingLocation');
 		if(mySelectedFish != null) {
 			unityContext.addFishFight2(mySelectedFish);
 		}
@@ -122,7 +122,7 @@ const StartFight = () => {
 
 	const setUserFish = async (fish : Fish) => {
 		console.log("UserSelected Fish: " + fish.tokenId)
-		//unityContext.clearFishPool('ShowFight');
+		//unityContext.clearFishPool('showFightingLocation');
 		if(opponentFish != null) {
 			unityContext.addFishFight1(opponentFish);
 		}
@@ -228,7 +228,7 @@ const StartFight = () => {
 		setIsFighting(false)
 		setMySelectedFish(null)
 		setOpponentFish(null)
-		setShowFightResult(false);
+		setshowFightingLocationResult(false);
 	}
 
 	return (
@@ -301,7 +301,7 @@ const StartFight = () => {
 				</ContainerControls>
 				<FightGrid>
 					<FishNFT selectedUser={true} fish={mySelectedFish}></FishNFT>
-					{showFightResult ? 
+					{showFightingLocationResult ? 
 					<ResultContainer>
 						<ResultData>Results</ResultData>
 						<ResultData>Round 1: {fightResult.round1.description}</ResultData>

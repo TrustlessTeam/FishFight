@@ -11,6 +11,7 @@ import { getLibraryProvider } from './utils/provider';
 import { FishFightProvider } from './context/fishFightContext';
 import { UnityProvider } from './context/unityContext';
 import { FishPoolProvider } from './context/fishPoolContext';
+import { ContractWrapperProvider } from './context/contractWrapperContext';
 import { BrowserRouter as Router } from 'react-router-dom';
 
 
@@ -23,7 +24,9 @@ ReactDOM.render(
 						<UnityProvider>
 							<FishFightProvider>
 								<FishPoolProvider>
-									<App />
+									<ContractWrapperProvider>
+										<App />
+									</ContractWrapperProvider>
 								</FishPoolProvider>
 							</FishFightProvider>
 						</UnityProvider>

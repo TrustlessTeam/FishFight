@@ -37,7 +37,6 @@ import FightingWaters from './components/FightingWaters';
 import UILayout from './components/MenuOverlay';
 import StartFight from './components/StartFight';
 import BreedingWaters from './components/BreedingWaters';
-import UserBreedingWaters from './components/UserBreedingWaters';
 import StartBreed from './components/StartBreed';
 import { isMobile } from 'react-device-detect';
 import MenuOverlay from './components/MenuOverlay';
@@ -66,8 +65,8 @@ const App = () => {
 										<Route path="/fighting/start" element={<FightingWaters />} />
 									</Route>
 									<Route path="/breeding" element={<BreedingWaters />}>
-										<Route path="/breeding/user" element={<UserBreedingWaters />} />
-										<Route path="/breeding/start" element={<StartBreed />} />
+										{/* <Route path="/breeding/user" element={<UserBreedingWaters />} /> */}
+										{/* <Route path="/breeding/start" element={<StartBreed />} /> */}
 									</Route>
 
 							</Route>

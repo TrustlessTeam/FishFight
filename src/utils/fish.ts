@@ -122,7 +122,7 @@ export class Fish {
       ColorBodyTertiary: {r: genesArray[12], g: genesArray[13], b: genesArray[14], a: 255},
 
       ColorHeadPrimary: {r: genesArray[15], g: genesArray[16], b: genesArray[17], a: 255},
-      ColorHeadSeconday: {r: genesArray[18], g: genesArray[19], b: genesArray[20], a: 255},
+      ColorHeadSecondary: {r: genesArray[18], g: genesArray[19], b: genesArray[20], a: 255},
       ColorHeadTertiary: {r: genesArray[21], g: genesArray[22], b: genesArray[23], a: 255},
 
       ColorTailPrimary: {r: genesArray[24], g: genesArray[25], b: genesArray[26], a: 255},
@@ -225,7 +225,7 @@ type VisualTraits = {
   ColorBodyTertiary: Color,
 
   ColorHeadPrimary: Color,
-  ColorHeadSeconday: Color,
+  ColorHeadSecondary: Color,
   ColorHeadTertiary: Color,
 
   ColorTailPrimary: Color,

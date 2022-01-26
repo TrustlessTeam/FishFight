@@ -36,8 +36,8 @@ const Ocean = () => {
 
 	useEffect(() => {
 		console.log("CLEAR OCEAN")
-		unityContext.clearFishPool('ShowOcean')
-		unityContext.showOcean();
+		unityContext.clearFishPool('showOceanLocation')
+		unityContext.showOceanLocation();
 	}, [unityContext.isFishPoolReady]);
 
 	useEffect(() => {
@@ -55,8 +55,8 @@ const Ocean = () => {
 
 	// useEffect(() => {
 	// 	console.log("CLEAR OCEAN")
-	// 	unityContext.clearFishPool('ShowOcean')
-	// 	unityContext.showOcean();
+	// 	unityContext.clearFishPool('showOceanLocation')
+	// 	unityContext.showOceanLocation();
 	// }, []);
 
 	useEffect(() => {
@@ -84,7 +84,7 @@ const Ocean = () => {
 	// }, [oceanFish, unityContext.isFishPoolReady]);
 
 	// useEffect(() => {
-	// 	unityContext.showOcean();
+	// 	unityContext.showOceanLocation();
 	// }, [unityContext.isFishPoolReady]);
 
 	return (

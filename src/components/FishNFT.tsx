@@ -112,6 +112,7 @@ const FishId = styled.div`
 	width: 100%;
 	bottom: 0;
 	padding: ${props => props.theme.spacing.gapSmall};
+	pointer-events: none;
 `;
 
 const FishStats = styled.div`
@@ -121,6 +122,7 @@ const FishStats = styled.div`
 	justify-content: flex-end;
 	width: 100%;
 	top: 0;
+	pointer-events: none;
 	/* padding: ${props => props.theme.spacing.gapSmall}; */
 `;
 

@@ -35,7 +35,7 @@ const FishOptions = () => {
 	// const [fighterSelectionToShow, setFighterSelectionToShow] = useState<number>(FishViewOptions.MyFish);
 	const [fishSelectionToShow, setFishSelectionToShow] = useState<number>(FishSelectionEnum.AlphaFish);
 	const [fightResult, setFightResult] = useState<Fight | null>();
-	const [showFightResult, setShowFightResult] = useState(false);
+	const [showFightingLocationResult, setshowFightingLocationResult] = useState(false);
 	const [isFighting, setIsFighting] = useState<boolean>(false);
 	const [pendingTransaction, setPendingTransaction] = useState<boolean>(false);
 	const [renderedFish, setRenderedFish] = useState<number[]>([]);
@@ -50,21 +50,34 @@ const FishOptions = () => {
 	
 
 	useEffect(() => {
-		console.log("Breeding Fish")
-		unityContext.showBreeding();
-		// unityContext.showBreed() ?
-	}, [unityContext.isFishPoolReady]);
-
-	useEffect(() => {
-		unityContext.UnityInstance.on('FishPoolFightWinner', function () {
-			console.log('Confirm FishPoolFightWinner');
-			setShowBreedResult(true);
+		unityContext.UnityInstance.on('UISelectionConfirm', function (data: any) {
+			console.log('UI changed catch fish');
+			console.log(data)
+			switch (data) {
+				case 'fight':
+					// catchFish();
+					return;
+				case 'breed':
+					breedFish();
+					return;
+				case 'depositFighter':
+					// depositAlphaFish();
+					return;
+				case 'withdrawFighter':
+					withdrawFightingFish();
+					return;
+				case 'depositAlpha':
+					depositBreedingFish();
+					return;
+				case 'withdrawAlpha':
+					withdrawBreedingFish();
+					return;
+				default:
+					return;
+			}
+			
 		});
-		unityContext.UnityInstance.on('FishPoolFightTie', function () {
-			console.log('Confirm FishPoolFightTie');
-			setShowBreedResult(true);
-		});
-	}, [unityContext.isFishPoolReady]);
+	}, [unityContext.isFishPoolReady, account]);
 
 	// On Click Set Selected Fish Functions
 
@@ -100,24 +113,69 @@ const FishOptions = () => {
 		unityContext.addFishFight2(fish)
 	}
 
-	const withdrawFightingFish = async (fish : Fish) => {
-		const secondsSinceEpoch = Math.round(Date.now() / 1000)
-		if(fish.stakedFighting != null && fish.stakedFighting.lockedExpire > secondsSinceEpoch) {
-			const expireTime = (fish.stakedFighting.lockedExpire - secondsSinceEpoch) / 60;
-			const lockedFor = (Math.round(expireTime * 10) / 10).toFixed(1);
-			toast.error(`Fish Locked for ${lockedFor} minutes`)
+	const breedFish = async () => {
+		if(!account) {
+			toast.error('Connect your wallet');
 			return;
 		}
+		if(selectedUserFish == null) {
+			toast.error('Select Your Fish to Breed');
+			return;
+		}
+		if(selectedPoolFish == null) {
+			toast.error('Select Fish to Breed with');
+			return;
+		}
+		if(!await FishFight.readSeasons.methods.isBreedingPhase().call()) {
+			toast.error('Must be Breeding Season to Breed');
+			return;
+		}
+
+		try {
+			FishFight.fishFood?.methods.allowance(account, FishFight.readBreedingWaters.options.address).call()
+			.then((approvedAmount: any) => {
+				console.log(approvedAmount)
+				console.log(web3.utils.fromWei(approvedAmount))
+				if(web3.utils.fromWei(approvedAmount) >= '100') {
+					// contractBreed(selectedPoolFish, selectedUserFish)
+				} else {
+					contractApproveFoodForBreeding()
+					.on('receipt', () => {
+						// contractBreed(selectedPoolFish, selectedUserFish)
+					})
+				}
+			})
+
+		} catch (error: any) {
+			// toast.error("Transaction Failed")
+			console.log(error)
+			// setPendingTransaction(false);
+			// toast.error(error);
+			// setIsBreeding(false)
+			// setSelectedUserFish(null)
+			// setSelectedPoolFish(null)
+		}
+	};
+
+	const withdrawFightingFish = async () => {
 		if(!account) {
 			toast.error('Connect your wallet');
 			return;
 		}
 		if(selectedUserFish == null) {
 			toast.error('Select a Fish');
+			return;
+		}
+		const secondsSinceEpoch = Math.round(Date.now() / 1000)
+		if(selectedUserFish.stakedFighting != null && selectedUserFish.stakedFighting.lockedExpire > secondsSinceEpoch) {
+			const expireTime = (selectedUserFish.stakedFighting.lockedExpire - secondsSinceEpoch) / 60;
+			const lockedFor = (Math.round(expireTime * 10) / 10).toFixed(1);
+			toast.error(`Fish Locked for ${lockedFor} minutes`)
+			return;
 		}
 
 		try {
-			await FishFight.fightingWaters?.methods.withdraw(fish.tokenId).send({
+			await FishFight.fightingWaters?.methods.withdraw(selectedUserFish.tokenId).send({
 				from: account,
 				gasPrice: 30000000000,
 				gasLimit: 800000,
@@ -140,7 +198,41 @@ const FishOptions = () => {
 		}
 	}
 
-	const contractApproveAll = () => {
+	const withdrawBreedingFish = async () => {
+		if(!account) {
+			toast.error('Connect your wallet');
+			return;
+		}
+		if(selectedUserFish == null) {
+			toast.error('Select a Fish');
+			return;
+		}
+		try {
+			await FishFight.breedingWaters?.methods.withdraw(selectedUserFish.tokenId).send({
+				from: account,
+				gasPrice: 30000000000,
+				gasLimit: 800000,
+			})
+			.on('transactionHash', () => {
+				setPendingTransaction(true);
+			})
+			.on('receipt', async (data: any) => {
+				setPendingTransaction(false);
+				// withdrawUserBreedingFish(fish);
+				// setFishSelectionToShow(FishSelectionEnum.UserFish)
+				toast.success('Transaction done', {
+					onClose: async () => {
+						refetchBalance()
+						// refreshFish(fish.tokenId, false, false)
+					},
+				});
+			})
+		} catch (error: any) {
+			toast.error(error);
+		}
+	}
+
+	const contractApproveAllFishForBreeding = () => {
 		return FishFight.fishFactory?.methods.setApprovalForAll(FishFight.readBreedingWaters.options.address, true).send({
 			from: account,
 			gasPrice: 30000000000,
@@ -160,7 +252,55 @@ const FishOptions = () => {
 		})
 	}
 
-	const contractDeposit = (fish: Fish) => {
+	
+
+	const depositBreedingFish = async () => {
+		if(!account) {
+			toast.error('Connect your wallet');
+			return;
+		}
+		if(selectedUserFish == null) {
+			toast.error('Select a Fish');
+			return;
+		}
+		try {
+			FishFight.fishFactory?.methods.isApprovedForAll(account, FishFight.readBreedingWaters.options.address).call()
+			.then((isApproved: boolean) => {
+				if(isApproved) {
+					contractBreedDeposit(selectedUserFish);
+				} else {
+					contractApproveAllFishForBreeding()
+					.on('receipt', () => {
+						contractBreedDeposit(selectedUserFish);
+					})
+				}
+			})
+		} catch (error: any) {
+			console.log(error)
+		}
+	}
+
+	const contractApproveFoodForBreeding = () => {
+		return FishFight.fishFood?.methods.approve(FishFight.readBreedingWaters.options.address, web3.utils.toWei(BREEDCOSTFISHFOOD)).send({
+			from: account,
+			gasPrice: 30000000000,
+			gasLimit: 500000
+		})
+		.on('error', (error: any) => {
+			console.log(error)
+			toast.error('Approval Failed');
+			setPendingTransaction(false);
+		})
+		.on('transactionHash', () => {
+			setPendingTransaction(true);
+		})
+		.on('receipt', () => {
+			console.log('FishFood Approval completed')
+			toast.success('FishFood Approval Completed')
+		})
+	}
+
+	const contractBreedDeposit = (fish: Fish) => {
 		return FishFight.breedingWaters?.methods.deposit(fish.tokenId).send({
 			from: account,
 			gasPrice: 30000000000,
@@ -184,53 +324,7 @@ const FishOptions = () => {
 		})
 	}
 
-	const depositFish = async (fish : Fish) => {
-		if(!account) {
-			toast.error('Connect your wallet');
-			return;
-		}
-		if(selectedUserFish == null) {
-			toast.error('Select a Fish');
-			return;
-		}
-		try {
-			FishFight.fishFactory?.methods.isApprovedForAll(account, FishFight.readBreedingWaters.options.address).call()
-			.then((isApproved: boolean) => {
-				if(isApproved) {
-					contractDeposit(fish);
-				} else {
-					contractApproveAll()
-					.on('receipt', () => {
-						contractDeposit(fish);
-					})
-				}
-			})
-		} catch (error: any) {
-			console.log(error)
-		}
-	}
-
-	const contractApprove = () => {
-		return FishFight.fishFood?.methods.approve(FishFight.readBreedingWaters.options.address, web3.utils.toWei(BREEDCOSTFISHFOOD)).send({
-			from: account,
-			gasPrice: 30000000000,
-			gasLimit: 500000
-		})
-		.on('error', (error: any) => {
-			console.log(error)
-			toast.error('Approval Failed');
-			setPendingTransaction(false);
-		})
-		.on('transactionHash', () => {
-			setPendingTransaction(true);
-		})
-		.on('receipt', () => {
-			console.log('FishFood Approval completed')
-			toast.success('FishFood Approval Completed')
-		})
-	}
-
-	const contractBreed = (fishAlpha: Fish, fishBetta: Fish) => {
+	const contractBreed = (fishAlpha: Fish, fishBetta: Fish, account: string | null | undefined) => {
 		console.log(fishAlpha)
 		console.log(fishBetta)
 		return FishFight.breedingWaters?.methods.breedFish(fishAlpha.tokenId, fishBetta.tokenId).send({
@@ -267,57 +361,13 @@ const FishOptions = () => {
 		})
 	}
 
-	const breedFish = async () => {
-		if(!account) {
-			toast.error('Connect your wallet');
-			return;
-		}
-		if(selectedUserFish == null) {
-			toast.error('Select Your Fish to Breed');
-			return;
-		}
-		if(selectedPoolFish == null) {
-			toast.error('Select Fish to Breed with');
-			return;
-		}
-		if(!await FishFight.readSeasons.methods.isBreedingPhase().call()) {
-			toast.error('Must be Breeding Season to Breed');
-			return;
-		}
-
-		try {
-			FishFight.fishFood?.methods.allowance(account, FishFight.readBreedingWaters.options.address).call()
-			.then((approvedAmount: any) => {
-				console.log(approvedAmount)
-				console.log(web3.utils.fromWei(approvedAmount))
-				if(web3.utils.fromWei(approvedAmount) >= '100') {
-					contractBreed(selectedPoolFish, selectedUserFish)
-				} else {
-					contractApprove()
-					.on('receipt', () => {
-						contractBreed(selectedPoolFish, selectedUserFish)
-					})
-				}
-			})
-
-		} catch (error: any) {
-			// toast.error("Transaction Failed")
-			console.log(error)
-			// setPendingTransaction(false);
-			// toast.error(error);
-			// setIsBreeding(false)
-			// setSelectedUserFish(null)
-			// setSelectedPoolFish(null)
-		}
-	};
-
 	const breedAgain = () => {
 		setBreedResult(null)
 		setIsBreeding(false)
 		setSelectedUserFish(null)
 		setSelectedPoolFish(null)
 		setShowBreedResult(false);
-		unityContext.showFight();
+		unityContext.showFightingLocation();
 	}
 
 	return (
@@ -328,12 +378,12 @@ const FishOptions = () => {
 			>
 			{selectedUserFish != null &&
 			<OptionsContainer>
-				{selectedUserFish.stakedFighting &&
+				{/* {selectedUserFish.stakedFighting &&
 					<GameButton onClick={() => withdrawFightingFish(selectedUserFish)}>{'Withdraw Fighter'}</GameButton>
 				}
 				{selectedUserFish.seasonStats.fightWins > 0 && !selectedUserFish.stakedFighting &&
 					<GameButton onClick={() => depositFish(selectedUserFish)}>{'Deposit'}</GameButton>
-				}
+				} */}
 				{/* {!showOpponentSelection &&
 					<GameButton onClick={() => setShowOpponentSelection(true)}>{'Start Fight'}</GameButton>
 				} */}
