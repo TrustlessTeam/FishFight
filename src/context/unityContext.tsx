@@ -80,6 +80,10 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
 		UnityInstance.on('CameraStartConfirm', function () {
 			console.log('CameraStartConfirmed!');
 		});
+
+		UnityInstance.on('CanvasUIStartConfirm', function () {
+			console.log('CanvasUIStartConfirm!');
+		});
 		UnityInstance.on('UISelectionConfirm', function (data: any) {
 			console.log('UI changed');
 			console.log(data)
@@ -88,6 +92,12 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
 					if(cookies['accepted_terms'] === true) return;
     			setCookie('accepted_terms', true);
 					return;
+				case "fight_confirm":
+				// EDD TODO
+				return;
+				case "breed_confirm":
+				// EDD TODO
+				return;
 				default:
 					return;
 			}
