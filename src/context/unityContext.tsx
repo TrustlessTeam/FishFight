@@ -303,6 +303,7 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
 		console.log(fish)
     if(!isLoaded || !fishPoolReady) return;
 		UnityInstance.send('Camera', 'SetAnimState', 'ShowFish');
+		// showFishUI();
 		// addFish1(fish);
 		UnityInstance.send('FishPool', 'AddFish_FishView', JSON.stringify(fish));
 		if(fish.parentAFish && fish.parentBFish) {

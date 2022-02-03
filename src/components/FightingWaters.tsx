@@ -37,7 +37,7 @@ const FightingWaters = () => {
 			console.log('UI changed catch fish');
 			console.log(data)
 			switch (data) {
-				case 'fight':
+				case 'breed_confirm':
 					fightFish(mySelectedFish, opponentFish);
 					return;
 				case 'depositFighter':
