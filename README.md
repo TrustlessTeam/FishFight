@@ -1,3 +1,7 @@
+Please NOTE: We have moved development on this project to closed source for security reasons.
+
+We will be creating a more details tutorial for how to build games like ours in the near future.
+
 # FishFight.one : A NFT/Blockchain game
 
 ## Video Demo
