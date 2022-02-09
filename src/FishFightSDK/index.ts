@@ -53,6 +53,7 @@ class FishFight {
     readFishingWaters: Contract
     readFightingWaters: Contract
     readBreedingWaters: Contract
+    // readTrainingWaters: Contract
     readSeasons: Contract
     readFishFood: Contract
     readDeadFishFactory: Contract
@@ -60,6 +61,7 @@ class FishFight {
     listenFishingWaters: Contract
     listenFightingWaters: Contract
     listenBreedingWaters: Contract
+    // listenTrainingWaters: Contract
     listenSeasons: Contract
     listenFishFood: Contract
     listenDeadFishFactory: Contract
@@ -81,6 +83,7 @@ class FishFight {
         this.readFishingWaters = this.setFishingWatersContract(this.provider, "web3")
         this.readFightingWaters = this.setFightingWatersContract(this.provider, "web3")
         this.readBreedingWaters = this.setBreedingWatersContract(this.provider, "web3")
+        // this.readTrainingWaters = this.setTrainingWatersContract(this.provider, "web3")
         this.readSeasons = this.setSeasonsContract(this.provider, "web3")
         this.readFishFood = this.setFishFoodContract(this.provider, "web3")
         this.readDeadFishFactory = this.setDeadFishFactoryContract(this.provider, "web3")
@@ -89,6 +92,7 @@ class FishFight {
         this.listenFishingWaters = this.setFishingWatersContract(this.listener, "web3")
         this.listenFightingWaters = this.setFightingWatersContract(this.listener, "web3")
         this.listenBreedingWaters = this.setBreedingWatersContract(this.listener, "web3")
+        // this.listenTrainingWaters = this.setTrainingWatersContract(this.listener, "web3")
         this.listenSeasons = this.setSeasonsContract(this.listener, "web3")
         this.listenFishFood = this.setFishFoodContract(this.listener, "web3")
         this.listenDeadFishFactory = this.setDeadFishFactoryContract(this.listener, "web3")
@@ -98,6 +102,7 @@ class FishFight {
         this.fishingWaters = null;
         this.fightingWaters = null;
         this.breedingWaters = null;
+        // this.trainingWaters = null;
         this.seasons = null;
         this.fishFood = null;
         this.deadFishFactory = null;
@@ -115,6 +120,7 @@ class FishFight {
         this.fishingWaters = this.setFishingWatersContract(this.providerWallet, type)
         this.fightingWaters = this.setFightingWatersContract(this.providerWallet, type)
         this.breedingWaters = this.setBreedingWatersContract(this.providerWallet, type)
+        // this.trainingWaters = this.setTrainingWatersContract(this.providerWallet, type)
         this.seasons = this.setSeasonsContract(this.providerWallet, type)
         this.fishFood = this.setFishFoodContract(this.providerWallet, type)
         this.deadFishFactory = this.setDeadFishFactoryContract(this.providerWallet, type)
@@ -179,6 +185,18 @@ class FishFight {
 
         return null;
     }
+
+    // setTrainingWatersContract = (provider: any, type: "web3" | "harmony" | "default") => {
+    //     if (type === "harmony" || type === "default" ) {
+    //         return provider.contracts.createContract(Contracts.contracts.TrainingWaters.abi, Contracts.contracts.TrainingWaters.address)
+    //     }
+
+    //     if (type === "web3") {
+    //         return new provider.eth.Contract(Contracts.contracts.TrainingWaters.abi, Contracts.contracts.TrainingWaters.address)
+    //     }
+
+    //     return null;
+    // }
 
     setSeasonsContract = (provider: any, type: "web3" | "harmony" | "default") => {
         if (type === "harmony" || type === "default" ) {

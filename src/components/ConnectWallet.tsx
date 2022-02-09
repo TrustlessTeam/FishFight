@@ -3,18 +3,16 @@ import styled from 'styled-components';
 import { useUnity } from '../context/unityContext';
 import Account from './Account';
 
+type Props = {
+  text: string
+};
 
-const ConnectWallet = () => {
-	const unityContext = useUnity()
-
-	useEffect(() => {
-		unityContext.showFishingLocation();
-	}, [unityContext.isFishPoolReady]);
+const ConnectWallet = ({ text }: Props) => {
 
 	return (
 		<ConnectContainer>
-			<Account mobile={false}/>
-			<Text>To Catch A Fish Connect Your Wallet</Text>
+			<Account mobile={false} textOverride={"Connect"}/>
+			<Text>{text}</Text>
 		</ConnectContainer>
 	);
 };

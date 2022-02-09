@@ -7,9 +7,12 @@ import { Fight} from '../utils/fight'
 import { useUnity } from '../context/unityContext';
 import { useFishPool } from '../context/fishPoolContext';
 import FishViewer from './FishViewer';
-import { BaseLinkButton, BaseOverlayContainer, ContainerControls } from './BaseStyles';
+import { ApprovalDisclaimer, ApprovalsContainer, BaseButton, BaseLinkButton, BaseOverlayContainer, ContainerControls } from './BaseStyles';
 import { ToggleGroup, ToggleOption } from './ToggleButton';
 import { useContractWrapper } from '../context/contractWrapperContext';
+import { useFishFight } from '../context/fishFightContext';
+import ConnectWallet from './ConnectWallet';
+import Account from './Account';
 
 enum FishSelectionEnum {
   MyFish,
@@ -30,7 +33,8 @@ const FightingWaters = () => {
 	const { userFish, fightingFish } = useFishPool()
 	const { account } = useWeb3React();
 	const unityContext = useUnity();
-	const { fightFish, depositFightingFish, withdrawFightingFish, pendingTransaction} = useContractWrapper();
+	const { fightFish, depositFightingFish, withdrawFightingFish, contractApproveAllForFighting, pendingTransaction} = useContractWrapper();
+	const { fightingFishApproval } = useFishFight();
 
 	useEffect(() => {
 		unityContext.UnityInstance.on('UISelectionConfirm', function (data: any) {
@@ -125,6 +129,23 @@ const FightingWaters = () => {
 		setshowFightingLocationResult(false);
 	}
 
+	const ApprovalUI = () => {
+		return (
+			
+
+	<ApprovalsContainer>
+		<ApprovalDisclaimer>
+			<p>Approval Required: Fighting contract approval to control your $FISH is required to Fight Fish.</p>
+			<OptionsContainer>
+				{!fightingFishApproval &&
+					<BaseButton onClick={() => contractApproveAllForFighting()}>{'Approve $FISH'}</BaseButton>
+				}
+			</OptionsContainer>
+		</ApprovalDisclaimer>
+	</ApprovalsContainer>	
+		)
+	}
+
 	const FighterSelection = () => {
 		return (
 			<>
@@ -150,7 +171,7 @@ const FightingWaters = () => {
 					}
 				</ContainerControls>
 				{account && userFish.length > 0 && fishSelectionToShow === FishSelectionEnum.MyFish && 
-					<FishViewer selectedFish={mySelectedFish} fishCollection={userFish} onClick={setUserFighter} />
+					<FishViewer type="Fighting" selectedFish={mySelectedFish} fishCollection={userFish} onClick={setUserFighter} />
 				}
 				{account && userFish.length === 0 && fishSelectionToShow === FishSelectionEnum.MyFish &&
 					<BaseLinkButton to={'/catch'}>Catch a Fish!</BaseLinkButton>
@@ -162,17 +183,37 @@ const FightingWaters = () => {
 		)
 	}
 
-	return (
-		<BaseOverlayContainer
+	if(account && fightingFishApproval) {
+		return (
+			<BaseOverlayContainer
 			active={pendingTransaction}
 			spinner
 			text='Waiting for confirmation...'
 			>
-			{!isFighting && !showFightingLocationResult && !fightResult &&
+			{!isFighting && !showFightingLocationResult && !fightResult	&&
 				<FighterSelection />
 			}
 		</BaseOverlayContainer>
-	);
+			
+		)
+	} else {
+		return (
+			<ApprovalsContainer
+			active={pendingTransaction}
+			spinner
+			text='Waiting for confirmation...'
+			>
+				<ContainerControls>
+					{!account &&
+						<Account mobile={false} textOverride={"Connect Wallet to Fight $FISH"}/>
+					}
+					{account && 
+					<ApprovalUI></ApprovalUI>
+					}
+				</ContainerControls>
+			</ApprovalsContainer>
+		)
+	}
 };
 
 const OptionsContainer = styled.div`

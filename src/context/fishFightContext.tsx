@@ -5,8 +5,9 @@ import { getWalletProvider } from '../helpers/providerHelper'
 import { toBech32 } from '@harmony-js/crypto';
 import { isBech32Address, fromWei, hexToNumber, Units } from '@harmony-js/utils';
 import { Harmony } from "@harmony-js/core";
-import { Web3Provider } from "@ethersproject/providers";
+import { EtherscanProvider, Web3Provider } from "@ethersproject/providers";
 import Web3 from 'web3';
+import BN from 'bn.js'
 import { Season } from '../utils/season';
 
 // Typescript
@@ -29,9 +30,14 @@ interface FishFightProviderContext {
     totalSupply: number
     fightingWatersSupply: number
     breedingWatersSupply: number
+    fightingFishApproval: boolean
+    fightingFoodApproval: boolean
+    breedingFishApproval: boolean
+    breedingFoodApproval: boolean
     refetchBalance: () => void
 	  resetBalance: () => void
     refetchStats: () => void
+    checkApprovals: () => void
     // seasonNumber: number
     // seasonPhase: string
 }
@@ -46,6 +52,16 @@ export const FishFightProvider = ({ children }: FishFightProviderProps ) => {
   // FishFight instance initiates with default url provider upon visiting page
   const [FishFightInstance, setFishFightInstance] = useState<FishFight>(new FishFight())
   const [userConnected, setUserConnected] = useState<boolean>(false);
+  const [fightingFishApproval, setFightingFishApproval] = useState<boolean>(false);
+  const [fightingFoodApproval, setFightingFoodApproval] = useState<boolean>(false);
+
+  const [breedingFishApproval, setBreedingFishApproval] = useState<boolean>(false);
+  const [breedingFoodApproval, setBreedingFoodApproval] = useState<boolean>(false);
+
+  // const [trainingFishApproval, setTrainingFishApproval] = useState<boolean>(false);
+  // const [trainingFoodApproval, setTrainingFoodApproval] = useState<boolean>(false);
+
+
   const [currentBlock, setCurrentBlock] = useState<number>(0);
   // State of web3React
   const { account, connector, library} = useWeb3React();
@@ -83,6 +99,7 @@ export const FishFightProvider = ({ children }: FishFightProviderProps ) => {
         setUserConnected(true);
         refetchBalance();
         refetchStats();
+        checkApprovals();
         console.log(FishFightInstance)
       })
     }
@@ -108,14 +125,41 @@ export const FishFightProvider = ({ children }: FishFightProviderProps ) => {
     contextSeasons.fetchStats(FishFightInstance);
   }
 
+  const checkApprovals = async () => {
+    // Fighting Waters approvals
+    const approvedFishFighting = await FishFightInstance.readFishFactory.methods.isApprovedForAll(account, FishFightInstance.readFightingWaters.options.address).call();
+    if(approvedFishFighting) setFightingFishApproval(true);
+    let approvedFoodFighting = new BN(await FishFightInstance.readFishFood.methods.allowance(account, FishFightInstance.readFightingWaters.options.address).call());
+    // approvedFoodFighting = new BN(approvedFoodFighting);
+    if(approvedFoodFighting.gt(new BN('99999999'))) setFightingFoodApproval(true);
+
+    // Breeding Waters approvals
+    const approvedFishBreeding = await FishFightInstance.readFishFactory.methods.isApprovedForAll(account, FishFightInstance.readBreedingWaters.options.address).call();
+    if(approvedFishBreeding) setBreedingFishApproval(true);
+    let approvedFoodBreeding = new BN(await FishFightInstance.readFishFood.methods.allowance(account, FishFightInstance.readBreedingWaters.options.address).call());
+    // approvedFoodBreeding = new BN(approvedFoodBreeding);
+    if(approvedFoodBreeding.gt(new BN('99999999'))) setBreedingFoodApproval(true);
+
+    // Training Waters approvals
+    // const approvedFishTraining = await FishFightInstance.readFishFactory.methods.isApprovedForAll(account, FishFightInstance.readTrainingWaters.options.address).call();
+    // if(approvedFishTraining) setTrainingFishApproval(true);
+    // const approvedFoodTraining = await FishFightInstance.readFishFood.methods.allowance(account, FishFightInstance.readTrainingWaters.options.address).call();
+    // if(Web3.utils.fromWei(approvedFoodTraining) >= '99999999') setTrainingFoodApproval(true);
+  }
+
   const value: FishFightProviderContext = {
     FishFight: FishFightInstance,
     userConnected: userConnected,
     currentBlock: currentBlock,
+    fightingFishApproval: fightingFishApproval,
+    fightingFoodApproval: fightingFoodApproval,
+    breedingFishApproval: breedingFishApproval,
+    breedingFoodApproval: breedingFoodApproval,
     refetchBalance,
     ...contextBalance,
     ...contextSeasons,
-    refetchStats
+    refetchStats,
+    checkApprovals,
   }
   return (
       <FishFightContext.Provider value={value}>{children}</FishFightContext.Provider>

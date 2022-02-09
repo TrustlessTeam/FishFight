@@ -23,6 +23,9 @@ interface ProviderInterface {
 	breedFish: (fishA: Fish | null, fishB: Fish | null) => void;
 	withdrawBreedingFish: (fish: Fish | null) => void;
 	depositBreedingFish: (fish: Fish | null) => void;
+	contractApproveAllForFighting: () => void;
+	contractApproveAllFishForBreeding: () => void;
+	contractApproveFoodForBreeding: () => void;
 	pendingTransaction: boolean;
 }
 
@@ -33,7 +36,7 @@ const ContractWrapperContext = createContext<ProviderInterface | undefined>(unde
 export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 	const [pendingTransaction, setPendingTransaction] = useState<boolean>(false);
 	const { account } = useWeb3React();
-	const { FishFight, refetchBalance } = useFishFight();
+	const { FishFight, refetchBalance, checkApprovals } = useFishFight();
 	const { refreshFish, createUserFish } = useFishPool();
 	const unityContext = useUnity();
 
@@ -167,6 +170,8 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 		.on('receipt', () => {
 			console.log('Breeding Approval completed')
 			toast.success('Breeding Approval completed')
+			checkApprovals();
+			setPendingTransaction(false);
 		})
 	}
 
@@ -197,7 +202,7 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 	}
 
 	const contractApproveFoodForBreeding = () => {
-		return FishFight.fishFood?.methods.approve(FishFight.readBreedingWaters.options.address, web3.utils.toWei(BREEDCOSTFISHFOOD)).send({
+		return FishFight.fishFood?.methods.approve(FishFight.readBreedingWaters.options.address, '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff').send({
 			from: account,
 			gasPrice: 30000000000,
 			gasLimit: 500000
@@ -213,6 +218,8 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 		.on('receipt', () => {
 			console.log('FishFood Approval completed')
 			toast.success('FishFood Approval Completed')
+			checkApprovals();
+			setPendingTransaction(false);
 		})
 	}
 
@@ -257,6 +264,7 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 	}
 
 	const contractApproveAllForFighting = () => {
+		console.log("test")
 		return FishFight.fishFactory?.methods.setApprovalForAll(FishFight.readFightingWaters.options.address, true).send({
 			from: account,
 			gasPrice: 30000000000,
@@ -273,6 +281,8 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 		.on('receipt', () => {
 			console.log('Fighting Approval completed')
 			toast.success('Fighting Approval completed')
+			checkApprovals();
+			setPendingTransaction(false);
 		})
 	}
 
@@ -467,6 +477,9 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 		breedFish: breedFish,
 		withdrawBreedingFish: withdrawBreedingFish,
 		depositBreedingFish: depositBreedingFish,
+		contractApproveAllForFighting: contractApproveAllForFighting,
+		contractApproveAllFishForBreeding: contractApproveAllFishForBreeding,
+		contractApproveFoodForBreeding: contractApproveFoodForBreeding,
 		pendingTransaction: pendingTransaction
 	};
 	return <ContractWrapperContext.Provider value={value}>{children}</ContractWrapperContext.Provider>;

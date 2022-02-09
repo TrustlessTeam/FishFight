@@ -35,6 +35,22 @@ export const ContainerControls = styled.div`
 	
 `;
 
+export const ApprovalsContainer = styled(LoadingOverlay)`
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	width: 100%;
+	height: 100%;
+`;
+
+export const ApprovalDisclaimer = styled.div`
+	padding: ${props => props.theme.spacing.gap};
+	margin-bottom: ${props => props.theme.spacing.gap};
+	background-color: white;
+	border-radius: 25px;
+`;
+
 export const BaseText = styled.p`
 	display: flex;
 	flex-flow: column;

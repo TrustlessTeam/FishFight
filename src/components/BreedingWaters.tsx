@@ -6,9 +6,12 @@ import { Fish } from '../utils/fish'
 import { useUnity } from '../context/unityContext';
 import { useFishPool } from '../context/fishPoolContext';
 import FishViewer from './FishViewer';
-import {  BaseLinkButton, BaseOverlayContainer, ContainerControls } from './BaseStyles';
+import {  BaseLinkButton, BaseOverlayContainer, ContainerControls, ApprovalsContainer, BaseButton, ApprovalDisclaimer } from './BaseStyles';
 import { ToggleGroup, ToggleOption } from './ToggleButton';
 import { useContractWrapper } from '../context/contractWrapperContext';
+import { useFishFight } from '../context/fishFightContext';
+import ConnectWallet from './ConnectWallet';
+import Account from './Account';
 
 enum FishSelectionEnum {
   MyFish,
@@ -29,7 +32,8 @@ const BreedingWaters = () => {
 	const unityContext = useUnity();
 	const { account } = useWeb3React();
 	const { userFish, breedingFish } = useFishPool()
-	const { breedFish, depositBreedingFish, withdrawBreedingFish, pendingTransaction} = useContractWrapper();
+	const { breedFish, depositBreedingFish, withdrawBreedingFish, contractApproveFoodForBreeding, contractApproveAllFishForBreeding, pendingTransaction} = useContractWrapper();
+	const { breedingFishApproval, breedingFoodApproval } = useFishFight();
 
 	useEffect(() => {
 		console.log("Breeding Fish")
@@ -61,6 +65,11 @@ const BreedingWaters = () => {
 	}
 
 	const setUserBetta = async (fish : Fish) => {
+		if(fish.stakedFighting) {
+			toast.error('Withdraw from Fight Pool');
+		} else {
+			
+		}
 		console.log("Betta Fish: " + fish.tokenId)
 		setMyBettaFish(fish);
 		unityContext.addFishFight1(fish)
@@ -75,45 +84,117 @@ const BreedingWaters = () => {
 		unityContext.showFightingLocation();
 	}
 
-	return (
-		<BaseOverlayContainer
+	const ApprovalUI = () => {
+		return (
+			<ApprovalsContainer>
+				<ApprovalDisclaimer>
+					<p>Approval Required: Breeding contract approval to control your $FISH and send $FISHFOOD is required to Breed Fish.</p>
+					<OptionsContainer>
+					{!breedingFishApproval &&
+						<BaseButton onClick={() => contractApproveAllFishForBreeding()}>{'Approve $FISH'}</BaseButton>
+					}
+					{!breedingFoodApproval &&
+						<BaseButton onClick={() => contractApproveFoodForBreeding()}>{'Approve $FISHFOOD'}</BaseButton>
+					}
+				</OptionsContainer>
+				</ApprovalDisclaimer>
+				
+			</ApprovalsContainer>	
+		)
+	}
+
+	const BreederSelection = () => {
+		return (
+			<BaseOverlayContainer
 			active={pendingTransaction}
 			spinner
 			text='Waiting for confirmation...'
 			>
-			{myBettaFish != null &&
-			<OptionsContainer>
-				{myBettaFish.stakedBreeding &&
-					<GameButton onClick={() => withdrawBreedingFish(myBettaFish)}>{'Withdraw Breeder'}</GameButton>
+				{myBettaFish != null &&
+				<OptionsContainer>
+					{myBettaFish.stakedBreeding &&
+						<GameButton onClick={() => withdrawBreedingFish(myBettaFish)}>{'Withdraw Breeder'}</GameButton>
+					}
+					{myBettaFish.seasonStats.fightWins > 0 && !myBettaFish.stakedFighting &&
+						<GameButton onClick={() => depositBreedingFish(myBettaFish)}>{'Deposit'}</GameButton>
+					}
+					{myBettaFish && alphaFish &&
+						<GameButton onClick={() => breedFish(alphaFish, myBettaFish)}>{'Breed Fish'}</GameButton>
+					}
+				</OptionsContainer>
 				}
-				{myBettaFish.seasonStats.fightWins > 0 && !myBettaFish.stakedFighting &&
-					<GameButton onClick={() => depositBreedingFish(myBettaFish)}>{'Deposit'}</GameButton>
+				<ContainerControls>
+					{account &&
+						<ToggleGroup>
+							<ToggleOption className={fishSelectionToShow === FishSelectionEnum.MyFish ? 'active' : ''} onClick={() => setFishSelectionToShow(FishSelectionEnum.MyFish)}>My $FISH</ToggleOption>
+							<ToggleOption className={fishSelectionToShow === FishSelectionEnum.AlphaFish ? 'active' : ''} onClick={() => setFishSelectionToShow(FishSelectionEnum.AlphaFish)}>Alpha $FISH</ToggleOption>
+						</ToggleGroup>
+					}
+				</ContainerControls>
+				{account && userFish.length > 0 && fishSelectionToShow === FishSelectionEnum.MyFish && 
+					<FishViewer type="Breeding" selectedFish={myBettaFish} fishCollection={userFish} onClick={setUserBetta} />
 				}
-				{myBettaFish && alphaFish &&
-					<GameButton onClick={() => breedFish(alphaFish, myBettaFish)}>{'Breed Fish'}</GameButton>
+				{account && userFish.length === 0 && fishSelectionToShow === FishSelectionEnum.MyFish &&
+					<BaseLinkButton to={'/catch'}>Catch a Fish!</BaseLinkButton>
 				}
-			</OptionsContainer>
-			}
-			<ContainerControls>
-				{account &&
-					<ToggleGroup>
-						<ToggleOption className={fishSelectionToShow === FishSelectionEnum.MyFish ? 'active' : ''} onClick={() => setFishSelectionToShow(FishSelectionEnum.MyFish)}>My Betta $FISH</ToggleOption>
-						<ToggleOption className={fishSelectionToShow === FishSelectionEnum.AlphaFish ? 'active' : ''} onClick={() => setFishSelectionToShow(FishSelectionEnum.AlphaFish)}>Alpha $FISH</ToggleOption>
-					</ToggleGroup>
+				{(fishSelectionToShow === FishSelectionEnum.AlphaFish || !account ) &&
+					<FishViewer selectedOpponent={alphaFish} fishCollection={breedingFish} onClick={setAlpha} />
 				}
-			</ContainerControls>
-			{account && userFish.length > 0 && fishSelectionToShow === FishSelectionEnum.MyFish && 
-				<FishViewer selectedFish={myBettaFish} fishCollection={userFish} onClick={setUserBetta} />
-			}
-			{account && userFish.length === 0 && fishSelectionToShow === FishSelectionEnum.MyFish &&
-				<BaseLinkButton to={'/catch'}>Catch a Fish!</BaseLinkButton>
-			}
-			{(fishSelectionToShow === FishSelectionEnum.AlphaFish || !account ) &&
-				<FishViewer depositAlpha={true} selectedOpponent={alphaFish} fishCollection={breedingFish} onClick={setAlpha} />
-			}
 		</BaseOverlayContainer>
-	);
+		)
+	}
+
+
+	if(!unityContext.isFishPoolReady) return null;
+
+	if(account && breedingFishApproval && breedingFoodApproval) {
+		return (
+			<BreederSelection></BreederSelection>
+		)
+	} else {
+		return (
+			<ApprovalsContainer
+			active={pendingTransaction}
+			spinner
+			text='Waiting for confirmation...'
+			>
+				<ContainerControls>
+					{!account &&
+						<Account mobile={false} textOverride={"Connect Wallet to Breed $FISH"}/>
+					}
+					{account && 
+					<ApprovalUI></ApprovalUI>
+					}
+				</ContainerControls>
+			</ApprovalsContainer>
+		)
+	}
+	
+
+	// return (
+	// 	<BaseOverlayContainer
+	// 		active={pendingTransaction}
+	// 		spinner
+	// 		text='Waiting for confirmation...'
+	// 		>
+	// 		{!account &&
+				
+	// 		<ContainerControls>
+	// 			<Account mobile={false} textOverride={"Connect"}/>
+	// 		</ContainerControls>
+	// 		}
+	// 		{account && ! breedingFishApproval && breedingFoodApproval && 
+	// 			<ApprovalUI></ApprovalUI>
+	// 		}
+	// 		{account && breedingFishApproval && breedingFoodApproval &&
+	// 			<BreederSelection></BreederSelection>
+	// 		}
+			
+	// 	</BaseOverlayContainer>
+	// );
 };
+
+
 
 const OptionsContainer = styled.div`
 	display: flex;

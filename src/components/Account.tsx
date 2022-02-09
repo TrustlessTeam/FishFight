@@ -31,9 +31,10 @@ if (process.env.NODE_ENV !== 'test') Modal.setAppElement('#root');
 type Props = {
   children?: React.ReactNode;
 	mobile: boolean;
+	textOverride?: string;
 };
 
-const Account = ({ children, mobile }: Props) => {
+const Account = ({ children, mobile, textOverride }: Props) => {
 	const [modalIsOpen, setModalIsOpen] = useState(false);
 	const { account, active } = useWeb3React();
 	const { balance, balanceFish, balanceDeadFish, balanceFood, balanceFightFish, balanceBreedFish  } = useFishFight();
@@ -55,6 +56,7 @@ const Account = ({ children, mobile }: Props) => {
 				<WalletImg open={modalIsOpen} onClick={openModal} src={walletImg} alt="User Wallet"></WalletImg>
 				{children}
 				<Modal
+					// style={{overlay: { zIndex: 10}}}
 					isOpen={modalIsOpen}
 					className="Modal"
 					overlayClassName="Overlay"
@@ -129,7 +131,7 @@ const Account = ({ children, mobile }: Props) => {
 						{parsedAccount.substring(0, 6)}...{parsedAccount.substring(parsedAccount.length - 4)}
 					</span>
 				) : (
-					<Span>Connect Wallet</Span>
+					<Span>{textOverride ? textOverride : "Connect Wallet"}</Span>
 				)}
 			</AccountComponent>
 		</Group>
@@ -162,6 +164,7 @@ const Account = ({ children, mobile }: Props) => {
 	
 			{children}
 			<Modal
+				style={{overlay: { zIndex: 10}}}
 				isOpen={modalIsOpen}
 				className="Modal"
 				overlayClassName="Overlay"

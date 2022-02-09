@@ -40,6 +40,7 @@ import BreedingWaters from './components/BreedingWaters';
 import StartBreed from './components/StartBreed';
 import { isMobile } from 'react-device-detect';
 import MenuOverlay from './components/MenuOverlay';
+import Default from './components/Default';
 
 const App = () => {
 	// const {FishFight} = useFishFight()
@@ -58,6 +59,7 @@ const App = () => {
 						<MenuOverlay></MenuOverlay>
 						<Routes>
 							<Route element={<UnityWindow />}>
+									<Route path="/" element={<Default />} />
 									<Route path="/ocean" element={<Ocean />} />
 									<Route path="/fishing" element={<CatchFish />} />
 									<Route path="/fighting" element={<FightingWaters />}>
