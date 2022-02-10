@@ -81,6 +81,11 @@ const BreedingWaters = () => {
 			toast.error(`Fish on cooldown for ${lockedFor} minutes`)
 			return;
 		}
+		if(fish.seasonStats.fightWins == 0) {
+			setAlphaFish(fish);
+			toast.error(`Not Alpha this Season`)
+			return;
+		}
 		console.log("Alpha Fish: " + fish.tokenId)
 		unityContext.showBreedingUI();
 		setAlphaFish(fish);
@@ -104,6 +109,11 @@ const BreedingWaters = () => {
 			console.log(fish.birthTime)
 			console.log(currentSeason.startTs)
 			toast.error('Too Young');
+			return;
+		}
+		if(fish.stakedBreeding && fish.seasonStats.fightWins == 0) {
+			toast.error('Not alpha this season, withdraw to use');
+			setMyBettaFish(fish);
 			return;
 		}
 

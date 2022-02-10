@@ -38,6 +38,8 @@ interface UnityProviderContext {
   showFish: (fish: Fish) => void;
   clearFishPool: (pool: string) => void;
   sendRound: (round: number, roundStat: number) => void;
+	clearUIFish: () => void;
+	hideUI: () => void;
   sendWinner: (fish: Fish) => void;
   sendTie: () => void;
 }
@@ -227,6 +229,18 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
     if (!isLoaded) return;
     UnityInstance.send("CanvasUserInterface", "SetAnimState", "ShowBreeding");
   };
+
+	const clearUIFish = () => {
+    // console.log("ClearFishPool Called " + pool)
+    if (!isLoaded || !fishPoolReady) return;
+    UnityInstance.send("FishPool", "ClearUIFish");
+    // console.log("ClearFishPool Called " + pool)
+  };
+
+	const hideUI = () => {
+		if (!isLoaded || !fishPoolReady) return;
+		UnityInstance.send("CanvasUserInterface", "SetAnimState", "Hide");
+	}
 
   const clearFishPool = (pool: string) => {
     // console.log("ClearFishPool Called " + pool)
@@ -429,6 +443,8 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
     addFishFishing: addFishFishing,
     showFish: showFish,
     clearFishPool: clearFishPool,
+		clearUIFish: clearUIFish,
+		hideUI: hideUI,
     sendRound: sendRound,
     sendWinner: sendWinner,
     sendTie: sendTie,

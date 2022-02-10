@@ -49,6 +49,10 @@ const FightingWaters = () => {
 			}
 			
 		});
+
+		unityContext.UnityInstance.on("UI_Fighting_Start_Request", function () {
+      console.log("UI_Fighting_Start_Request!");
+    });
 	}, [unityContext.isFishPoolReady, account]);
 
 	useEffect(() => {
@@ -64,7 +68,8 @@ const FightingWaters = () => {
 		// unityContext.clearFishPool("Fighting")
 		// unityContext.clearFishPool("Breeding")
 		// unityContext.clearFishPool('Fish');
-
+		unityContext.clearUIFish();
+		unityContext.hideUI();
 		unityContext.showFightingLocation();
 	}, [unityContext.isFishPoolReady]);
 
