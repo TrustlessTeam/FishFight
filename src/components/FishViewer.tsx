@@ -8,6 +8,16 @@ import { Fish } from "../utils/fish";
 import Menu, { MenuItem } from "../components/Menu";
 
 const sortId = (a: Fish, b: Fish) => a.tokenId - b.tokenId;
+const sortAlpha = (a: Fish, b: Fish) => {
+	let bIsAlpha: any = b.seasonStats.fightWins > 0;
+	let aIsAlpha: any = a.seasonStats.fightWins > 0;
+	return bIsAlpha - aIsAlpha;
+}
+const sortBetta = (a: Fish, b: Fish) => {
+	let bIsBetta: any = b.seasonStats.fightWins === 0;
+	let aIsBetta: any = a.seasonStats.fightWins === 0;
+	return bIsBetta - aIsBetta;
+}
 const sortAgi = (a: Fish, b: Fish) => a.agility - b.agility;
 const sortStr = (a: Fish, b: Fish) => a.strength - b.strength;
 const sortInt = (a: Fish, b: Fish) => a.intelligence - b.intelligence;
@@ -15,6 +25,8 @@ const sortWins = (a: Fish, b: Fish) => a.lifetimeWins - b.lifetimeWins;
 
 enum SortSelection {
   "Id",
+  "Alpha",
+  "Betta",
   "Strength",
   "Intelligence",
   "Agility",
@@ -43,11 +55,25 @@ const FishViewer = ({
   const [sortOption, setSortOption] = useState<number>(SortSelection.Id);
   const [searchId, setSearchId] = useState<string>("");
 
+	useEffect(() => {
+		if(type == "Breeding") setSortOption(SortSelection.Betta)
+	}, []);
+
   const SortOptions = [
     {
       name: "Id",
       onClick: () => setSortOption(SortSelection.Id),
       sortFn: sortId,
+    },
+		{
+      name: "Alpha",
+      onClick: () => setSortOption(SortSelection.Alpha),
+      sortFn: sortAlpha,
+    },
+		{
+      name: "Betta",
+      onClick: () => setSortOption(SortSelection.Betta),
+      sortFn: sortBetta,
     },
     {
       name: "Strength",

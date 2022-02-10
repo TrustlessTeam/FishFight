@@ -12,6 +12,7 @@ import { useContractWrapper } from '../context/contractWrapperContext';
 import { useFishFight } from '../context/fishFightContext';
 import ConnectWallet from './ConnectWallet';
 import Account from './Account';
+import web3 from 'web3';
 
 enum FishSelectionEnum {
   MyFish,
@@ -33,7 +34,7 @@ const BreedingWaters = () => {
 	const { account } = useWeb3React();
 	const { userFish, breedingFish } = useFishPool()
 	const { breedFish, depositBreedingFish, withdrawBreedingFish, contractApproveFoodForBreeding, contractApproveAllFishForBreeding, pendingTransaction} = useContractWrapper();
-	const { breedingFishApproval, breedingFoodApproval } = useFishFight();
+	const { breedingFishApproval, breedingFoodApproval, currentSeason } = useFishFight();
 
 	useEffect(() => {
 		console.log("Breeding Fish")
@@ -41,13 +42,34 @@ const BreedingWaters = () => {
 	}, [unityContext.isFishPoolReady]);
 
 	useEffect(() => {
-		unityContext.UnityInstance.on('FishPoolFightWinner', function () {
-			console.log('Confirm FishPoolFightWinner');
-			setShowBreedResult(true);
+		console.log("Breeding Fish Changed")
+		console.log(breedingFish)
+		if(!unityContext.isFishPoolReady) return;
+		unityContext.clearFishPool("ShowBreeding")
+		breedingFish.forEach(fish => {
+			unityContext.addFishBreedingPool(fish);
+		})
+	}, [breedingFish, unityContext.isFishPoolReady]);
+
+	useEffect(() => {
+		unityContext.UnityInstance.on('UISelectionConfirm', function (data: any) {
+			// console.log('UI changed catch fish');
+			console.log(data)
+			switch (data) {
+				case 'breed_confirm':
+					breedFish(alphaFish, myBettaFish);
+					return;
+				default:
+					return;
+			}
+			
 		});
-		unityContext.UnityInstance.on('FishPoolFightTie', function () {
-			console.log('Confirm FishPoolFightTie');
-			setShowBreedResult(true);
+	}, [unityContext.isFishPoolReady, account, alphaFish, myBettaFish]);
+
+	useEffect(() => {
+		unityContext.UnityInstance.on('UI_Breeding_Start_Request', function () {
+			console.log('Confirm UI_Breeding_Start_Request');
+			// setShowBreedResult(true);
 		});
 	}, [unityContext.isFishPoolReady]);
 
@@ -60,19 +82,36 @@ const BreedingWaters = () => {
 			return;
 		}
 		console.log("Alpha Fish: " + fish.tokenId)
+		unityContext.showBreedingUI();
 		setAlphaFish(fish);
-		unityContext.addFishFight2(fish)
+		unityContext.addFishBreed2(fish)
+		unityContext.addFish2(fish)
+
 	}
 
 	const setUserBetta = async (fish : Fish) => {
 		if(fish.stakedFighting) {
 			toast.error('Withdraw from Fight Pool');
-		} else {
-			
+			setMyBettaFish(fish);
+			return;
+		} 
+		if(fish.seasonStats.fightWins > 0 && fish.stakedBreeding) {
+			toast.error('Already in Alpha Pool');
+			setMyBettaFish(fish);
+			return;
 		}
+		if(fish.parentA > 0 && currentSeason != null && fish.birthTime > currentSeason?.startTs) {
+			console.log(fish.birthTime)
+			console.log(currentSeason.startTs)
+			toast.error('Too Young');
+			return;
+		}
+
 		console.log("Betta Fish: " + fish.tokenId)
+		unityContext.showBreedingUI();
 		setMyBettaFish(fish);
-		unityContext.addFishFight1(fish)
+		unityContext.addFishBreed1(fish)
+		unityContext.addFish1(fish)
 	}
 
 	const breedAgain = () => {

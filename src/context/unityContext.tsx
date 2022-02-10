@@ -17,6 +17,10 @@ interface UnityProviderContext {
   showBreedingLocation: () => void;
   showOceanLocation: () => void;
   showFightingLocation: () => void;
+	showFightingUI: () => void;
+	showBreedingUI: () => void;
+	showFishingUI: () => void;
+	showFishUI: () => void;
   showHome: () => void;
   showTank: () => void;
   addFishOcean: (fish: Fish) => void;
@@ -165,21 +169,21 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
     // console.log("showFightingLocation Called")
     if (!isLoaded || !fishPoolReady) return;
     UnityInstance.send("Camera", "SetAnimState", "ShowFighting");
-    UnityInstance.send("CanvasUserInterface", "SetAnimState", "ShowFighting");
+    // UnityInstance.send("CanvasUserInterface", "SetAnimState", "ShowFighting");
     // console.log("showFightingLocation Completed")
   };
   const showBreedingLocation = () => {
      console.log("showBreedingLocation Called")
     if (!isLoaded || !fishPoolReady) return;
     UnityInstance.send("Camera", "SetAnimState", "ShowBreeding");
-    UnityInstance.send("CanvasUserInterface", "SetAnimState", "ShowBreeding");
+    // UnityInstance.send("CanvasUserInterface", "SetAnimState", "ShowBreeding");
     // console.log("showFightingLocation Completed")
   };
   const showOceanLocation = () => {
     // console.log("showOceanLocation Called")
     if (!isLoaded || !fishPoolReady) return;
     UnityInstance.send("Camera", "SetAnimState", "ShowOcean");
-    UnityInstance.send("CanvasUserInterface", "SetAnimState", "ShowOcean");
+    // UnityInstance.send("CanvasUserInterface", "SetAnimState", "ShowOcean");
     // console.log("showOceanLocation Completed")
   };
   const showHome = () => {
@@ -203,6 +207,13 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
     //UnityInstance.send('Camera', 'SetUIState', 'ShowOcean'); // ShowFish ?
     UnityInstance.send("CanvasUserInterface", "SetAnimState", "ShowFish"); // ShowFish ?
     console.log("ShowFish Completed");
+  };
+	const showFishingUI = () => {
+    console.log("Show Fishing UI Called");
+    if (!isLoaded) return;
+    //UnityInstance.send('Camera', 'SetUIState', 'ShowOcean'); // ShowFish ?
+    UnityInstance.send("CanvasUserInterface", "SetAnimState", "ShowFishing"); // ShowFish ?
+    console.log("ShowFishing Completed");
   };
   const showFightingUI = () => {
     console.log("Show Fight UI Called");
@@ -276,7 +287,7 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
     console.log(fish);
     UnityInstance.send(
       "FishPool",
-      "AddFish_FightingView",
+      "AddFish_BreedingView",
       JSON.stringify(fish)
     );
     // console.log("AddFish Completed")
@@ -343,9 +354,8 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
   const showFish = (fish: Fish) => {
     console.log(fish);
     if (!isLoaded || !fishPoolReady) return;
+		clearFishPool("Fish");
     UnityInstance.send("CanvasUserInterface", "SetAnimState", "ShowFish");
-    // showFishUI();
-    // addFish1(fish);
     UnityInstance.send("FishPool", "AddFish_FishView", JSON.stringify(fish));
     if (fish.parentAFish && fish.parentBFish) {
       addFish2(fish.parentAFish);
@@ -398,6 +408,10 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
     showBreedingLocation: showBreedingLocation,
     showOceanLocation: showOceanLocation,
     showFightingLocation: showFightingLocation,
+		showFightingUI: showFightingUI,
+		showBreedingUI: showBreedingUI,
+		showFishingUI: showFishingUI,
+		showFishUI: showFishUI,
     showHome: showHome,
     showTank: showTank,
     addFishOcean: addFishOcean,

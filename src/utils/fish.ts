@@ -69,6 +69,7 @@ export class Fish {
   fightingHistory: number[] | null;
   stakedFighting: FightingStake | undefined;
   stakedBreeding: BreedingStake | null;
+  isUser: boolean;
 
   constructor(
     fishInfo: any,
@@ -109,6 +110,7 @@ export class Fish {
     this.fightingHistory = null;
     this.stakedFighting = undefined;
     this.stakedBreeding = null;
+    this.isUser = false;
   };
 
   parseTraits(): VisualTraits {

@@ -11,6 +11,7 @@ import fishImg from "../img/icons/fish-dark.svg";
 import alphaImg from "../img/icons/alpha-dark.svg";
 import bettaImg from "../img/icons/betta-dark.svg";
 import { useContractWrapper } from "../context/contractWrapperContext";
+import { useFishFight } from "../context/fishFightContext";
 
 type Props = {
   fish: Fish;
@@ -43,6 +44,8 @@ const FishNFT = ({
     pendingTransaction,
   } = useContractWrapper();
 
+	const { currentSeason } = useFishFight();
+
   const toggleStats = () => {
     setShowStats((prevShowStats) => !prevShowStats);
   };
@@ -58,10 +61,13 @@ const FishNFT = ({
         {fish.stakedFighting && (
           <LogoSmallImg src={fightingImg} alt="$FIGHTFISH"></LogoSmallImg>
         )}
-        {fish.seasonStats.fightWins > 0 && type === 'Breeding' && (
+				{fish.stakedBreeding && (
+          <LogoSmallImg src={breedingImg} alt="$FIGHTFISH"></LogoSmallImg>
+        )}
+        {type === 'Breeding' && fish.seasonStats.fightWins > 0 && (
           <LogoSmallImg src={alphaImg} alt="$FIGHTFISH"></LogoSmallImg>
         )}
-				{!fish.stakedFighting && !fish.stakedBreeding && fish.seasonStats.fightWins === 0 && type === 'Breeding' && (
+				{type === 'Breeding' && fish.seasonStats.fightWins == 0 && (
           <LogoSmallImg src={bettaImg} alt="$FIGHTFISH"></LogoSmallImg>
         )}
       </FishStats>
@@ -85,6 +91,9 @@ const FishNFT = ({
         <Options>
           {fish.stakedFighting && (
             <Button onClick={() => withdrawFightingFish(fish)}>Withdraw</Button>
+          )}
+					{fish.stakedBreeding && (
+            <Button onClick={() => withdrawBreedingFish(fish)}>Withdraw</Button>
           )}
           {!fish.stakedFighting && !fish.stakedBreeding && type === 'Fighting' && (
             <Button onClick={() => depositFightingFish(fish)}>Deposit</Button>

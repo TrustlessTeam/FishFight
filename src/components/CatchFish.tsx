@@ -31,7 +31,10 @@ const CatchFish = () => {
 	}, [account]);
 
 	useEffect(() => {
-		unityContext.clearFishPool('showFishingLocation');
+		unityContext.clearFishPool('Fishing');
+		unityContext.clearFishPool('Breeding');
+		unityContext.clearFishPool('Fighting');
+		unityContext.showFishingUI();
 	}, []);
 
 	useEffect(() => {

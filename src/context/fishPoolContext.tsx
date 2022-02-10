@@ -368,6 +368,7 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
     console.log("Add Fish By Id")
     const fishData = await getFish(FishFight, tokenId, false, false)
     if(fishData != null) {
+      fishData.isUser = true;
       setUserFish(prevTokens => [...prevTokens, fishData])
     }
   };

@@ -41,14 +41,8 @@ const FightingWaters = () => {
 			console.log('UI changed catch fish');
 			console.log(data)
 			switch (data) {
-				case 'breed_confirm':
+				case 'fight_confirm':
 					fightFish(mySelectedFish, opponentFish);
-					return;
-				case 'depositFighter':
-					depositFightingFish(mySelectedFish);
-					return;
-				case 'withdrawFighter':
-					withdrawFightingFish(mySelectedFish);
 					return;
 				default:
 					return;
@@ -67,28 +61,31 @@ const FightingWaters = () => {
 
 	useEffect(() => {
 		console.log("Show Fighting Location")
+		// unityContext.clearFishPool("Fighting")
+		// unityContext.clearFishPool("Breeding")
+		// unityContext.clearFishPool('Fish');
+
 		unityContext.showFightingLocation();
 	}, [unityContext.isFishPoolReady]);
 
 	useEffect(() => {
-		console.log("Fightintg Fish Changed")
+		console.log("Fighting Fish Changed")
 		console.log(fightingFish)
-		console.log(userFish)
 		if(!unityContext.isFishPoolReady) return;
-		let i = 0;
+		unityContext.clearFishPool("ShowFighting")
 		fightingFish.forEach(fish => {
-			if(!renderedFish.includes(fish.tokenId)) {
-				unityContext.addFishFightingPool(fish);
-				setRenderedFish(prevData => [...prevData, fish.tokenId])
-				i++;
-			}
+			unityContext.addFishFightingPool(fish);
 		})
-		console.log(i)
-	}, [fightingFish, userFish, unityContext.isFishPoolReady]);
+	}, [fightingFish, unityContext.isFishPoolReady]);
 
 
 	const setUserFighter = async (fish : Fish) => {
 		console.log("User Selected Fish: " + fish.tokenId)
+		unityContext.showFightingUI();
+		if(fish.tokenId == opponentFish?.tokenId) {
+			toast.error("Can't Fight the same Fish")
+			return;
+		}
 		setMySelectedFish(fish);
 		unityContext.addFish1(fish)
 		unityContext.addFishFight1(fish)
@@ -96,6 +93,7 @@ const FightingWaters = () => {
 
 	const setOpponentFighter = (fish : Fish) => {
 		console.log("Opponent Fish: " + fish.tokenId)
+		unityContext.showFightingUI();
 		if(fish.tokenId == mySelectedFish?.tokenId) {
 			toast.error("Can't Fight the same Fish")
 			return;
@@ -182,6 +180,8 @@ const FightingWaters = () => {
 			</>
 		)
 	}
+
+	if(!unityContext.isFishPoolReady) return null;
 
 	if(account && fightingFishApproval) {
 		return (
