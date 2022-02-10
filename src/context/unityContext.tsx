@@ -163,6 +163,7 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
     // console.log("showFishingLocation Called")
     if (!isLoaded || !fishPoolReady) return;
     UnityInstance.send("Camera", "SetAnimState", "ShowFishing");
+    UnityInstance.send("CanvasUserInterface", "SetAnimState", "ShowFishing");
     // console.log("showFishingLocation Completed")
   };
   const showFightingLocation = () => {
