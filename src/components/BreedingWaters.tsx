@@ -13,6 +13,7 @@ import { useFishFight } from '../context/fishFightContext';
 import ConnectWallet from './ConnectWallet';
 import Account from './Account';
 import web3 from 'web3';
+import { Constants } from '../utils/constants';
 
 enum FishSelectionEnum {
   MyFish,
@@ -38,6 +39,8 @@ const BreedingWaters = () => {
 
 	useEffect(() => {
 		console.log("Breeding Fish")
+		unityContext.clearUIFish();
+		unityContext.hideUI();
 		unityContext.showBreedingLocation();
 	}, [unityContext.isFishPoolReady]);
 
@@ -52,8 +55,11 @@ const BreedingWaters = () => {
 	}, [breedingFish, unityContext.isFishPoolReady]);
 
 	useEffect(() => {
+		if(!unityContext.isFishPoolReady) return;
 		unityContext.UnityInstance.on('UISelectionConfirm', function (data: any) {
 			// console.log('UI changed catch fish');
+			console.log(account)
+			console.log(myBettaFish)
 			console.log(data)
 			switch (data) {
 				case 'breed_confirm':
@@ -75,10 +81,8 @@ const BreedingWaters = () => {
 
 	const setAlpha = (fish : Fish) => {
 		const secondsSinceEpoch = Math.round(Date.now() / 1000)
-		if(fish.stakedBreeding != null && fish.stakedBreeding.breedCooldown > secondsSinceEpoch) {
-			const expireTime = (fish.stakedBreeding.breedCooldown - secondsSinceEpoch) / 60;
-			const lockedFor = (Math.round(expireTime * 10) / 10).toFixed(1);
-			toast.error(`Fish on cooldown for ${lockedFor} minutes`)
+		if(fish.power < Constants._alphaBreedPowerFee) {
+			toast.error(`Alpha Fish doesn't have enough power to breed!`)
 			return;
 		}
 		if(fish.seasonStats.fightWins == 0) {

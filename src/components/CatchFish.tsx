@@ -8,6 +8,7 @@ import { useUnity } from '../context/unityContext';
 import { useFishPool } from '../context/fishPoolContext';
 import web3 from 'web3';
 import { BaseOverlayContainer, ContainerControls } from './BaseStyles';
+import { Constants } from '../utils/constants';
 
 const COSTPERCASTONE = web3.utils.toBN(1);
 
@@ -31,9 +32,8 @@ const CatchFish = () => {
 	}, [account]);
 
 	useEffect(() => {
-		unityContext.clearFishPool('Fishing');
-		unityContext.clearFishPool('Breeding');
-		unityContext.clearFishPool('Fighting');
+		unityContext.clearUIFish();
+		unityContext.hideUI();
 		unityContext.showFishingUI();
 	}, []);
 
@@ -96,7 +96,7 @@ const CatchFish = () => {
 				gasPrice: 30000000000,
 				gasLimit: 500000,
 				// gasLimit: await FishFight.fishingWaters?.methods.goFishing().estimateGas({from: account, value: web3.utils.toWei(COSTPERCASTONE)}),
-				value: web3.utils.toWei(COSTPERCASTONE)
+				value: Constants._fishingPrice
 			}).on('transactionHash', () => {
 				setPendingTransaction(true);
 			}).on('receipt', (result: any) => {

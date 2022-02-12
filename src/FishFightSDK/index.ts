@@ -47,13 +47,14 @@ class FishFight {
     provider: Web3
     listener: Web3
     providerWallet: HarmonyExtension | Web3 | null
+    fishCalls: Contract;
     multicall: Multicall | null;
     type: "web3" | "harmony" | null
     readFishFactory: Contract
     readFishingWaters: Contract
     readFightingWaters: Contract
     readBreedingWaters: Contract
-    // readTrainingWaters: Contract
+    readTrainingWaters: Contract
     readSeasons: Contract
     readFishFood: Contract
     readDeadFishFactory: Contract
@@ -61,29 +62,32 @@ class FishFight {
     listenFishingWaters: Contract
     listenFightingWaters: Contract
     listenBreedingWaters: Contract
-    // listenTrainingWaters: Contract
+    listenTrainingWaters: Contract
     listenSeasons: Contract
     listenFishFood: Contract
     listenDeadFishFactory: Contract
+    
     fishFactory: Contract | HarmonyContract | null
     fishingWaters: Contract | HarmonyContract | null
     fightingWaters: Contract | HarmonyContract | null
     breedingWaters: Contract | HarmonyContract | null
+    trainingWaters: Contract | HarmonyContract | null
     seasons: Contract | HarmonyContract | null
     fishFood: Contract| HarmonyContract | null
     deadFishFactory: Contract| HarmonyContract | null
+    
 
     constructor(){
         this.provider = new Web3(getProvider().url);
         this.listener = new Web3(new Web3.providers.WebsocketProvider(getWebSocketProvider().url, wsOptions)); 
         this.multicall = null;
         this.type = null
-        
+        this.fishCalls = this.setFishCallsContract(this.provider, "web3")
         this.readFishFactory = this.setFishFactoryContract(this.provider, "web3")
         this.readFishingWaters = this.setFishingWatersContract(this.provider, "web3")
         this.readFightingWaters = this.setFightingWatersContract(this.provider, "web3")
         this.readBreedingWaters = this.setBreedingWatersContract(this.provider, "web3")
-        // this.readTrainingWaters = this.setTrainingWatersContract(this.provider, "web3")
+        this.readTrainingWaters = this.setTrainingWatersContract(this.provider, "web3")
         this.readSeasons = this.setSeasonsContract(this.provider, "web3")
         this.readFishFood = this.setFishFoodContract(this.provider, "web3")
         this.readDeadFishFactory = this.setDeadFishFactoryContract(this.provider, "web3")
@@ -92,7 +96,7 @@ class FishFight {
         this.listenFishingWaters = this.setFishingWatersContract(this.listener, "web3")
         this.listenFightingWaters = this.setFightingWatersContract(this.listener, "web3")
         this.listenBreedingWaters = this.setBreedingWatersContract(this.listener, "web3")
-        // this.listenTrainingWaters = this.setTrainingWatersContract(this.listener, "web3")
+        this.listenTrainingWaters = this.setTrainingWatersContract(this.listener, "web3")
         this.listenSeasons = this.setSeasonsContract(this.listener, "web3")
         this.listenFishFood = this.setFishFoodContract(this.listener, "web3")
         this.listenDeadFishFactory = this.setDeadFishFactoryContract(this.listener, "web3")
@@ -102,7 +106,7 @@ class FishFight {
         this.fishingWaters = null;
         this.fightingWaters = null;
         this.breedingWaters = null;
-        // this.trainingWaters = null;
+        this.trainingWaters = null;
         this.seasons = null;
         this.fishFood = null;
         this.deadFishFactory = null;
@@ -124,6 +128,18 @@ class FishFight {
         this.seasons = this.setSeasonsContract(this.providerWallet, type)
         this.fishFood = this.setFishFoodContract(this.providerWallet, type)
         this.deadFishFactory = this.setDeadFishFactoryContract(this.providerWallet, type)
+    }
+
+    setFishCallsContract = (provider: any, type: "web3" | "harmony" | "default") => {
+        if (type === "harmony") {
+            return provider.contracts.createContract(Contracts.contracts.FishCalls.abi, Contracts.contracts.FishCalls.address)
+        }
+
+        if (type === "web3") {
+            return new provider.eth.Contract(Contracts.contracts.FishCalls.abi as any, Contracts.contracts.FishCalls.address)
+        }
+
+        return null;
     }
 
     setFishFactoryContract = (provider: any, type: "web3" | "harmony" | "default") => {
@@ -186,17 +202,17 @@ class FishFight {
         return null;
     }
 
-    // setTrainingWatersContract = (provider: any, type: "web3" | "harmony" | "default") => {
-    //     if (type === "harmony" || type === "default" ) {
-    //         return provider.contracts.createContract(Contracts.contracts.TrainingWaters.abi, Contracts.contracts.TrainingWaters.address)
-    //     }
+    setTrainingWatersContract = (provider: any, type: "web3" | "harmony" | "default") => {
+        if (type === "harmony" || type === "default" ) {
+            return provider.contracts.createContract(Contracts.contracts.TrainingWaters.abi, Contracts.contracts.TrainingWaters.address)
+        }
 
-    //     if (type === "web3") {
-    //         return new provider.eth.Contract(Contracts.contracts.TrainingWaters.abi, Contracts.contracts.TrainingWaters.address)
-    //     }
+        if (type === "web3") {
+            return new provider.eth.Contract(Contracts.contracts.TrainingWaters.abi, Contracts.contracts.TrainingWaters.address)
+        }
 
-    //     return null;
-    // }
+        return null;
+    }
 
     setSeasonsContract = (provider: any, type: "web3" | "harmony" | "default") => {
         if (type === "harmony" || type === "default" ) {

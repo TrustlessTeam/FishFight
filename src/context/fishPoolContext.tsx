@@ -159,34 +159,33 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
 		if(unityContext.isFishPoolReady) loadTokenData(account);
   }, [account]);
   
-// TODO add function to clear pool when user logs out?
-
-  const getAccount = () => {
-    return account;
-  }
 
   const fetchOceanFish = async () => {
     console.log("Loading Ocean Fish")
 
     try {
-      const randomFish: string[] = await FishFight.readFishFactory.methods.getRandomFish().call();
-      console.log(randomFish)
-      let oceanIds = [...new Set(randomFish)].filter((val) => {
-        return val !== '0';
-      });
-      // const totalFishSupply = web3.utils.toBN(fishSupply).toNumber();
+      // const randomFish: string[] = await FishFight.readFishFactory.methods.getRandomFish().call();
+      // console.log(randomFish)
+      // let oceanIds = [...new Set(randomFish)].filter((val) => {
+      //   return val !== '0';
+      // });
+      // // const totalFishSupply = web3.utils.toBN(fishSupply).toNumber();
 
-      // const allTokenIds = [...Array(totalFishSupply+1).keys()].slice(1);
-      oceanIds.forEach(async tokenId => {
-        const parsedTokenId = web3.utils.toNumber(tokenId);
-        if(!oceanFish.some(fish => fish.tokenId == parsedTokenId)) {
-          const fishData = await getFish(FishFight, parsedTokenId, false, false)
-          if(fishData != null) {
-            setOceanFish(prevData => [...prevData, fishData])
-            // setAllLoadedFish(prevData => [...prevData, fishData])
-          }
-        }
-      });
+      // // const allTokenIds = [...Array(totalFishSupply+1).keys()].slice(1);
+      // oceanIds.forEach(async tokenId => {
+      //   const parsedTokenId = web3.utils.toNumber(tokenId);
+      //   if(!oceanFish.some(fish => fish.tokenId == parsedTokenId)) {
+      //     const fishData = await getFish(FishFight, parsedTokenId, false, false)
+      //     if(fishData != null) {
+      //       setOceanFish(prevData => [...prevData, fishData])
+      //       // setAllLoadedFish(prevData => [...prevData, fishData])
+      //     }
+      //   }
+      // });
+      const loadFish = await FishFight.fishCalls.methods.getFish(0, false).call()
+      // for()
+      console.log(loadFish)
+      // setOceanFish(loadFish)
     
     } catch (error) {
       console.log(error)
@@ -555,11 +554,6 @@ const getFish = async (fishFightInstance: FishFight, tokenId: number, isFighting
       const fightHistory = await fishFightInstance.readFightingWaters.methods.getFightsForFish(tokenId).call();
       console.log(fightHistory)
       fish.fightingHistory = fightHistory;
-    }
-    if(fish.lifetimeAlphaBreeds > 0 || fish.lifetimeBettaBreeds > 0) {
-      const offspringHistory = await fishFightInstance.readBreedingWaters.methods.getFishOffspring(tokenId).call();
-      console.log(offspringHistory)
-      fish.offspringHistory = offspringHistory;
     }
     if(isFighting) {
       const stakedFighting = await fishFightInstance.readFightingWaters.methods.getPoolInfo(tokenId).call();

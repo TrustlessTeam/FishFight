@@ -93,24 +93,24 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
     UnityInstance.on("CanvasUIStartConfirm", function () {
       console.log("CanvasUIStartConfirm!");
     });
-    UnityInstance.on("UISelectionConfirm", function (data: any) {
-      console.log("UI changed");
-      console.log(data);
-      switch (data) {
-        case "disclaimer_confirm":
-          if (cookies["accepted_terms"] === true) return;
-          setCookie("accepted_terms", true);
-          return;
-        case "fight_confirm":
-          // EDD TODO
-          return;
-        case "breed_confirm":
-          // EDD TODO
-          return;
-        default:
-          return;
-      }
-    });
+    // UnityInstance.on("UISelectionConfirm", function (data: any) {
+    //   console.log("UI changed");
+    //   console.log(data);
+    //   switch (data) {
+    //     case "disclaimer_confirm":
+    //       if (cookies["accepted_terms"] === true) return;
+    //       setCookie("accepted_terms", true);
+    //       return;
+    //     case "fight_confirm":
+    //       // EDD TODO
+    //       return;
+    //     case "breed_confirm":
+    //       // EDD TODO
+    //       return;
+    //     default:
+    //       return;
+    //   }
+    // });
     UnityInstance.on("FishPoolStartConfirm", function () {
       setFishPoolReady(true);
       console.log("FishPoolStartConfirmed!");

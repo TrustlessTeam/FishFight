@@ -36,8 +36,8 @@ const Ocean = () => {
 
 	useEffect(() => {
 		console.log("CLEAR OCEAN")
-		unityContext.clearFishPool('Breeding')
-		unityContext.clearFishPool('Fighting')
+		unityContext.clearUIFish();
+		unityContext.hideUI();
 		unityContext.showOceanLocation();
 	}, [unityContext.isFishPoolReady]);
 
@@ -49,6 +49,14 @@ const Ocean = () => {
 		fishToRender.forEach(fish => {
 			unityContext.addFishOcean(fish);
 		})
+
+		unityContext.UnityInstance.on('UISelectionConfirm', function (data: any) {
+			console.log(data)
+			if(data == 'feed_confirm') {
+				console.log('feed')
+			}
+			
+		});
 
 	}, [unityContext.isFishPoolReady, fishToShow, oceanFish, userFish]);
 

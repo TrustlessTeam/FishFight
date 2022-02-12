@@ -437,6 +437,25 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 		}
 	};
 
+	const feedFish = async (fish: Fish) => {
+		return FishFight.trainingWaters?.methods.feedFish(fish.tokenId).send({
+			from: account,
+			gasPrice: 30000000000,
+			gasLimit: 5000000,
+		}).on('transactionHash', () => {
+			setPendingTransaction(true);
+			//unityContext.isFighting ?
+		}).on('receipt', async (result: any) => {
+			setPendingTransaction(false);
+			refreshFish(fish.tokenId, false, false)
+			toast.success('Fish Fed!', {
+				onClose: async () => {
+					refetchBalance()
+				},
+			});
+		})
+	}
+
 	
 
 	

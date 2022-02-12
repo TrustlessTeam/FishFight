@@ -12,14 +12,11 @@ export class FightingStake {
 }
 
 export class BreedingStake {
-  breedCooldown: number;
   earnedFishFood: string;
   
   constructor(
     stakedBreedFishObject: any,
-    breedsForFishObject: any
   ) {
-    this.breedCooldown = web3.utils.toNumber(stakedBreedFishObject.breedCooldown);
     this.earnedFishFood = web3.utils.fromWei(stakedBreedFishObject.earnedFishFood);
   }
 }
@@ -29,6 +26,9 @@ export class FishSeasonStats {
 	alphaBreeds: number;
 	bettaBreeds: number;
 	challenges: number;
+  strModifier: number;
+  intModifier: number;
+  agiModifier: number;
 
   constructor(
     seasonObject: any
@@ -38,6 +38,9 @@ export class FishSeasonStats {
 		this.alphaBreeds = web3.utils.toNumber(seasonObject.alphaBreeds);
 		this.bettaBreeds = web3.utils.toNumber(seasonObject.bettaBreeds);
 		this.challenges = web3.utils.toNumber(seasonObject.challenges);
+    this.strModifier = web3.utils.toNumber(seasonObject.strModifier);
+    this.intModifier = web3.utils.toNumber(seasonObject.intModifier);
+    this.agiModifier = web3.utils.toNumber(seasonObject.agiModifier);
 	}
 }
 
@@ -50,7 +53,7 @@ export class Fish {
   strength: number;
   intelligence: number;
   agility: number;
-  cooldownMultiplier: number;
+  power: number;
   lifetimeWins: number;
   lifetimeAlphaBreeds: number;
   lifetimeBettaBreeds: number;
@@ -60,6 +63,7 @@ export class Fish {
   parentBFish: Fish | null;
   breedKey: string;
   deathTime: number;
+  revived: boolean;
   genesArray: Array<number>;
 	visualTraits: VisualTraits;
   imgSrc: string | null;
@@ -67,7 +71,7 @@ export class Fish {
   seasonStats: FishSeasonStats;
   offspringHistory: number[] | null;
   fightingHistory: number[] | null;
-  stakedFighting: FightingStake | undefined;
+  stakedFighting: FightingStake | null;
   stakedBreeding: BreedingStake | null;
   isUser: boolean;
 
@@ -91,7 +95,7 @@ export class Fish {
     this.strength = web3.utils.toNumber(fishInfo.strength);
     this.intelligence = web3.utils.toNumber(fishInfo.intelligence);
     this.agility = web3.utils.toNumber(fishInfo.agility);
-    this.cooldownMultiplier = web3.utils.toNumber(fishInfo.cooldownMultiplier);
+    this.power = web3.utils.toNumber(fishInfo.power);
     this.lifetimeWins = web3.utils.toNumber(fishInfo.lifetimeWins);
     this.lifetimeAlphaBreeds = web3.utils.toNumber(fishInfo.lifetimeAlphaBreeds);
     this.lifetimeBettaBreeds = web3.utils.toNumber(fishInfo.lifetimeBettaBreeds);
@@ -101,14 +105,16 @@ export class Fish {
     this.parentBFish = null;
     this.breedKey = fishInfo.breedKey;
     this.deathTime = web3.utils.toNumber(fishInfo.deathTime);
+    this.revived = fishInfo.revived;
+    this.offspringHistory = fishInfo.offspring;
     this.genesArray = this.parseGenes(this.genes);
     this.visualTraits = this.parseTraits();
     this.imgSrc = imgSrc;
     this.ipfsLink = ipfsLink;
     this.seasonStats = new FishSeasonStats(fishSeasonStats);
-    this.offspringHistory = null;
+    
     this.fightingHistory = null;
-    this.stakedFighting = undefined;
+    this.stakedFighting = null;
     this.stakedBreeding = null;
     this.isUser = false;
   };
