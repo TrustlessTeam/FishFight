@@ -23,24 +23,17 @@ export class Fight {
 		winner: number;
 
   constructor(
-    typeOfFight: number,
-		fishChallenger: number,
-		fishChallenged: number,
-		timeOfFight: number,
-		round1: string,
-		round2: string,
-		round3: string,
-		winner: number
+    fightInfo: any
   ) 
   {
-    this.typeOfFight = typeOfFight;
-		this.fishChallenger = fishChallenger;
-		this.fishChallenged = fishChallenged;
-		this.timeOfFight = timeOfFight;
-		this.round1 = this.parseRound(round1);
-		this.round2 = this.parseRound(round2);
-		this.round3 = this.parseRound(round3);
-		this.winner = winner;
+    this.typeOfFight = new BN(fightInfo.typeOfFight).toNumber();
+		this.fishChallenger = new BN(fightInfo.fishChallenger).toNumber();
+		this.fishChallenged = new BN(fightInfo.fishChallenged).toNumber();
+		this.timeOfFight = new BN(fightInfo.timeOfFight).toNumber();
+		this.round1 = this.parseRound(fightInfo.round1);
+		this.round2 = this.parseRound(fightInfo.round2);
+		this.round3 = this.parseRound(fightInfo.round3);
+		this.winner = new BN(fightInfo.winner).toNumber();
   };
 
 

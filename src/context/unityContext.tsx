@@ -3,6 +3,7 @@ import { Fish } from "../utils/fish";
 import { createContext, useContext, useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
 import { useLocation } from "react-router-dom";
+import { Fight } from "../utils/fight";
 
 interface UnityProviderContext {
   UnityInstance: UnityContent;
@@ -40,7 +41,7 @@ interface UnityProviderContext {
   sendRound: (round: number, roundStat: number) => void;
 	clearUIFish: () => void;
 	hideUI: () => void;
-  sendWinner: (fish: Fish) => void;
+  sendFightResult: (fight: Fight) => void;
   sendTie: () => void;
 }
 
@@ -394,10 +395,10 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
     }
   };
 
-  const sendWinner = (fish: Fish) => {
-    console.log("SetWinner Called");
-    UnityInstance.send("FishPool", "SetWinner", JSON.stringify(fish));
-    console.log("SetWinner Completed");
+  const sendFightResult = (fight: Fight) => {
+    console.log("SendFight Called");
+    UnityInstance.send("FishPool", "SetFightResults", JSON.stringify(fight));
+    console.log("SendFight Completed");
   };
 
   const sendTie = () => {
@@ -446,7 +447,7 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
 		clearUIFish: clearUIFish,
 		hideUI: hideUI,
     sendRound: sendRound,
-    sendWinner: sendWinner,
+    sendFightResult: sendFightResult,
     sendTie: sendTie,
   };
   return (

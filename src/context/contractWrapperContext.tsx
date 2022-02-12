@@ -12,6 +12,7 @@ import { useUnity } from './unityContext';
 import { useFishPool } from './fishPoolContext';
 import { Fight } from '../utils/fight';
 import BN from 'bn.js';
+import { Constants } from '../utils/constants';
 
 const BREEDCOSTONE = web3.utils.toBN(1);
 const BREEDCOSTFISHFOOD = web3.utils.toBN(100);
@@ -376,16 +377,15 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 			from: account,
 			gasPrice: 30000000000,
 			gasLimit: 5000000,
-			value: web3.utils.toWei('1')
+			value: Constants._fightFee
 		}).on('transactionHash', () => {
 			setPendingTransaction(true);
-			//unityContext.isFighting ?
 		}).on('receipt', async (result: any) => {
-			// console.log(result)
-			//unityContext.isFighting ?
 			const fightIndex = web3.utils.toNumber(result.events.FightCompleted.returnValues._fightIndex);
 			setPendingTransaction(false);
-			await getUserFight(fightIndex, myFish, opponentFish);
+			const fightResult = await getFightByIndex(fightIndex)
+			unityContext.sendFightResult(fightResult);
+			refreshFish(fightResult.winner, true, false);
 			toast.success('Fight Commpleted!', {
 				onClose: async () => {
 					refetchBalance()
@@ -460,33 +460,9 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 
 	
 
-	const getUserFight = async (fightIndex: number, myFish: Fish, opponentFish: Fish) => {
+	const getFightByIndex = async (fightIndex: number) => {
 		const fightInfo = await FishFight.fightingWaters?.methods.getFightInfo(fightIndex).call();
-		const newFight = new Fight(
-			new BN(fightInfo.typeOfFight).toNumber(),
-			new BN(fightInfo.fishChallenger).toNumber(),
-			new BN(fightInfo.fishChallenged).toNumber(),
-			new BN(fightInfo.timeOfFight).toNumber(),
-			fightInfo.round1,
-			fightInfo.round2,
-			fightInfo.round3,
-			new BN(fightInfo.winner).toNumber()
-		);
-		unityContext.sendRound(1, newFight.round1.value);
-		unityContext.sendRound(2, newFight.round2.value);
-		unityContext.sendRound(3, newFight.round3.value);
-		if(newFight.winner == myFish.tokenId) {
-			unityContext.sendWinner(myFish);
-			// depositUserFightingFish(userFish);
-		}
-		else if(newFight.winner == opponentFish?.tokenId) {
-			unityContext.sendWinner(opponentFish);
-		}
-		else if(newFight.winner == 0) {
-			unityContext.sendTie()
-		}
-		// unityContext.showFightingLocationResult?
-		refreshFish(newFight.winner, true, false);
+		return new Fight(fightInfo);
 	}
 
 	const value: ProviderInterface = {
