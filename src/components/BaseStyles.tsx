@@ -13,7 +13,7 @@ export const BaseOverlayContainer = styled(LoadingOverlay)`
 	justify-content: flex-end;
 	width: 100%;
 	height: 100%;
-	/* pointer-events: auto; */
+	pointer-events: none;
 `;
 
 export const BaseContainer = styled.div`

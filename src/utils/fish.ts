@@ -1,4 +1,5 @@
 import web3 from 'web3'
+import { Constants } from './constants';
 
 export class FightingStake {
   lockedExpire: number;
@@ -21,11 +22,26 @@ export class BreedingStake {
   }
 }
 
+export class TrainingStatus {
+  lastFed: number;
+  lastClaimed: number;
+  canFeed: boolean;
+  canClaim: boolean;
+  
+  constructor(
+    trainingObject: any,
+  ) {
+    this.lastFed = web3.utils.toNumber(trainingObject.lastFed);
+    this.lastClaimed = web3.utils.toNumber(trainingObject.lastClaimed);
+    this.canFeed = this.lastFed + Constants._feedCooldown <= Math.round(Date.now() / 1000)
+    this.canClaim = this.lastClaimed + Constants._feedCooldown <= Math.round(Date.now() / 1000)
+  }
+}
+
 export class FishSeasonStats {
 	fightWins: number;
 	alphaBreeds: number;
 	bettaBreeds: number;
-	challenges: number;
   strModifier: number;
   intModifier: number;
   agiModifier: number;
@@ -37,7 +53,6 @@ export class FishSeasonStats {
 		this.fightWins = web3.utils.toNumber(seasonObject.fightWins);
 		this.alphaBreeds = web3.utils.toNumber(seasonObject.alphaBreeds);
 		this.bettaBreeds = web3.utils.toNumber(seasonObject.bettaBreeds);
-		this.challenges = web3.utils.toNumber(seasonObject.challenges);
     this.strModifier = web3.utils.toNumber(seasonObject.strModifier);
     this.intModifier = web3.utils.toNumber(seasonObject.intModifier);
     this.agiModifier = web3.utils.toNumber(seasonObject.agiModifier);
@@ -73,7 +88,9 @@ export class Fish {
   fightingHistory: number[] | null;
   stakedFighting: FightingStake | null;
   stakedBreeding: BreedingStake | null;
+  trainingStatus: TrainingStatus | null;
   isUser: boolean;
+  canQuest: boolean;
 
   constructor(
     fishInfo: any,
@@ -116,7 +133,9 @@ export class Fish {
     this.fightingHistory = null;
     this.stakedFighting = null;
     this.stakedBreeding = null;
+    this.trainingStatus = null;
     this.isUser = false;
+    this.canQuest = this.power >= Constants._modifierCost;
   };
 
   parseTraits(): VisualTraits {

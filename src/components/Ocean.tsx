@@ -7,8 +7,10 @@ import { useWeb3React } from '@web3-react/core';
 import Account from './Account';
 import FishViewer from './FishViewer';
 import Menu, { MenuItem } from './Menu';
-import { BaseContainer, ContainerControls, BaseLinkButton } from './BaseStyles';
+import { BaseContainer, ContainerControls, BaseLinkButton, BaseOverlayContainer } from './BaseStyles';
 import { ToggleGroup, ToggleOption } from './ToggleButton';
+import Fish from '../utils/fish';
+import { useContractWrapper } from '../context/contractWrapperContext';
 
 enum FishView {
 	Ocean,
@@ -18,9 +20,11 @@ enum FishView {
 const Ocean = () => {
 	const { userFish, oceanFish } = useFishPool();
 	const [fishToShow, setFishToShow] = useState<number>(FishView.Ocean);
+	const [mySelectedFish, setMySelectedFish] = useState<Fish | null>(null);
 
 	const [renderedFish, setRenderedFish] = useState<number[]>([]);
 	const unityContext = useUnity();
+	const { feedFish, pendingTransaction } = useContractWrapper();
 	const { account } = useWeb3React();
 
 	const FishViewOptions: MenuItem[] = [
@@ -33,6 +37,17 @@ const Ocean = () => {
 			onClick: () => setFishToShow(FishView.User)
 		}
 	]
+
+	useEffect(() => {
+		unityContext.UnityInstance.on('UISelectionConfirm', function (data: any) {
+			console.log(data)
+			if(data == 'feed_confirm') {
+				console.log('feed')
+				feedFish(mySelectedFish)
+			}
+			
+		});
+	}, [unityContext.isFishPoolReady, mySelectedFish]);
 
 	useEffect(() => {
 		console.log("CLEAR OCEAN")
@@ -49,14 +64,6 @@ const Ocean = () => {
 		fishToRender.forEach(fish => {
 			unityContext.addFishOcean(fish);
 		})
-
-		unityContext.UnityInstance.on('UISelectionConfirm', function (data: any) {
-			console.log(data)
-			if(data == 'feed_confirm') {
-				console.log('feed')
-			}
-			
-		});
 
 	}, [unityContext.isFishPoolReady, fishToShow, oceanFish, userFish]);
 
@@ -76,6 +83,11 @@ const Ocean = () => {
 			setFishToShow(FishView.Ocean)
 		}
 	}, [account]);
+
+	const oceanFishClick = (fish: Fish) => {
+		setMySelectedFish(fish);
+		unityContext.showFish(fish)
+	}
 
 	// useEffect(() => {
 	// 	console.log("Ocean Fish Changed")
@@ -98,7 +110,11 @@ const Ocean = () => {
 
 	return (
 
-		<BaseContainer>
+		<BaseOverlayContainer
+			active={pendingTransaction}
+			spinner
+			text='Waiting for confirmation...'
+			>
 				<ContainerControls>
 					<ToggleGroup>
 						<ToggleOption className={fishToShow === FishView.Ocean ? 'active' : ''} onClick={() => setFishToShow(FishView.Ocean)}>Ocean Fish</ToggleOption>
@@ -113,8 +129,8 @@ const Ocean = () => {
 					}
 				</ContainerControls>
 
-				<FishViewer fishCollection={fishToShow === FishView.Ocean ? oceanFish : userFish} onClick={unityContext.showFish}></FishViewer>
-		</BaseContainer>
+				<FishViewer selectedFish={mySelectedFish} fishCollection={fishToShow === FishView.Ocean ? oceanFish : userFish} onClick={oceanFishClick}></FishViewer>
+		</BaseOverlayContainer>
 		
 	);
 };

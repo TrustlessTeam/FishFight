@@ -48,7 +48,7 @@ class FishFight {
     listener: Web3
     providerWallet: HarmonyExtension | Web3 | null
     fishCalls: Contract;
-    multicall: Multicall | null;
+    multicall: Multicall;
     type: "web3" | "harmony" | null
     readFishFactory: Contract
     readFishingWaters: Contract
@@ -80,7 +80,8 @@ class FishFight {
     constructor(){
         this.provider = new Web3(getProvider().url);
         this.listener = new Web3(new Web3.providers.WebsocketProvider(getWebSocketProvider().url, wsOptions)); 
-        this.multicall = null;
+        this.multicall = new Multicall({ nodeUrl: getProvider().url, multicallCustomContractAddress: Contracts.contracts.Multicall.address, tryAggregate: true });
+
         this.type = null
         this.fishCalls = this.setFishCallsContract(this.provider, "web3")
         this.readFishFactory = this.setFishFactoryContract(this.provider, "web3")
@@ -118,13 +119,12 @@ class FishFight {
             this.providerWallet = this.providerWallet as Web3
             this.providerWallet.eth.handleRevert = true;
         }
-        this.multicall = new Multicall({ web3Instance: providerWallet, multicallCustomContractAddress: Contracts.contracts.Multicall.address });
         this.type = type;
         this.fishFactory = this.setFishFactoryContract(this.providerWallet, type)
         this.fishingWaters = this.setFishingWatersContract(this.providerWallet, type)
         this.fightingWaters = this.setFightingWatersContract(this.providerWallet, type)
         this.breedingWaters = this.setBreedingWatersContract(this.providerWallet, type)
-        // this.trainingWaters = this.setTrainingWatersContract(this.providerWallet, type)
+        this.trainingWaters = this.setTrainingWatersContract(this.providerWallet, type)
         this.seasons = this.setSeasonsContract(this.providerWallet, type)
         this.fishFood = this.setFishFoodContract(this.providerWallet, type)
         this.deadFishFactory = this.setDeadFishFactoryContract(this.providerWallet, type)
