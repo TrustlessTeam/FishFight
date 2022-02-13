@@ -42,16 +42,7 @@ const CatchFish = () => {
 			console.log('UI changed catch fish');
 			console.log(data)
 			switch (data) {
-				case 'mint_fish_2.5percent':
-					catchFish();
-					return;
-				case 'mint_fish_5percent':
-					catchFish();
-					return;
-				case 'mint_fish_10percent':
-					catchFish();
-					return;
-				case 'mint_fish_100percent':
+				case 'mint_fish':
 					catchFish();
 					return;
 				default:
