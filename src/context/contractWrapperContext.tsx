@@ -25,6 +25,8 @@ interface ProviderInterface {
 	withdrawBreedingFish: (fish: Fish | null) => void;
 	depositBreedingFish: (fish: Fish | null) => void;
 	feedFish: (fish: Fish | null) => void;
+	questFish: (fish: Fish | null) => void;
+	claimFishFood: (fish: Fish | null) => void;
 	contractApproveAllForFighting: () => void;
 	contractApproveAllFishForBreeding: () => void;
 	contractApproveFoodForBreeding: () => void;
@@ -38,7 +40,7 @@ const ContractWrapperContext = createContext<ProviderInterface | undefined>(unde
 export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 	const [pendingTransaction, setPendingTransaction] = useState<boolean>(false);
 	const { account } = useWeb3React();
-	const { FishFight, refetchBalance, checkApprovals } = useFishFight();
+	const { FishFight, refetchBalance, checkApprovals, balanceFood } = useFishFight();
 	const { refreshFish, createUserFish } = useFishPool();
 	const unityContext = useUnity();
 
@@ -60,7 +62,10 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 			toast.error('Must be Breeding Season to Breed');
 			return;
 		}
-
+		if(balanceFood && new BN(web3.utils.toWei(balanceFood)).lt(new BN(Constants._fishFoodBreedFee))) {
+			toast.error('Not enough $FISHFOOD');
+			return;
+		}
 		try {
 			FishFight.fishFood?.methods.allowance(account, FishFight.readBreedingWaters.options.address).call()
 			.then((approvedAmount: any) => {
@@ -447,6 +452,10 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 			toast.error('Select a Fish');
 			return;
 		}
+		if(balanceFood && new BN(web3.utils.toWei(balanceFood)).lt(new BN(Constants._feedFee))) {
+			toast.error('Not enough $FISHFOOD');
+			return;
+		}
 		const secondsSinceEpoch = Math.round(Date.now() / 1000)
 		if(fish.trainingStatus != null && !fish.trainingStatus.canFeed) {
 			const expireTime = ((fish.trainingStatus.lastFed + Constants._feedCooldown) - secondsSinceEpoch) / 60;
@@ -477,6 +486,75 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 		
 	}
 
+	const questFish = async (fish: Fish | null) => {
+		if(!account) {
+			toast.error('Connect your wallet');
+			return;
+		}
+		if(fish == null) {
+			toast.error('Select a Fish');
+			return;
+		}
+		if(balanceFood && new BN(web3.utils.toWei(balanceFood)).lt(new BN(Constants._questFee))) {
+			toast.error('Not enough $FISHFOOD');
+			return;
+		}
+		if(!fish.canQuest) {
+			toast.error(`${fish.power}/${Constants._modifierCost} POWER Required`);
+			return;
+		}
+		if(fish.seasonStats != null && (fish.seasonStats.agiModifier > 0 || fish.seasonStats.strModifier > 0 || fish.seasonStats.intModifier > 0)) {
+			toast.error(`Only 1 Attribute Upgrade allowed per season!`)
+			return;
+		}
+		try {
+			FishFight.fishFood?.methods.allowance(account, FishFight.readTrainingWaters.options.address).call()
+			.then((approvedAmount: any) => {
+				console.log(approvedAmount)
+				console.log(Constants._feedFee)
+
+				console.log(new BN(approvedAmount).gte(new BN(Constants._feedFee)))
+				if(new BN(approvedAmount).gte(new BN(Constants._feedFee))) {
+					contractQuestFish(fish)
+				} else {
+					contractApproveFoodForTraining()
+					.on('receipt', () => {
+						console.log("approve")
+						contractQuestFish(fish)
+					})
+				}
+			})
+		} catch (error: any) {
+			console.log(error);
+		}
+		
+	}
+
+	const claimFishFood = async (fish: Fish | null) => {
+		if(!account) {
+			toast.error('Connect your wallet');
+			return;
+		}
+		if(fish == null) {
+			toast.error('Select a Fish');
+			return;
+		}
+
+		const secondsSinceEpoch = Math.round(Date.now() / 1000)
+		if(fish.trainingStatus != null && !fish.trainingStatus.canClaim) {
+			const expireTime = ((fish.trainingStatus.lastClaimed + Constants._claimCooldown) - secondsSinceEpoch) / 60;
+			const lockedFor = (Math.round(expireTime * 10) / 10).toFixed(1);
+			toast.error(`Can't claim for ${lockedFor} minutes`)
+			return;
+		}
+		try {
+			contractClaimFishFood(fish)	
+		} catch (error: any) {
+			console.log(error);
+		}
+		
+	}
+
 	const contractFeedFish = (fish: Fish) => {
 		console.log("here")
 		console.log(fish)
@@ -497,8 +575,58 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 		})
 		.on('receipt', async (result: any) => {
 			setPendingTransaction(false);
-			refreshFish(fish.tokenId, false, false)
+			refreshFish(fish.tokenId, fish.stakedBreeding != null, fish.stakedFighting != null)
 			toast.success('Fish Fed!', {
+				onClose: async () => {
+					refetchBalance()
+				},
+			});
+		})
+	}
+
+	const contractQuestFish = (fish: Fish) => {
+		return FishFight.trainingWaters?.methods.questFish(fish.tokenId, 2).send({
+			from: account,
+			gasPrice: 30000000000,
+			gasLimit: 5000000,
+		})
+		.on('error', (error: any) => {
+			console.log(error)
+			toast.error('Quest Failed');
+			setPendingTransaction(false);
+		})
+		.on('transactionHash', () => {
+			setPendingTransaction(true);
+		})
+		.on('receipt', async (result: any) => {
+			setPendingTransaction(false);
+			refreshFish(fish.tokenId, false, false)
+			toast.success('Quest Successful!', {
+				onClose: async () => {
+					refetchBalance()
+				},
+			});
+		})
+	}
+
+	const contractClaimFishFood = (fish: Fish) => {
+		return FishFight.trainingWaters?.methods.claimFishFood(fish.tokenId).send({
+			from: account,
+			gasPrice: 30000000000,
+			gasLimit: 5000000,
+		})
+		.on('error', (error: any) => {
+			console.log(error)
+			toast.error('Quest Failed');
+			setPendingTransaction(false);
+		})
+		.on('transactionHash', () => {
+			setPendingTransaction(true);
+		})
+		.on('receipt', async (result: any) => {
+			setPendingTransaction(false);
+			refreshFish(fish.tokenId, false, false)
+			toast.success('Claim Successful!', {
 				onClose: async () => {
 					refetchBalance()
 				},
@@ -545,6 +673,8 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 		withdrawBreedingFish: withdrawBreedingFish,
 		depositBreedingFish: depositBreedingFish,
 		feedFish: feedFish,
+		questFish: questFish,
+		claimFishFood: claimFishFood,
 		contractApproveAllForFighting: contractApproveAllForFighting,
 		contractApproveAllFishForBreeding: contractApproveAllFishForBreeding,
 		contractApproveFoodForBreeding: contractApproveFoodForBreeding,

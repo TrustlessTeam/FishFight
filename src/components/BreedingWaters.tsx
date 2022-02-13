@@ -82,7 +82,8 @@ const BreedingWaters = () => {
 	const setAlpha = (fish : Fish) => {
 		const secondsSinceEpoch = Math.round(Date.now() / 1000)
 		if(fish.power < Constants._alphaBreedPowerFee) {
-			toast.error(`Alpha Fish doesn't have enough power to breed!`)
+			setAlphaFish(fish);
+			toast.error(`Alpha Fish has ${fish.power} power, at least ${Constants._alphaBreedPowerFee} power required to breed!`)
 			return;
 		}
 		if(fish.seasonStats.fightWins == 0) {

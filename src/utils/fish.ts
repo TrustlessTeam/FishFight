@@ -1,7 +1,7 @@
 import web3 from 'web3'
 import { Constants } from './constants';
 
-export class FightingStake {
+export class StakedFighting {
   lockedExpire: number;
   earnedFishFood: string;
   constructor(
@@ -12,7 +12,7 @@ export class FightingStake {
   }
 }
 
-export class BreedingStake {
+export class StakedBreeding {
   earnedFishFood: string;
   
   constructor(
@@ -84,17 +84,18 @@ export class Fish {
   imgSrc: string | null;
   ipfsLink: string | null;
   seasonStats: FishSeasonStats;
+  trainingStatus: TrainingStatus;
   offspringHistory: number[] | null;
   fightingHistory: number[] | null;
-  stakedFighting: FightingStake | null;
-  stakedBreeding: BreedingStake | null;
-  trainingStatus: TrainingStatus | null;
+  stakedFighting: StakedFighting | null;
+  stakedBreeding: StakedBreeding | null;
   isUser: boolean;
   canQuest: boolean;
 
   constructor(
     fishInfo: any,
     fishSeasonStats: any,
+    trainingStats: any,
     imgSrc: string | null,
     ipfsLink: string | null,
     // offspringHistory: number[] | null,
@@ -129,11 +130,10 @@ export class Fish {
     this.imgSrc = imgSrc;
     this.ipfsLink = ipfsLink;
     this.seasonStats = new FishSeasonStats(fishSeasonStats);
-    
+    this.trainingStatus = new TrainingStatus(trainingStats);
     this.fightingHistory = null;
     this.stakedFighting = null;
     this.stakedBreeding = null;
-    this.trainingStatus = null;
     this.isUser = false;
     this.canQuest = this.power >= Constants._modifierCost;
   };

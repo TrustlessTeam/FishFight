@@ -7,6 +7,8 @@ import axios from 'axios';
 import FishFight from '../FishFightSDK';
 import { useUnity } from './unityContext';
 import Contracts from '../contracts/contracts.json';
+import BN from 'bn.js';
+
 
 import {
   Multicall,
@@ -167,74 +169,52 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
   }, [account]);
   
 
-  const fetchOceanFish = async () => {
+  const fetchOceanFish = async (startIndex?: number, random?: boolean) => {
     console.log("Loading Ocean Fish")
-
     try {
-      // const randomFish: string[] = await FishFight.readFishFactory.methods.getRandomFish().call();
-      // console.log(randomFish)
-      // let oceanIds = [...new Set(randomFish)].filter((val) => {
-      //   return val !== '0';
-      // });
-      // // const totalFishSupply = web3.utils.toBN(fishSupply).toNumber();
+      let randomFish: string[];
+      if(random) {
+        randomFish = await FishFight.fishCalls.methods.getFish(startIndex ? startIndex : 1, false).call()
 
-      // // const allTokenIds = [...Array(totalFishSupply+1).keys()].slice(1);
-      // oceanIds.forEach(async tokenId => {
-      //   const parsedTokenId = web3.utils.toNumber(tokenId);
-      //   if(!oceanFish.some(fish => fish.tokenId == parsedTokenId)) {
-      //     const fishData = await getFish(FishFight, parsedTokenId, false, false)
-      //     if(fishData != null) {
-      //       setOceanFish(prevData => [...prevData, fishData])
-      //       // setAllLoadedFish(prevData => [...prevData, fishData])
-      //     }
-      //   }
-      // });
-      const loadFish = await FishFight.fishCalls.methods.getFish(1, false).call()
-      loadFish[0].forEach(async (contractFish: any, index: number) => {
-        if(contractFish.tokenId > 0) {
-          let fish = new Fish(contractFish, loadFish[1][index], null, null)
-          console.log(fish)
-          setOceanFish(prevData => [...prevData, fish])
-          // await buildFish(FishFight, fish.tokenId)
-        }
-        
+      } else {
+        randomFish = await FishFight.fishCalls.methods.getFish(1, true).call()
+      }
+      console.log(randomFish)
+      let oceanIds = [...new Set(randomFish)].filter((val) => {
+        return val !== '0';
       });
-      console.log(loadFish)
-      // setOceanFish(loadFish)
-    
+      // const totalFishSupply = web3.utils.toBN(fishSupply).toNumber();
+
+      // const allTokenIds = [...Array(totalFishSupply+1).keys()].slice(1);
+      oceanIds.forEach(async tokenId => {
+        const parsedTokenId = web3.utils.toNumber(tokenId);
+        if(!oceanFish.some(fish => fish.tokenId == parsedTokenId)) {
+          const fishData = await buildFish(FishFight, web3.utils.toNumber(parsedTokenId))
+          if(fishData != null) {
+            setOceanFish(prevData => [...prevData, fishData])
+          }
+        }
+      });
+
     } catch (error) {
       console.log(error)
     }
   }
 
-  const fetchUserFish = async (account: string) => {
-    console.log("Loading Ocean Fish")
-    try {
-      // const loadFish = await FishFight.fishCalls.methods.getFishForAddress(0, account).call()
-      // loadFish[0].forEach(async (contractFish: any, index: number) => {
-      //   if(contractFish.tokenId > 0) {
-      //     let fish = new Fish(contractFish, loadFish[1][index], null, null)
-
-      //     if(!userFish.some(existingFish => existingFish.tokenId == fish.tokenId)) {
-      //       fish.isUser = true;
-      //       fish = await getFishExtras(FishFight, fish, false, false)
-      //       setUserFish(prevTokens => [...prevTokens, fish])
-      //       // addUserFishById(web3.utils.toNumber(tokenId));
-      //     }
-      //   }
-        
-      // });
-      const fishUserOwns = await FishFight.readFishFactory.methods.balanceOf(account).call();
-      console.log(`User owns: ${fishUserOwns}`)
-      const numUserFish = web3.utils.toBN(fishUserOwns).toNumber();
-      for(let i = 0; i < numUserFish; i++) {
-        FishFight.readFishFactory.methods.tokenOfOwnerByIndex(account, i).call()
-        .then((tokenId: any) => {
-          if(!userFish.some(fish => fish.tokenId == tokenId)) {
-            addUserFishById(web3.utils.toNumber(tokenId));
-          }
-        });
-      }
+  const fetchUserFish = async (account: string, startIndex?: number) => {
+    console.log("Loading User Fish")
+    try { 
+      let userFishIds: string[] = await FishFight.fishCalls.methods.getFishForAddress(startIndex ? startIndex : 0, account).call()
+      console.log(userFishIds)
+      userFishIds = [...new Set(userFishIds)].filter((val) => {
+        return val !== '0';
+      });
+      userFishIds.forEach(async tokenId => {
+        const parsedTokenId = web3.utils.toNumber(tokenId);
+        if(!userFish.some(fish => fish.tokenId == parsedTokenId)) {
+          addUserFightingFishById(parsedTokenId)
+        }
+      });
       setAreUserFishLoaded(true);
     } catch (error) {
       console.log("Error loading Fish tokens owned by account: ")
@@ -394,7 +374,8 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
 
   const addUserFishById = async (tokenId: number) => {
     console.log("Add Fish By Id")
-    const fishData = await getFish(FishFight, tokenId, false, false)
+    // const fishData = await getFish(FishFight, tokenId, false, false)
+    const fishData = await buildFish(FishFight, tokenId)
     if(fishData != null) {
       fishData.isUser = true;
       setUserFish(prevTokens => [...prevTokens, fishData])
@@ -403,7 +384,7 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
 
   const addUserFightingFishById = async (tokenId: number) => {
     console.log("Add FightingFish By Id")
-    const fishData = await getFish(FishFight, tokenId, true, false)
+    const fishData = await buildFish(FishFight, tokenId)
     console.log(fishData)
     if(fishData != null) {
       setUserFish(prevTokens => [...prevTokens, fishData])
@@ -412,7 +393,7 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
 
   const addUserBreedingFishById = async (tokenId: number) => {
     console.log("Add User BreedingFish By Id")
-    const fishData = await getFish(FishFight, tokenId, false, true)
+    const fishData = await buildFish(FishFight, tokenId)
     if(fishData != null) {
       setUserFish(prevTokens => [...prevTokens, fishData])
     }
@@ -420,7 +401,7 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
 
   const addFightingFishById = async (tokenId: number) => {
     console.log("Add FightingFish By Id")
-    const fishData = await getFish(FishFight, tokenId, true, false)
+    const fishData = await buildFish(FishFight, tokenId)
     if(fishData != null) {
       setFightingFish(prevTokens => [...prevTokens, fishData])
     }
@@ -428,7 +409,7 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
 
   const addBreedingFishById = async (tokenId: number) => {
     console.log("Add BreedingFish By Id")
-    const fishData = await getFish(FishFight, tokenId, false, true)
+    const fishData = await buildFish(FishFight, tokenId)
     if(fishData != null) {
       setBreedingFish(prevTokens => [...prevTokens, fishData])
     }
@@ -447,7 +428,9 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
   }
 
   const refreshFish = async (tokenId: number, isFighting: boolean, isBreeding: boolean) =>  {
-    const fishData = await getFish(FishFight, tokenId, isFighting, isBreeding)
+    // const fishData = await getFish(FishFight, tokenId, isFighting, isBreeding)
+    const fishData = await buildFish(FishFight, tokenId)
+
     if(fishData == null) return null;
     
     if(userFish.some(fish => fish.tokenId == tokenId)) {
@@ -560,6 +543,7 @@ const getFish = async (fishFightInstance: FishFight, tokenId: number, isFighting
     console.log(`Loading Fish ${tokenId} from blockchain`)
     const fishInfo = await fishFightInstance.readFishFactory.methods.getFishInfo(tokenId).call();
     const fishSeasonStats = await fishFightInstance.readSeasons.methods.getFishSeasonStats(tokenId).call();
+    const trainingStats = await fishFightInstance.readTrainingWaters.methods.getStatus(tokenId).call();
     let tokenURI = null;
     try {
       tokenURI = await fishFightInstance.readFishFactory.methods.tokenURI(tokenId).call();
@@ -575,16 +559,11 @@ const getFish = async (fishFightInstance: FishFight, tokenId: number, isFighting
     let fish = new Fish(
       fishInfo,
       fishSeasonStats,
+      trainingStats,
       imgSrc,
       tokenURI,
     );
-    try {
-      const training = await fishFightInstance.readTrainingWaters.methods.getStatus(fish.tokenId).call();
-      fish.trainingStatus = new TrainingStatus(training);
-    } catch (error) {
-      console.log("Get TrainingStatus Failed:")
-      console.log(error)
-    }
+
       // need to return null if contract throws error, or add check in contract
     if(fish.lifetimeWins > 0) {
       const fightHistory = await fishFightInstance.readFightingWaters.methods.getFightsForFish(tokenId).call();
@@ -617,63 +596,6 @@ const getFish = async (fishFightInstance: FishFight, tokenId: number, isFighting
   
 }
 
-const getFishExtras = async (fishFightInstance: FishFight, fish: Fish, isFighting: boolean, isBreeding: boolean, isParent?: boolean) : Promise<Fish> => {
-  try {
-    // console.log(`Loading Fish ${tokenId} from blockchain`)
-    // const fishInfo = await fishFightInstance.readFishFactory.methods.getFishInfo(tokenId).call();
-    // const fishSeasonStats = await fishFightInstance.readSeasons.methods.getFishSeasonStats(tokenId).call();
-    let tokenURI = null;
-    try {
-      tokenURI = await fishFightInstance.readFishFactory.methods.tokenURI(fish.tokenId).call();
-    } catch (error) {
-      console.log("Get TokenURI call failed:")
-      console.log(error)
-    }
-
-    try {
-      const training = await fishFightInstance.readTrainingWaters.methods.getStatus(fish.tokenId).call();
-      fish.trainingStatus = new TrainingStatus(training);
-    } catch (error) {
-      console.log("Get TrainingStatus Failed:")
-      console.log(error)
-    }
-
-    if(tokenURI) {
-      fish.imgSrc = `${serverURL}/tokens/${fish.tokenId}.png`
-    }
-
-      // need to return null if contract throws error, or add check in contract
-    if(fish.lifetimeWins > 0) {
-      const fightHistory = await fishFightInstance.readFightingWaters.methods.getFightsForFish(fish.tokenId).call();
-      console.log(fightHistory)
-      fish.fightingHistory = fightHistory;
-    }
-    if(isFighting) {
-      const stakedFighting = await fishFightInstance.readFightingWaters.methods.getPoolInfo(fish.tokenId).call();
-      console.log(stakedFighting)
-      fish.stakedFighting = stakedFighting;
-    }
-    if(isBreeding) {
-      const stakedBreeding = await fishFightInstance.readBreedingWaters.methods.getPoolInfo(fish.tokenId).call();
-      console.log(stakedBreeding)
-      fish.stakedBreeding = stakedBreeding;
-    }
-    if(!isParent && fish.parentA !== 0 && fish.parentB !== 0) {
-      fish.parentAFish = await getFish(fishFightInstance, fish.parentA, false, false, true);
-      fish.parentBFish = await getFish(fishFightInstance, fish.parentB, false, false, true);
-    }
-    
-    // console.log(fish)
-    return fish;
-
-  } catch (error) {
-    console.log("Get Fish Extras call failed:")
-    console.log(error)
-    return fish
-  }
-  
-}
-
 // Gets Fish tokenURI from smart contract and loads the associated metadata from IPFS
 // TODO: currently just returns imgSrc, will add mp4 src
 const getFishMetaData = async (tokenURI: string) : Promise<string> => {
@@ -690,19 +612,6 @@ const getFishMetaData = async (tokenURI: string) : Promise<string> => {
   return metadata;
 }
 
-function getRandomInt(min: number, max: number) {
-  return Math.random() * (max - min) + min;
-}
-
-const getRandomFish = (maxSupply: number) => {
-  const randomTokenIds: number[] = [];
-  while(randomTokenIds.length < MAX_FISH) {
-    let randomToken = Math.round(getRandomInt(0, maxSupply));
-    console.log(randomToken)
-    if(!randomTokenIds.includes(randomToken)) randomTokenIds.push(randomToken);
-  }
-  return randomTokenIds;
-}
 
 const buildFish = async (fishFightInstance: FishFight, tokenId: number) => {
   const contractCallContext: ContractCallContext[] = [
@@ -710,42 +619,123 @@ const buildFish = async (fishFightInstance: FishFight, tokenId: number) => {
       reference: 'fishFactory',
       contractAddress: Contracts.contracts.FishFactory.address,
       abi: Contracts.contracts.FishFactory.abi,
-      calls: [{ reference: 'fishData', methodName: 'getFishInfo', methodParameters: [tokenId] }, { reference: 'tokenUri', methodName: 'tokenURI', methodParameters: [tokenId] }]
+      calls: [{ reference: 'fishData', methodName: 'getFishInfo', methodParameters: [tokenId] },
+      { reference: 'fishTokenUri', methodName: 'tokenURI', methodParameters: [tokenId] }  
+      ]
+    },
+    {
+      reference: 'seasons',
+      contractAddress: fishFightInstance.readSeasons.options.address,
+      abi: Contracts.contracts.Seasons.abi,
+      calls: [{ reference: 'fishSeasonData', methodName: 'getFishSeasonStats', methodParameters: [tokenId] }]
+    },
+    {
+      reference: 'trainingWaters',
+      contractAddress: fishFightInstance.readTrainingWaters.options.address,
+      abi: Contracts.contracts.TrainingWaters.abi,
+      calls: [{ reference: 'fishTrainingData', methodName: 'getStatus', methodParameters: [tokenId] }]
+    },
+    {
+      reference: 'fightingWaters',
+      contractAddress: fishFightInstance.readFightingWaters.options.address,
+      abi: Contracts.contracts.FightingWaters.abi,
+      calls: [{ reference: 'fishFightData', methodName: 'getFightsForFish', methodParameters: [tokenId] },
+      { reference: 'fishStakedFightData', methodName: 'getPoolInfo', methodParameters: [tokenId] }]
+    },
+    {
+      reference: 'breedingWaters',
+      contractAddress: fishFightInstance.readBreedingWaters.options.address,
+      abi: Contracts.contracts.BreedingWaters.abi,
+      calls: [{ reference: 'fishStakedBreedData', methodName: 'getPoolInfo', methodParameters: [tokenId] }]
     }
-    // {
-    //   reference: 'seasons',
-    //   contractAddress: fishFightInstance.readSeasons.options.address,
-    //   abi: Contracts.contracts.Seasons.abi,
-    //   calls: [{ reference: 'fishSeasonData', methodName: 'getFishSeasonStats', methodParameters: [tokenId] }]
-    // },
-    // {
-    //   reference: 'trainingWaters',
-    //   contractAddress: fishFightInstance.readTrainingWaters.options.address,
-    //   abi: Contracts.contracts.TrainingWaters.abi,
-    //   calls: [{ reference: 'fishTrainingData', methodName: 'getStatus', methodParameters: [tokenId] }]
-    // },
-    // {
-    //   reference: 'fightingWaters',
-    //   contractAddress: fishFightInstance.readFightingWaters.options.address,
-    //   abi: Contracts.contracts.FightingWaters.abi,
-    //   calls: [{ reference: 'fishFightData', methodName: 'getFightsForFish', methodParameters: [tokenId] }]
-    // },
-    // {
-    //   reference: 'fightingWaters',
-    //   contractAddress: fishFightInstance.readFightingWaters.options.address,
-    //   abi: Contracts.contracts.FightingWaters.abi,
-    //   calls: [{ reference: 'fishStakedFightData', methodName: 'getPoolInfo', methodParameters: [tokenId] }]
-    // },
-    // {
-    //   reference: 'breedingWaters',
-    //   contractAddress: fishFightInstance.readBreedingWaters.options.address,
-    //   abi: Contracts.contracts.BreedingWaters.abi,
-    //   calls: [{ reference: 'fishStakedBreedData', methodName: 'getPoolInfo', methodParameters: [tokenId] }]
-    // }
   ];
 
   console.log("multicall")
 
-  const results = await fishFightInstance.multicall.call(contractCallContext);
+  const results: ContractCallResults = await fishFightInstance.multicall.call(contractCallContext);
+
+  const fishFactoryGetFishInfo = results.results.fishFactory.callsReturnContext[0].success ? results.results.fishFactory.callsReturnContext[0].returnValues : null;
+  const fishFactoryTokenUri = results.results.fishFactory.callsReturnContext[1].success ? results.results.fishFactory.callsReturnContext[1].returnValues[0] : null;
+
+  const seasonsGetFishSeasonStats = results.results.seasons.callsReturnContext[0].success ? results.results.seasons.callsReturnContext[0].returnValues : null;
+  const trainingWatersGetStatus = results.results.trainingWaters.callsReturnContext[0].success ? results.results.trainingWaters.callsReturnContext[0].returnValues : null;
+  const fightingWatersGetPoolInfo = results.results.fightingWaters.callsReturnContext[1].success ? results.results.fightingWaters.callsReturnContext[1].returnValues : null;
+  const fightingWatersGetFights = results.results.fightingWaters.callsReturnContext[0].success ? results.results.fightingWaters.callsReturnContext[0].returnValues : null;
+  const breedingWatersGetPoolInfo = results.results.breedingWaters.callsReturnContext[0].success ? results.results.breedingWaters.callsReturnContext[0].returnValues : null;
   console.log(results);
+
+  if(fishFactoryGetFishInfo == null) return null;
+  let fishInfo = {
+    tokenId: fishFactoryGetFishInfo[0].hex,
+    birthTime: fishFactoryGetFishInfo[1].hex,
+    parentA: fishFactoryGetFishInfo[2].hex,
+    parentB: fishFactoryGetFishInfo[3].hex,
+    deathTime: fishFactoryGetFishInfo[4].hex,
+    revived: fishFactoryGetFishInfo[5],
+    lifetimeWins: fishFactoryGetFishInfo[6],
+    lifetimeAlphaBreeds: fishFactoryGetFishInfo[7],
+    lifetimeBettaBreeds: fishFactoryGetFishInfo[8],
+    strength: fishFactoryGetFishInfo[9],
+    intelligence: fishFactoryGetFishInfo[10],
+    agility: fishFactoryGetFishInfo[11],
+    fishType: fishFactoryGetFishInfo[12],
+    rarity: fishFactoryGetFishInfo[13],
+    power: fishFactoryGetFishInfo[14],
+    genes: fishFactoryGetFishInfo[15],
+    breedKey: fishFactoryGetFishInfo[16],
+    offspring: fishFactoryGetFishInfo[17],
+  }
+  console.log(fishInfo)
+  if(seasonsGetFishSeasonStats == null) return null;
+  let fishSeasonStats = {
+    fightWins: seasonsGetFishSeasonStats[0],
+    alphaBreeds: seasonsGetFishSeasonStats[1],
+    bettaBreeds: seasonsGetFishSeasonStats[2],
+    strModifier: seasonsGetFishSeasonStats[3],
+    intModifier: seasonsGetFishSeasonStats[4],
+    agiModifier: seasonsGetFishSeasonStats[5],
+  }
+  if(trainingWatersGetStatus == null) return null;
+  let trainingObject = {
+    lastFed: trainingWatersGetStatus[0].hex,
+    lastClaimed: trainingWatersGetStatus[1].hex,
+  }
+
+  const fish = new Fish(fishInfo, fishSeasonStats, trainingObject, null, null)
+
+  if(fightingWatersGetPoolInfo != null) {
+    fish.stakedFighting = {
+      earnedFishFood: web3.utils.fromWei(fightingWatersGetPoolInfo[0].hex),
+      lockedExpire: web3.utils.toNumber(fightingWatersGetPoolInfo[2].hex),
+    }
+  }
+  if(breedingWatersGetPoolInfo != null) {
+    fish.stakedBreeding = {
+      earnedFishFood: web3.utils.fromWei(breedingWatersGetPoolInfo[0].hex),
+    }
+  }
+  if(fightingWatersGetFights != null) {
+    fish.fightingHistory = fightingWatersGetFights[0];
+  }
+
+  if(fish.parentA > 0) {
+    fish.parentAFish = await getParentFish(fishFightInstance, fish.parentA);
+    fish.parentBFish = await getParentFish(fishFightInstance, fish.parentB);
+  }
+  console.log(fish)
+
+  return fish;
+}
+
+
+const getParentFish = async (fishFightInstance: FishFight, tokenId: number) => {
+  const fishInfo = await fishFightInstance.readFishFactory.methods.getFishInfo(tokenId).call();
+  let fish = new Fish(
+    fishInfo,
+    null,
+    null,
+    null,
+    null,
+  );
+  return fish;
 }

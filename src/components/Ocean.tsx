@@ -60,11 +60,21 @@ const Ocean = () => {
 		if(!unityContext.isFishPoolReady) return;
 
 		let fishToRender = fishToShow === FishView.Ocean ? oceanFish : userFish;
-		unityContext.clearFishPool("Ocean")
 		fishToRender.forEach(fish => {
+			if(renderedFish.some(prevTokenId => prevTokenId === fish.tokenId)) return;
 			unityContext.addFishOcean(fish);
+			setRenderedFish(prevTokens => [...prevTokens, fish.tokenId])
 		})
-
+		
+		if(mySelectedFish != null) {
+			let matchingUserFish = userFish.find(fish => fish.tokenId === mySelectedFish.tokenId);
+			let matchingOceanFish = oceanFish.find(fish => fish.tokenId === mySelectedFish.tokenId);
+			if(matchingUserFish != null) {
+				unityContext.showFish(matchingUserFish)
+			} else if(matchingOceanFish != null) {
+				unityContext.showFish(matchingOceanFish)
+			}
+		}
 	}, [unityContext.isFishPoolReady, fishToShow, oceanFish, userFish]);
 
 	
@@ -128,8 +138,13 @@ const Ocean = () => {
 						<BaseLinkButton to={'/catch'}>Catch a Fish!</BaseLinkButton>
 					}
 				</ContainerControls>
-
-				<FishViewer selectedFish={mySelectedFish} fishCollection={fishToShow === FishView.Ocean ? oceanFish : userFish} onClick={oceanFishClick}></FishViewer>
+				{fishToShow === FishView.Ocean &&
+					<FishViewer selectedOpponent={mySelectedFish} fishCollection={oceanFish} onClick={oceanFishClick}></FishViewer>
+				}
+				{fishToShow === FishView.User &&
+					<FishViewer selectedFish={mySelectedFish} fishCollection={userFish} onClick={oceanFishClick}></FishViewer>
+				}
+				
 		</BaseOverlayContainer>
 		
 	);

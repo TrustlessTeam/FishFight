@@ -12,6 +12,9 @@ import alphaImg from "../img/icons/alpha-dark.svg";
 import bettaImg from "../img/icons/betta-dark.svg";
 import { useContractWrapper } from "../context/contractWrapperContext";
 import { useFishFight } from "../context/fishFightContext";
+import { Constants } from "../utils/constants";
+import BN from 'bn.js';
+
 
 type Props = {
   fish: Fish;
@@ -41,6 +44,9 @@ const FishNFT = ({
     withdrawBreedingFish,
     depositFightingFish,
     withdrawFightingFish,
+    feedFish,
+    questFish,
+    claimFishFood,
     pendingTransaction,
   } = useContractWrapper();
 
@@ -89,6 +95,13 @@ const FishNFT = ({
 
       {selectedUser && (
         <Options>
+          <Button onClick={() => feedFish(fish)}>Feed</Button>
+          {fish.trainingStatus.canClaim &&
+            <Button onClick={() => claimFishFood(fish)}>Claim</Button>
+          }
+          {fish.canQuest && !fish.stakedBreeding && !fish.stakedFighting &&
+            <Button onClick={() => questFish(fish)}>Quest</Button>
+          }
           {fish.stakedFighting && (
             <Button onClick={() => withdrawFightingFish(fish)}>Withdraw</Button>
           )}
@@ -106,6 +119,12 @@ const FishNFT = ({
             )}
         </Options>
       )}
+
+      {selectedOpponent &&
+        <Options>
+          <Button onClick={() => feedFish(fish)}>Feed</Button>
+        </Options>
+      }
 
       {/* {showStats &&
 				<FishStatsOverlay>
@@ -179,7 +198,8 @@ const FishImg = styled.img<ImgProps>`
   ${({ selectedOpponent }) =>
     selectedOpponent &&
     `
-    border-color: rgba(154, 3, 30, 0.5)
+    border-color: rgba(154, 3, 30, 0.5);
+		height: 14vh;
   `}
 `;
 

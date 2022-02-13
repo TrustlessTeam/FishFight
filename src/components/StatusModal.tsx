@@ -13,7 +13,7 @@ import { useFishPool } from '../context/fishPoolContext';
 import web3 from 'web3';
 import Countdown from 'react-countdown';
 import BN from 'bn.js'
-import { FightingStake } from '../utils/fish';
+import { StakedFighting } from '../utils/fish';
 import { Route, Routes } from 'react-router-dom';
 import infoImg from "../img/icons/info.svg"
 

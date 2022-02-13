@@ -2803,18 +2803,13 @@
       ]
     },
     "FishCalls": {
-      "address": "0x380825F1Dd4B1B1d040d04d85b33eCC8F1b4F8BF",
+      "address": "0xA2ff7a528422A3a89792301d489e922a79EcFC11",
       "abi": [
         {
           "inputs": [
             {
               "internalType": "contract FishFactory",
               "name": "fish",
-              "type": "address"
-            },
-            {
-              "internalType": "contract Seasons",
-              "name": "seasons",
               "type": "address"
             }
           ],
@@ -2850,138 +2845,9 @@
           "name": "getFish",
           "outputs": [
             {
-              "components": [
-                {
-                  "internalType": "uint256",
-                  "name": "tokenId",
-                  "type": "uint256"
-                },
-                {
-                  "internalType": "uint256",
-                  "name": "birthTime",
-                  "type": "uint256"
-                },
-                {
-                  "internalType": "uint256",
-                  "name": "parentA",
-                  "type": "uint256"
-                },
-                {
-                  "internalType": "uint256",
-                  "name": "parentB",
-                  "type": "uint256"
-                },
-                {
-                  "internalType": "uint256",
-                  "name": "deathTime",
-                  "type": "uint256"
-                },
-                {
-                  "internalType": "bool",
-                  "name": "revived",
-                  "type": "bool"
-                },
-                {
-                  "internalType": "uint32",
-                  "name": "lifetimeWins",
-                  "type": "uint32"
-                },
-                {
-                  "internalType": "uint32",
-                  "name": "lifetimeAlphaBreeds",
-                  "type": "uint32"
-                },
-                {
-                  "internalType": "uint32",
-                  "name": "lifetimeBettaBreeds",
-                  "type": "uint32"
-                },
-                {
-                  "internalType": "uint16",
-                  "name": "strength",
-                  "type": "uint16"
-                },
-                {
-                  "internalType": "uint16",
-                  "name": "intelligence",
-                  "type": "uint16"
-                },
-                {
-                  "internalType": "uint16",
-                  "name": "agility",
-                  "type": "uint16"
-                },
-                {
-                  "internalType": "uint8",
-                  "name": "fishType",
-                  "type": "uint8"
-                },
-                {
-                  "internalType": "uint8",
-                  "name": "rarity",
-                  "type": "uint8"
-                },
-                {
-                  "internalType": "int8",
-                  "name": "power",
-                  "type": "int8"
-                },
-                {
-                  "internalType": "bytes",
-                  "name": "genes",
-                  "type": "bytes"
-                },
-                {
-                  "internalType": "bytes",
-                  "name": "breedKey",
-                  "type": "bytes"
-                },
-                {
-                  "internalType": "uint256[]",
-                  "name": "offspring",
-                  "type": "uint256[]"
-                }
-              ],
-              "internalType": "struct FishFactory.Fish[20]",
+              "internalType": "uint256[40]",
               "name": "",
-              "type": "tuple[20]"
-            },
-            {
-              "components": [
-                {
-                  "internalType": "uint16",
-                  "name": "fightWins",
-                  "type": "uint16"
-                },
-                {
-                  "internalType": "uint16",
-                  "name": "alphaBreeds",
-                  "type": "uint16"
-                },
-                {
-                  "internalType": "uint16",
-                  "name": "bettaBreeds",
-                  "type": "uint16"
-                },
-                {
-                  "internalType": "int8",
-                  "name": "strModifier",
-                  "type": "int8"
-                },
-                {
-                  "internalType": "int8",
-                  "name": "intModifier",
-                  "type": "int8"
-                },
-                {
-                  "internalType": "int8",
-                  "name": "agiModifier",
-                  "type": "int8"
-                }
-              ],
-              "internalType": "struct Seasons.FishSeasonStats[20]",
-              "name": "",
-              "type": "tuple[20]"
+              "type": "uint256[40]"
             }
           ],
           "stateMutability": "view",
@@ -3003,138 +2869,9 @@
           "name": "getFishForAddress",
           "outputs": [
             {
-              "components": [
-                {
-                  "internalType": "uint256",
-                  "name": "tokenId",
-                  "type": "uint256"
-                },
-                {
-                  "internalType": "uint256",
-                  "name": "birthTime",
-                  "type": "uint256"
-                },
-                {
-                  "internalType": "uint256",
-                  "name": "parentA",
-                  "type": "uint256"
-                },
-                {
-                  "internalType": "uint256",
-                  "name": "parentB",
-                  "type": "uint256"
-                },
-                {
-                  "internalType": "uint256",
-                  "name": "deathTime",
-                  "type": "uint256"
-                },
-                {
-                  "internalType": "bool",
-                  "name": "revived",
-                  "type": "bool"
-                },
-                {
-                  "internalType": "uint32",
-                  "name": "lifetimeWins",
-                  "type": "uint32"
-                },
-                {
-                  "internalType": "uint32",
-                  "name": "lifetimeAlphaBreeds",
-                  "type": "uint32"
-                },
-                {
-                  "internalType": "uint32",
-                  "name": "lifetimeBettaBreeds",
-                  "type": "uint32"
-                },
-                {
-                  "internalType": "uint16",
-                  "name": "strength",
-                  "type": "uint16"
-                },
-                {
-                  "internalType": "uint16",
-                  "name": "intelligence",
-                  "type": "uint16"
-                },
-                {
-                  "internalType": "uint16",
-                  "name": "agility",
-                  "type": "uint16"
-                },
-                {
-                  "internalType": "uint8",
-                  "name": "fishType",
-                  "type": "uint8"
-                },
-                {
-                  "internalType": "uint8",
-                  "name": "rarity",
-                  "type": "uint8"
-                },
-                {
-                  "internalType": "int8",
-                  "name": "power",
-                  "type": "int8"
-                },
-                {
-                  "internalType": "bytes",
-                  "name": "genes",
-                  "type": "bytes"
-                },
-                {
-                  "internalType": "bytes",
-                  "name": "breedKey",
-                  "type": "bytes"
-                },
-                {
-                  "internalType": "uint256[]",
-                  "name": "offspring",
-                  "type": "uint256[]"
-                }
-              ],
-              "internalType": "struct FishFactory.Fish[20]",
+              "internalType": "uint256[40]",
               "name": "",
-              "type": "tuple[20]"
-            },
-            {
-              "components": [
-                {
-                  "internalType": "uint16",
-                  "name": "fightWins",
-                  "type": "uint16"
-                },
-                {
-                  "internalType": "uint16",
-                  "name": "alphaBreeds",
-                  "type": "uint16"
-                },
-                {
-                  "internalType": "uint16",
-                  "name": "bettaBreeds",
-                  "type": "uint16"
-                },
-                {
-                  "internalType": "int8",
-                  "name": "strModifier",
-                  "type": "int8"
-                },
-                {
-                  "internalType": "int8",
-                  "name": "intModifier",
-                  "type": "int8"
-                },
-                {
-                  "internalType": "int8",
-                  "name": "agiModifier",
-                  "type": "int8"
-                }
-              ],
-              "internalType": "struct Seasons.FishSeasonStats[20]",
-              "name": "",
-              "type": "tuple[20]"
+              "type": "uint256[40]"
             }
           ],
           "stateMutability": "view",
@@ -5266,22 +5003,314 @@
       ]
     },
     "Multicall": {
-      "address": "0x176362206C4AA08BD7B678EDfA3D48c2c063ec68",
+      "address": "0x7c2c387670e4408A82De46084d5B5393cEb706DE",
       "abi": [
         {
           "inputs": [
             {
+              "components": [
+                {
+                  "internalType": "address",
+                  "name": "target",
+                  "type": "address"
+                },
+                {
+                  "internalType": "bytes",
+                  "name": "callData",
+                  "type": "bytes"
+                }
+              ],
+              "internalType": "struct Multicall.Call[]",
+              "name": "calls",
+              "type": "tuple[]"
+            }
+          ],
+          "name": "aggregate",
+          "outputs": [
+            {
+              "internalType": "uint256",
+              "name": "blockNumber",
+              "type": "uint256"
+            },
+            {
               "internalType": "bytes[]",
-              "name": "data",
+              "name": "returnData",
               "type": "bytes[]"
             }
           ],
-          "name": "multicall",
+          "stateMutability": "nonpayable",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "components": [
+                {
+                  "internalType": "address",
+                  "name": "target",
+                  "type": "address"
+                },
+                {
+                  "internalType": "bytes",
+                  "name": "callData",
+                  "type": "bytes"
+                }
+              ],
+              "internalType": "struct Multicall.Call[]",
+              "name": "calls",
+              "type": "tuple[]"
+            }
+          ],
+          "name": "blockAndAggregate",
           "outputs": [
             {
-              "internalType": "bytes[]",
-              "name": "results",
-              "type": "bytes[]"
+              "internalType": "uint256",
+              "name": "blockNumber",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "blockHash",
+              "type": "bytes32"
+            },
+            {
+              "components": [
+                {
+                  "internalType": "bool",
+                  "name": "success",
+                  "type": "bool"
+                },
+                {
+                  "internalType": "bytes",
+                  "name": "returnData",
+                  "type": "bytes"
+                }
+              ],
+              "internalType": "struct Multicall.Result[]",
+              "name": "returnData",
+              "type": "tuple[]"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "uint256",
+              "name": "blockNumber",
+              "type": "uint256"
+            }
+          ],
+          "name": "getBlockHash",
+          "outputs": [
+            {
+              "internalType": "bytes32",
+              "name": "blockHash",
+              "type": "bytes32"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [],
+          "name": "getBlockNumber",
+          "outputs": [
+            {
+              "internalType": "uint256",
+              "name": "blockNumber",
+              "type": "uint256"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [],
+          "name": "getCurrentBlockCoinbase",
+          "outputs": [
+            {
+              "internalType": "address",
+              "name": "coinbase",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [],
+          "name": "getCurrentBlockDifficulty",
+          "outputs": [
+            {
+              "internalType": "uint256",
+              "name": "difficulty",
+              "type": "uint256"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [],
+          "name": "getCurrentBlockGasLimit",
+          "outputs": [
+            {
+              "internalType": "uint256",
+              "name": "gaslimit",
+              "type": "uint256"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [],
+          "name": "getCurrentBlockTimestamp",
+          "outputs": [
+            {
+              "internalType": "uint256",
+              "name": "timestamp",
+              "type": "uint256"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "addr",
+              "type": "address"
+            }
+          ],
+          "name": "getEthBalance",
+          "outputs": [
+            {
+              "internalType": "uint256",
+              "name": "balance",
+              "type": "uint256"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [],
+          "name": "getLastBlockHash",
+          "outputs": [
+            {
+              "internalType": "bytes32",
+              "name": "blockHash",
+              "type": "bytes32"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "bool",
+              "name": "requireSuccess",
+              "type": "bool"
+            },
+            {
+              "components": [
+                {
+                  "internalType": "address",
+                  "name": "target",
+                  "type": "address"
+                },
+                {
+                  "internalType": "bytes",
+                  "name": "callData",
+                  "type": "bytes"
+                }
+              ],
+              "internalType": "struct Multicall.Call[]",
+              "name": "calls",
+              "type": "tuple[]"
+            }
+          ],
+          "name": "tryAggregate",
+          "outputs": [
+            {
+              "components": [
+                {
+                  "internalType": "bool",
+                  "name": "success",
+                  "type": "bool"
+                },
+                {
+                  "internalType": "bytes",
+                  "name": "returnData",
+                  "type": "bytes"
+                }
+              ],
+              "internalType": "struct Multicall.Result[]",
+              "name": "returnData",
+              "type": "tuple[]"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "bool",
+              "name": "requireSuccess",
+              "type": "bool"
+            },
+            {
+              "components": [
+                {
+                  "internalType": "address",
+                  "name": "target",
+                  "type": "address"
+                },
+                {
+                  "internalType": "bytes",
+                  "name": "callData",
+                  "type": "bytes"
+                }
+              ],
+              "internalType": "struct Multicall.Call[]",
+              "name": "calls",
+              "type": "tuple[]"
+            }
+          ],
+          "name": "tryBlockAndAggregate",
+          "outputs": [
+            {
+              "internalType": "uint256",
+              "name": "blockNumber",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "blockHash",
+              "type": "bytes32"
+            },
+            {
+              "components": [
+                {
+                  "internalType": "bool",
+                  "name": "success",
+                  "type": "bool"
+                },
+                {
+                  "internalType": "bytes",
+                  "name": "returnData",
+                  "type": "bytes"
+                }
+              ],
+              "internalType": "struct Multicall.Result[]",
+              "name": "returnData",
+              "type": "tuple[]"
             }
           ],
           "stateMutability": "nonpayable",
