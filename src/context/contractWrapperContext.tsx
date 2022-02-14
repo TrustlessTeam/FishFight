@@ -41,7 +41,7 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 	const [pendingTransaction, setPendingTransaction] = useState<boolean>(false);
 	const { account } = useWeb3React();
 	const { FishFight, refetchBalance, checkApprovals, balanceFood } = useFishFight();
-	const { refreshFish, createUserFish } = useFishPool();
+	const { refreshFish, createUserFish, refreshLoadedFish } = useFishPool();
 	const unityContext = useUnity();
 
 	// Breeding Functions
@@ -626,6 +626,31 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 		.on('receipt', async (result: any) => {
 			setPendingTransaction(false);
 			refreshFish(fish.tokenId, false, false)
+			toast.success('Claim Successful!', {
+				onClose: async () => {
+					refetchBalance()
+				},
+			});
+		})
+	}
+
+	const contractClaimAllFishFood = () => {
+		return FishFight.trainingWaters?.methods.claimAllFishFood().send({
+			from: account,
+			gasPrice: 30000000000,
+			gasLimit: 5000000,
+		})
+		.on('error', (error: any) => {
+			console.log(error)
+			toast.error('Quest Failed');
+			setPendingTransaction(false);
+		})
+		.on('transactionHash', () => {
+			setPendingTransaction(true);
+		})
+		.on('receipt', async (result: any) => {
+			setPendingTransaction(false);
+			refreshLoadedFish();
 			toast.success('Claim Successful!', {
 				onClose: async () => {
 					refetchBalance()

@@ -16,6 +16,7 @@ import BN from 'bn.js'
 import { StakedFighting } from '../utils/fish';
 import { Route, Routes } from 'react-router-dom';
 import infoImg from "../img/icons/info.svg"
+import { BaseButton } from './BaseStyles';
 
 
 type Props = {
@@ -35,19 +36,25 @@ const StatusModal = ({}: Props) => {
 					breedingWatersSupply,
 					FishFight
 				} = useFishFight();
-	const { userFightingFish, userBreedingFish } = useFishPool();
+	const { userFish } = useFishPool();
 	const [pendingAward, setPendingAward] = useState<string>();
+	const [pendingCollectAward, setPendingCollectAward] = useState<string>();
+	const [pendingFightFood, setPendingFightFood] = useState<string>();
+	const [pendingBreedFood, setPendingBreedFood] = useState<string>();
 	const [modalIsOpen, setModalIsOpen] = useState(false);
 	
 	const { account } = useWeb3React();
+	const { balanceFish, balanceDeadFish, balanceFood, balanceFightFish, balanceBreedFish  } = useFishFight();
 
 	useEffect(() => {
 		const loadData = async (account: any) => {
       if(!account) return;
 			getPendingFood();
+			getPendingFoodFromCollect();
+			getUserFishStats();
     }
 		loadData(account);
-	}, [account, userFightingFish]);
+	}, [account, userFish]);
 
 	const toggleModel = () => {
 		setModalIsOpen(!modalIsOpen);
@@ -63,36 +70,39 @@ const StatusModal = ({}: Props) => {
 		setPendingAward(web3.utils.fromWei(result));
 	}
 
-	const getFoodFromFights = () => {
-		let total = web3.utils.toBN(0);
-		for(let i = 0; i < userFightingFish.length; i++) {
-			if(userFightingFish[i].stakedFighting) {
-				total = total.add(web3.utils.toBN(userFightingFish[i].stakedFighting!.earnedFishFood))
-			}
-		}
-		return web3.utils.fromWei(total);
+	const getPendingFoodFromCollect = async () => {
+		if(!account) return;
+		const result = await FishFight.readTrainingWaters.methods.checkRewards().call();
+		console.log(result)
+		setPendingCollectAward(web3.utils.fromWei(result));
 	}
 
-	const getFoodFromBreeds = () => {
-		let total = web3.utils.toBN(0);
-		for(let i = 0; i < userBreedingFish.length; i++) {
-			if(userBreedingFish[i].stakedFighting) {
-				total = total.add(web3.utils.toBN(userBreedingFish[i].stakedBreeding!.earnedFishFood))
+	const getUserFishStats = () => {
+		let totalFight = web3.utils.toBN(0);
+		let totalBreed = web3.utils.toBN(0);
+		for(let i = 0; i < userFish.length; i++) {
+			if(userFish[i].stakedFighting && userFish[i].stakedFighting?.earnedFishFood != null) {
+				totalFight = totalFight.add(web3.utils.toBN(userFish[i].stakedFighting!.earnedFishFood))
+
+			}
+			if(userFish[i].stakedFighting && userFish[i].stakedBreeding?.earnedFishFood != null) {
+				totalBreed = totalBreed.add(web3.utils.toBN(userFish[i].stakedBreeding!.earnedFishFood))
 			}
 		}
-		return web3.utils.fromWei(total);
+		setPendingFightFood(totalFight.toString());
+		setPendingBreedFood(totalBreed.toString());
 	}
 
 	const oceanData = () => {
 		return (
 			<DataContainer>
-				<SubTitle>Ocean Stats</SubTitle>
+				<Title>Ocean Stats</Title>
 				<StatusContainer>
 					<DataItem title="">
-						<StatusText>{`Total Supply: ${totalSupply}`}</StatusText>
+						<StatusText>{`All Fish: ${totalSupply}`}</StatusText>
 					</DataItem>
 					<DataItem title="">
-						<StatusText>{`Current Max Supply: ${maxSupply - totalSupply}`}</StatusText>
+						<StatusText>{`Fish to Catch: ${maxSupply - totalSupply}`}</StatusText>
 					</DataItem>
 				</StatusContainer>
 			</DataContainer>
@@ -126,36 +136,17 @@ const StatusModal = ({}: Props) => {
 		return (
 			<DataContainer>
 				<StatusContainer>
-					<Title>Fighting Waters</Title>
+					<Title>Fighting Pool</Title>
 	
 					<DataItem>
-						<StatusText>{`All Fight Fish: ${fightingWatersSupply}`}</StatusText>
+						<StatusText>{`Available to Fight: ${fightingWatersSupply}`}</StatusText>
 					</DataItem>
 					{account &&
 					<>
 						<DataItem>
-							<StatusText>My Fight Fish: {userFightingFish.length}</StatusText>
+							<StatusText>{`My Fighters: ${balanceFightFish}`}</StatusText>
 						</DataItem>
 					</>
-						
-					}
-				</StatusContainer>
-				<StatusContainer>
-					
-					{account &&
-					<>
-					<Title>My Pending $FISHFOOD</Title>
-						<DataItem>
-							<StatusText>{`Fights: ${getFoodFromFights()}`}</StatusText>
-						</DataItem>
-						<DataItem>
-							<StatusText>{`Staking: ${pendingAward}`}</StatusText>
-						</DataItem>
-						<DataItem>
-							<StatusText>{`Breeds: ${getFoodFromBreeds()}`}</StatusText>
-						</DataItem>
-					</>
-						
 					}
 				</StatusContainer>
 			</DataContainer>
@@ -170,9 +161,42 @@ const StatusModal = ({}: Props) => {
 					<DataItem>
 						<StatusText>{`Breeding Fish: ${breedingWatersSupply}`}</StatusText>
 					</DataItem>
-					<DataItem>
-						{/* <StatusText>{`Pending FISHFOOD: ${userBreedingFish.map(fish => fish.stakedBreeding != null ? web3.utils.toBN(fish.stakedBreeding.earnedFishFood) : web3.utils.toBN(0)).reduce((x: BN, y: web3.utils.BN) => x.add(y))}`}</StatusText> */}
-					</DataItem>
+					{account &&
+					<>
+						<DataItem>
+							<StatusText>{`My Breeders: ${balanceBreedFish}`}</StatusText>
+						</DataItem>
+					</>
+					}
+				</StatusContainer>
+			</DataContainer>
+		);
+	}
+
+	const userData = () => {
+		if(!account) return null;
+		return (
+			<DataContainer>
+				<Title>{`Pending FISHFOOD`}</Title>
+				<StatusContainer>
+						<DataItem>
+							<StatusText>{`Fighter Wins: ${pendingFightFood}`}</StatusText>
+						</DataItem>
+						<DataItem>
+							<StatusText>{`Fighter Staking: ${pendingAward}`}</StatusText>
+						</DataItem>
+						<DataItem>
+							<StatusText>{`Alpha Breeds: ${pendingBreedFood}`}</StatusText>
+						</DataItem>
+				</StatusContainer>
+				<Title>FISH Actions</Title>
+				<StatusContainer>
+						<DataItem>
+							<BaseButton>{`Feed Eligible Fish`}</BaseButton>
+						</DataItem>
+						<DataItem>
+							<BaseButton>{`Collect from All Fish: ~${pendingCollectAward}`}</BaseButton>
+						</DataItem>
 				</StatusContainer>
 			</DataContainer>
 		);
@@ -245,6 +269,7 @@ const StatusModal = ({}: Props) => {
 						<Route path="breeding" element={breedingData()} />
 						<Route path="breeding/:id" element={breedingData()} />
 					</Routes>
+					{userData()}
 				</StatusModalContainer>
 				</Modal>
 			</ImgContainer>

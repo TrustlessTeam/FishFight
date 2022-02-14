@@ -17,26 +17,12 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 // Styled Components
-import styled, { ThemeProvider } from 'styled-components';
-import { BaseTheme } from '../default-theme';
-import { slide as Menu } from 'react-burger-menu'
+import styled from 'styled-components';
+
 
 // Components
 import Nav from './Nav';
 import Account from './Account';
-import Balance from './Balance';
-
-import logo from '../src/img/FishFightLogo.png'
-import infoImg from "../img/icons/info.svg"
-
-import Blockchain from './BlockchainStatus';
-
-
-import SeasonStatus from './SeasonStatus';
-import UnityWindow from "./UnityWindow";
-import FishingStatus from "./FishingStatus";
-import FightingStatus from "./StatusModal";
-import BreedingStatus from "./BreedingStatus";
 import { useState } from "react";
 import StatusModal from "./StatusModal";
 
