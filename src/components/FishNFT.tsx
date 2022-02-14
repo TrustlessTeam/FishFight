@@ -96,7 +96,7 @@ const FishNFT = ({
       {selectedUser && (
         <Options>
           <Button onClick={() => feedFish(fish)}>Feed</Button>
-          {fish.trainingStatus.canClaim &&
+          {fish.trainingStatus.canClaim() && !fish.stakedBreeding && !fish.stakedFighting &&
             <Button onClick={() => claimFishFood(fish)}>Collect</Button>
           }
           {fish.canQuest && !fish.stakedBreeding && !fish.stakedFighting &&

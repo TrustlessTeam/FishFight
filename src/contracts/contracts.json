@@ -6467,7 +6467,7 @@
       ]
     },
     "TrainingWaters": {
-      "address": "0x636b4457b1ef44965f6dAECFb82Fe102755589f0",
+      "address": "0xfc881ad1C543c9832aAB1975612Dfab8701c9Aba",
       "abi": [
         {
           "inputs": [
@@ -6702,6 +6702,19 @@
         {
           "inputs": [
             {
+              "internalType": "uint256[]",
+              "name": "tokenIds",
+              "type": "uint256[]"
+            }
+          ],
+          "name": "feedMultipleFish",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
               "internalType": "uint256",
               "name": "tokenId",
               "type": "uint256"
@@ -6713,12 +6726,12 @@
               "components": [
                 {
                   "internalType": "uint256",
-                  "name": "lastFed",
+                  "name": "feedCooldown",
                   "type": "uint256"
                 },
                 {
                   "internalType": "uint256",
-                  "name": "lastClaimed",
+                  "name": "claimCooldown",
                   "type": "uint256"
                 }
               ],

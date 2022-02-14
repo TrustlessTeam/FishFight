@@ -23,18 +23,18 @@ export class StakedBreeding {
 }
 
 export class TrainingStatus {
-  lastFed: number;
-  lastClaimed: number;
-  canFeed: boolean;
-  canClaim: boolean;
+  feedCooldown: number;
+  claimCooldown: number;
+  canFeed: () => boolean;
+  canClaim: () => boolean;
   
   constructor(
     trainingObject: any,
   ) {
-    this.lastFed = web3.utils.toNumber(trainingObject.lastFed);
-    this.lastClaimed = web3.utils.toNumber(trainingObject.lastClaimed);
-    this.canFeed = this.lastFed + Constants._feedCooldown <= Math.round(Date.now() / 1000)
-    this.canClaim = this.lastClaimed + Constants._feedCooldown <= Math.round(Date.now() / 1000)
+    this.feedCooldown = web3.utils.toNumber(trainingObject.lastFed);
+    this.claimCooldown = web3.utils.toNumber(trainingObject.lastClaimed);
+    this.canFeed = () => {return this.feedCooldown <= Math.round(Date.now() / 1000)}
+    this.canClaim = () => {return this.claimCooldown <= Math.round(Date.now() / 1000)}
   }
 }
 

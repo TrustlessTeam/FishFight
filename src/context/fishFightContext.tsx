@@ -16,6 +16,7 @@ interface FishFightProviderContext {
     userConnected: boolean
     balance: string | undefined
     balanceFood: string | undefined
+    balanceFoodWei: BN | undefined
     balanceFish: string | undefined
     balanceDeadFish: string | undefined
     balanceFightFish: string | undefined
@@ -170,6 +171,7 @@ export const FishFightProvider = ({ children }: FishFightProviderProps ) => {
 const useBalance = () => {
 	const [balance, setBalance] = useState<string>();
 	const [balanceFood, setBalanceFood] = useState<string>();
+	const [balanceFoodWei, setBalanceFoodWei] = useState<BN>();
 	const [balanceFish, setBalanceFish] = useState<string>();
 	const [balanceDeadFish, setBalanceDeadFish] = useState<string>();
 	const [balanceFightFish, setBalanceFightFish] = useState<string>();
@@ -185,6 +187,7 @@ const useBalance = () => {
       const food = await FishFight.readFishFood.methods.balanceOf(account).call();
       const parsedFood = FishFight.provider.utils.fromWei(food);
       setBalanceFood(parsedFood);
+      setBalanceFoodWei(new BN(food));
 
       const fish = await FishFight.readFishFactory.methods.balanceOf(account).call();
       const parsedFish = fish
@@ -212,6 +215,7 @@ const useBalance = () => {
 	return {
 		balance,
     balanceFood,
+    balanceFoodWei,
     balanceFish,
     balanceDeadFish,
     balanceFightFish,

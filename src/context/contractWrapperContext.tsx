@@ -27,6 +27,8 @@ interface ProviderInterface {
 	feedFish: (fish: Fish | null) => void;
 	questFish: (fish: Fish | null) => void;
 	claimFishFood: (fish: Fish | null) => void;
+	claimAllFishFood: () => void;
+	feedAllFish: () => void;
 	contractApproveAllForFighting: () => void;
 	contractApproveAllFishForBreeding: () => void;
 	contractApproveFoodForBreeding: () => void;
@@ -40,8 +42,8 @@ const ContractWrapperContext = createContext<ProviderInterface | undefined>(unde
 export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 	const [pendingTransaction, setPendingTransaction] = useState<boolean>(false);
 	const { account } = useWeb3React();
-	const { FishFight, refetchBalance, checkApprovals, balanceFood } = useFishFight();
-	const { refreshFish, createUserFish, refreshLoadedFish } = useFishPool();
+	const { FishFight, refetchBalance, checkApprovals, balanceFoodWei } = useFishFight();
+	const { userFish, refreshFish, createUserFish, refreshLoadedFish } = useFishPool();
 	const unityContext = useUnity();
 
 	// Breeding Functions
@@ -62,7 +64,7 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 			toast.error('Must be Breeding Season to Breed');
 			return;
 		}
-		if(balanceFood && new BN(web3.utils.toWei(balanceFood)).lt(new BN(Constants._fishFoodBreedFee))) {
+		if(balanceFoodWei && balanceFoodWei.lt(new BN(Constants._fishFoodBreedFee))) {
 			toast.error('Not enough $FISHFOOD');
 			return;
 		}
@@ -452,17 +454,18 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 			toast.error('Select a Fish');
 			return;
 		}
-		if(balanceFood && new BN(web3.utils.toWei(balanceFood)).lt(new BN(Constants._feedFee))) {
+		if(balanceFoodWei && balanceFoodWei.lt(new BN(Constants._feedFee))) {
 			toast.error('Not enough $FISHFOOD');
 			return;
 		}
 		const secondsSinceEpoch = Math.round(Date.now() / 1000)
-		if(fish.trainingStatus != null && !fish.trainingStatus.canFeed) {
-			const expireTime = ((fish.trainingStatus.lastFed + Constants._feedCooldown) - secondsSinceEpoch) / 60;
+		if(fish.trainingStatus != null && !fish.trainingStatus.canFeed()) {
+			const expireTime = (fish.trainingStatus.feedCooldown - secondsSinceEpoch) / 60;
 			const lockedFor = (Math.round(expireTime * 10) / 10).toFixed(1);
 			toast.error(`Can't feed for ${lockedFor} minutes`)
 			return;
 		}
+
 		try {
 			FishFight.fishFood?.methods.allowance(account, FishFight.readTrainingWaters.options.address).call()
 			.then((approvedAmount: any) => {
@@ -495,7 +498,7 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 			toast.error('Select a Fish');
 			return;
 		}
-		if(balanceFood && new BN(web3.utils.toWei(balanceFood)).lt(new BN(Constants._questFee))) {
+		if(balanceFoodWei && balanceFoodWei.lt(new BN(Constants._questFee))) {
 			toast.error('Not enough $FISHFOOD');
 			return;
 		}
@@ -530,6 +533,48 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 		
 	}
 
+	const claimAllFishFood = async () => {
+		if(!account) {
+			toast.error('Connect your wallet');
+			return;
+		}
+		try {
+			contractClaimAllFishFood()	
+		} catch (error: any) {
+			console.log(error);
+		}
+	}
+
+	const feedAllFish = async () => {
+		const tokenIds = userFish.filter((fish) => {
+			return fish.trainingStatus.canFeed()
+		}).map(fish => fish.tokenId)
+		console.log(tokenIds)
+		if(!account) {
+			toast.error('Connect your wallet');
+			return;
+		}
+		if(balanceFoodWei && balanceFoodWei.lt(new BN(Constants._feedFee).mul(new BN(tokenIds.length))) ) {
+			toast.error('Not enough $FISHFOOD');
+			return;
+		}
+		try {
+			FishFight.fishFood?.methods.allowance(account, FishFight.readTrainingWaters.options.address).call()
+			.then((approvedAmount: any) => {
+				if(new BN(approvedAmount).gte(new BN(Constants._feedFee).mul(new BN(tokenIds.length))) ) {
+					contractFeedMultipleFish(tokenIds)
+				} else {
+					contractApproveFoodForTraining()
+					.on('receipt', () => {
+						contractFeedMultipleFish(tokenIds)
+					})
+				}
+			})
+		} catch (error: any) {
+			console.log(error);
+		}
+	}
+
 	const claimFishFood = async (fish: Fish | null) => {
 		if(!account) {
 			toast.error('Connect your wallet');
@@ -541,8 +586,8 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 		}
 
 		const secondsSinceEpoch = Math.round(Date.now() / 1000)
-		if(fish.trainingStatus != null && !fish.trainingStatus.canClaim) {
-			const expireTime = ((fish.trainingStatus.lastClaimed + Constants._claimCooldown) - secondsSinceEpoch) / 60;
+		if(fish.trainingStatus != null && !fish.trainingStatus.canClaim()) {
+			const expireTime = (fish.trainingStatus.claimCooldown - secondsSinceEpoch) / 60;
 			const lockedFor = (Math.round(expireTime * 10) / 10).toFixed(1);
 			toast.error(`Can't claim for ${lockedFor} minutes`)
 			return;
@@ -642,7 +687,7 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 		})
 		.on('error', (error: any) => {
 			console.log(error)
-			toast.error('Quest Failed');
+			toast.error('Claim All Failed');
 			setPendingTransaction(false);
 		})
 		.on('transactionHash', () => {
@@ -650,8 +695,33 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 		})
 		.on('receipt', async (result: any) => {
 			setPendingTransaction(false);
-			refreshLoadedFish();
+			refreshLoadedFish()
 			toast.success('Claim Successful!', {
+				onClose: async () => {
+					refetchBalance()
+				},
+			});
+		})
+	}
+
+	const contractFeedMultipleFish = (tokenIds: number[]) => {
+		return FishFight.trainingWaters?.methods.feedMultipleFish(tokenIds).send({
+			from: account,
+			gasPrice: 30000000000,
+			gasLimit: 5000000,
+		})
+		.on('error', (error: any) => {
+			console.log(error)
+			toast.error('Feed All Failed');
+			setPendingTransaction(false);
+		})
+		.on('transactionHash', () => {
+			setPendingTransaction(true);
+		})
+		.on('receipt', async (result: any) => {
+			setPendingTransaction(false);
+			refreshLoadedFish()
+			toast.success('Feed All Successful!', {
 				onClose: async () => {
 					refetchBalance()
 				},
@@ -700,6 +770,8 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 		feedFish: feedFish,
 		questFish: questFish,
 		claimFishFood: claimFishFood,
+		claimAllFishFood: claimAllFishFood,
+		feedAllFish: feedAllFish,
 		contractApproveAllForFighting: contractApproveAllForFighting,
 		contractApproveAllFishForBreeding: contractApproveAllFishForBreeding,
 		contractApproveFoodForBreeding: contractApproveFoodForBreeding,

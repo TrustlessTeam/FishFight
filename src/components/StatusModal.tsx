@@ -17,6 +17,7 @@ import { StakedFighting } from '../utils/fish';
 import { Route, Routes } from 'react-router-dom';
 import infoImg from "../img/icons/info.svg"
 import { BaseButton } from './BaseStyles';
+import { useContractWrapper } from '../context/contractWrapperContext';
 
 
 type Props = {
@@ -45,7 +46,7 @@ const StatusModal = ({}: Props) => {
 	
 	const { account } = useWeb3React();
 	const { balanceFish, balanceDeadFish, balanceFood, balanceFightFish, balanceBreedFish  } = useFishFight();
-
+	const { feedAllFish, claimAllFishFood } = useContractWrapper();
 	useEffect(() => {
 		const loadData = async (account: any) => {
       if(!account) return;
@@ -72,8 +73,9 @@ const StatusModal = ({}: Props) => {
 
 	const getPendingFoodFromCollect = async () => {
 		if(!account) return;
-		const result = await FishFight.readTrainingWaters.methods.checkRewards().call();
-		console.log(result)
+		const result = await FishFight.readTrainingWaters.methods.checkRewards().call({
+			from: account
+		});
 		setPendingCollectAward(web3.utils.fromWei(result));
 	}
 
@@ -177,25 +179,29 @@ const StatusModal = ({}: Props) => {
 		if(!account) return null;
 		return (
 			<DataContainer>
-				<Title>{`Pending FISHFOOD`}</Title>
+				<Title>{`My Account`}</Title>
+				<SubTitle>Pending FishFood</SubTitle>
 				<StatusContainer>
 						<DataItem>
-							<StatusText>{`Fighter Wins: ${pendingFightFood}`}</StatusText>
+							<StatusText>{`Fighter Wins: ${pendingFightFood} -> Withdraw Fighters to Collect`}</StatusText>
 						</DataItem>
 						<DataItem>
-							<StatusText>{`Fighter Staking: ${pendingAward}`}</StatusText>
+							<StatusText>{`Fighter Staking: ${pendingAward}-> Withdraw Fighters to Collect`}</StatusText>
 						</DataItem>
 						<DataItem>
 							<StatusText>{`Alpha Breeds: ${pendingBreedFood}`}</StatusText>
 						</DataItem>
+						<DataItem>
+							<StatusText>{`Fish Food Collecting: ${pendingCollectAward}`}</StatusText><BaseButton onClick={claimAllFishFood}>{`Collect All`}</BaseButton>
+						</DataItem>
 				</StatusContainer>
-				<Title>FISH Actions</Title>
+				<SubTitle>Actions</SubTitle>
 				<StatusContainer>
 						<DataItem>
-							<BaseButton>{`Feed Eligible Fish`}</BaseButton>
+							<BaseButton onClick={feedAllFish}>{`Feed Eligible Fish`}</BaseButton>
 						</DataItem>
 						<DataItem>
-							<BaseButton>{`Collect from All Fish: ~${pendingCollectAward}`}</BaseButton>
+							
 						</DataItem>
 				</StatusContainer>
 			</DataContainer>
