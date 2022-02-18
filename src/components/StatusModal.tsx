@@ -179,31 +179,39 @@ const StatusModal = ({}: Props) => {
 		if(!account) return null;
 		return (
 			<DataContainer>
-				<Title>{`My Account`}</Title>
-				<SubTitle>Pending FishFood</SubTitle>
+				<DataItem>
+					<Title>{`My FISH`}</Title>
+				</DataItem>
 				<StatusContainer>
-						<DataItem>
-							<StatusText>{`Fighter Wins: ${pendingFightFood} -> Withdraw Fighters to Collect`}</StatusText>
-						</DataItem>
-						<DataItem>
-							<StatusText>{`Fighter Staking: ${pendingAward}-> Withdraw Fighters to Collect`}</StatusText>
-						</DataItem>
-						<DataItem>
-							<StatusText>{`Alpha Breeds: ${pendingBreedFood}`}</StatusText>
-						</DataItem>
-						<DataItem>
-							<StatusText>{`Fish Food Collecting: ${pendingCollectAward}`}</StatusText><BaseButton onClick={claimAllFishFood}>{`Collect All`}</BaseButton>
-						</DataItem>
-				</StatusContainer>
-				<SubTitle>Actions</SubTitle>
-				<StatusContainer>
+						<DataRow>
+							<StatusText>Total: {parseInt(balanceFish ? balanceFish : '0') + parseInt(balanceFightFish ? balanceFightFish : '0') + parseInt(balanceBreedFish ? balanceBreedFish : '0')}</StatusText>
+							<StatusText>{`Available to Feed: ${userFish.filter((fish) => {return fish.trainingStatus.canFeed()}).length}`}</StatusText>
+						</DataRow>
 						<DataItem>
 							<BaseButton onClick={feedAllFish}>{`Feed Eligible Fish`}</BaseButton>
-						</DataItem>
-						<DataItem>
-							
+							<BaseButton onClick={claimAllFishFood}>{`Send $FISH to Collect: ${pendingCollectAward}`}</BaseButton>
 						</DataItem>
 				</StatusContainer>
+				<SubTitle>Fighters</SubTitle>
+				<StatusContainer>
+					<DataItem>
+						<StatusText>{`Deposited Fighters: ${balanceFightFish}`}</StatusText>
+					</DataItem>
+					<DataItem>
+						<StatusText>{`Pending $FISHFOOD from Wins: ${pendingFightFood}, from Staking: ${pendingAward}`}</StatusText>
+					</DataItem>
+						
+				</StatusContainer>
+				<SubTitle>Breeders</SubTitle>
+				<StatusContainer>
+					<DataItem>
+						<StatusText>{`Deposited Alphas: ${balanceBreedFish}`}</StatusText>
+					</DataItem>
+					<DataItem>
+						<StatusText>{`Pending $FISHFOOD from Breeds: ${pendingBreedFood}`}</StatusText>
+					</DataItem>
+				</StatusContainer>
+				
 			</DataContainer>
 		);
 	}
@@ -217,9 +225,7 @@ const StatusModal = ({}: Props) => {
 				<SubTitle>{`Phase Stats`}</SubTitle>
 				<DataItem title="">
 					<StatusText></StatusText>
-					<StatusText>{`Current: ${currentSeason.phaseString}`}</StatusText>
-				</DataItem>
-				<DataItem title="">
+					<StatusText>{`Current: ${currentSeason.phaseString} -> `}</StatusText>
 					{currentSeason.phase == 1 &&
 						<StatusText>Next: Fighting</StatusText>
 					}
@@ -307,6 +313,7 @@ const StatusModalContainer = styled.div`
 	flex-flow: column;
 	background-color: white;
 	padding: ${props => props.theme.spacing.gapMedium};
+	z-index: 10;
 	/* justify-content: space-evenly;
 	align-items: flex-start; */
 `;
@@ -368,6 +375,8 @@ const StatusText = styled.b`
 	color: black;
 	font-size: ${props => props.theme.font.medium}vmax;
 	margin-bottom: ${props => props.theme.spacing.gapSmall};
+	padding: 0 ${props => props.theme.spacing.gapSmall};
+
 	cursor: default;
 	@media ${props => props.theme.device.tablet} {
 		font-size: ${props => props.theme.font.medium};
@@ -380,7 +389,6 @@ const DataItem = styled.div`
 	flex-flow: row;
 	justify-content: center;
 	margin-top: ${props => props.theme.spacing.gapSmall};
-	/* padding: ${props => props.theme.spacing.gap} ${props => props.theme.spacing.gap}; */
 	/* background-color: white; */
 	color: white;
 	/* border: 2px solid white; */
@@ -394,6 +402,18 @@ const DataItem = styled.div`
 		margin: 0;
   }
 `;
+
+const DataRow = styled.div`
+	display: flex;
+	flex-flow: row;
+	/* justify-content: space-between; */
+	margin-top: ${props => props.theme.spacing.gapSmall};
+	/* padding: ${props => props.theme.spacing.gap} ${props => props.theme.spacing.gap}; */
+	/* background-color: white; */
+	color: white;
+	width: 100%;
+`;
+
 
 const LogoImg = styled.img<{open: boolean}>`
 	background-color: ${p => (p.open ? "gray" : "white")};
