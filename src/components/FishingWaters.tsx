@@ -10,9 +10,10 @@ import web3 from 'web3';
 import { ApprovalDisclaimer, ApprovalsContainer, BaseButton, BaseOverlayContainer, ContainerControls, OptionsContainer } from './BaseStyles';
 import { Constants } from '../utils/constants';
 import { useContractWrapper } from '../context/contractWrapperContext';
+import Account from './Account';
 
 
-const CatchFish = () => {
+const FishingWaters = () => {
 	const unityContext = useUnity()
 	const { account } = useWeb3React();
 	const { trainingFoodApproval, FishFight, maxSupply, totalSupply, refetchBalance } = useFishFight()
@@ -27,17 +28,16 @@ const CatchFish = () => {
 
 	useEffect(() => {
 		unityContext.showFishingLocation();
+		unityContext.hideUI();
 	}, [unityContext.isFishPoolReady]);
 
 	useEffect(() => {
-		console.log(account)
+		if(account) {
+			unityContext.clearUIFish();
+			unityContext.hideUI();
+			unityContext.showFishingUI();
+		}
 	}, [account]);
-
-	useEffect(() => {
-		unityContext.clearUIFish();
-		unityContext.hideUI();
-		unityContext.showFishingUI();
-	}, []);
 
 	useEffect(() => {
 		unityContext.UnityInstance.on('UISelectionConfirm', function (data: any) {
@@ -62,22 +62,6 @@ const CatchFish = () => {
 			setCaughtFish(newFish)
 			unityContext.addFishFishing(newFish);
 		}
-	}
-
-	const ApprovalUI = () => {
-		return (
-			
-	<ApprovalsContainer>
-		<ApprovalDisclaimer>
-			<p>Approval Required: Fighting contract approval to control your $FISH is required to Fight Fish.</p>
-			<OptionsContainer>
-				{!trainingFoodApproval &&
-					<BaseButton onClick={() => contractApproveFoodForTraining()}>{'Approve $FISHFOOD'}</BaseButton>
-				}
-			</OptionsContainer>
-		</ApprovalDisclaimer>
-	</ApprovalsContainer>	
-		)
 	}
 
 
@@ -138,55 +122,70 @@ const CatchFish = () => {
 		}
 	};
 
-	return (
-		<BaseOverlayContainer
-			active={pendingTransaction}
-			spinner
-			text='Fishing from the blockchain...'>
-		{caughtFish && caughtFishHash &&
+	const FishingUI = () => {
+		return (
+			<BaseOverlayContainer
+				active={pendingTransaction}
+				spinner
+				text='Fishing from the blockchain...'>
+			{caughtFish && caughtFishHash &&
+				<ContainerControls>
+					<CaughtFish>
+						<FishData><b>Token ID: {caughtFish.tokenId}</b></FishData>
+						<FishData>Strength: {caughtFish.strength}</FishData>
+						<FishData>Intelligence: {caughtFish.intelligence}</FishData>
+						<FishData>Agiltiy: {caughtFish.agility}</FishData>
+						<FishData>Rarity: {caughtFish.rarity}</FishData>
+						<TransactionLink target="_blank" href={`https://explorer.pops.one/tx/${caughtFishHash}`}>View Transaction</TransactionLink>
+					</CaughtFish>
+	
+					<GameButton onClick={() => {
+						setCaughtFish(null);
+						setCaughtFishHash(null);
+						unityContext.clearFishPool('showFishingLocation');
+					}}>
+						Catch another fish!
+					</GameButton>
+				</ContainerControls>
+			}
+			
+			{noCatch &&
 			<ContainerControls>
-				<CaughtFish>
-					<FishData><b>Token ID: {caughtFish.tokenId}</b></FishData>
-					<FishData>Strength: {caughtFish.strength}</FishData>
-					<FishData>Intelligence: {caughtFish.intelligence}</FishData>
-					<FishData>Agiltiy: {caughtFish.agility}</FishData>
-					<FishData>Rarity: {caughtFish.rarity}</FishData>
-					<TransactionLink target="_blank" href={`https://explorer.pops.one/tx/${caughtFishHash}`}>View Transaction</TransactionLink>
-				</CaughtFish>
-
-				<GameButton onClick={() => {
-					setCaughtFish(null);
-					setCaughtFishHash(null);
-					unityContext.clearFishPool('showFishingLocation');
-				}}>
-					Catch another fish!
-				</GameButton>
+				<MissedCatchContainer>
+					<CaughtFish>
+						<Text>Sorry... It got away!</Text>
+						<Text>{`You rolled a ${diceRoll}, but needed less than ${maxSupply - totalSupply}`}</Text>
+					</CaughtFish>
+	
+					<GameButton onClick={() => {
+						setCaughtFish(null);
+						setCaughtFishHash(null);
+						setNoCatch(false)
+						unityContext.clearFishPool('showFishingLocation');
+					}}>
+						Try again!
+					</GameButton>
+				</MissedCatchContainer>
 			</ContainerControls>
-		}
-		
-		{noCatch &&
-		<ContainerControls>
-			<MissedCatchContainer>
-				<CaughtFish>
-					<Text>Sorry... It got away!</Text>
-					<Text>{`You rolled a ${diceRoll}, but needed less than ${maxSupply - totalSupply}`}</Text>
-				</CaughtFish>
+			}
+			
+			</BaseOverlayContainer>
+		);
+	}
 
-				<GameButton onClick={() => {
-					setCaughtFish(null);
-					setCaughtFishHash(null);
-					setNoCatch(false)
-					unityContext.clearFishPool('showFishingLocation');
-				}}>
-					Try again!
-				</GameButton>
-			</MissedCatchContainer>
-		</ContainerControls>
-		}
-		
-		</BaseOverlayContainer>
-	);
+	
+
+
+	if(!unityContext.isFishPoolReady) return null;
+
+	if(account) {
+		return (
+			<FishingUI></FishingUI>
+		)
+	} 
+	return null;
 };
+
 
 const CaughtFish = styled.div`
 	display: flex;
@@ -263,4 +262,4 @@ const GameButton = styled.button`
 	}
 `;
 
-export default CatchFish;
+export default FishingWaters;

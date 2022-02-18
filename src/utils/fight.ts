@@ -28,7 +28,7 @@ export class Fight {
   {
     this.typeOfFight = new BN(fightInfo.typeOfFight).toNumber();
 		this.fishChallenger = new BN(fightInfo.fishChallenger).toNumber();
-		this.fishChallenged = new BN(fightInfo.fishChallenged).toNumber();
+		this.fishChallenged = new BN(fightInfo.fishOpponent).toNumber();
 		this.timeOfFight = new BN(fightInfo.timeOfFight).toNumber();
 		this.round1 = this.parseRound(fightInfo.round1);
 		this.round2 = this.parseRound(fightInfo.round2);

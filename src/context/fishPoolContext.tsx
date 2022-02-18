@@ -55,7 +55,7 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
   const [breedingFish, setBreedingFish] = useState<Fish[]>([]);
 
 
-  const { account } = useWeb3React();
+  const { account, deactivate } = useWeb3React();
   const { FishFight, refetchStats, refetchBalance } = useFishFight();
 	const unityContext = useUnity();
 
@@ -149,8 +149,10 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
 
   // Load connected user fish data from the blockchain
   useEffect(() => {
+    setUserFish([]);
     const loadTokenData = async (account: string | null | undefined) => {
       if(account) {
+        // Clear user fish in case of account switch
         console.log("ACCOUNT CONNECTED")
         console.log("Getting user fish")
         fetchUserFish(account);

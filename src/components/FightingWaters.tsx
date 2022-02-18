@@ -34,7 +34,7 @@ const FightingWaters = () => {
 	const { account } = useWeb3React();
 	const unityContext = useUnity();
 	const { fightFish, depositFightingFish, withdrawFightingFish, contractApproveAllForFighting, pendingTransaction} = useContractWrapper();
-	const { fightingFishApproval } = useFishFight();
+	const { fightingFishApproval, requireApproval, updateApproval } = useFishFight();
 
 	useEffect(() => {
 		unityContext.UnityInstance.on('UISelectionConfirm', function (data: any) {
@@ -134,17 +134,17 @@ const FightingWaters = () => {
 
 	const ApprovalUI = () => {
 		return (
-			
-	<ApprovalsContainer>
-		<ApprovalDisclaimer>
-			<p>Approval Required: Fighting contract approval to control your $FISH is required to Fight Fish.</p>
-			<OptionsContainer>
-				{!fightingFishApproval &&
-					<BaseButton onClick={() => contractApproveAllForFighting()}>{'Approve $FISH'}</BaseButton>
-				}
-			</OptionsContainer>
-		</ApprovalDisclaimer>
-	</ApprovalsContainer>	
+			<ApprovalsContainer>
+				<ApprovalDisclaimer>
+					<p>Approval Required: Fighting contract approval to control your $FISH is required to Fight Fish.</p>
+					<OptionsContainer>
+						{!fightingFishApproval &&
+							<BaseButton onClick={() => contractApproveAllForFighting()}>{'Approve $FISH'}</BaseButton>
+						}
+					</OptionsContainer>
+					{/* <p>Use per Transaction Approval</p><button onClick={() => updateApproval(true)}></button> */}
+				</ApprovalDisclaimer>
+			</ApprovalsContainer>	
 		)
 	}
 

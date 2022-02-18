@@ -12,7 +12,7 @@ import { BaseTheme } from './default-theme';
 
 // Components
 
-import CatchFish from './components/CatchFish';
+import CatchFish from './components/FishingWaters';
 import logo from '../src/img/FishFightLogo.png'
 import Blockchain from './components/BlockchainStatus';
 
@@ -24,6 +24,7 @@ import FightingWaters from './components/FightingWaters';
 import BreedingWaters from './components/BreedingWaters';
 import MenuOverlay from './components/MenuOverlay';
 import Default from './components/Default';
+import FishingWaters from "./components/FishingWaters";
 
 const App = () => {
 	return (
@@ -35,7 +36,7 @@ const App = () => {
 							<Route element={<UnityWindow />}>
 									<Route path="/" element={<Default />} />
 									<Route path="/ocean" element={<Ocean />} />
-									<Route path="/fishing" element={<CatchFish />} />
+									<Route path="/fishing" element={<FishingWaters />} />
 									<Route path="/fighting" element={<FightingWaters />}>
 										{/* <Route path="/fighting/user" element={<FightingWaters />} /> */}
 										<Route path="/fighting/start" element={<FightingWaters />} />

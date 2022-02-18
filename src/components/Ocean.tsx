@@ -7,10 +7,11 @@ import { useWeb3React } from '@web3-react/core';
 import Account from './Account';
 import FishViewer from './FishViewer';
 import Menu, { MenuItem } from './Menu';
-import { BaseContainer, ContainerControls, BaseLinkButton, BaseOverlayContainer } from './BaseStyles';
+import { BaseContainer, ContainerControls, BaseLinkButton, BaseOverlayContainer, ApprovalsContainer, ApprovalDisclaimer, OptionsContainer, BaseButton } from './BaseStyles';
 import { ToggleGroup, ToggleOption } from './ToggleButton';
 import Fish from '../utils/fish';
 import { useContractWrapper } from '../context/contractWrapperContext';
+import { useFishFight } from '../context/fishFightContext';
 
 enum FishView {
 	Ocean,
@@ -24,8 +25,10 @@ const Ocean = () => {
 
 	const [renderedFish, setRenderedFish] = useState<number[]>([]);
 	const unityContext = useUnity();
-	const { feedFish, pendingTransaction } = useContractWrapper();
+	const { feedFish, contractApproveFoodForTraining, pendingTransaction } = useContractWrapper();
 	const { account } = useWeb3React();
+	const { trainingFoodApproval } = useFishFight();
+
 
 	const FishViewOptions: MenuItem[] = [
 		{
@@ -117,6 +120,33 @@ const Ocean = () => {
 	// useEffect(() => {
 	// 	unityContext.showOceanLocation();
 	// }, [unityContext.isFishPoolReady]);
+	const ApprovalUI = () => {
+		return (
+				<ApprovalDisclaimer>
+					<p>Approval Required: Training contract approval to control your $FISH is required for $FISH interations.</p>
+					<OptionsContainer>
+						{!trainingFoodApproval &&
+							<BaseButton onClick={() => contractApproveFoodForTraining()}>{'Approve $FISHFOOD'}</BaseButton>
+						}
+					</OptionsContainer>
+				</ApprovalDisclaimer>
+		)
+	}
+
+	if(account && !trainingFoodApproval) {
+		return (
+			<ApprovalsContainer
+			active={pendingTransaction}
+			spinner
+			text='Waiting for confirmation...'
+			>
+				<ContainerControls>
+					<ApprovalUI></ApprovalUI>
+				</ContainerControls>
+			</ApprovalsContainer>
+		)
+	}
+
 
 	return (
 
@@ -125,6 +155,15 @@ const Ocean = () => {
 			spinner
 			text='Waiting for confirmation...'
 			>
+				{account && fishToShow === FishView.User && !trainingFoodApproval &&
+
+						<ContainerControls>
+
+							<ApprovalUI></ApprovalUI>
+
+						</ContainerControls>
+
+				}
 				<ContainerControls>
 					<ToggleGroup>
 						<ToggleOption className={fishToShow === FishView.Ocean ? 'active' : ''} onClick={() => setFishToShow(FishView.Ocean)}>Ocean Fish</ToggleOption>
