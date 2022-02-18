@@ -92,7 +92,7 @@ const FightingWaters = () => {
 			return;
 		}
 		setMySelectedFish(fish);
-		unityContext.addFish1(fish)
+		// unityContext.addFish1(fish)
 		unityContext.addFishFight1(fish)
 	}
 
@@ -104,7 +104,7 @@ const FightingWaters = () => {
 			return;
 		}
 		setOpponentFish(fish);
-		unityContext.addFish2(fish)
+		// unityContext.addFish2(fish)
 		unityContext.addFishFight2(fish)
 	}
 
@@ -135,7 +135,6 @@ const FightingWaters = () => {
 	const ApprovalUI = () => {
 		return (
 			
-
 	<ApprovalsContainer>
 		<ApprovalDisclaimer>
 			<p>Approval Required: Fighting contract approval to control your $FISH is required to Fight Fish.</p>

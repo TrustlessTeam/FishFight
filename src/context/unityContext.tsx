@@ -397,6 +397,7 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
 
   const sendFightResult = (fight: Fight) => {
     console.log("SendFight Called");
+    console.log(fight)
     UnityInstance.send("FishPool", "SetFightResults", JSON.stringify(fight));
     console.log("SendFight Completed");
   };

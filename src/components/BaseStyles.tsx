@@ -44,6 +44,13 @@ export const ApprovalsContainer = styled(LoadingOverlay)`
 	height: 100%;
 `;
 
+export const OptionsContainer = styled.div`
+	display: flex;
+	flex-flow: row nowrap;
+	justify-content: center;
+	align-items: center;
+`;
+
 export const ApprovalDisclaimer = styled.div`
 	padding: ${props => props.theme.spacing.gap};
 	margin-bottom: ${props => props.theme.spacing.gap};

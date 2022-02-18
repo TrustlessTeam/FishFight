@@ -16,6 +16,7 @@ import { Constants } from '../utils/constants';
 
 const BREEDCOSTONE = web3.utils.toBN(1);
 const BREEDCOSTFISHFOOD = web3.utils.toBN(100);
+const MAX_APPROVE = '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff';
 
 interface ProviderInterface {
 	fightFish: (fishA: Fish | null, fishB: Fish | null) => void;
@@ -32,6 +33,7 @@ interface ProviderInterface {
 	contractApproveAllForFighting: () => void;
 	contractApproveAllFishForBreeding: () => void;
 	contractApproveFoodForBreeding: () => void;
+	contractApproveFoodForTraining: () => void;
 	pendingTransaction: boolean;
 }
 
@@ -70,14 +72,14 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 		}
 		try {
 			FishFight.fishFood?.methods.allowance(account, FishFight.readBreedingWaters.options.address).call()
-			.then((approvedAmount: any) => {
+			.then(async (approvedAmount: any) => {
 				console.log(approvedAmount)
 				console.log(web3.utils.fromWei(approvedAmount))
 				if(web3.utils.fromWei(approvedAmount) >= '100') {
 					contractBreed(fishAlpha, fishBetta)
 				} else {
-					contractApproveFoodForBreeding()
-					.on('receipt', () => {
+					const approveResult = await contractApproveFoodForBreeding()
+					approveResult.on('receipt', () => {
 						contractBreed(fishAlpha, fishBetta)
 					})
 				}
@@ -94,14 +96,15 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 		}
 	};
 
-	const contractBreed = (fishAlpha: Fish, fishBetta: Fish) => {
+	const contractBreed = async (fishAlpha: Fish, fishBetta: Fish) => {
 		console.log(fishAlpha)
 		console.log(fishBetta)
+		const gas = await FishFight.breedingWaters?.methods.breedFish(fishAlpha.tokenId, fishBetta.tokenId).estimateGas({from: account});
 		return FishFight.breedingWaters?.methods.breedFish(fishAlpha.tokenId, fishBetta.tokenId).send({
 			from: account,
 			gasPrice: 30000000000,
-			gasLimit: 6000000,
-			value: web3.utils.toWei(BREEDCOSTONE)
+			gasLimit: gas,
+			value: Constants._oneBreedFee
 		})
 		.on('error', (error: any) => {
 			console.log(error)
@@ -138,10 +141,11 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 			return;
 		}
 		try {
+			const gas = await FishFight.breedingWaters?.methods.withdraw(fish.tokenId).estimateGas({from: account})
 			await FishFight.breedingWaters?.methods.withdraw(fish.tokenId).send({
 				from: account,
 				gasPrice: 30000000000,
-				gasLimit: 800000,
+				gasLimit: gas,
 			})
 			.on('transactionHash', () => {
 				setPendingTransaction(true);
@@ -162,11 +166,11 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 		}
 	}
 
-	const contractApproveAllFishForBreeding = () => {
+	const contractApproveAllFishForBreeding = async () => {
 		return FishFight.fishFactory?.methods.setApprovalForAll(FishFight.readBreedingWaters.options.address, true).send({
 			from: account,
 			gasPrice: 30000000000,
-			gasLimit: 500000,
+			gasLimit: await FishFight.fishFactory?.methods.setApprovalForAll(FishFight.readBreedingWaters.options.address, true).estimateGas({from: account}),
 		})
 		.on('error', (error: any) => {
 			console.log(error)
@@ -182,6 +186,7 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 			checkApprovals();
 			setPendingTransaction(false);
 		})
+	
 	}
 
 	const depositBreedingFish = async (fish: Fish | null) => {
@@ -195,12 +200,12 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 		}
 		try {
 			FishFight.fishFactory?.methods.isApprovedForAll(account, FishFight.readBreedingWaters.options.address).call()
-			.then((isApproved: boolean) => {
+			.then(async (isApproved: boolean) => {
 				if(isApproved) {
 					contractBreedDeposit(fish);
 				} else {
-					contractApproveAllFishForBreeding()
-					.on('receipt', () => {
+					const approveResults = await contractApproveAllFishForBreeding();
+					approveResults.on('receipt', () => {
 						contractBreedDeposit(fish);
 					})
 				}
@@ -210,33 +215,35 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 		}
 	}
 
-	const contractApproveFoodForBreeding = () => {
-		return FishFight.fishFood?.methods.approve(FishFight.readBreedingWaters.options.address, '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff').send({
-			from: account,
-			gasPrice: 30000000000,
-			gasLimit: 500000
-		})
-		.on('error', (error: any) => {
-			console.log(error)
-			toast.error('Approval Failed');
-			setPendingTransaction(false);
-		})
-		.on('transactionHash', () => {
-			setPendingTransaction(true);
-		})
-		.on('receipt', () => {
-			console.log('FishFood Approval completed')
-			toast.success('FishFood Approval Completed')
-			checkApprovals();
-			setPendingTransaction(false);
-		})
+	const contractApproveFoodForBreeding = async () => {
+			return FishFight.fishFood?.methods.approve(FishFight.readBreedingWaters.options.address, MAX_APPROVE).send({
+				from: account,
+				gasPrice: 30000000000,
+				gasLimit: await FishFight.fishFood?.methods.approve(FishFight.readBreedingWaters.options.address, MAX_APPROVE).estimateGas({from: account})
+			})
+			.on('error', (error: any) => {
+				console.log(error)
+				toast.error('Approval Failed');
+				setPendingTransaction(false);
+			})
+			.on('transactionHash', () => {
+				setPendingTransaction(true);
+			})
+			.on('receipt', () => {
+				console.log('FishFood Approval completed')
+				toast.success('FishFood Approval Completed')
+				checkApprovals();
+				setPendingTransaction(false);
+			})
+		
 	}
 
-	const contractBreedDeposit = (fish: Fish) => {
+	const contractBreedDeposit = async (fish: Fish) => {
+		const gas = await FishFight.breedingWaters?.methods.deposit(fish.tokenId).estimateGas({from: account})
 		return FishFight.breedingWaters?.methods.deposit(fish.tokenId).send({
 			from: account,
 			gasPrice: 30000000000,
-			gasLimit: 800000,
+			gasLimit: gas,
 		})
 		.on('error', (error: any) => {
 			console.log(error)
@@ -272,12 +279,11 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 		return owner == FishFight.readFightingWaters.options.address;
 	}
 
-	const contractApproveAllForFighting = () => {
-		console.log("test")
+	const contractApproveAllForFighting = async () => {
 		return FishFight.fishFactory?.methods.setApprovalForAll(FishFight.readFightingWaters.options.address, true).send({
 			from: account,
 			gasPrice: 30000000000,
-			gasLimit: 500000,
+			gasLimit: await FishFight.fishFactory?.methods.setApprovalForAll(FishFight.readFightingWaters.options.address, true).estimateGas({from: account}),
 		})
 		.on('error', (error: any) => {
 			console.log(error)
@@ -293,32 +299,36 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 			checkApprovals();
 			setPendingTransaction(false);
 		})
+		
 	}
 
 	const contractDepositFightingFish = (fish: Fish) => {
-		return FishFight.fightingWaters?.methods.deposit(fish.tokenId).send({
-			from: account,
-			gasPrice: 30000000000,
-			gasLimit: 800000,
+		return FishFight.fightingWaters?.methods.deposit(fish.tokenId).estimateGas({from: account}).then((gas: any) => {
+			FishFight.fightingWaters?.methods.deposit(fish.tokenId).send({
+				from: account,
+				gasPrice: 30000000000,
+				gasLimit: gas,
+			})
+			.on('error', (error: any) => {
+				console.log(error)
+				toast.error('Deposit Failed');
+				setPendingTransaction(false);
+			})
+			.on('transactionHash', () => {
+				setPendingTransaction(true);
+			})
+			.on('receipt', async () => {
+				setPendingTransaction(false);
+				// depositUserFightingFish(fish);
+				toast.success('Fish Deposited', {
+					onClose: async () => {
+						refetchBalance()
+						refreshFish(fish.tokenId, true, false);
+					},
+				});
+			})
 		})
-		.on('error', (error: any) => {
-			console.log(error)
-			toast.error('Deposit Failed');
-			setPendingTransaction(false);
-		})
-		.on('transactionHash', () => {
-			setPendingTransaction(true);
-		})
-		.on('receipt', async () => {
-			setPendingTransaction(false);
-			// depositUserFightingFish(fish);
-			toast.success('Fish Deposited', {
-				onClose: async () => {
-					refetchBalance()
-					refreshFish(fish.tokenId, true, false);
-				},
-			});
-		})
+		
 	}
 
 	const depositFightingFish = async (fish : Fish | null) => {
@@ -332,12 +342,12 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 		}
 		try {
 			FishFight.fishFactory?.methods.isApprovedForAll(account, FishFight.readFightingWaters.options.address).call()
-			.then((isApproved: boolean) => {
+			.then(async (isApproved: boolean) => {
 				if(isApproved) {
 					contractDepositFightingFish(fish);
 				} else {
-					contractApproveAllForFighting()
-					.on('receipt', () => {
+					const approveResult = await contractApproveAllForFighting()
+					approveResult.on('receipt', () => {
 						contractDepositFightingFish(fish);
 					})
 				}
@@ -361,10 +371,12 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 			return;
 		}
 
+		const gas = await FishFight.fightingWaters?.methods.withdraw(fish.tokenId).estimateGas({from: account});
+
 		return FishFight.fightingWaters?.methods.withdraw(fish.tokenId).send({
 			from: account,
 			gasPrice: 30000000000,
-			gasLimit: 800000,
+			gasLimit: gas,
 		}).on('transactionHash', () => {
 			setPendingTransaction(true);
 		}).on('receipt', async (data: any) => {
@@ -394,7 +406,7 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 			const fightResult = await getFightByIndex(fightIndex)
 			unityContext.sendFightResult(fightResult);
 			refreshFish(fightResult.winner, true, false);
-			toast.success('Fight Commpleted!', {
+			toast.success('Fight Completed!', {
 				onClose: async () => {
 					refetchBalance()
 				},
@@ -424,12 +436,12 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 			}
 			else { // If User selected fish is already deposited, we can just fight them
 				FishFight.fishFactory?.methods.isApprovedForAll(account, FishFight.readFightingWaters.options.address).call()
-				.then((isApproved: boolean) => {
+				.then(async (isApproved: boolean) => {
 					if(isApproved) {
 						contractDeathFight(myFish, opponentFish, true);
 					} else {
-						contractApproveAllForFighting()
-						.on('receipt', () => {
+						const approveResult = await contractApproveAllForFighting()
+						approveResult.on('receipt', () => {
 							contractDeathFight(myFish, opponentFish, true);
 						})
 					}
@@ -468,7 +480,7 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 
 		try {
 			FishFight.fishFood?.methods.allowance(account, FishFight.readTrainingWaters.options.address).call()
-			.then((approvedAmount: any) => {
+			.then(async (approvedAmount: any) => {
 				console.log(approvedAmount)
 				console.log(Constants._feedFee)
 
@@ -476,8 +488,8 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 				if(new BN(approvedAmount).gte(new BN(Constants._feedFee))) {
 					contractFeedFish(fish)
 				} else {
-					contractApproveFoodForTraining()
-					.on('receipt', () => {
+					const approveResult = await contractApproveFoodForTraining();
+					approveResult.on('receipt', () => {
 						console.log("approve")
 						contractFeedFish(fish)
 					})
@@ -512,7 +524,7 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 		}
 		try {
 			FishFight.fishFood?.methods.allowance(account, FishFight.readTrainingWaters.options.address).call()
-			.then((approvedAmount: any) => {
+			.then(async (approvedAmount: any) => {
 				console.log(approvedAmount)
 				console.log(Constants._feedFee)
 
@@ -520,8 +532,8 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 				if(new BN(approvedAmount).gte(new BN(Constants._feedFee))) {
 					contractQuestFish(fish)
 				} else {
-					contractApproveFoodForTraining()
-					.on('receipt', () => {
+					const approveResult = await contractApproveFoodForTraining();
+					approveResult.on('receipt', () => {
 						console.log("approve")
 						contractQuestFish(fish)
 					})
@@ -560,12 +572,13 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 		}
 		try {
 			FishFight.fishFood?.methods.allowance(account, FishFight.readTrainingWaters.options.address).call()
-			.then((approvedAmount: any) => {
+			.then(async (approvedAmount: any) => {
 				if(new BN(approvedAmount).gte(new BN(Constants._feedFee).mul(new BN(tokenIds.length))) ) {
 					contractFeedMultipleFish(tokenIds)
 				} else {
-					contractApproveFoodForTraining()
-					.on('receipt', () => {
+					const approveResult = await contractApproveFoodForTraining();
+					approveResult.on('receipt', () => {
+						console.log("approve")
 						contractFeedMultipleFish(tokenIds)
 					})
 				}
@@ -600,14 +613,15 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 		
 	}
 
-	const contractFeedFish = (fish: Fish) => {
+	const contractFeedFish = async (fish: Fish) => {
 		console.log("here")
 		console.log(fish)
 		console.log(account)
+		const gas = await FishFight.trainingWaters?.methods.feedFish(fish.tokenId).estimateGas({from: account});
 		return FishFight.trainingWaters?.methods.feedFish(fish.tokenId).send({
 			from: account,
 			gasPrice: 30000000000,
-			gasLimit: 5000000,
+			gasLimit: gas,
 		})
 		.on('error', (error: any) => {
 			console.log(error)
@@ -629,11 +643,12 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 		})
 	}
 
-	const contractQuestFish = (fish: Fish) => {
-		return FishFight.trainingWaters?.methods.questFish(fish.tokenId, 2).send({
+	const contractQuestFish = async (fish: Fish) => {
+		const gas = await FishFight.trainingWaters?.methods.questFish(fish.tokenId, 2)
+		return FishFight.trainingWaters?.methods.questFish(fish.tokenId, getRandomIntInclusive(0, 2)).send({
 			from: account,
 			gasPrice: 30000000000,
-			gasLimit: 5000000,
+			gasLimit: gas,
 		})
 		.on('error', (error: any) => {
 			console.log(error)
@@ -654,11 +669,12 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 		})
 	}
 
-	const contractClaimFishFood = (fish: Fish) => {
+	const contractClaimFishFood = async (fish: Fish) => {
+		const gas = await FishFight.trainingWaters?.methods.claimFishFood(fish.tokenId).estimateGas({from: account});
 		return FishFight.trainingWaters?.methods.claimFishFood(fish.tokenId).send({
 			from: account,
 			gasPrice: 30000000000,
-			gasLimit: 5000000,
+			gasLimit: gas,
 		})
 		.on('error', (error: any) => {
 			console.log(error)
@@ -679,11 +695,12 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 		})
 	}
 
-	const contractClaimAllFishFood = () => {
+	const contractClaimAllFishFood = async () => {
+		const gas = await FishFight.trainingWaters?.methods.claimAllFishFood().estimateGas({from: account});
 		return FishFight.trainingWaters?.methods.claimAllFishFood().send({
 			from: account,
 			gasPrice: 30000000000,
-			gasLimit: 5000000,
+			gasLimit: gas,
 		})
 		.on('error', (error: any) => {
 			console.log(error)
@@ -704,11 +721,12 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 		})
 	}
 
-	const contractFeedMultipleFish = (tokenIds: number[]) => {
+	const contractFeedMultipleFish = async (tokenIds: number[]) => {
+		const gas = await FishFight.trainingWaters?.methods.feedMultipleFish(tokenIds).estimateGas({from: account});
 		return FishFight.trainingWaters?.methods.feedMultipleFish(tokenIds).send({
 			from: account,
 			gasPrice: 30000000000,
-			gasLimit: 5000000,
+			gasLimit: gas,
 		})
 		.on('error', (error: any) => {
 			console.log(error)
@@ -729,11 +747,11 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 		})
 	}
 
-	const contractApproveFoodForTraining = () => {
-		return FishFight.fishFood?.methods.approve(FishFight.readTrainingWaters.options.address, '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff').send({
+	const contractApproveFoodForTraining = async () => {
+		return FishFight.fishFood?.methods.approve(FishFight.readTrainingWaters.options.address, MAX_APPROVE).send({
 			from: account,
 			gasPrice: 30000000000,
-			gasLimit: 500000
+			gasLimit: await FishFight.fishFood?.methods.approve(FishFight.readTrainingWaters.options.address, MAX_APPROVE).estimateGas({from: account})
 		})
 		.on('error', (error: any) => {
 			console.log(error)
@@ -749,6 +767,7 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 			checkApprovals();
 			setPendingTransaction(false);
 		})
+
 	}
 
 	
@@ -758,6 +777,12 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 	const getFightByIndex = async (fightIndex: number) => {
 		const fightInfo = await FishFight.fightingWaters?.methods.getFightInfo(fightIndex).call();
 		return new Fight(fightInfo);
+	}
+
+	function getRandomIntInclusive(min: number, max: number) {
+		min = Math.ceil(min);
+		max = Math.floor(max);
+		return Math.floor(Math.random() * (max - min + 1) + min); //The maximum is inclusive and the minimum is inclusive
 	}
 
 	const value: ProviderInterface = {
@@ -775,6 +800,7 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 		contractApproveAllForFighting: contractApproveAllForFighting,
 		contractApproveAllFishForBreeding: contractApproveAllFishForBreeding,
 		contractApproveFoodForBreeding: contractApproveFoodForBreeding,
+		contractApproveFoodForTraining: contractApproveFoodForTraining,
 		pendingTransaction: pendingTransaction
 	};
 	return <ContractWrapperContext.Provider value={value}>{children}</ContractWrapperContext.Provider>;

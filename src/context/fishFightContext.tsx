@@ -35,6 +35,7 @@ interface FishFightProviderContext {
     fightingFoodApproval: boolean
     breedingFishApproval: boolean
     breedingFoodApproval: boolean
+    trainingFoodApproval: boolean
     refetchBalance: () => void
 	  resetBalance: () => void
     refetchStats: () => void
@@ -59,8 +60,8 @@ export const FishFightProvider = ({ children }: FishFightProviderProps ) => {
   const [breedingFishApproval, setBreedingFishApproval] = useState<boolean>(false);
   const [breedingFoodApproval, setBreedingFoodApproval] = useState<boolean>(false);
 
-  // const [trainingFishApproval, setTrainingFishApproval] = useState<boolean>(false);
-  // const [trainingFoodApproval, setTrainingFoodApproval] = useState<boolean>(false);
+  const [trainingFishApproval, setTrainingFishApproval] = useState<boolean>(false);
+  const [trainingFoodApproval, setTrainingFoodApproval] = useState<boolean>(false);
 
 
   const [currentBlock, setCurrentBlock] = useState<number>(0);
@@ -142,10 +143,10 @@ export const FishFightProvider = ({ children }: FishFightProviderProps ) => {
     if(approvedFoodBreeding.gt(new BN('99999999'))) setBreedingFoodApproval(true);
 
     // Training Waters approvals
-    // const approvedFishTraining = await FishFightInstance.readFishFactory.methods.isApprovedForAll(account, FishFightInstance.readTrainingWaters.options.address).call();
-    // if(approvedFishTraining) setTrainingFishApproval(true);
-    // const approvedFoodTraining = await FishFightInstance.readFishFood.methods.allowance(account, FishFightInstance.readTrainingWaters.options.address).call();
-    // if(Web3.utils.fromWei(approvedFoodTraining) >= '99999999') setTrainingFoodApproval(true);
+    const approvedFishTraining = await FishFightInstance.readFishFactory.methods.isApprovedForAll(account, FishFightInstance.readTrainingWaters.options.address).call();
+    if(approvedFishTraining) setTrainingFishApproval(true);
+    const approvedFoodTraining = await FishFightInstance.readFishFood.methods.allowance(account, FishFightInstance.readTrainingWaters.options.address).call();
+    if(Web3.utils.fromWei(approvedFoodTraining) >= '99999999') setTrainingFoodApproval(true);
   }
 
   const value: FishFightProviderContext = {
@@ -156,6 +157,7 @@ export const FishFightProvider = ({ children }: FishFightProviderProps ) => {
     fightingFoodApproval: fightingFoodApproval,
     breedingFishApproval: breedingFishApproval,
     breedingFoodApproval: breedingFoodApproval,
+    trainingFoodApproval: trainingFoodApproval,
     refetchBalance,
     ...contextBalance,
     ...contextSeasons,

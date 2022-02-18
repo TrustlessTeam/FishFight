@@ -7,16 +7,18 @@ import { useFishFight } from '../context/fishFightContext';
 import { useUnity } from '../context/unityContext';
 import { useFishPool } from '../context/fishPoolContext';
 import web3 from 'web3';
-import { BaseOverlayContainer, ContainerControls } from './BaseStyles';
+import { ApprovalDisclaimer, ApprovalsContainer, BaseButton, BaseOverlayContainer, ContainerControls, OptionsContainer } from './BaseStyles';
 import { Constants } from '../utils/constants';
+import { useContractWrapper } from '../context/contractWrapperContext';
 
-const COSTPERCASTONE = web3.utils.toBN(1);
 
 const CatchFish = () => {
 	const unityContext = useUnity()
 	const { account } = useWeb3React();
-	const { FishFight, refetchBalance } = useFishFight()
+	const { trainingFoodApproval, FishFight, maxSupply, totalSupply, refetchBalance } = useFishFight()
 	const { createUserFish } = useFishPool();
+	const { contractApproveFoodForTraining } = useContractWrapper();
+
 	const [caughtFish, setCaughtFish] = useState<Fish | null>(null);
 	const [caughtFishHash, setCaughtFishHash] = useState<string | null>(null);
 	const [noCatch, setNoCatch] = useState<boolean>(false);
@@ -60,6 +62,22 @@ const CatchFish = () => {
 			setCaughtFish(newFish)
 			unityContext.addFishFishing(newFish);
 		}
+	}
+
+	const ApprovalUI = () => {
+		return (
+			
+	<ApprovalsContainer>
+		<ApprovalDisclaimer>
+			<p>Approval Required: Fighting contract approval to control your $FISH is required to Fight Fish.</p>
+			<OptionsContainer>
+				{!trainingFoodApproval &&
+					<BaseButton onClick={() => contractApproveFoodForTraining()}>{'Approve $FISHFOOD'}</BaseButton>
+				}
+			</OptionsContainer>
+		</ApprovalDisclaimer>
+	</ApprovalsContainer>	
+		)
 	}
 
 
@@ -151,7 +169,7 @@ const CatchFish = () => {
 			<MissedCatchContainer>
 				<CaughtFish>
 					<Text>Sorry... It got away!</Text>
-					<Text>You rolled a {diceRoll}</Text>
+					<Text>{`You rolled a ${diceRoll}, but needed less than ${maxSupply - totalSupply}`}</Text>
 				</CaughtFish>
 
 				<GameButton onClick={() => {

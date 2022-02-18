@@ -53,16 +53,6 @@ const Nav = () => {
         </SubContainer> */}
       </NavItem>
       <NavItem>
-        <NavImg className={({isActive}) => isActive ? 'active' : ''} to="/breeding">
-          <LogoImg active={location === 'breeding'} src={breedingImg} alt="Breeding"></LogoImg>
-        </NavImg>
-        {/* <SubContainer>
-          <Option className={({isActive}) => isActive ? 'active' : ''} to='/breeding' end>Breeding Waters</Option>
-          <Option className={({isActive}) => isActive ? 'active' : ''} to='/breeding/user'>My Breeding Fish</Option>
-          <Option className={({isActive}) => isActive ? 'active' : ''} to='/breeding/start'>Breed!</Option>
-        </SubContainer> */}
-      </NavItem>
-      <NavItem>
         <NavImg className={({isActive}) => isActive ? 'active' : ''} to="/fighting">
           <LogoImg src={fightingImg} alt="Fighting"></LogoImg>
         </NavImg>
@@ -70,6 +60,16 @@ const Nav = () => {
           <Option className={({isActive}) => isActive ? 'active' : ''} to='/fighting' end>Fighting Waters</Option>
           <Option className={({isActive}) => isActive ? 'active' : ''} to='/fighting/user'>My Fighting Fish</Option>
           <Option className={({isActive}) => isActive ? 'active' : ''} to='/fighting/start'>FIGHT!</Option>
+        </SubContainer> */}
+      </NavItem>
+      <NavItem>
+        <NavImg className={({isActive}) => isActive ? 'active' : ''} to="/breeding">
+          <LogoImg active={location === 'breeding'} src={breedingImg} alt="Breeding"></LogoImg>
+        </NavImg>
+        {/* <SubContainer>
+          <Option className={({isActive}) => isActive ? 'active' : ''} to='/breeding' end>Breeding Waters</Option>
+          <Option className={({isActive}) => isActive ? 'active' : ''} to='/breeding/user'>My Breeding Fish</Option>
+          <Option className={({isActive}) => isActive ? 'active' : ''} to='/breeding/start'>Breed!</Option>
         </SubContainer> */}
       </NavItem>
       {/* <GameButton to="/fishing"><span>Fishing</span></GameButton> */}
