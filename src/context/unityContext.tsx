@@ -283,6 +283,12 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
       "AddFish1_FightingView",
       JSON.stringify(fish)
     );
+
+    UnityInstance.send(
+      "ShowFighting_UI",
+    "SetFishFighter1",
+    JSON.stringify(fish)
+  );
     // console.log("AddFish Completed")
   };
   const addFishFight2 = (fish: Fish) => {
@@ -294,7 +300,12 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
       "AddFish2_FightingView",
       JSON.stringify(fish)
     );
-    // console.log("AddFish Completed")
+
+    UnityInstance.send(
+      "ShowFighting_UI",
+    "SetFishFighter2",
+    JSON.stringify(fish)
+  );
   };
 
   const addFishBreedingPool = (fish: Fish) => {
