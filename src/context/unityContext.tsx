@@ -35,6 +35,7 @@ interface UnityProviderContext {
   addFishFight2: (fish: Fish) => void;
   addFishBreed1: (fish: Fish) => void;
   addFishBreed2: (fish: Fish) => void;
+  addBreedOffspring: (fish: Fish) => void;
   addFishFishing: (fish: Fish) => void;
   showFish: (fish: Fish) => void;
   clearFishPool: (pool: string) => void;
@@ -363,6 +364,15 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
     // console.log("AddFish Completed")
   };
 
+  const addBreedOffspring = (fish: Fish) => {
+    UnityInstance.send("CanvasUserInterface", "SetAnimState", "ShowBreedingResultsSuccess");
+    if (fish.parentAFish && fish.parentBFish) {
+      addFish2(fish.parentAFish);
+      addFish3(fish.parentBFish);
+    }
+    addFish1(fish)
+  }
+
   const addFish1 = (fish: Fish) => {
     console.log(fish);
     if (!isLoaded || !fishPoolReady) return;
@@ -393,11 +403,13 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
     if (!isLoaded || !fishPoolReady) return;
 		clearFishPool("Fish");
     UnityInstance.send("CanvasUserInterface", "SetAnimState", "ShowFish");
-    UnityInstance.send("FishPool", "AddFish_FishView", JSON.stringify(fish));
+    // UnityInstance.send("FishPool", "AddFish_FishView", JSON.stringify(fish));
     if (fish.parentAFish && fish.parentBFish) {
       addFish2(fish.parentAFish);
       addFish3(fish.parentBFish);
     }
+    addFish1(fish)
+
   };
   const sendRound = (round: number, roundStat: number) => {
     console.log(roundStat);
@@ -463,6 +475,7 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
     addFishFight2: addFishFight2,
     addFishBreed1: addFishBreed1,
     addFishBreed2: addFishBreed2,
+    addBreedOffspring: addBreedOffspring,
     addFishFishing: addFishFishing,
     showFish: showFish,
     clearFishPool: clearFishPool,

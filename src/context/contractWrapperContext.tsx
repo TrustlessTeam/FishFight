@@ -99,11 +99,11 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 	const contractBreed = async (fishAlpha: Fish, fishBetta: Fish) => {
 		console.log(fishAlpha)
 		console.log(fishBetta)
-		const gas = await FishFight.breedingWaters?.methods.breedFish(fishAlpha.tokenId, fishBetta.tokenId).estimateGas({from: account});
+		// const gas = await FishFight.breedingWaters?.methods.breedFish(fishAlpha.tokenId, fishBetta.tokenId).estimateGas({from: account});
 		return FishFight.breedingWaters?.methods.breedFish(fishAlpha.tokenId, fishBetta.tokenId).send({
 			from: account,
 			gasPrice: 30000000000,
-			gasLimit: gas,
+			gasLimit: 15000000,
 			value: Constants._oneBreedFee
 		})
 		.on('error', (error: any) => {
@@ -121,7 +121,8 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 				onClose: async () => {
 					const fish = await createUserFish(web3.utils.toNumber(data.events.BreedingResult.returnValues.tokenId));
 					if(fish != null) {
-						unityContext.showFish(fish);
+						// unityContext.showFish(fish);
+						unityContext.addBreedOffspring(fish)
 					}
 					refetchBalance()
 					refreshFish(fishAlpha.tokenId, false, true);

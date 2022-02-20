@@ -308,7 +308,7 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
   }
 
   const createUserFish = async (tokenId: number) => {
-    const fishData = await getFish(FishFight, web3.utils.toNumber(tokenId), false, false)
+    const fishData = await buildFish(FishFight, web3.utils.toNumber(tokenId))
     if(fishData != null) {
       setUserFish(prevTokens => [...prevTokens, fishData])
       return fishData;
@@ -554,7 +554,7 @@ const getFishMetaData = async (tokenURI: string) : Promise<string> => {
 }
 
 
-const buildFish = async (fishFightInstance: FishFight, tokenId: number) => {
+const buildFish = async (fishFightInstance: FishFight, tokenId: number, isParent?: boolean) => {
   const contractCallContext: ContractCallContext[] = [
     {
       reference: 'fishFactory',
@@ -662,9 +662,9 @@ const buildFish = async (fishFightInstance: FishFight, tokenId: number) => {
     fish.fightingHistory = fightingWatersGetFights[0];
   }
 
-  if(fish.parentA > 0) {
-    fish.parentAFish = await getParentFish(fishFightInstance, fish.parentA);
-    fish.parentBFish = await getParentFish(fishFightInstance, fish.parentB);
+  if(fish.parentA > 0 && !isParent) {
+    fish.parentAFish = await buildFish(fishFightInstance, fish.parentA, true);
+    fish.parentBFish = await buildFish(fishFightInstance, fish.parentB, true);
   }
   console.log(fish)
 

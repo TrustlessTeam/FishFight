@@ -40,6 +40,7 @@ const BreedingWaters = () => {
 	useEffect(() => {
 		console.log("Breeding Fish")
 		unityContext.clearUIFish();
+		unityContext.clearFishPool("ShowBreeding")
 		unityContext.hideUI();
 		unityContext.showBreedingLocation();
 	}, [unityContext.isFishPoolReady]);
@@ -48,7 +49,6 @@ const BreedingWaters = () => {
 		console.log("Breeding Fish Changed")
 		console.log(breedingFish)
 		if(!unityContext.isFishPoolReady) return;
-		unityContext.clearFishPool("ShowBreeding")
 		breedingFish.forEach(fish => {
 			unityContext.addFishBreedingPool(fish);
 		})

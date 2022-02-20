@@ -87,7 +87,7 @@ const StatusModal = ({}: Props) => {
 				totalFight = totalFight.add(web3.utils.toBN(userFish[i].stakedFighting!.earnedFishFood))
 
 			}
-			if(userFish[i].stakedFighting && userFish[i].stakedBreeding?.earnedFishFood != null) {
+			if(userFish[i].stakedBreeding && userFish[i].stakedBreeding?.earnedFishFood != null) {
 				totalBreed = totalBreed.add(web3.utils.toBN(userFish[i].stakedBreeding!.earnedFishFood))
 			}
 		}
