@@ -286,7 +286,7 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
 
     UnityInstance.send(
       "ShowFighting_UI",
-    "SetFishFighter1",
+      "SetFish1",
     JSON.stringify(fish)
   );
     // console.log("AddFish Completed")
@@ -303,9 +303,9 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
 
     UnityInstance.send(
       "ShowFighting_UI",
-    "SetFishFighter2",
-    JSON.stringify(fish)
-  );
+      "SetFish2",
+      JSON.stringify(fish)
+    );
   };
 
   const addFishBreedingPool = (fish: Fish) => {
@@ -328,6 +328,11 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
       "AddFish1_BreedingView",
       JSON.stringify(fish)
     );
+    UnityInstance.send(
+      "ShowBreeding_UI",
+      "SetFish1",
+      JSON.stringify(fish)
+    );
     // console.log("AddFish Completed")
   };
   const addFishBreed2 = (fish: Fish) => {
@@ -337,6 +342,11 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
     UnityInstance.send(
       "FishPool",
       "AddFish2_BreedingView",
+      JSON.stringify(fish)
+    );
+    UnityInstance.send(
+      "ShowBreeding_UI",
+      "SetFish2",
       JSON.stringify(fish)
     );
     // console.log("AddFish Completed")
