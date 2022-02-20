@@ -17,7 +17,8 @@ import {
 } from 'ethereum-multicall';
 
 const MAX_FISH = 42;
-const serverURL = `http://198.199.79.15:5000`;
+// const serverURL = `http://198.199.79.15:5000`;
+const serverURL = `http://localhost:5000`;
 
 interface FishPoolProviderContext {
 	userFish: Fish[]
@@ -58,19 +59,25 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
   const { account, deactivate } = useWeb3React();
   const { FishFight, refetchStats, refetchBalance } = useFishFight();
 	const unityContext = useUnity();
+  let burnedEmitter;
+  let caughtEmitter;
+  let depositedFighterEmitter;
+  let withdrawnFighterEmitter;
+  let depositedBreederEmitter;
+  let withdrawnBreederEmitter;
 
   useEffect(() => {
     // Set websocket block listener
-    var burned = FishFight.listenFishFactory.events.FishBurned()
-    burned.on("data", function(data: any){
+    burnedEmitter = FishFight.listenFishFactory.events.FishBurned()
+    burnedEmitter.on("data", function(data: any){
       console.log(data)
       if(data.returnValues.tokenId) {
         fishBurned(web3.utils.toNumber(data.returnValues.tokenId));
       }
     })
 
-    var fishCaught = FishFight.listenFishFactory.events.FishMinted()
-    fishCaught.on("data", function(data: any){
+    caughtEmitter = FishFight.listenFishFactory.events.FishMinted()
+    caughtEmitter.on("data", function(data: any){
       console.log(data)
       if(data.returnValues.tokenId) {
         console.log("Fish Caught - refetching data")
@@ -79,8 +86,8 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
       }
     })
 
-    var depositedFighter = FishFight.listenFightingWaters.events.Deposit()
-    depositedFighter.on("data", function(data: any){
+    depositedFighterEmitter = FishFight.listenFightingWaters.events.Deposit()
+    depositedFighterEmitter.on("data", function(data: any){
       console.log(data)
       console.log(data.returnValues.user)
       console.log("FIGHITNG DEPOSIT LISTENER")
@@ -90,8 +97,8 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
       }
     })
 
-    var withdrawFighter = FishFight.listenFightingWaters.events.Withdraw()
-    withdrawFighter.on("data", function(data: any){
+    withdrawnFighterEmitter = FishFight.listenFightingWaters.events.Withdraw()
+    withdrawnFighterEmitter.on("data", function(data: any){
       console.log(data)
       if(data.returnValues.tokenId) {
         refetchStats();
@@ -99,8 +106,8 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
       }
     })
 
-    var depositedBreeder = FishFight.listenBreedingWaters.events.Deposit()
-    depositedBreeder.on("data", function(data: any){
+    depositedBreederEmitter = FishFight.listenBreedingWaters.events.Deposit()
+    depositedBreederEmitter.on("data", function(data: any){
       console.log(data)
       console.log("BREEDING DEPOSIT LISTENER")
       if(data.returnValues.tokenId) {
@@ -109,8 +116,8 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
       }
     })
 
-    var withdrawBreeder = FishFight.listenBreedingWaters.events.Withdraw()
-    withdrawBreeder.on("data", function(data: any){
+    withdrawnBreederEmitter = FishFight.listenBreedingWaters.events.Withdraw()
+    withdrawnBreederEmitter.on("data", function(data: any){
       console.log(data)
       if(data.returnValues.tokenId) {
         refetchStats();
@@ -248,9 +255,9 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
       for(let i = 0; i < numUserFish; i++) {
         FishFight.readFishFactory.methods.tokenOfOwnerByIndex(fightingWatersAddress, i).call()
         .then((tokenId: any) => {
-          // if(!userFish.some(fish => fish.tokenId == tokenId)) {
+          if(!userFish.some(fish => fish.tokenId == tokenId)) {
             addFightingFishById(web3.utils.toNumber(tokenId))
-          // }
+          }
         });
       }
     } catch (error) {
@@ -584,13 +591,16 @@ const buildFish = async (fishFightInstance: FishFight, tokenId: number) => {
     }
   ];
 
-  console.log("multicall")
+  
 
   const results: ContractCallResults = await fishFightInstance.multicall.call(contractCallContext);
-
+  console.log(results)
   const fishFactoryGetFishInfo = results.results.fishFactory.callsReturnContext[0].success ? results.results.fishFactory.callsReturnContext[0].returnValues : null;
   const fishFactoryTokenUri = results.results.fishFactory.callsReturnContext[1].success ? results.results.fishFactory.callsReturnContext[1].returnValues[0] : null;
-
+  let imgSrc = null;
+  if(fishFactoryTokenUri) {
+    imgSrc = `${serverURL}/tokens/${tokenId}.png`
+  }
   const seasonsGetFishSeasonStats = results.results.seasons.callsReturnContext[0].success ? results.results.seasons.callsReturnContext[0].returnValues : null;
   const trainingWatersGetStatus = results.results.trainingWaters.callsReturnContext[0].success ? results.results.trainingWaters.callsReturnContext[0].returnValues : null;
   const fightingWatersGetPoolInfo = results.results.fightingWaters.callsReturnContext[1].success ? results.results.fightingWaters.callsReturnContext[1].returnValues : null;
@@ -635,7 +645,7 @@ const buildFish = async (fishFightInstance: FishFight, tokenId: number) => {
     lastClaimed: trainingWatersGetStatus[1].hex,
   }
 
-  const fish = new Fish(fishInfo, fishSeasonStats, trainingObject, null, null)
+  const fish = new Fish(fishInfo, fishSeasonStats, trainingObject, imgSrc, fishFactoryTokenUri)
 
   if(fightingWatersGetPoolInfo != null) {
     fish.stakedFighting = {

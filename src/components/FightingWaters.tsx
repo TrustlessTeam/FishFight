@@ -68,43 +68,45 @@ const FightingWaters = () => {
 		// unityContext.clearFishPool("Fighting")
 		// unityContext.clearFishPool("Breeding")
 		// unityContext.clearFishPool('Fish');
-		unityContext.clearUIFish();
-		unityContext.hideUI();
+		// unityContext.clearUIFish();
+		// unityContext.hideUI();
 		unityContext.showFightingLocation();
+		unityContext.showFightingUI();
+
 	}, [unityContext.isFishPoolReady]);
 
 	useEffect(() => {
 		console.log("Fighting Fish Changed")
 		console.log(fightingFish)
 		if(!unityContext.isFishPoolReady) return;
-		unityContext.clearFishPool("ShowFighting")
+		// unityContext.clearFishPool("ShowFighting")
 		fightingFish.forEach(fish => {
-			unityContext.addFishFightingPool(fish);
+			// unityContext.addFishFightingPool(fish);
 		})
 	}, [fightingFish, unityContext.isFishPoolReady]);
 
 
 	const setUserFighter = async (fish : Fish) => {
 		console.log("User Selected Fish: " + fish.tokenId)
-		unityContext.showFightingUI();
+		// unityContext.showFightingUI();
 		if(fish.tokenId == opponentFish?.tokenId) {
 			toast.error("Can't Fight the same Fish")
 			return;
 		}
 		setMySelectedFish(fish);
-		// unityContext.addFish1(fish)
+		unityContext.addFish1(fish)
 		unityContext.addFishFight1(fish)
 	}
 
 	const setOpponentFighter = (fish : Fish) => {
 		console.log("Opponent Fish: " + fish.tokenId)
-		unityContext.showFightingUI();
+		// unityContext.showFightingUI();
 		if(fish.tokenId == mySelectedFish?.tokenId) {
 			toast.error("Can't Fight the same Fish")
 			return;
 		}
 		setOpponentFish(fish);
-		// unityContext.addFish2(fish)
+		unityContext.addFish2(fish)
 		unityContext.addFishFight2(fish)
 	}
 
