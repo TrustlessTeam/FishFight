@@ -39,8 +39,8 @@ const BreedingWaters = () => {
 
 	useEffect(() => {
 		console.log("Breeding Fish")
-		unityContext.clearUIFish();
-		unityContext.clearFishPool("ShowBreeding")
+		// unityContext.clearUIFish();
+		// unityContext.clearFishPool("ShowBreeding")
 		unityContext.hideUI();
 		unityContext.showBreedingLocation();
 	}, [unityContext.isFishPoolReady]);
@@ -95,8 +95,6 @@ const BreedingWaters = () => {
 		unityContext.showBreedingUI();
 		setAlphaFish(fish);
 		unityContext.addFishBreed2(fish)
-		unityContext.addFish2(fish)
-
 	}
 
 	const setUserBetta = async (fish : Fish) => {
@@ -116,9 +114,19 @@ const BreedingWaters = () => {
 			toast.error('Too Young');
 			return;
 		}
-		if(fish.stakedBreeding && fish.seasonStats.fightWins == 0) {
-			toast.error('Not alpha this season, withdraw to use');
+		if(fish.stakedBreeding && fish.seasonStats.fightWins != 0) {
+			toast.error('Not betta fish');
 			setMyBettaFish(fish);
+			return;
+		}
+		if(fish.stakedBreeding && fish.seasonStats.bettaBreeds >= Constants._maxBettaBreedsPerSeason) {
+			toast.error('Already bred this season');
+			setMyBettaFish(fish);
+			return;
+		}
+		if(fish.power < Constants._bettaBreedPowerFee) {
+			setMyBettaFish(fish);
+			toast.error(`Betta Fish has ${fish.power} power, at least ${Constants._bettaBreedPowerFee} power required to breed!`)
 			return;
 		}
 
@@ -126,7 +134,6 @@ const BreedingWaters = () => {
 		unityContext.showBreedingUI();
 		setMyBettaFish(fish);
 		unityContext.addFishBreed1(fish)
-		unityContext.addFish1(fish)
 	}
 
 	const breedAgain = () => {

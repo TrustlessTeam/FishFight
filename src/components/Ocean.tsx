@@ -69,15 +69,15 @@ const Ocean = () => {
 			setRenderedFish(prevTokens => [...prevTokens, fish.tokenId])
 		})
 		
-		if(mySelectedFish != null) {
-			let matchingUserFish = userFish.find(fish => fish.tokenId === mySelectedFish.tokenId);
-			let matchingOceanFish = oceanFish.find(fish => fish.tokenId === mySelectedFish.tokenId);
-			if(matchingUserFish != null) {
-				unityContext.showFish(matchingUserFish)
-			} else if(matchingOceanFish != null) {
-				unityContext.showFish(matchingOceanFish)
-			}
-		}
+		// if(mySelectedFish != null) {
+		// 	let matchingUserFish = userFish.find(fish => fish.tokenId === mySelectedFish.tokenId);
+		// 	let matchingOceanFish = oceanFish.find(fish => fish.tokenId === mySelectedFish.tokenId);
+		// 	if(matchingUserFish != null) {
+		// 		unityContext.showFish(matchingUserFish)
+		// 	} else if(matchingOceanFish != null) {
+		// 		unityContext.showFish(matchingOceanFish)
+		// 	}
+		// }
 	}, [unityContext.isFishPoolReady, fishToShow, oceanFish, userFish]);
 
 	

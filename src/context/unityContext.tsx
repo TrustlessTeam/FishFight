@@ -288,10 +288,17 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
     UnityInstance.send(
       "ShowFighting_UI",
       "SetFish1",
-    JSON.stringify(fish)
-  );
+      JSON.stringify(fish)
+    );
+
+    UnityInstance.send(
+      "FishPool",
+      "AddFish1_FishView",
+      JSON.stringify(fish)
+    );
     // console.log("AddFish Completed")
   };
+
   const addFishFight2 = (fish: Fish) => {
     // console.log("AddFish Called")
     if (!isLoaded || !fishPoolReady) return;
@@ -305,6 +312,12 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
     UnityInstance.send(
       "ShowFighting_UI",
       "SetFish2",
+      JSON.stringify(fish)
+    );
+
+    UnityInstance.send(
+      "FishPool",
+      "AddFish2_FishView",
       JSON.stringify(fish)
     );
   };
@@ -334,7 +347,11 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
       "SetFish1",
       JSON.stringify(fish)
     );
-    // console.log("AddFish Completed")
+    UnityInstance.send(
+      "FishPool",
+      "AddFish1_FishView",
+      JSON.stringify(fish)
+    );
   };
   const addFishBreed2 = (fish: Fish) => {
     // console.log("AddFish Called")
@@ -350,27 +367,20 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
       "SetFish2",
       JSON.stringify(fish)
     );
-    // console.log("AddFish Completed")
-  };
-  const addFishBreed3 = (fish: Fish) => {
-    // console.log("AddFish Called")
-    if (!isLoaded || !fishPoolReady) return;
-    console.log(fish);
     UnityInstance.send(
       "FishPool",
-      "AddFish3_BreedingView",
+      "AddFish2_FishView",
       JSON.stringify(fish)
     );
-    // console.log("AddFish Completed")
   };
 
   const addBreedOffspring = (fish: Fish) => {
     UnityInstance.send("CanvasUserInterface", "SetAnimState", "ShowBreedingResultsSuccess");
     if (fish.parentAFish && fish.parentBFish) {
-      addFish2(fish.parentAFish);
-      addFish3(fish.parentBFish);
+      UnityInstance.send("FishPool", "AddFish2_FishView", JSON.stringify(fish.parentAFish));
+      UnityInstance.send("FishPool", "AddFish3_FishView", JSON.stringify(fish.parentBFish));
     }
-    addFish1(fish)
+    UnityInstance.send("FishPool", "AddFish1_FishView", JSON.stringify(fish));
   }
 
   const addFish1 = (fish: Fish) => {
@@ -399,17 +409,20 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
     console.log("AddFish Completed");
   };
   const showFish = (fish: Fish) => {
-    console.log(fish);
+    console.log(fish)
+    clearUIFish()
     if (!isLoaded || !fishPoolReady) return;
-		clearFishPool("Fish");
     UnityInstance.send("CanvasUserInterface", "SetAnimState", "ShowFish");
-    // UnityInstance.send("FishPool", "AddFish_FishView", JSON.stringify(fish));
     if (fish.parentAFish && fish.parentBFish) {
-      addFish2(fish.parentAFish);
-      addFish3(fish.parentBFish);
+      UnityInstance.send("FishPool", "AddFish2_FishView", JSON.stringify(fish.parentAFish));
+      UnityInstance.send("FishPool", "AddFish3_FishView", JSON.stringify(fish.parentBFish));
     }
-    addFish1(fish)
-
+    UnityInstance.send("FishPool", "AddFish1_FishView", JSON.stringify(fish));
+    UnityInstance.send(
+      "ShowFish_UI",
+      "SetFish1",
+      JSON.stringify(fish)
+    );
   };
   const sendRound = (round: number, roundStat: number) => {
     console.log(roundStat);

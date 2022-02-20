@@ -68,7 +68,7 @@ const FightingWaters = () => {
 		// unityContext.clearFishPool("Fighting")
 		// unityContext.clearFishPool("Breeding")
 		// unityContext.clearFishPool('Fish');
-		// unityContext.clearUIFish();
+		unityContext.clearUIFish();
 		// unityContext.hideUI();
 		unityContext.showFightingLocation();
 		unityContext.showFightingUI();
@@ -94,7 +94,6 @@ const FightingWaters = () => {
 			return;
 		}
 		setMySelectedFish(fish);
-		unityContext.addFish1(fish)
 		unityContext.addFishFight1(fish)
 	}
 
@@ -106,7 +105,6 @@ const FightingWaters = () => {
 			return;
 		}
 		setOpponentFish(fish);
-		unityContext.addFish2(fish)
 		unityContext.addFishFight2(fish)
 	}
 
