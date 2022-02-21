@@ -17,8 +17,8 @@ import {
 } from 'ethereum-multicall';
 
 const MAX_FISH = 42;
-// const serverURL = `http://198.199.79.15:5000`;
-const serverURL = `http://localhost:5000`;
+const serverURL = `http://198.199.79.15:5000`;
+// const serverURL = `http://localhost:5000`;
 
 interface FishPoolProviderContext {
 	userFish: Fish[]

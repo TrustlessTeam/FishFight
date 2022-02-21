@@ -345,13 +345,13 @@ const fishTypes = [
       ColorEyeTertiary: [0, 255],
 
       // Head options
-      HeadEdges: [0, 100], // need to know upper range index for each option, using 2 for now
+      HeadEdges: [0, 69], // need to know upper range index for each option, using 2 for now
       HeadNose: [0, 60],
-      HeadFrills: [0, 100],
-      HeadFlat: [0, 80],
-      HeadSplit: [0, 70], // map to intelligence
-      HeadFlatnose: [0, 100], // map to agility
-      BodyFat: [0, 75], // map to strength
+      HeadFrills: [0, 69],
+      HeadFlat: [0, 30],
+      HeadSplit: [0, 69], // map to intelligence
+      HeadFlatnose: [0, 30], // map to agility
+      BodyFat: [0, 55], // map to strength
 
       // Textures
       TextureBodyPrimary: [0, 8], // need to know upper range index for each option, using 2 for now
