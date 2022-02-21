@@ -3,7 +3,7 @@
   "chainId": "1666700000",
   "contracts": {
     "FishFood": {
-      "address": "0x86264847c1B795cA4Fdde34150D21704c24eba54",
+      "address": "0x36ab37eABb3ba64A00C07da78F801eD8cf0b7E9A",
       "abi": [
         {
           "inputs": [],
@@ -658,7 +658,7 @@
       ]
     },
     "FishFactory": {
-      "address": "0x894EFA65Ec467969809EE9e90631e0ABE22B876F",
+      "address": "0x82551f488760FC5907EA614b8BB0d0e97012B40F",
       "abi": [
         {
           "inputs": [
@@ -1802,7 +1802,7 @@
       ]
     },
     "DeadFishFactory": {
-      "address": "0x30300c547e80B468C8a386924701359A8fd98bE5",
+      "address": "0x75168e5f42A5354b4eB0b5f871926Cd4F0731Dc3",
       "abi": [
         {
           "inputs": [
@@ -2481,7 +2481,7 @@
       ]
     },
     "Seasons": {
-      "address": "0x093A34B375e2bf8520d1d21c170f4ed4cF71408B",
+      "address": "0x504D3a0488Ac80305000CEd24303f23E8F74D157",
       "abi": [
         {
           "inputs": [
@@ -3629,7 +3629,7 @@
       ]
     },
     "FightComputation": {
-      "address": "0x01aD6e9AA92C0900b372bF060b99E6D865609a54",
+      "address": "0x472EF125F7C640427B83f12602f2d48DE45Fde9B",
       "abi": [
         {
           "inputs": [
@@ -3708,7 +3708,7 @@
       ]
     },
     "BreedComputation": {
-      "address": "0x01cfD0320563fc279C9032C8D1D90D62EC045921",
+      "address": "0xbfab3F7Fee9a7a89882CA790E6B0314c69F49AB0",
       "abi": [
         {
           "inputs": [
@@ -4029,7 +4029,7 @@
       ]
     },
     "FishingWaters": {
-      "address": "0xEFa3cf66bce461C20542A64cf925DFC31d098163",
+      "address": "0xfEC42F4Be2Fe68023eDD2275f877B25913288E6c",
       "abi": [
         {
           "inputs": [
@@ -4366,7 +4366,7 @@
       ]
     },
     "FightingWaters": {
-      "address": "0xC252A8cD4dD356D7338cB0E67715C7CeD5078231",
+      "address": "0x2558616Ff00AD632E2b91E302405f6ebdE7fE7dc",
       "abi": [
         {
           "inputs": [
@@ -5313,7 +5313,7 @@
       ]
     },
     "BreedingWaters": {
-      "address": "0x16Ebb6e357b1fA5356E60F244cE4928123D8fE12",
+      "address": "0xaa027aBaBd48Fd61052b3F909b90Be4EB6D82733",
       "abi": [
         {
           "inputs": [
@@ -6087,7 +6087,7 @@
       ]
     },
     "TrainingWaters": {
-      "address": "0x9774FB4b3E83bB542f395BD2274223A7321c16bd",
+      "address": "0xf28E974479457A6997A32C866e1781F4336e68F2",
       "abi": [
         {
           "inputs": [
@@ -6460,7 +6460,7 @@
       ]
     },
     "Multicall": {
-      "address": "0xDA1aD6b5DfF34F54F9B87C1d0BA0FaBe3305A13F",
+      "address": "0x4524dccf7588963BebF8388937074678491c7D5A",
       "abi": [
         {
           "inputs": [
@@ -6776,7 +6776,7 @@
       ]
     },
     "FishCalls": {
-      "address": "0x04236173d3085F1a8a27B56b06a19FBE0286a6f3",
+      "address": "0xcff2c7A7a5EbbD6Ac5638683a5D03848f808D8Ee",
       "abi": [
         {
           "inputs": [
