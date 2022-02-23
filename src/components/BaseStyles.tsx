@@ -51,6 +51,17 @@ export const OptionsContainer = styled.div`
 	align-items: center;
 `;
 
+export const UIContainer = styled.div`
+	display: flex;
+	flex-flow: row nowrap;
+	justify-content: center;
+	align-items: center;
+	background-color: rgba(255,255,255,0.8);
+	padding: ${props => props.theme.spacing.gap};
+	border-radius: 25px;
+
+`;
+
 export const ApprovalDisclaimer = styled.div`
 	padding: ${props => props.theme.spacing.gap};
 	margin-bottom: ${props => props.theme.spacing.gap};
@@ -74,7 +85,7 @@ export const BaseButton = styled.button`
 	display: flex;
 	flex-flow: column;
 	justify-content: center;
-	padding: 1.2vmin 1.2vmin;
+	padding: ${props => props.theme.spacing.gapSmall} ${props => props.theme.spacing.gapSmall};;
 	border-radius: 25px;
 	background-color: white;
 	border: none;
@@ -88,13 +99,17 @@ export const BaseButton = styled.button`
 	text-transform: uppercase;
 	font-weight: bolder;
 	text-decoration: none;
-	font-size: ${props => props.theme.font.medium};
+	font-size: ${props => props.theme.font.small};
 
 	&:hover {
 		opacity: 1;
 		box-shadow: 1px 2px 2px 2px rgba(0, 0, 0, 0.2);
 		cursor: pointer;
 	}
+
+	@media ${props => props.theme.device.tablet} {
+		font-size: ${props => props.theme.font.medium};
+  }
 `;
 
 export const BaseLinkButton = styled(Link)`
@@ -115,11 +130,15 @@ export const BaseLinkButton = styled(Link)`
 	text-transform: uppercase;
 	font-weight: bolder;
 	text-decoration: none;
-	font-size: ${props => props.theme.font.medium};
+	font-size: ${props => props.theme.font.small};
 
 	&:hover {
 		opacity: 1;
 		box-shadow: 1px 2px 2px 2px rgba(0, 0, 0, 0.2);
 		cursor: pointer;
 	}
+
+	@media ${props => props.theme.device.tablet} {
+		font-size: ${props => props.theme.font.medium};
+  }
 `

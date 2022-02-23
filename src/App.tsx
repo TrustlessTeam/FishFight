@@ -50,7 +50,7 @@ const App = () => {
           	</Routes>	
 	
 
-						<Blockchain></Blockchain>
+						{/* <Blockchain></Blockchain> */}
 
 					</Container>
 					<ToastContainer

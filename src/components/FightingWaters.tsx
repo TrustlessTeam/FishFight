@@ -69,7 +69,7 @@ const FightingWaters = () => {
 		// unityContext.clearFishPool("Breeding")
 		// unityContext.clearFishPool('Fish');
 		unityContext.clearUIFish();
-		// unityContext.hideUI();
+		unityContext.hideUI();
 		unityContext.showFightingLocation();
 		unityContext.showFightingUI();
 
@@ -151,19 +151,6 @@ const FightingWaters = () => {
 	const FighterSelection = () => {
 		return (
 			<>
-				{mySelectedFish != null &&
-				<OptionsContainer>
-					{mySelectedFish.stakedFighting ?
-						<GameButton onClick={() => withdrawFightingFish(mySelectedFish)}>{'Withdraw'}</GameButton>
-						:
-						<GameButton onClick={() => depositFightingFish(mySelectedFish)}>{'Deposit'}</GameButton>
-					}
-					{mySelectedFish && opponentFish &&
-						<GameButton onClick={() => fightFish(mySelectedFish, opponentFish)}>{'Start Fight'}</GameButton>
-					}
-					{/* <GameButton onClick={() => selectAnother()}>{'Back to Fish'}</GameButton> */}
-				</OptionsContainer>
-				}
 				<ContainerControls>
 					{account &&
 						<ToggleGroup>

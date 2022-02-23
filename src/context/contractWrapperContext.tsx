@@ -407,6 +407,7 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 			const fightResult = await getFightByIndex(fightIndex)
 			unityContext.sendFightResult(fightResult);
 			refreshFish(fightResult.winner, true, false);
+			// unityContext.
 			toast.success('Fight Completed!', {
 				onClose: async () => {
 					refetchBalance()
