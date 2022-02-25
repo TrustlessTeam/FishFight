@@ -166,22 +166,25 @@ const FishingWaters = () => {
 					</BaseButton>
 				</MissedCatchContainer>
 			}
-
-			<InfoContainer>
-					<DataText>
-					{`Fish Available: ${maxSupply - totalSupply}`}
-					</DataText>
-					{currentSeason?.phaseString === 'Fishing' ? 
+			{!caughtFish &&
+				<InfoContainer>
+					<DataContainer>
 						<DataText>
-							{`Chance to Catch: ${((maxSupply - totalSupply) / maxSupply) * 100}%`}
+							{`Fish Available: ${maxSupply - totalSupply}`}
 						</DataText>
-						:
-						<DataText>
-							{`Chance to Catch: ${((maxSupply - totalSupply) / (maxSupply * 2)) * 100}%`}
-						</DataText>
-					}
-					
-			</InfoContainer>
+						{currentSeason?.phaseString === 'Fishing' ? 
+							<DataText>
+								{`Chance to Catch: ${((maxSupply - totalSupply) / maxSupply) * 100}%`}
+							</DataText>
+							:
+							<DataText>
+								{`Chance to Catch: ${((maxSupply - totalSupply) / (maxSupply * 2)) * 100}%`}
+							</DataText>
+						}
+					</DataContainer>
+				</InfoContainer>
+			}
+			
 			
 			</BaseOverlayContainer>
 		);
@@ -215,6 +218,12 @@ const CatchContainer = styled.div`
   }
 `;
 
+const DataContainer = styled.div`
+	background-color: rgba(255, 255, 255, 0.8);
+	border-radius: 25px;
+	padding: ${props => props.theme.spacing.gap};
+`
+
 const InfoContainer = styled.div`
 	display: flex;
 	flex-direction: row;
@@ -222,7 +231,8 @@ const InfoContainer = styled.div`
 	align-items: flex-start;
 	height: 100%;
 	margin: 70px;
-	padding: ${props => props.theme.spacing.gap};
+	
+	
 
 	@media ${props => props.theme.device.tablet} {
 		margin: 90px;
@@ -247,7 +257,7 @@ const DataText = styled.p`
 	align-items: center;
 	margin-top: ${props => props.theme.spacing.gapSmall};
 	/* background-color: white; */
-	color: white;
+	color: black;
 	/* border: 2px solid white; */
 	border-radius: 50%;
 
