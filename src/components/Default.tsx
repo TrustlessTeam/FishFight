@@ -1,21 +1,39 @@
 // React
 import { useWeb3React } from '@web3-react/core';
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 // Styled Components
 import styled from 'styled-components';
 import { useFishPool } from '../context/fishPoolContext';
 import { useUnity } from '../context/unityContext';
 import { BaseText, UIContainer } from './BaseStyles';
 
-
+import fishingImg from "../img/icons/fishing-dark.svg"
+import breedingImg from "../img/icons/breeding-dark.svg"
+import fightingImg from "../img/icons/fighting-dark.svg"
+import oceanImg from "../img/icons/ocean-dark.svg"
 
 const Default = () => {
 	const unityContext = useUnity();
 	const { account } = useWeb3React();
 	const { oceanFish } = useFishPool();
 	const [renderedFish, setRenderedFish] = useState<number[]>([]);
+	const [disclaimerApproved, setDisclaimerApproved] = useState<boolean>(false);
 
-
+	useEffect(() => {
+		unityContext.UnityInstance.on('UISelectionConfirm', function (data: any) {
+			console.log('UI changed catch fish');
+			console.log(data)
+			switch (data) {
+				case 'disclaimer_confirm':
+					setDisclaimerApproved(true)
+					return;
+				default:
+					return;
+			}
+			
+		});
+	}, [unityContext.isFishPoolReady, account]);
 
 
 	useEffect(() => {
@@ -32,27 +50,82 @@ const Default = () => {
 	}, [unityContext.isFishPoolReady, oceanFish]);
 
 	return (
-			<WelcomeContainer>
-				<UIContainer>
-					<h1>Welcome to FishFight!</h1>
-				{/* {!account &&
-					<BaseText>
-						Connect your Wallet to get
-					</BaseText>
-				} */}
-				</UIContainer>
+	<>
+		{disclaimerApproved &&
+			<WelcomeWrapper>
+				<h1>Welcome to FishFight!</h1>
+				<WelcomeContainer>
+					<Item to="/ocean">
+						<LogoImg src={oceanImg} alt="Ocean"></LogoImg>
+						<Text>Interact with your $FISH! Feed, Deposit/Withdraw from Pools, and Collect $FISHFOOD</Text>
+					</Item>
+					<Item to="/fishing">
+						<LogoImg src={fishingImg} alt="Ocean"></LogoImg>
+						<Text>Catch $FISH or $FISHFOOD at the Fishing Waters</Text>
+					</Item>
+					<Item to="/fighting">
+						<LogoImg src={fightingImg} alt="Fighting"></LogoImg>
+						<Text>Fight $FISH to earn $FISHFOOD and become an ALPHA at the Fighting Waters</Text>
+					</Item>
+					<Item to="/breeding">
+						<LogoImg src={breedingImg} alt="Breeding"></LogoImg>
+						<Text>Fight $FISH to earn $FISHFOOD and become an ALPHA at the Breeding Waters</Text>
+					</Item>
+				</WelcomeContainer>
 
-			</WelcomeContainer>
+			</WelcomeWrapper>
+		}
+	</>
 	);
 };
 
-const WelcomeContainer = styled.div`
+const LogoImg = styled.img`
+	height: 50px;
+	/* border: 2px solid white;s */
+	border-radius: 50%;
+  &.active {
+    background-color: rgba(255, 255, 255, 0.5);
+  }
+
+  @media ${props => props.theme.device.tablet} {
+		height: 70px;
+  }
+`;
+
+const Text = styled.p`
+	color: black;
+	text-align: center;
+`;
+
+const WelcomeWrapper = styled.div`
 	display: flex;
 	flex-flow: column;
 	justify-content: center;
 	align-items: center;
 	width: 100%;
 	height: 100%;
+`;
+
+const WelcomeContainer = styled.div`
+	display: flex;
+	flex-flow: row wrap;
+	justify-content: space-between;
+	align-items: flex-start;
+`;
+
+const Item = styled(Link)`
+	display: flex;
+	flex-flow: column;
+	justify-content: flex-start;
+	align-items: center;
+	background-color: rgba(255,255,255,0.8);
+	padding: ${props => props.theme.spacing.gap};
+	margin: ${props => props.theme.spacing.gap};
+	border-radius: 25px;
+	pointer-events: auto;
+	width: 150px;
+	text-decoration: none;
+
 `;
 
 

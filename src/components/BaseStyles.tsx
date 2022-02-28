@@ -53,13 +53,13 @@ export const OptionsContainer = styled.div`
 
 export const UIContainer = styled.div`
 	display: flex;
-	flex-flow: row nowrap;
+	flex-flow: column;
 	justify-content: center;
 	align-items: center;
 	background-color: rgba(255,255,255,0.8);
 	padding: ${props => props.theme.spacing.gap};
 	border-radius: 25px;
-
+	pointer-events: auto;
 `;
 
 export const ApprovalDisclaimer = styled.div`
