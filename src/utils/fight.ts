@@ -21,6 +21,7 @@ export class Fight {
 		round2: Round;
 		round3: Round;
 		winner: number;
+		playerResult: number;
 
   constructor(
     fightInfo: any
@@ -34,6 +35,7 @@ export class Fight {
 		this.round2 = this.parseRound(fightInfo.round2);
 		this.round3 = this.parseRound(fightInfo.round3);
 		this.winner = new BN(fightInfo.winner).toNumber();
+		this.playerResult = 0;
   };
 
 

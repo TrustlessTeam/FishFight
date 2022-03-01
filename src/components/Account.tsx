@@ -23,6 +23,7 @@ import foodImg from "../img/icons/food.svg"
 import walletImg from "../img/icons/wallet.svg"
 import breedingImg from "../img/icons/breeding.svg"
 import fightingImg from "../img/icons/fighting.svg"
+import { BaseButton } from './BaseStyles';
 
 
 // ?
@@ -131,7 +132,7 @@ const Account = ({ children, mobile, textOverride }: Props) => {
 						{parsedAccount.substring(0, 6)}...{parsedAccount.substring(parsedAccount.length - 4)}
 					</span>
 				) : (
-					<Span>{textOverride ? textOverride : "Connect Wallet"}</Span>
+					<Row>{textOverride ? textOverride : "Connect"}<LogoImgWallet src={walletImg} alt="User Wallet"></LogoImgWallet></Row>
 				)}
 			</AccountComponent>
 		</Group>
@@ -219,33 +220,34 @@ const Group = styled.div`
   }
 `;
 
-const AccountComponent = styled.div`
-	display: flex;
-	justify-content: center;
-	font-size: ${props => props.theme.font.medium}vmax;
-	padding: ${props => props.theme.spacing.gapSmall} ${props => props.theme.spacing.gapSmall};
+const AccountComponent = styled(BaseButton)`
 	border-radius: 25px;
-	background-color: white;
-	opacity: 0.7;
-	box-shadow: 1px 2px 4px 4px rgba(0, 0, 0, 0.25);
-	color: black;
-	margin-left: ${props => props.theme.spacing.gapSmall};
-	transition: opacity 0.3s ease, box-shadow 0.25s ease-in-out;
 
+/* 
 	&:hover {
 		opacity: 1;
 		box-shadow: 1px 2px 2px 2px rgba(0, 0, 0, 0.2);
 		cursor: pointer;
-	}
+	} */
 	z-index: 5;
-	@media ${props => props.theme.device.tablet} {
+	/* @media ${props => props.theme.device.tablet} {
 	  font-size: ${props => props.theme.font.medium};
+  } */
+	&::before {
+    border-radius: 25px;
   }
 `;
 
 const Span = styled.span`
 	display: flex;
 	flex-flow: column;
+	justify-content: center;
+	align-items: center;
+`;
+
+const Row = styled.span`
+	display: flex;
+	flex-flow: row nowrap;
 	justify-content: center;
 	align-items: center;
 `;
@@ -288,6 +290,11 @@ const LogoImg = styled.img`
 	@media ${props => props.theme.device.tablet} {
 	  height: 30px;
   }
+`;
+
+const LogoImgWallet = styled.img`
+	height: 25px;
+	margin-left: 2px;
 `;
 
 const WalletImg = styled.img<{open: boolean}>`

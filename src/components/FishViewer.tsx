@@ -6,6 +6,7 @@ import useHorizontalScroll from "../utils/horizontalScrolling";
 import FishNFT from "./FishNFT";
 import { Fish } from "../utils/fish";
 import Menu, { MenuItem } from "../components/Menu";
+import { ContainerControls } from './BaseStyles';
 
 const sortId = (a: Fish, b: Fish) => a.tokenId - b.tokenId;
 const sortAlpha = (a: Fish, b: Fish) => {
@@ -40,6 +41,7 @@ type Props = {
   depositFighter?: boolean;
   depositAlpha?: boolean;
 	type?: string;
+  children?: React.ReactNode;
 };
 
 const FishViewer = ({
@@ -49,7 +51,8 @@ const FishViewer = ({
   selectedOpponent,
   depositAlpha,
   depositFighter,
-	type
+	type,
+  children
 }: Props) => {
   const [showStats, setShowStats] = useState<boolean>(false);
   const [sortOption, setSortOption] = useState<number>(SortSelection.Id);
@@ -96,27 +99,29 @@ const FishViewer = ({
 
   return (
     <>
-      {fishCollection.length > 0 && (
-        <SortMenu>
-          <Menu
-            name={`Sort by: ${SortSelection[sortOption]}`}
-            items={SortOptions}
-          ></Menu>
-          <Search>
-            <TextLabel>
-              VIEW ID:
-              <SearchInput
-                type="text"
-                value={searchId}
-                onChange={(ev: React.ChangeEvent<HTMLInputElement>): void =>
-                  setSearchId(ev.target.value)
-                }
-              />
-            </TextLabel>
-            <input type="submit" value="GO" />
-          </Search>
-        </SortMenu>
-      )}
+      <ContainerControls>
+        {children}
+        {fishCollection.length > 0 && (
+        <Menu
+          name={`Sort by: ${SortSelection[sortOption]}`}
+          items={SortOptions}
+        ></Menu>
+        )}
+        {/* <Search>
+          <TextLabel>
+            VIEW ID:
+            <SearchInput
+              type="text"
+              value={searchId}
+              onChange={(ev: React.ChangeEvent<HTMLInputElement>): void =>
+                setSearchId(ev.target.value)
+              }
+            />
+          </TextLabel>
+          <input type="submit" value="GO" />
+        </Search> */}
+      </ContainerControls>
+
       <FishGrid ref={scrollRef}>
         {depositAlpha && <AddButton to="/ocean">Add to Breed Pool</AddButton>}
         {depositFighter && <AddButton to="/ocean">Add to Fight Pool</AddButton>}

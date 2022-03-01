@@ -14,6 +14,7 @@ import { useContractWrapper } from "../context/contractWrapperContext";
 import { useFishFight } from "../context/fishFightContext";
 import { Constants } from "../utils/constants";
 import BN from 'bn.js';
+import { BaseButton } from "./BaseStyles";
 
 
 type Props = {
@@ -95,34 +96,34 @@ const FishNFT = ({
 
       {selectedUser && (
         <Options>
-          <Button onClick={() => feedFish(fish)}>Feed</Button>
+          <FishButton onClick={() => feedFish(fish)}>Feed</FishButton>
           {fish.trainingStatus.canClaim() && !fish.stakedBreeding && !fish.stakedFighting &&
-            <Button onClick={() => claimFishFood(fish)}>Collect</Button>
+            <FishButton onClick={() => claimFishFood(fish)}>Collect</FishButton>
           }
           {fish.canQuest && !fish.stakedBreeding && !fish.stakedFighting &&
-            <Button onClick={() => questFish(fish)}>Quest</Button>
+            <FishButton onClick={() => questFish(fish)}>Quest</FishButton>
           }
           {fish.stakedFighting && (
-            <Button onClick={() => withdrawFightingFish(fish)}>Withdraw</Button>
+            <FishButton onClick={() => withdrawFightingFish(fish)}>Withdraw</FishButton>
           )}
 					{fish.stakedBreeding && (
-            <Button onClick={() => withdrawBreedingFish(fish)}>Withdraw</Button>
+            <FishButton onClick={() => withdrawBreedingFish(fish)}>Withdraw</FishButton>
           )}
           {!fish.stakedFighting && !fish.stakedBreeding && type === 'Fighting' && (
-            <Button onClick={() => depositFightingFish(fish)}>Deposit</Button>
+            <FishButton onClick={() => depositFightingFish(fish)}>Deposit</FishButton>
           )}
           {!fish.stakedFighting &&
             !fish.stakedBreeding &&
             type === 'Breeding' &&
             fish.seasonStats.fightWins > 0 && (
-              <Button onClick={() => depositBreedingFish(fish)}>Deposit</Button>
+              <FishButton onClick={() => depositBreedingFish(fish)}>Deposit</FishButton>
             )}
         </Options>
       )}
 
       {selectedOpponent &&
         <Options>
-          <Button onClick={() => feedFish(fish)}>Feed</Button>
+          <FishButton onClick={() => feedFish(fish)}>Feed</FishButton>
         </Options>
       }
 
@@ -144,20 +145,25 @@ const FishNFT = ({
 const Options = styled.div`
   position: absolute;
   display: flex;
-  flex-flow: row wrap;
+  flex-flow: row nowrap;
   justify-content: space-between;
   bottom: 0;
 `;
 
-const Button = styled.button`
-  padding: ${(props) => props.theme.spacing.gapSmall};
-  border: none;
-  border-radius: 50%;
-  font-size: ${(props) => props.theme.font.small};
-  font-weight: bold;
-  color: black;
-  background-color: white;
-  cursor: pointer;
+const FishButton = styled(BaseButton)`
+  padding: 10px;
+  margin: 0 2px;
+  border-radius: 20px;
+
+  @media ${props => props.theme.device.tablet} {
+    font-size: 14px;
+  }
+  &::before {
+    border-radius: 20px;
+  }
+  &:active {
+		transform: scale(0.8);
+	}
 `;
 
 const LogoImg = styled.img`
@@ -167,10 +173,16 @@ const LogoImg = styled.img`
   padding: 3px;
 `;
 const LogoSmallImg = styled.img`
-  width: 35px;
-  background-color: white;
+  height: 20px;
+  /* background-color: white; */
   border-radius: 50%;
   padding: 3px;
+  background: linear-gradient(#caf0f8, #48cae4);
+  box-shadow: inset 2px 2px 2px rgba(255, 255, 255, .3), inset -2px -2px 2px rgba(0, 0, 0, .3);
+
+  @media ${props => props.theme.device.tablet} {
+		height: 25px;
+  }
 `;
 
 const FishContainer = styled.div`
@@ -183,35 +195,63 @@ const FishContainer = styled.div`
 `;
 
 const FishImg = styled.img<ImgProps>`
-  height: 12vh;
+  height: 100px;
   border-radius: 50%;
   /* border-radius: 40px; */
-
-  border: 0.5vh solid rgba(255, 255, 255, 0.5);
+  /* border: 0.5vh solid rgba(255, 255, 255, 0.5); */
   cursor: pointer;
   ${({ selectedUser }) =>
     selectedUser &&
     `
-    border-color: rgba(0, 128, 0, 0.5);
-		height: 14vh;
+    // border-color: rgba(0, 128, 0, 0.5);
+		height: 120px;
   `}
   ${({ selectedOpponent }) =>
     selectedOpponent &&
     `
-    border-color: rgba(154, 3, 30, 0.5);
-		height: 14vh;
+    // border-color: rgba(154, 3, 30, 0.5);
+		height: 120px;
   `}
+
+  @media ${props => props.theme.device.tablet} {
+		height: 120px;
+    ${({ selectedUser }) =>
+    selectedUser &&
+    `
+    // border-color: rgba(0, 128, 0, 0.5);
+		height: 150px;
+  `}
+  ${({ selectedOpponent }) =>
+    selectedOpponent &&
+    `
+    // border-color: rgba(154, 3, 30, 0.5);
+		height: 150px;
+  `}
+  }
+
+  
 `;
 
 const FishId = styled.p`
-  padding: ${(props) => props.theme.spacing.gapSmall};
+  display: flex;
+  flex-flow: column;
+  justify-content: center;
+  align-items: center;
+  padding: 3px 10px;
   margin: 0;
-  background-color: white;
+  /* background-color: white; */
+  /* opacity: 0.6; */
   color: black;
-  font-size: ${(props) => props.theme.font.medium};
+  font-size: ${(props) => props.theme.font.small};
   font-weight: bold;
-  border-radius: 25px;
+  border-radius: 20px;
   pointer-events: none;
+  background: linear-gradient(#caf0f8, #48cae4);
+  box-shadow: inset 2px 2px 2px rgba(255, 255, 255, .3), inset -2px -2px 2px rgba(0, 0, 0, .3);
+
+  @media ${props => props.theme.device.tablet} {
+		font-size: ${props => props.theme.font.medium};
+  }
 `;
 
 const FishStats = styled.div`
