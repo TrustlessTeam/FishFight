@@ -123,8 +123,8 @@ const FishViewer = ({
       </ContainerControls>
 
       <FishGrid ref={scrollRef}>
-        {depositAlpha && <AddButton to="/ocean">Add to Breed Pool</AddButton>}
-        {depositFighter && <AddButton to="/ocean">Add to Fight Pool</AddButton>}
+        {/* {depositAlpha && <AddButton to="/ocean">Add to Breed Pool</AddButton>}
+        {depositFighter && <AddButton to="/ocean">Add to Fight Pool</AddButton>} */}
         {fishCollection
           .sort(SortOptions[sortOption].sortFn)
           ?.map((fish, index) => (

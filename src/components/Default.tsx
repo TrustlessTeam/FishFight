@@ -53,11 +53,10 @@ const Default = () => {
 	<>
 		{disclaimerApproved &&
 			<WelcomeWrapper>
-				<h1>Welcome to FishFight!</h1>
 				<WelcomeContainer>
 					<Item to="/ocean">
 						<LogoImg src={oceanImg} alt="Ocean"></LogoImg>
-						<Text>Interact with your $FISH! Feed, Deposit/Withdraw from Pools, and Collect $FISHFOOD</Text>
+						<Text>Interact with $FISH! Feed, Manage, and Quest your $FISH at the Ocean</Text>
 					</Item>
 					<Item to="/fishing">
 						<LogoImg src={fishingImg} alt="Ocean"></LogoImg>
@@ -69,7 +68,7 @@ const Default = () => {
 					</Item>
 					<Item to="/breeding">
 						<LogoImg src={breedingImg} alt="Breeding"></LogoImg>
-						<Text>Fight $FISH to earn $FISHFOOD and become an ALPHA at the Breeding Waters</Text>
+						<Text>Breed BETTA and ALPHA $FISH at the Breeding Waters</Text>
 					</Item>
 				</WelcomeContainer>
 
@@ -95,6 +94,11 @@ const LogoImg = styled.img`
 const Text = styled.p`
 	color: black;
 	text-align: center;
+	font-size: ${props => props.theme.font.small};
+
+	@media ${props => props.theme.device.tablet} {
+		font-size: ${props => props.theme.font.medium};
+  }
 `;
 
 const WelcomeWrapper = styled.div`
@@ -109,7 +113,7 @@ const WelcomeWrapper = styled.div`
 const WelcomeContainer = styled.div`
 	display: flex;
 	flex-flow: row wrap;
-	justify-content: space-between;
+	justify-content: center;
 	align-items: flex-start;
 `;
 
@@ -118,14 +122,25 @@ const Item = styled(Link)`
 	flex-flow: column;
 	justify-content: flex-start;
 	align-items: center;
-	background-color: rgba(255,255,255,0.8);
+	background-color: rgba(255,255,255,0.7);
 	padding: ${props => props.theme.spacing.gap};
 	margin: ${props => props.theme.spacing.gap};
-	border-radius: 25px;
+	border-radius: 30px;
 	pointer-events: auto;
-	width: 150px;
+	width: 120px;
+	height: 120px;
 	text-decoration: none;
+  transition: all 0.25s ease-in-out;
 
+
+	@media ${props => props.theme.device.tablet} {
+		width: 160px;
+		height: 160px;
+  }
+
+	&:hover {
+		background-color: rgba(255,255,255,1);
+	}
 `;
 
 

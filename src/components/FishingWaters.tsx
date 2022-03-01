@@ -174,11 +174,11 @@ const FishingWaters = () => {
 						</DataText>
 						{currentSeason?.phaseString === 'Fishing' ? 
 							<DataText>
-								{`Chance to Catch: ${((maxSupply - totalSupply) / maxSupply) * 100}%`}
+								{`Chance to Catch: ${(((maxSupply - totalSupply) / maxSupply) * 100).toFixed(2)}%`}
 							</DataText>
 							:
 							<DataText>
-								{`Chance to Catch: ${((maxSupply - totalSupply) / (maxSupply * 2)) * 100}%`}
+								{`Chance to Catch: ${(((maxSupply - totalSupply) / (maxSupply * 2)) * 100).toFixed(2)}%`}
 							</DataText>
 						}
 					</DataContainer>
@@ -230,12 +230,10 @@ const InfoContainer = styled.div`
 	justify-content: center;
 	align-items: flex-start;
 	height: 100%;
-	margin: 70px;
-	
-	
+	margin: 100px;
 
 	@media ${props => props.theme.device.tablet} {
-		margin: 90px;
+		margin: 120px;
   }
 `;
 

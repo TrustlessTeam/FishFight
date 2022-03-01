@@ -185,7 +185,7 @@ const NavImg = styled(NavLink)<ActiveProps>`
   &.active {
     font-weight: bold;
     & > img {
-      background-color: rgba(255, 255, 255, 0.5);
+      background-color: rgba(255, 255, 255, 1);
     }
     & + div {
       display: flex;

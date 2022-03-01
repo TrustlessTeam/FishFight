@@ -39,7 +39,7 @@ const BreedingWaters = () => {
 
 	useEffect(() => {
 		console.log("Breeding Fish")
-		// unityContext.clearUIFish();
+		unityContext.clearUIFish();
 		// unityContext.clearFishPool("ShowBreeding")
 		unityContext.hideUI();
 		unityContext.showBreedingLocation();
@@ -164,6 +164,19 @@ const BreedingWaters = () => {
 		)
 	}
 
+	const ViewOptions = () => {
+		return (
+			<>
+			{account &&
+				<ToggleGroup>
+					<ToggleOption className={fishSelectionToShow === FishSelectionEnum.MyFish ? 'active' : ''} onClick={() => setFishSelectionToShow(FishSelectionEnum.MyFish)}>My $FISH</ToggleOption>
+					<ToggleOption className={fishSelectionToShow === FishSelectionEnum.AlphaFish ? 'active' : ''} onClick={() => setFishSelectionToShow(FishSelectionEnum.AlphaFish)}>Alpha $FISH</ToggleOption>
+				</ToggleGroup>
+			}
+			</>
+		)
+	}
+
 	const BreederSelection = () => {
 		return (
 			<BaseOverlayContainer
@@ -173,33 +186,29 @@ const BreedingWaters = () => {
 			>
 				{myBettaFish != null &&
 				<OptionsContainer>
-					{myBettaFish.stakedBreeding &&
+					{/* {myBettaFish.stakedBreeding &&
 						<GameButton onClick={() => withdrawBreedingFish(myBettaFish)}>{'Withdraw Breeder'}</GameButton>
 					}
 					{myBettaFish.seasonStats.fightWins > 0 && !myBettaFish.stakedFighting &&
 						<GameButton onClick={() => depositBreedingFish(myBettaFish)}>{'Deposit'}</GameButton>
-					}
+					} */}
 					{myBettaFish && alphaFish &&
 						<GameButton onClick={() => breedFish(alphaFish, myBettaFish)}>{'Breed Fish'}</GameButton>
 					}
 				</OptionsContainer>
 				}
-				<ContainerControls>
-					{account &&
-						<ToggleGroup>
-							<ToggleOption className={fishSelectionToShow === FishSelectionEnum.MyFish ? 'active' : ''} onClick={() => setFishSelectionToShow(FishSelectionEnum.MyFish)}>My $FISH</ToggleOption>
-							<ToggleOption className={fishSelectionToShow === FishSelectionEnum.AlphaFish ? 'active' : ''} onClick={() => setFishSelectionToShow(FishSelectionEnum.AlphaFish)}>Alpha $FISH</ToggleOption>
-						</ToggleGroup>
-					}
-				</ContainerControls>
 				{account && userFish.length > 0 && fishSelectionToShow === FishSelectionEnum.MyFish && 
-					<FishViewer type="Breeding" selectedFish={myBettaFish} fishCollection={userFish} onClick={setUserBetta} />
+					<FishViewer type="Breeding" selectedFish={myBettaFish} fishCollection={userFish} onClick={setUserBetta}>
+						<ViewOptions></ViewOptions>
+					</FishViewer>
 				}
 				{account && userFish.length === 0 && fishSelectionToShow === FishSelectionEnum.MyFish &&
 					<BaseLinkButton to={'/catch'}>Catch a Fish!</BaseLinkButton>
 				}
 				{(fishSelectionToShow === FishSelectionEnum.AlphaFish || !account ) &&
-					<FishViewer selectedOpponent={alphaFish} fishCollection={breedingFish} onClick={setAlpha} />
+					<FishViewer selectedOpponent={alphaFish} fishCollection={breedingFish} onClick={setAlpha}>
+						<ViewOptions></ViewOptions>
+					</FishViewer>
 				}
 		</BaseOverlayContainer>
 		)

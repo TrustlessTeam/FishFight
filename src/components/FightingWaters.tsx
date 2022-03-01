@@ -41,7 +41,7 @@ const FightingWaters = () => {
 			console.log('UI changed catch fish');
 			console.log(data)
 			switch (data) {
-				case 'fight_confirm':
+				case 'confirm':
 					fightFish(mySelectedFish, opponentFish);
 					return;
 				default:
@@ -53,7 +53,7 @@ const FightingWaters = () => {
 		unityContext.UnityInstance.on("UI_Fighting_Start_Request", function () {
       console.log("UI_Fighting_Start_Request!");
     });
-	}, [unityContext.isFishPoolReady, account]);
+	}, [unityContext.isFishPoolReady, account, mySelectedFish, opponentFish]);
 
 	useEffect(() => {
 		if(account) {
@@ -148,25 +148,34 @@ const FightingWaters = () => {
 		)
 	}
 
+	const ViewOptions = () => {
+		return (
+			<>
+			{account &&
+				<ToggleGroup>
+					<ToggleOption className={fishSelectionToShow === FishSelectionEnum.MyFish ? 'active' : ''} onClick={() => setFishSelectionToShow(FishSelectionEnum.MyFish)}>My $FISH</ToggleOption>
+					<ToggleOption className={fishSelectionToShow === FishSelectionEnum.FightFish ? 'active' : ''} onClick={() => setFishSelectionToShow(FishSelectionEnum.FightFish)}>Opponent $FISH</ToggleOption>
+				</ToggleGroup>
+			}
+			</>
+		)
+	}
+
 	const FighterSelection = () => {
 		return (
 			<>
-				<ContainerControls>
-					{account &&
-						<ToggleGroup>
-							<ToggleOption className={fishSelectionToShow === FishSelectionEnum.MyFish ? 'active' : ''} onClick={() => setFishSelectionToShow(FishSelectionEnum.MyFish)}>My $FISH</ToggleOption>
-							<ToggleOption className={fishSelectionToShow === FishSelectionEnum.FightFish ? 'active' : ''} onClick={() => setFishSelectionToShow(FishSelectionEnum.FightFish)}>Opponent $FISH</ToggleOption>
-						</ToggleGroup>
-					}
-				</ContainerControls>
 				{account && userFish.length > 0 && fishSelectionToShow === FishSelectionEnum.MyFish && 
-					<FishViewer type="Fighting" selectedFish={mySelectedFish} fishCollection={userFish} onClick={setUserFighter} />
+					<FishViewer type="Fighting" selectedFish={mySelectedFish} fishCollection={userFish} onClick={setUserFighter}>
+						<ViewOptions></ViewOptions>
+					</FishViewer>
 				}
 				{account && userFish.length === 0 && fishSelectionToShow === FishSelectionEnum.MyFish &&
 					<BaseLinkButton to={'/catch'}>Catch a Fish!</BaseLinkButton>
 				}
 				{(fishSelectionToShow === FishSelectionEnum.FightFish || !account ) &&
-					<FishViewer depositFighter selectedOpponent={opponentFish} fishCollection={fightingFish} onClick={setOpponentFighter} />
+					<FishViewer depositFighter selectedOpponent={opponentFish} fishCollection={fightingFish} onClick={setOpponentFighter}>
+						<ViewOptions></ViewOptions>
+					</FishViewer>
 				}
 			</>
 		)

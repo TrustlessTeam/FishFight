@@ -122,11 +122,11 @@ const StatusModal = ({}: Props) => {
 					</DataItem>
 					{currentSeason?.phaseString === 'Fishing' ? 
 						<DataItem title="">
-							<StatusText>{`Chance to Catch: ${((maxSupply - totalSupply) / maxSupply) * 100}%`}</StatusText>
+							<StatusText>{`Chance to Catch: ${(((maxSupply - totalSupply) / maxSupply) * 100).toFixed(2)}%`}</StatusText>
 						</DataItem>
 						:
 						<DataItem title="">
-							<StatusText>{`Chance to Catch: ${((maxSupply - totalSupply) / (maxSupply * 2)) * 100}%`}</StatusText>
+							<StatusText>{`Chance to Catch: ${(((maxSupply - totalSupply) / (maxSupply * 2)) * 100).toFixed(2)}%`}</StatusText>
 						</DataItem>
 					}
 					
@@ -199,7 +199,7 @@ const StatusModal = ({}: Props) => {
 						<StatusText>{`Deposited Fighters: ${balanceFightFish}`}</StatusText>
 					</DataItem>
 					<DataItem>
-						<StatusText>{`Pending $FISHFOOD from Wins: ${pendingFightFood}, from Staking: ${pendingAward}`}</StatusText>
+						<StatusText>{`Pending $FISHFOOD from Wins: ${parseFloat(pendingFightFood ? pendingFightFood : '0').toFixed(2)}, from Staking: ${parseFloat(pendingAward ? pendingAward : '0').toFixed(2)}`}</StatusText>
 					</DataItem>
 						
 				</StatusContainer>
@@ -348,7 +348,7 @@ const StatusContainer = styled.div`
 
 const Title = styled.h1`
 	color: black;
-	font-size: ${props => props.theme.font.large};
+	font-size: ${props => props.theme.font.medium};
 
 	@media ${props => props.theme.device.tablet} {
 		display: block;
@@ -360,7 +360,7 @@ const Title = styled.h1`
 
 const SubTitle = styled.h2`
 	color: black;
-	font-size: ${props => props.theme.font.medium};
+	font-size: ${props => props.theme.font.small};
 	text-decoration: underline;
 
 	@media ${props => props.theme.device.tablet} {
@@ -377,7 +377,7 @@ const StatusText = styled.b`
 	justify-content: center;
 	align-items: center;
 	color: black;
-	font-size: ${props => props.theme.font.medium}vmax;
+	font-size: ${props => props.theme.font.small};
 	margin-bottom: ${props => props.theme.spacing.gapSmall};
 	padding: 0 ${props => props.theme.spacing.gapSmall};
 
@@ -422,6 +422,11 @@ const WaterStats = styled(BaseButton)`
 	border-radius: 25px;
 	&::before {
     border-radius: 25px;
+  }
+	padding: 10px 10px;
+
+	@media ${props => props.theme.device.tablet} {
+	  padding: 14px 24px;
   }
 `;
 
