@@ -152,7 +152,7 @@ const FishingWaters = () => {
 			{noCatch &&
 				<MissedCatchContainer>
 					<CaughtFish>
-						<Text>Missed the big one! Looks like you caught some $FISHFOOD...</Text>
+						{/* <Text>Missed the big one! Looks like you caught some $FISHFOOD...</Text> */}
 						<Text>{`You rolled a ${diceRoll}, but needed less than ${maxSupply - totalSupply}`}</Text>
 					</CaughtFish>
 	

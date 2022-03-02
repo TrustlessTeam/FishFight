@@ -123,7 +123,7 @@ const Menu = ({name, items} : Props) => {
 	
 	return (
     <Drop>
-      <BaseButton onClick={() => toggleDropdown()}>
+      <Dropbtn onClick={() => toggleDropdown()}>
         {name}
         <LogoImg open={open} src={dropdownImg} alt={"Dropdown arrow"}></LogoImg>
         <DropContent open={open}>
@@ -131,12 +131,13 @@ const Menu = ({name, items} : Props) => {
           return (
             <DropItem key={index} onClick={() => {
               toggleDropdown();
+              console.log(selection)
               selection.onClick();
             }}>{selection.name}</DropItem>
           )
         })}
       </DropContent>
-      </BaseButton>
+      </Dropbtn>
     </Drop>
   );
 };
