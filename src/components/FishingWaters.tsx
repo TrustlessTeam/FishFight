@@ -16,7 +16,7 @@ import Account from './Account';
 const FishingWaters = () => {
 	const unityContext = useUnity()
 	const { account } = useWeb3React();
-	const { trainingFoodApproval, FishFight, maxSupply, totalSupply, refetchBalance } = useFishFight()
+	const { currentSeason, FishFight, maxSupply, totalSupply, refetchBalance } = useFishFight()
 	const { createUserFish } = useFishPool();
 	const { contractApproveFoodForTraining } = useContractWrapper();
 
@@ -129,7 +129,7 @@ const FishingWaters = () => {
 				spinner
 				text='Fishing from the blockchain...'>
 			{caughtFish && caughtFishHash &&
-				<ContainerControls>
+				<CatchContainer>
 					<CaughtFish>
 						<FishData><b>Token ID: {caughtFish.tokenId}</b></FishData>
 						<FishData>Strength: {caughtFish.strength}</FishData>
@@ -139,35 +139,52 @@ const FishingWaters = () => {
 						<TransactionLink target="_blank" href={`https://explorer.pops.one/tx/${caughtFishHash}`}>View Transaction</TransactionLink>
 					</CaughtFish>
 	
-					<GameButton onClick={() => {
+					<BaseButton onClick={() => {
 						setCaughtFish(null);
 						setCaughtFishHash(null);
 						unityContext.clearFishPool('showFishingLocation');
 					}}>
 						Catch another fish!
-					</GameButton>
-				</ContainerControls>
+					</BaseButton>
+				</CatchContainer>
 			}
 			
 			{noCatch &&
-			<ContainerControls>
 				<MissedCatchContainer>
 					<CaughtFish>
-						<Text>Sorry... It got away!</Text>
+						{/* <Text>Missed the big one! Looks like you caught some $FISHFOOD...</Text> */}
 						<Text>{`You rolled a ${diceRoll}, but needed less than ${maxSupply - totalSupply}`}</Text>
 					</CaughtFish>
 	
-					<GameButton onClick={() => {
+					<BaseButton onClick={() => {
 						setCaughtFish(null);
 						setCaughtFishHash(null);
 						setNoCatch(false)
 						unityContext.clearFishPool('showFishingLocation');
 					}}>
 						Try again!
-					</GameButton>
+					</BaseButton>
 				</MissedCatchContainer>
-			</ContainerControls>
 			}
+			{!caughtFish &&
+				<InfoContainer>
+					<DataContainer>
+						<DataText>
+							{`Fish Available: ${maxSupply - totalSupply}`}
+						</DataText>
+						{currentSeason?.phaseString === 'Fishing' ? 
+							<DataText>
+								{`Chance to Catch: ${(((maxSupply - totalSupply) / maxSupply) * 100).toFixed(2)}%`}
+							</DataText>
+							:
+							<DataText>
+								{`Chance to Catch: ${(((maxSupply - totalSupply) / (maxSupply * 2)) * 100).toFixed(2)}%`}
+							</DataText>
+						}
+					</DataContainer>
+				</InfoContainer>
+			}
+			
 			
 			</BaseOverlayContainer>
 		);
@@ -186,6 +203,39 @@ const FishingWaters = () => {
 	return null;
 };
 
+const CatchContainer = styled.div`
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-start;
+	align-items: center;
+	height: 100%;
+	padding: ${props => props.theme.spacing.gap};
+	margin: ${props => props.theme.spacing.gap};
+
+	@media ${props => props.theme.device.tablet} {
+		width: 25%;
+		justify-content: center;
+  }
+`;
+
+const DataContainer = styled.div`
+	background-color: rgba(255, 255, 255, 0.8);
+	border-radius: 25px;
+	padding: ${props => props.theme.spacing.gap};
+`
+
+const InfoContainer = styled.div`
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+	align-items: flex-start;
+	height: 100%;
+	margin: 100px;
+
+	@media ${props => props.theme.device.tablet} {
+		margin: 120px;
+  }
+`;
 
 const CaughtFish = styled.div`
 	display: flex;
@@ -196,6 +246,26 @@ const CaughtFish = styled.div`
 	padding: ${props => props.theme.spacing.gap};
 	margin: ${props => props.theme.spacing.gap};
 	border-radius: 25px;
+`;
+
+const DataText = styled.p`
+	display: flex;
+	flex-flow: row;
+	justify-content: center;
+	align-items: center;
+	margin-top: ${props => props.theme.spacing.gapSmall};
+	/* background-color: white; */
+	color: black;
+	/* border: 2px solid white; */
+	border-radius: 50%;
+
+	& > span {
+		margin-left: 4px;
+	}
+
+	@media ${props => props.theme.device.tablet} {
+		margin: 0;
+  }
 `;
 
 const TransactionLink = styled.a`
@@ -224,42 +294,30 @@ const MissedCatchContainer = styled.div`
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
+	align-items: center;
 	height: 100%;
+	@media ${props => props.theme.device.tablet} {
+		justify-content: center;
+  }
 `;
 
 const Text = styled.p`
 	display: flex;
 	flex-flow: column;
 	justify-content: center;
+	align-items: center;
 	padding: ${props => props.theme.spacing.gap};
 	margin: 0;
 	background-color: white;
-	font-size: ${props => props.theme.font.large};
-	border-radius: 25px;
-	margin-left: ${props => props.theme.spacing.gapSmall};
-`;
-
-const GameButton = styled.button`
-	text-align: center;
-	padding: ${props => props.theme.spacing.gap};
-	border-radius: 25px;
-	background-color: white;
-	opacity: 0.7;
-	border: none;
-	box-shadow: 1px 2px 4px 4px rgba(0, 0, 0, 0.25);
 	color: black;
+	font-size: ${props => props.theme.font.medium};
+	border-radius: 25px;
 	margin-left: ${props => props.theme.spacing.gapSmall};
-	transition: opacity 0.3s ease, box-shadow 0.25s ease-in-out;
-	text-transform: uppercase;
-	font-weight: bolder;
-	text-decoration: none;
-	font-size: ${props => props.theme.font.large};
 
-	&:hover {
-		opacity: 1;
-		box-shadow: 1px 2px 2px 2px rgba(0, 0, 0, 0.2);
-		cursor: pointer;
-	}
+	@media ${props => props.theme.device.tablet} {
+		font-size: ${props => props.theme.font.large};
+
+  }
 `;
 
 export default FishingWaters;

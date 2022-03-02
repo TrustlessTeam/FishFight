@@ -80,7 +80,7 @@ const MenuContainer = styled.div`
 	flex-flow: row nowrap;
 	align-items: center;
 	/* justify-content: space-between; */
-	background-color: rgba(0, 0, 0, 0.8);
+	background-color: rgba(0, 0, 0, 0.6);
 
 	@media ${props => props.theme.device.tablet} {
 		display: flex;

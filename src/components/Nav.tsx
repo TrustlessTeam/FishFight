@@ -9,10 +9,10 @@ import {
 } from "react-router-dom";
 import { useState } from 'react';
 
-import fishingImg from "../img/icons/fishing.svg"
-import breedingImg from "../img/icons/breeding.svg"
-import fightingImg from "../img/icons/fighting.svg"
-import oceanImg from "../img/icons/ocean.svg"
+import fishingImg from "../img/icons/fishing-dark.svg"
+import breedingImg from "../img/icons/breeding-dark.svg"
+import fightingImg from "../img/icons/fighting-dark.svg"
+import oceanImg from "../img/icons/ocean-dark.svg"
 
 type Props = {
   fish: Fish;
@@ -96,15 +96,21 @@ const Logo = styled(Link)`
 `;
 
 const LogoImg = styled.img<ActiveProps>`
-	height: 50px;
+	height: 40px;
 	/* border: 2px solid white;s */
 	border-radius: 50%;
+  padding: 5px;
+  background-image: linear-gradient(#b6deffe1, #50cdffc1);
+  box-shadow: inset 2px 2px 2px #c7c7c74b, inset -2px -2px 2px #3f3f3f4c;
+
+
   &.active {
     background-color: rgba(255, 255, 255, 0.5);
   }
 
   @media ${props => props.theme.device.tablet} {
-		height: 70px;
+    padding: 10px;
+		height: 50px;
   }
 `;
 
@@ -179,7 +185,7 @@ const NavImg = styled(NavLink)<ActiveProps>`
   &.active {
     font-weight: bold;
     & > img {
-      background-color: rgba(255, 255, 255, 0.5);
+      background-color: rgba(255, 255, 255, 1);
     }
     & + div {
       display: flex;

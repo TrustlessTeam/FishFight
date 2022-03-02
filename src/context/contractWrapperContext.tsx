@@ -404,9 +404,10 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 		}).on('receipt', async (result: any) => {
 			const fightIndex = web3.utils.toNumber(result.events.FightCompleted.returnValues._fightIndex);
 			setPendingTransaction(false);
-			const fightResult = await getFightByIndex(fightIndex)
+			const fightResult = await getFightByIndex(fightIndex, myFish)
 			unityContext.sendFightResult(fightResult);
 			refreshFish(fightResult.winner, true, false);
+			// unityContext.
 			toast.success('Fight Completed!', {
 				onClose: async () => {
 					refetchBalance()
@@ -771,13 +772,14 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 
 	}
 
-	
-
-	
-
-	const getFightByIndex = async (fightIndex: number) => {
+	const getFightByIndex = async (fightIndex: number, myFish: Fish) => {
 		const fightInfo = await FishFight.fightingWaters?.methods.getFightInfo(fightIndex).call();
-		return new Fight(fightInfo);
+		let fightResult = new Fight(fightInfo);
+		if(myFish.tokenId === fightResult.winner) fightResult.playerResult = 1;
+		else if(fightResult.winner === 0) fightResult.playerResult = 0;
+		else fightResult.playerResult = -1;
+
+		return fightResult;
 	}
 
 	function getRandomIntInclusive(min: number, max: number) {

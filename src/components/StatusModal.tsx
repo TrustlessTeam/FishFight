@@ -15,7 +15,8 @@ import Countdown from 'react-countdown';
 import BN from 'bn.js'
 import { StakedFighting } from '../utils/fish';
 import { Route, Routes } from 'react-router-dom';
-import infoImg from "../img/icons/info.svg"
+import infoImg from "../img/icons/info.svg";
+import waterImg from "../img/icons/water-dark.svg";
 import { BaseButton } from './BaseStyles';
 import { useContractWrapper } from '../context/contractWrapperContext';
 
@@ -121,11 +122,11 @@ const StatusModal = ({}: Props) => {
 					</DataItem>
 					{currentSeason?.phaseString === 'Fishing' ? 
 						<DataItem title="">
-							<StatusText>{`Chance to Catch: ${((maxSupply - totalSupply) / maxSupply) * 100}%`}</StatusText>
+							<StatusText>{`Chance to Catch: ${(((maxSupply - totalSupply) / maxSupply) * 100).toFixed(2)}%`}</StatusText>
 						</DataItem>
 						:
 						<DataItem title="">
-							<StatusText>{`Chance to Catch: ${((maxSupply - totalSupply) / (maxSupply * 2)) * 100}%`}</StatusText>
+							<StatusText>{`Chance to Catch: ${(((maxSupply - totalSupply) / (maxSupply * 2)) * 100).toFixed(2)}%`}</StatusText>
 						</DataItem>
 					}
 					
@@ -198,7 +199,7 @@ const StatusModal = ({}: Props) => {
 						<StatusText>{`Deposited Fighters: ${balanceFightFish}`}</StatusText>
 					</DataItem>
 					<DataItem>
-						<StatusText>{`Pending $FISHFOOD from Wins: ${pendingFightFood}, from Staking: ${pendingAward}`}</StatusText>
+						<StatusText>{`Pending $FISHFOOD from Wins: ${parseFloat(pendingFightFood ? pendingFightFood : '0').toFixed(2)}, from Staking: ${parseFloat(pendingAward ? pendingAward : '0').toFixed(2)}`}</StatusText>
 					</DataItem>
 						
 				</StatusContainer>
@@ -260,7 +261,9 @@ const StatusModal = ({}: Props) => {
 
 		return (
 			<ImgContainer>
-				<LogoImg src={infoImg} open={modalIsOpen} onClick={toggleModel}></LogoImg>
+				<WaterStats onClick={toggleModel}>
+					Info<LogoImg open={modalIsOpen} src={waterImg}></LogoImg>
+				</WaterStats>
 				<Modal
 					isOpen={modalIsOpen}
 					className="Modal"
@@ -309,6 +312,7 @@ const ImgContainer = styled.div`
 `;
 
 const StatusModalContainer = styled.div`
+	position: relative;
 	display: flex;
 	flex-flow: column;
 	background-color: white;
@@ -344,7 +348,7 @@ const StatusContainer = styled.div`
 
 const Title = styled.h1`
 	color: black;
-	font-size: ${props => props.theme.font.large}vmax;
+	font-size: ${props => props.theme.font.medium};
 
 	@media ${props => props.theme.device.tablet} {
 		display: block;
@@ -356,7 +360,7 @@ const Title = styled.h1`
 
 const SubTitle = styled.h2`
 	color: black;
-	font-size: ${props => props.theme.font.medium}vmax;
+	font-size: ${props => props.theme.font.small};
 	text-decoration: underline;
 
 	@media ${props => props.theme.device.tablet} {
@@ -373,7 +377,7 @@ const StatusText = styled.b`
 	justify-content: center;
 	align-items: center;
 	color: black;
-	font-size: ${props => props.theme.font.medium}vmax;
+	font-size: ${props => props.theme.font.small};
 	margin-bottom: ${props => props.theme.spacing.gapSmall};
 	padding: 0 ${props => props.theme.spacing.gapSmall};
 
@@ -414,16 +418,24 @@ const DataRow = styled.div`
 	width: 100%;
 `;
 
-
-const LogoImg = styled.img<{open: boolean}>`
-	background-color: ${p => (p.open ? "gray" : "white")};
-	padding: ${props => props.theme.spacing.gapSmall};
-	height: 25px;
-	margin-left: ${props => props.theme.spacing.gapSmall};
-	border-radius: 50%;
+const WaterStats = styled(BaseButton)`
+	border-radius: 25px;
+	&::before {
+    border-radius: 25px;
+  }
+	padding: 10px 10px;
 
 	@media ${props => props.theme.device.tablet} {
-	  height: 20px;
+	  padding: 14px 24px;
+  }
+`;
+
+const LogoImg = styled.img<{open: boolean}>`
+	/* padding: ${props => props.theme.spacing.gapSmall}; */
+	height: 0px;
+
+	@media ${props => props.theme.device.tablet} {
+	  height: 30px;
   }
 `;
 

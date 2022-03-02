@@ -50,7 +50,7 @@ const App = () => {
           	</Routes>	
 	
 
-						<Blockchain></Blockchain>
+						{/* <Blockchain></Blockchain> */}
 
 					</Container>
 					<ToastContainer
@@ -70,7 +70,9 @@ const Wrapper = styled.div`
 	display: flex;
 	flex-flow: row wrap;
 	width: 100vw;
-	max-height: 100vh;
+	height: 100vh;
+	max-height: 100%;
+	max-width: 100%;
 	background-color: ${props => props.theme.colors.color1};
 	background-image: ${props => props.theme.colors.gradientTop};
 	font-size: 1rem;
@@ -78,11 +80,11 @@ const Wrapper = styled.div`
 
 const Container = styled.div`
 	display: flex;
-	width: 100vw;
+	width: 100%;
 	flex-direction: column;
 	align-items: center;
 	justify-content: flex-start;
-	height: 100vh;
+	height: 100%;
 	margin: 0 auto;
 `;
 

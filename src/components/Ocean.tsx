@@ -147,6 +147,24 @@ const Ocean = () => {
 		)
 	}
 
+	const ViewOptions = () => {
+		return (
+			<>
+				<ToggleGroup>
+					<ToggleOption className={fishToShow === FishView.Ocean ? 'active' : ''} onClick={() => setFishToShow(FishView.Ocean)}>Ocean Fish</ToggleOption>
+					<ToggleOption className={fishToShow === FishView.User ? 'active' : ''} onClick={() => setFishToShow(FishView.User)}>My Fish</ToggleOption>
+				</ToggleGroup>
+				{/* <Menu name={FishView[fishToShow]} items={FishViewOptions}></Menu> */}
+				{!account && fishToShow === FishView.User &&
+					<Account mobile={false}/>
+				}
+				{fishToShow === FishView.User && userFish?.length === 0 &&
+					<BaseLinkButton to={'/fishing'}>Catch a Fish!</BaseLinkButton>
+				}
+			</>
+		)
+	}
+
 
 	return (
 
@@ -164,24 +182,15 @@ const Ocean = () => {
 						</ContainerControls>
 
 				}
-				<ContainerControls>
-					<ToggleGroup>
-						<ToggleOption className={fishToShow === FishView.Ocean ? 'active' : ''} onClick={() => setFishToShow(FishView.Ocean)}>Ocean Fish</ToggleOption>
-						<ToggleOption className={fishToShow === FishView.User ? 'active' : ''} onClick={() => setFishToShow(FishView.User)}>My Fish</ToggleOption>
-					</ToggleGroup>
-					{/* <Menu name={FishView[fishToShow]} items={FishViewOptions}></Menu> */}
-					{!account && fishToShow === FishView.User &&
-						<Account mobile={false}/>
-					}
-					{fishToShow === FishView.User && account && userFish?.length === 0 &&
-						<BaseLinkButton to={'/catch'}>Catch a Fish!</BaseLinkButton>
-					}
-				</ContainerControls>
 				{fishToShow === FishView.Ocean &&
-					<FishViewer selectedOpponent={mySelectedFish} fishCollection={oceanFish} onClick={oceanFishClick}></FishViewer>
+					<FishViewer selectedOpponent={mySelectedFish} fishCollection={oceanFish} onClick={oceanFishClick}>
+						<ViewOptions></ViewOptions>
+					</FishViewer>
 				}
 				{fishToShow === FishView.User &&
-					<FishViewer selectedFish={mySelectedFish} fishCollection={userFish} onClick={oceanFishClick}></FishViewer>
+					<FishViewer selectedFish={mySelectedFish} fishCollection={userFish} onClick={oceanFishClick}>
+						<ViewOptions></ViewOptions>
+					</FishViewer>
 				}
 				
 		</BaseOverlayContainer>

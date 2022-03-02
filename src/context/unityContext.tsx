@@ -448,6 +448,15 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
     console.log("SendFight Completed");
   };
 
+  const updateWinningFish = (fish: Fish) => {
+    UnityInstance.send(
+      "ShowFightingResults_UI",
+      "SetFish1",
+      JSON.stringify(fish)
+    );
+    UnityInstance.send("FishPool", "ShowFightingResults_UI")
+  }
+
   const sendTie = () => {
     console.log("SetTie Called");
     UnityInstance.send("FishPool", "SetTie");

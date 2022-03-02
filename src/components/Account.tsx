@@ -20,9 +20,15 @@ import { useFishFight } from '../context/fishFightContext';
 import fishImg from "../img/icons/fish.svg"
 import deadImg from "../img/icons/dead.svg"
 import foodImg from "../img/icons/food.svg"
+import fishImgDark from "../img/icons/fish-dark.svg"
+import deadImgDark from "../img/icons/dead-dark.svg"
+import foodImgDark from "../img/icons/food-dark.svg"
+import breedingImgDark from "../img/icons/breeding-dark.svg"
+import fightingImgDark from "../img/icons/fighting-dark.svg"
 import walletImg from "../img/icons/wallet.svg"
 import breedingImg from "../img/icons/breeding.svg"
 import fightingImg from "../img/icons/fighting.svg"
+import { BaseButton } from './BaseStyles';
 
 
 // ?
@@ -74,28 +80,28 @@ const Account = ({ children, mobile, textOverride }: Props) => {
 								</BalanceComponent>
 								<BalanceComponent title="FISHFOOD Balance">
 									<BalanceText>
-										{parseFloat(balanceFood ? balanceFood : '0').toFixed(2)}<LogoImg src={foodImg} alt="FISHFOOD"></LogoImg>
+										{parseFloat(balanceFood ? balanceFood : '0').toFixed(2)}<LogoImg src={foodImgDark} alt="FISHFOOD"></LogoImg>
 									</BalanceText>
 								</BalanceComponent>
 								<BalanceComponent title="FISH Balance">
 									<BalanceText>
-										{balanceFish}<LogoImg src={fishImg} alt="FISH" ></LogoImg>
+										{balanceFish}<LogoImg src={fishImgDark} alt="FISH" ></LogoImg>
 									</BalanceText>
 								</BalanceComponent>
 
 								<BalanceComponent title="FIGHTFISH Balance">
 									<BalanceText>
-										{balanceFightFish}<LogoImg src={fightingImg} alt="FIGHTFISH"></LogoImg>
+										{balanceFightFish}<LogoImg src={fightingImgDark} alt="FIGHTFISH"></LogoImg>
 									</BalanceText>
 								</BalanceComponent>
 								<BalanceComponent title="BREEDFISH Balance">
 									<BalanceText>
-										{balanceBreedFish}<LogoImg src={breedingImg} alt="BREEDFISH"></LogoImg>
+										{balanceBreedFish}<LogoImg src={breedingImgDark} alt="BREEDFISH"></LogoImg>
 									</BalanceText>
 								</BalanceComponent>
 								<BalanceComponent title="DEADFISH Balance">
 									<BalanceText>
-										{balanceDeadFish}<LogoImg src={deadImg} alt="DEADFISH"></LogoImg>
+										{balanceDeadFish}<LogoImg src={deadImgDark} alt="DEADFISH"></LogoImg>
 									</BalanceText>
 								</BalanceComponent>
 									
@@ -131,7 +137,7 @@ const Account = ({ children, mobile, textOverride }: Props) => {
 						{parsedAccount.substring(0, 6)}...{parsedAccount.substring(parsedAccount.length - 4)}
 					</span>
 				) : (
-					<Span>{textOverride ? textOverride : "Connect Wallet"}</Span>
+					<Row>{textOverride ? textOverride : "Connect"}<LogoImgWallet src={walletImg} alt="User Wallet"></LogoImgWallet></Row>
 				)}
 			</AccountComponent>
 		</Group>
@@ -219,33 +225,34 @@ const Group = styled.div`
   }
 `;
 
-const AccountComponent = styled.div`
-	display: flex;
-	justify-content: center;
-	font-size: ${props => props.theme.font.medium}vmax;
-	padding: ${props => props.theme.spacing.gapSmall} ${props => props.theme.spacing.gapSmall};
+const AccountComponent = styled(BaseButton)`
 	border-radius: 25px;
-	background-color: white;
-	opacity: 0.7;
-	box-shadow: 1px 2px 4px 4px rgba(0, 0, 0, 0.25);
-	color: black;
-	margin-left: ${props => props.theme.spacing.gapSmall};
-	transition: opacity 0.3s ease, box-shadow 0.25s ease-in-out;
 
+/* 
 	&:hover {
 		opacity: 1;
 		box-shadow: 1px 2px 2px 2px rgba(0, 0, 0, 0.2);
 		cursor: pointer;
-	}
+	} */
 	z-index: 5;
-	@media ${props => props.theme.device.tablet} {
+	/* @media ${props => props.theme.device.tablet} {
 	  font-size: ${props => props.theme.font.medium};
+  } */
+	&::before {
+    border-radius: 25px;
   }
 `;
 
 const Span = styled.span`
 	display: flex;
 	flex-flow: column;
+	justify-content: center;
+	align-items: center;
+`;
+
+const Row = styled.span`
+	display: flex;
+	flex-flow: row nowrap;
 	justify-content: center;
 	align-items: center;
 `;
@@ -288,6 +295,11 @@ const LogoImg = styled.img`
 	@media ${props => props.theme.device.tablet} {
 	  height: 30px;
   }
+`;
+
+const LogoImgWallet = styled.img`
+	height: 25px;
+	margin-left: 2px;
 `;
 
 const WalletImg = styled.img<{open: boolean}>`
