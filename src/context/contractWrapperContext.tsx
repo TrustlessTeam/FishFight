@@ -646,7 +646,7 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 	}
 
 	const contractQuestFish = async (fish: Fish) => {
-		const gas = await FishFight.trainingWaters?.methods.questFish(fish.tokenId, 2)
+		const gas = await FishFight.trainingWaters?.methods.questFish(fish.tokenId, 2).estimateGas({from: account})
 		return FishFight.trainingWaters?.methods.questFish(fish.tokenId, getRandomIntInclusive(0, 2)).send({
 			from: account,
 			gasPrice: 30000000000,

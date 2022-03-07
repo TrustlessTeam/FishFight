@@ -82,7 +82,6 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
       if(data.returnValues.tokenId) {
         console.log("Fish Caught - refetching data")
         refetchStats();
-        refetchBalance();
       }
     })
 
