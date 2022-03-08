@@ -10,13 +10,13 @@ import { ContainerControls } from './BaseStyles';
 
 const sortId = (a: Fish, b: Fish) => a.tokenId - b.tokenId;
 const sortAlpha = (a: Fish, b: Fish) => {
-	let bIsAlpha: any = b.seasonStats.fightWins > 0;
-	let aIsAlpha: any = a.seasonStats.fightWins > 0;
+	let bIsAlpha: any = b.fishModifiers.alphaModifier.uses > 0;
+	let aIsAlpha: any = a.fishModifiers.alphaModifier.uses > 0;
 	return bIsAlpha - aIsAlpha;
 }
 const sortBetta = (a: Fish, b: Fish) => {
-	let bIsBetta: any = b.seasonStats.fightWins === 0;
-	let aIsBetta: any = a.seasonStats.fightWins === 0;
+	let bIsBetta: any = b.fishModifiers.alphaModifier.uses === 0;
+	let aIsBetta: any = a.fishModifiers.alphaModifier.uses === 0;
 	return bIsBetta - aIsBetta;
 }
 const sortAgi = (a: Fish, b: Fish) => a.agility - b.agility;

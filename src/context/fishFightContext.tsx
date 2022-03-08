@@ -8,7 +8,7 @@ import { Harmony } from "@harmony-js/core";
 import { EtherscanProvider, Web3Provider } from "@ethersproject/providers";
 import Web3 from 'web3';
 import BN from 'bn.js'
-import { Season } from '../utils/season';
+import { Phase } from '../utils/cycles';
 
 // Typescript
 interface FishFightProviderContext {
@@ -22,8 +22,8 @@ interface FishFightProviderContext {
     balanceFightFish: string | undefined
     balanceBreedFish: string | undefined
     currentBlock: number
-    currentSeason: Season | undefined
-    currentPhaseEndTime: number | undefined
+    currentPhase: Phase | undefined
+    currentCycle: number;
     maxSupply: number
     maxCaught: number
     maxKilled: number
@@ -237,7 +237,8 @@ const useBalance = () => {
 
 // Account balance utilities that will be included in FishFightContext
 const useStats = () => {
-	const [currentSeason, setCurrentSeason] = useState<Season | undefined>(undefined);
+	const [currentCycle, setCurrentCycle] = useState<number>(0);
+  const [currentPhase, setCurrentPhase] = useState<Phase>(new Phase(0))
 	const [maxSupply, setMaxSupply] = useState<number>(0);
   const [maxCaught, setMaxCaught] = useState<number>(0);
   const [maxKilled, setMaxKilled] = useState<number>(0);
@@ -252,19 +253,18 @@ const useStats = () => {
 	const fetchStats = useCallback(
 		async (FishFight: FishFight) => {
       // when account is connected get balances - uses default and read only providers
-      const season = await FishFight.readSeasons.methods.getCurrentSeason().call();
+      const cycle = await FishFight.readCycles.methods.getCycle().call();
       const totalSupply = await FishFight.readFishFactory.methods.totalSupply().call();
-      const maxSupply = await FishFight.readSeasons.methods._maxSupply().call();
-      const maxCatch = await FishFight.readSeasons.methods._maxFishCaught().call();
-      const maxDeath = await FishFight.readSeasons.methods._maxFishCaught().call();
-      const maxBirths = await FishFight.readSeasons.methods._maxFishCaught().call();
-      const phaseEndTime = await FishFight.readSeasons.methods._phaseEndTime().call();
-      const endTimeDate = Web3.utils.toNumber(phaseEndTime) * 1000
+      const maxSupply = await FishFight.readCycles.methods._maxSupply().call();
+      const maxCatch = await FishFight.readCycles.methods._maxFishCaught().call();
+      const maxDeath = await FishFight.readCycles.methods._maxFishKilled().call();
+      const maxBirths = await FishFight.readCycles.methods._maxFishBred().call();
       const fightingSupply = await FishFight.readFishFactory.methods.balanceOf(FishFight.readFightingWaters.options.address).call();
       const breedingSupply = await FishFight.readFishFactory.methods.balanceOf(FishFight.readBreedingWaters.options.address).call();
-      console.log(endTimeDate)
-      setCurrentSeason(new Season(season));
-      setCurrentPhaseEndTime(endTimeDate);
+      const phase = await FishFight.readCycles.methods.getPhase().call();
+      console.log(phase)
+      setCurrentCycle(Web3.utils.toNumber(cycle));
+      setCurrentPhase(new Phase(phase));
       setTotalSupply(Web3.utils.toNumber(totalSupply));
       setMaxSupply(Web3.utils.toNumber(maxSupply));
       setFightingWatersSupply(Web3.utils.toNumber(fightingSupply));
@@ -273,12 +273,12 @@ const useStats = () => {
       setMaxKilled(Web3.utils.toNumber(maxDeath))
       setMaxBred(Web3.utils.toNumber(maxBirths))
 		},
-		[setCurrentSeason, setCurrentPhaseEndTime],
+		[setCurrentCycle, setCurrentPhase],
 	);
 
 	return {
-		currentSeason,
-    currentPhaseEndTime,
+		currentCycle,
+    currentPhase,
     maxSupply,
     totalSupply,
     fightingWatersSupply,

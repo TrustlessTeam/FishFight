@@ -1,3 +1,4 @@
+import { BigNumber } from 'ethers';
 import web3 from 'web3'
 import { Constants } from './constants';
 
@@ -22,40 +23,75 @@ export class StakedBreeding {
   }
 }
 
-export class TrainingStatus {
-  feedCooldown: number;
-  claimCooldown: number;
-  canFeed: () => boolean;
-  canClaim: () => boolean;
-  
+export type FightHistory = {
+  address: string;
+  fightId: number;
+}
+
+// export type Modifier = {
+//   time: number;
+//   value: number;
+//   uses: number;
+// }
+
+export class Modifier {
+  time: number;
+  value: number;
+  uses: number;
+
   constructor(
-    trainingObject: any,
+    modifierObject: any,
   ) {
-    this.feedCooldown = web3.utils.toNumber(trainingObject.lastFed);
-    this.claimCooldown = web3.utils.toNumber(trainingObject.lastClaimed);
-    this.canFeed = () => {return this.feedCooldown <= Math.round(Date.now() / 1000)}
-    this.canClaim = () => {return this.claimCooldown <= Math.round(Date.now() / 1000)}
+    this.time = web3.utils.toNumber(modifierObject[0].hex);
+    this.value = modifierObject[1];
+    this.uses = modifierObject[2];
   }
 }
 
-export class FishSeasonStats {
-	fightWins: number;
-	alphaBreeds: number;
-	bettaBreeds: number;
-  strModifier: number;
-  intModifier: number;
-  agiModifier: number;
+// export class TrainingStatus {
+//   feedCooldown: number;
+//   claimCooldown: number;
+//   canFeed: () => boolean;
+//   canClaim: () => boolean;
+  
+//   constructor(
+//     trainingObject: any,
+//   ) {
+//     this.feedCooldown = web3.utils.toNumber(trainingObject.lastFed);
+//     this.claimCooldown = web3.utils.toNumber(trainingObject.lastClaimed);
+//     this.canFeed = () => {return this.feedCooldown <= Math.round(Date.now() / 1000)}
+//     this.canClaim = () => {return this.claimCooldown <= Math.round(Date.now() / 1000)}
+//   }
+// }
+
+export class FishModifiers {
+	alphaModifier: Modifier;
+	bettaModifier: Modifier;
+	collectModifier: Modifier;
+  feedModifier: Modifier;
+  strModifier: Modifier;
+  intModifier: Modifier;
+  agiModifier: Modifier;
+  powerModifier: Modifier;
+  canFeed: () => boolean;
+  canCollect: () => boolean;
+  inBettaCooldown: () => boolean;
 
   constructor(
-    seasonObject: any
+    fishStatsObject: any
   ) 
   {
-		this.fightWins = web3.utils.toNumber(seasonObject.fightWins);
-		this.alphaBreeds = web3.utils.toNumber(seasonObject.alphaBreeds);
-		this.bettaBreeds = web3.utils.toNumber(seasonObject.bettaBreeds);
-    this.strModifier = web3.utils.toNumber(seasonObject.strModifier);
-    this.intModifier = web3.utils.toNumber(seasonObject.intModifier);
-    this.agiModifier = web3.utils.toNumber(seasonObject.agiModifier);
+		this.alphaModifier = new Modifier(fishStatsObject[0]);
+		this.bettaModifier = new Modifier(fishStatsObject[1]);
+    this.collectModifier = new Modifier(fishStatsObject[2]);
+    this.feedModifier = new Modifier(fishStatsObject[3]);
+    this.strModifier = new Modifier(fishStatsObject[4]);
+    this.intModifier = new Modifier(fishStatsObject[5]);
+    this.agiModifier = new Modifier(fishStatsObject[6]);
+    this.powerModifier = new Modifier(fishStatsObject[7]);
+    this.canFeed = () => {return this.feedModifier.time <= Math.round(Date.now() / 1000)}
+    this.canCollect = () => {return this.collectModifier.time <= Math.round(Date.now() / 1000)}
+    this.inBettaCooldown = () => {return this.bettaModifier.time <= Math.round(Date.now() / 1000)}
 	}
 }
 
@@ -65,13 +101,12 @@ export class Fish {
   genes: string;
   fishType: number;
   rarity: number;
+  generation: number;
   strength: number;
   intelligence: number;
   agility: number;
   power: number;
   lifetimeWins: number;
-  lifetimeAlphaBreeds: number;
-  lifetimeBettaBreeds: number;
   parentA: number;
   parentAFish: Fish | null;
   parentB: number;
@@ -83,10 +118,9 @@ export class Fish {
 	visualTraits: VisualTraits;
   imgSrc: string | null;
   ipfsLink: string | null;
-  seasonStats: FishSeasonStats;
-  trainingStatus: TrainingStatus;
+  fishModifiers: FishModifiers;
   offspringHistory: number[] | null;
-  fightingHistory: number[] | null;
+  fightingHistory: FightHistory[] | null;
   stakedFighting: StakedFighting | null;
   stakedBreeding: StakedBreeding | null;
   isUser: boolean;
@@ -94,15 +128,9 @@ export class Fish {
 
   constructor(
     fishInfo: any,
-    fishSeasonStats: any,
-    trainingStats: any,
+    fishStats: any,
     imgSrc: string | null,
     ipfsLink: string | null,
-    // offspringHistory: number[] | null,
-    // fightingHistory: number[] | null,
-    // fightingWaters: FightingWatersData | null,
-    // breedingWaters: BreedingWatersData | null,
-    
   ) 
   {
     this.tokenId = web3.utils.toNumber(fishInfo.tokenId);
@@ -113,10 +141,8 @@ export class Fish {
     this.strength = web3.utils.toNumber(fishInfo.strength);
     this.intelligence = web3.utils.toNumber(fishInfo.intelligence);
     this.agility = web3.utils.toNumber(fishInfo.agility);
-    this.power = web3.utils.toNumber(fishInfo.power);
     this.lifetimeWins = web3.utils.toNumber(fishInfo.lifetimeWins);
-    this.lifetimeAlphaBreeds = web3.utils.toNumber(fishInfo.lifetimeAlphaBreeds);
-    this.lifetimeBettaBreeds = web3.utils.toNumber(fishInfo.lifetimeBettaBreeds);
+    this.generation = web3.utils.toNumber(fishInfo.generation);
     this.parentA = web3.utils.toNumber(fishInfo.parentA);
     this.parentAFish = null;
     this.parentB = web3.utils.toNumber(fishInfo.parentB);
@@ -129,13 +155,13 @@ export class Fish {
     this.visualTraits = this.parseTraits();
     this.imgSrc = imgSrc;
     this.ipfsLink = ipfsLink;
-    this.seasonStats = new FishSeasonStats(fishSeasonStats);
-    this.trainingStatus = new TrainingStatus(trainingStats);
+    this.fishModifiers = new FishModifiers(fishStats);
+    this.power = this.fishModifiers.powerModifier.value;
     this.fightingHistory = null;
     this.stakedFighting = null;
     this.stakedBreeding = null;
     this.isUser = false;
-    this.canQuest = this.power >= Constants._modifierCost;
+    this.canQuest = this.power >= Constants._fightModifierCost;
   };
 
   parseTraits(): VisualTraits {

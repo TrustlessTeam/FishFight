@@ -51,8 +51,6 @@ const FishNFT = ({
     pendingTransaction,
   } = useContractWrapper();
 
-	const { currentSeason } = useFishFight();
-
   const toggleStats = () => {
     setShowStats((prevShowStats) => !prevShowStats);
   };
@@ -71,10 +69,10 @@ const FishNFT = ({
 				{fish.stakedBreeding && (
           <LogoSmallImg src={breedingImg} alt="$FIGHTFISH"></LogoSmallImg>
         )}
-        {type === 'Breeding' && fish.seasonStats.fightWins > 0 && (
+        {type === 'Breeding' && fish.fishModifiers.alphaModifier.uses > 0 && (
           <LogoSmallImg src={alphaImg} alt="$FIGHTFISH"></LogoSmallImg>
         )}
-				{type === 'Breeding' && fish.seasonStats.fightWins == 0 && (
+				{type === 'Breeding' && fish.fishModifiers.alphaModifier.uses === 0 && (
           <LogoSmallImg src={bettaImg} alt="$FIGHTFISH"></LogoSmallImg>
         )}
       </FishStats>
@@ -97,7 +95,7 @@ const FishNFT = ({
       {selectedUser && (
         <Options>
           <FishButton onClick={() => feedFish(fish)}>Feed</FishButton>
-          {fish.trainingStatus.canClaim() && !fish.stakedBreeding && !fish.stakedFighting &&
+          {fish.fishModifiers.canCollect() && !fish.stakedBreeding && !fish.stakedFighting &&
             <FishButton onClick={() => claimFishFood(fish)}>Collect</FishButton>
           }
           {fish.canQuest && !fish.stakedBreeding && !fish.stakedFighting &&
@@ -115,7 +113,7 @@ const FishNFT = ({
           {!fish.stakedFighting &&
             !fish.stakedBreeding &&
             type === 'Breeding' &&
-            fish.seasonStats.fightWins > 0 && (
+            fish.fishModifiers.alphaModifier.uses > 0 && (
               <FishButton onClick={() => depositBreedingFish(fish)}>Deposit</FishButton>
             )}
         </Options>

@@ -27,8 +27,8 @@ type Props = {
 
 const StatusModal = ({}: Props) => {
 	const {
-					currentSeason,			
-					currentPhaseEndTime, 
+					currentCycle,			
+					currentPhase, 
 					maxCaught,
 					maxBred,
 					maxKilled,
@@ -120,15 +120,15 @@ const StatusModal = ({}: Props) => {
 					<DataItem title="">
 						<StatusText>{`Fish Available: ${maxSupply - totalSupply}`}</StatusText>
 					</DataItem>
-					{currentSeason?.phaseString === 'Fishing' ? 
-						<DataItem title="">
-							<StatusText>{`Chance to Catch: ${(((maxSupply - totalSupply) / maxSupply) * 100).toFixed(2)}%`}</StatusText>
-						</DataItem>
-						:
-						<DataItem title="">
-							<StatusText>{`Chance to Catch: ${(((maxSupply - totalSupply) / (maxSupply * 2)) * 100).toFixed(2)}%`}</StatusText>
-						</DataItem>
-					}
+					{totalSupply > 10000 ? 
+							<DataItem>
+								<StatusText>{`Chance to Catch: ${(((maxSupply - totalSupply) / maxSupply) * 100).toFixed(2)}%`}</StatusText>
+							</DataItem>
+							:
+							<DataItem>
+								<StatusText>{`Chance to Catch: 100% until ${totalSupply} = 10,000`}</StatusText>
+							</DataItem>
+						}
 					
 				</StatusContainer>
 			</DataContainer>
@@ -186,7 +186,7 @@ const StatusModal = ({}: Props) => {
 				<StatusContainer>
 						<DataRow>
 							<StatusText>Total: {parseInt(balanceFish ? balanceFish : '0') + parseInt(balanceFightFish ? balanceFightFish : '0') + parseInt(balanceBreedFish ? balanceBreedFish : '0')}</StatusText>
-							<StatusText>{`Available to Feed: ${userFish.filter((fish) => {return fish.trainingStatus.canFeed()}).length}`}</StatusText>
+							<StatusText>{`Available to Feed: ${userFish.filter((fish) => {return fish.fishModifiers.canFeed()}).length}`}</StatusText>
 						</DataRow>
 						<DataItem>
 							<BaseButton onClick={feedAllFish}>{`Feed Eligible Fish`}</BaseButton>
@@ -218,34 +218,32 @@ const StatusModal = ({}: Props) => {
 	}
 
 	const seasonData = () => {
-		if(currentSeason == null) return;
+		if(currentPhase == null) return;
 
 		return (
 			<DataContainer>
-				<Title>{`Season ${currentSeason.index}`}</Title>
+				<Title>{`Cycle ${currentCycle}`}</Title>
 				<SubTitle>{`Phase Stats`}</SubTitle>
 				<DataItem title="">
 					<StatusText></StatusText>
-					<StatusText>{`Current: ${currentSeason.phaseString} -> `}</StatusText>
-					{currentSeason.phase == 1 &&
+					<StatusText>{`Current: ${currentPhase.phaseString} -> `}</StatusText>
+					{currentPhase.phase === 1 &&
 						<StatusText>Next: Fighting</StatusText>
 					}
-					{currentSeason.phase == 2 &&
+					{currentPhase.phase === 2 &&
 						<StatusText>Next: Breeding</StatusText>
 					}
-					{currentSeason.phase == 3 &&
-						<StatusText>Next: Fishing + Season {currentSeason.index + 1}</StatusText>
+					{currentPhase.phase === 3 &&
+						<StatusText>Next: Fishing</StatusText>
 					}
 				</DataItem>
 				<DataItem>
-				{currentPhaseEndTime != undefined &&
-					<StatusText>{`Time Left: `}<Countdown date={new Date(currentPhaseEndTime)} /></StatusText>
-				}
+					<StatusText>{`Time Left: `}<Countdown date={currentPhase.phaseEndtimeDate} /></StatusText>
 				</DataItem>
 				{/* <StatusText>OR</StatusText> */}
-				<DataItem>
-				{currentSeason.phase == 1 &&
-					<StatusText>{`Catches Left: ${currentSeason.fishCatch} / ${maxCaught}`}</StatusText>
+				{/* <DataItem>
+				{currentPhase.phase == 1 &&
+					<StatusText>{`Catches Left: ${currentPhase.fishCatch} / ${maxCaught}`}</StatusText>
 				}
 				{currentSeason.phase == 2 &&
 					<StatusText>{`Deaths Left: ${currentSeason.fishDeath} / ${maxKilled}`}</StatusText>
@@ -253,7 +251,7 @@ const StatusModal = ({}: Props) => {
 				{currentSeason.phase == 3 &&
 					<StatusText>{`Births Left: ${currentSeason.fishBreed} / ${maxBred}`}</StatusText>
 				}
-				</DataItem>
+				</DataItem> */}
 			</DataContainer>
 		)
 	}

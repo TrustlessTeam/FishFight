@@ -1,4 +1,4 @@
-import { Fish, TrainingStatus } from '../utils/fish';
+import { Fish } from '../utils/fish';
 import { createContext, useContext, useEffect, useState } from 'react';
 import { useWeb3React } from '@web3-react/core';
 import { useFishFight } from './fishFightContext';
@@ -59,25 +59,19 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
   const { account, deactivate } = useWeb3React();
   const { FishFight, refetchStats, refetchBalance } = useFishFight();
 	const unityContext = useUnity();
-  let burnedEmitter;
-  let caughtEmitter;
-  let depositedFighterEmitter;
-  let withdrawnFighterEmitter;
-  let depositedBreederEmitter;
-  let withdrawnBreederEmitter;
 
   useEffect(() => {
     // Set websocket block listener
-    burnedEmitter = FishFight.listenFishFactory.events.FishBurned()
-    burnedEmitter.on("data", function(data: any){
+    FishFight.listenFishFactory.events.FishBurned()
+    .on("data", function(data: any){
       console.log(data)
       if(data.returnValues.tokenId) {
         fishBurned(web3.utils.toNumber(data.returnValues.tokenId));
       }
     })
 
-    caughtEmitter = FishFight.listenFishFactory.events.FishMinted()
-    caughtEmitter.on("data", function(data: any){
+    FishFight.listenFishFactory.events.FishMinted()
+    .on("data", function(data: any){
       console.log(data)
       if(data.returnValues.tokenId) {
         console.log("Fish Caught - refetching data")
@@ -85,8 +79,8 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
       }
     })
 
-    depositedFighterEmitter = FishFight.listenFightingWaters.events.Deposit()
-    depositedFighterEmitter.on("data", function(data: any){
+    FishFight.listenFightingWaters.events.Deposit()
+    .on("data", function(data: any){
       console.log(data)
       console.log(data.returnValues.user)
       console.log("FIGHITNG DEPOSIT LISTENER")
@@ -96,8 +90,8 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
       }
     })
 
-    withdrawnFighterEmitter = FishFight.listenFightingWaters.events.Withdraw()
-    withdrawnFighterEmitter.on("data", function(data: any){
+    FishFight.listenFightingWaters.events.Withdraw()
+    .on("data", function(data: any){
       console.log(data)
       if(data.returnValues.tokenId) {
         refetchStats();
@@ -105,8 +99,8 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
       }
     })
 
-    depositedBreederEmitter = FishFight.listenBreedingWaters.events.Deposit()
-    depositedBreederEmitter.on("data", function(data: any){
+    FishFight.listenBreedingWaters.events.Deposit()
+    .on("data", function(data: any){
       console.log(data)
       console.log("BREEDING DEPOSIT LISTENER")
       if(data.returnValues.tokenId) {
@@ -115,8 +109,8 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
       }
     })
 
-    withdrawnBreederEmitter = FishFight.listenBreedingWaters.events.Withdraw()
-    withdrawnBreederEmitter.on("data", function(data: any){
+    FishFight.listenBreedingWaters.events.Withdraw()
+    .on("data", function(data: any){
       console.log(data)
       if(data.returnValues.tokenId) {
         refetchStats();
@@ -124,22 +118,22 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
       }
     })
 
-    var nextPhase = FishFight.listenSeasons.events.NewPhase()
-    nextPhase.on("data", function(data: any){
+    FishFight.listenCycles.events.NewPhase()
+    .on("data", function(data: any){
       console.log(data)
       if(data.returnValues.newPhase) {
         refetchStats();
       }
     })
 
-    var seasonCompleted = FishFight.listenSeasons.events.SeasonCompleted()
-    seasonCompleted.on("data", function(data: any){
-      console.log(data)
-      if(data.returnValues.seasonIndex) {
-        refetchStats();
-        refreshLoadedFish()
-      }
-    })
+    // FishFight.listenCycles.events.CycleCompleted()
+    // .on("data", function(data: any){
+    //   console.log(data)
+    //   if(data.returnValues.seasonIndex) {
+    //     refetchStats();
+    //     refreshLoadedFish()
+    //   }
+    // })
   }, [])
 
   useEffect(() => {
@@ -477,65 +471,6 @@ export const useFishPool = () => {
 // Utility Functions
 
 
-// Gets fish data from smart contract and builds Fish object
-const getFish = async (fishFightInstance: FishFight, tokenId: number, isFighting: boolean, isBreeding: boolean, isParent?: boolean) : Promise<Fish | null> => {
-  try {
-    console.log(`Loading Fish ${tokenId} from blockchain`)
-    const fishInfo = await fishFightInstance.readFishFactory.methods.getFishInfo(tokenId).call();
-    const fishSeasonStats = await fishFightInstance.readSeasons.methods.getFishSeasonStats(tokenId).call();
-    const trainingStats = await fishFightInstance.readTrainingWaters.methods.getStatus(tokenId).call();
-    let tokenURI = null;
-    try {
-      tokenURI = await fishFightInstance.readFishFactory.methods.tokenURI(tokenId).call();
-    } catch (error) {
-      console.log("Get TokenURI call failed:")
-      console.log(error)
-    }
-    let imgSrc = null;
-    if(tokenURI) {
-      imgSrc = `${serverURL}/tokens/${tokenId}.png`
-    }
-
-    let fish = new Fish(
-      fishInfo,
-      fishSeasonStats,
-      trainingStats,
-      imgSrc,
-      tokenURI,
-    );
-
-      // need to return null if contract throws error, or add check in contract
-    if(fish.lifetimeWins > 0) {
-      const fightHistory = await fishFightInstance.readFightingWaters.methods.getFightsForFish(tokenId).call();
-      console.log(fightHistory)
-      fish.fightingHistory = fightHistory;
-    }
-    if(isFighting) {
-      const stakedFighting = await fishFightInstance.readFightingWaters.methods.getPoolInfo(tokenId).call();
-      console.log(stakedFighting)
-      fish.stakedFighting = stakedFighting;
-    }
-    if(isBreeding) {
-      const stakedBreeding = await fishFightInstance.readBreedingWaters.methods.getPoolInfo(tokenId).call();
-      console.log(stakedBreeding)
-      fish.stakedBreeding = stakedBreeding;
-    }
-    if(!isParent && fish.parentA !== 0 && fish.parentB !== 0) {
-      fish.parentAFish = await getFish(fishFightInstance, fish.parentA, false, false, true);
-      fish.parentBFish = await getFish(fishFightInstance, fish.parentB, false, false, true);
-    }
-    
-    // console.log(fish)
-    return fish;
-
-  } catch (error) {
-    console.log("Get FishInfo call failed:")
-    console.log(error)
-    return null;
-  }
-  
-}
-
 // Gets Fish tokenURI from smart contract and loads the associated metadata from IPFS
 // TODO: currently just returns imgSrc, will add mp4 src
 const getFishMetaData = async (tokenURI: string) : Promise<string> => {
@@ -564,23 +499,17 @@ const buildFish = async (fishFightInstance: FishFight, tokenId: number, isParent
       ]
     },
     {
-      reference: 'seasons',
-      contractAddress: fishFightInstance.readSeasons.options.address,
-      abi: Contracts.contracts.Seasons.abi,
-      calls: [{ reference: 'fishSeasonData', methodName: 'getFishSeasonStats', methodParameters: [tokenId] }]
-    },
-    {
-      reference: 'trainingWaters',
-      contractAddress: fishFightInstance.readTrainingWaters.options.address,
-      abi: Contracts.contracts.TrainingWaters.abi,
-      calls: [{ reference: 'fishTrainingData', methodName: 'getStatus', methodParameters: [tokenId] }]
+      reference: 'fishStats',
+      contractAddress: fishFightInstance.readFishStats.options.address,
+      abi: Contracts.contracts.FishStats.abi,
+      calls: [{ reference: 'fishStats', methodName: 'getFishModifiers', methodParameters: [tokenId] },
+      { reference: 'fishFights', methodName: 'getFishFights', methodParameters: [tokenId] }]
     },
     {
       reference: 'fightingWaters',
       contractAddress: fishFightInstance.readFightingWaters.options.address,
       abi: Contracts.contracts.FightingWaters.abi,
-      calls: [{ reference: 'fishFightData', methodName: 'getFightsForFish', methodParameters: [tokenId] },
-      { reference: 'fishStakedFightData', methodName: 'getPoolInfo', methodParameters: [tokenId] }]
+      calls: [{ reference: 'fishStakedFightData', methodName: 'getPoolInfo', methodParameters: [tokenId] }]
     },
     {
       reference: 'breedingWaters',
@@ -600,10 +529,9 @@ const buildFish = async (fishFightInstance: FishFight, tokenId: number, isParent
   if(fishFactoryTokenUri) {
     imgSrc = `${serverURL}/tokens/${tokenId}.png`
   }
-  const seasonsGetFishSeasonStats = results.results.seasons.callsReturnContext[0].success ? results.results.seasons.callsReturnContext[0].returnValues : null;
-  const trainingWatersGetStatus = results.results.trainingWaters.callsReturnContext[0].success ? results.results.trainingWaters.callsReturnContext[0].returnValues : null;
-  const fightingWatersGetPoolInfo = results.results.fightingWaters.callsReturnContext[1].success ? results.results.fightingWaters.callsReturnContext[1].returnValues : null;
-  const fightingWatersGetFights = results.results.fightingWaters.callsReturnContext[0].success ? results.results.fightingWaters.callsReturnContext[0].returnValues : null;
+  const fishStatsGetFishModifiers = results.results.fishStats.callsReturnContext[0].success ? results.results.fishStats.callsReturnContext[0].returnValues : null;
+  const fishStatsGetFights = results.results.fishStats.callsReturnContext[1].success ? results.results.fishStats.callsReturnContext[1].returnValues : null;
+  const fightingWatersGetPoolInfo = results.results.fightingWaters.callsReturnContext[0].success ? results.results.fightingWaters.callsReturnContext[0].returnValues : null;
   const breedingWatersGetPoolInfo = results.results.breedingWaters.callsReturnContext[0].success ? results.results.breedingWaters.callsReturnContext[0].returnValues : null;
   console.log(results);
 
@@ -615,36 +543,21 @@ const buildFish = async (fishFightInstance: FishFight, tokenId: number, isParent
     parentB: fishFactoryGetFishInfo[3].hex,
     deathTime: fishFactoryGetFishInfo[4].hex,
     revived: fishFactoryGetFishInfo[5],
-    lifetimeWins: fishFactoryGetFishInfo[6],
-    lifetimeAlphaBreeds: fishFactoryGetFishInfo[7],
-    lifetimeBettaBreeds: fishFactoryGetFishInfo[8],
-    strength: fishFactoryGetFishInfo[9],
-    intelligence: fishFactoryGetFishInfo[10],
-    agility: fishFactoryGetFishInfo[11],
-    fishType: fishFactoryGetFishInfo[12],
-    rarity: fishFactoryGetFishInfo[13],
-    power: fishFactoryGetFishInfo[14],
-    genes: fishFactoryGetFishInfo[15],
-    breedKey: fishFactoryGetFishInfo[16],
-    offspring: fishFactoryGetFishInfo[17],
+    generation: fishFactoryGetFishInfo[6],
+    lifetimeWins: fishFactoryGetFishInfo[7],
+    strength: fishFactoryGetFishInfo[8],
+    intelligence: fishFactoryGetFishInfo[9],
+    agility: fishFactoryGetFishInfo[10],
+    fishType: fishFactoryGetFishInfo[11],
+    rarity: fishFactoryGetFishInfo[12],
+    genes: fishFactoryGetFishInfo[13],
+    breedKey: fishFactoryGetFishInfo[14],
+    offspring: fishFactoryGetFishInfo[15],
   }
   console.log(fishInfo)
-  if(seasonsGetFishSeasonStats == null) return null;
-  let fishSeasonStats = {
-    fightWins: seasonsGetFishSeasonStats[0],
-    alphaBreeds: seasonsGetFishSeasonStats[1],
-    bettaBreeds: seasonsGetFishSeasonStats[2],
-    strModifier: seasonsGetFishSeasonStats[3],
-    intModifier: seasonsGetFishSeasonStats[4],
-    agiModifier: seasonsGetFishSeasonStats[5],
-  }
-  if(trainingWatersGetStatus == null) return null;
-  let trainingObject = {
-    lastFed: trainingWatersGetStatus[0].hex,
-    lastClaimed: trainingWatersGetStatus[1].hex,
-  }
+  if(fishStatsGetFishModifiers == null) return null;
 
-  const fish = new Fish(fishInfo, fishSeasonStats, trainingObject, imgSrc, fishFactoryTokenUri)
+  const fish = new Fish(fishInfo, fishStatsGetFishModifiers, imgSrc, fishFactoryTokenUri)
 
   if(fightingWatersGetPoolInfo != null) {
     fish.stakedFighting = {
@@ -657,8 +570,8 @@ const buildFish = async (fishFightInstance: FishFight, tokenId: number, isParent
       earnedFishFood: web3.utils.fromWei(breedingWatersGetPoolInfo[0].hex),
     }
   }
-  if(fightingWatersGetFights != null) {
-    fish.fightingHistory = fightingWatersGetFights[0];
+  if(fishStatsGetFights != null) {
+    fish.fightingHistory = fishStatsGetFights;
   }
 
   if(fish.parentA > 0 && !isParent) {
@@ -671,14 +584,14 @@ const buildFish = async (fishFightInstance: FishFight, tokenId: number, isParent
 }
 
 
-const getParentFish = async (fishFightInstance: FishFight, tokenId: number) => {
-  const fishInfo = await fishFightInstance.readFishFactory.methods.getFishInfo(tokenId).call();
-  let fish = new Fish(
-    fishInfo,
-    null,
-    null,
-    null,
-    null,
-  );
-  return fish;
-}
+// const getParentFish = async (fishFightInstance: FishFight, tokenId: number) => {
+//   const fishInfo = await fishFightInstance.readFishFactory.methods.getFishInfo(tokenId).call();
+//   let fish = new Fish(
+//     fishInfo,
+//     null,
+//     null,
+//     null,
+//     null,
+//   );
+//   return fish;
+// }

@@ -16,7 +16,7 @@ import Account from './Account';
 const FishingWaters = () => {
 	const unityContext = useUnity()
 	const { account } = useWeb3React();
-	const { currentSeason, FishFight, maxSupply, totalSupply, refetchBalance } = useFishFight()
+	const { currentPhase, FishFight, maxSupply, totalSupply, refetchBalance } = useFishFight()
 	const { createUserFish } = useFishPool();
 	const { contractApproveFoodForTraining } = useContractWrapper();
 
@@ -172,13 +172,13 @@ const FishingWaters = () => {
 						<DataText>
 							{`Fish Available: ${maxSupply - totalSupply}`}
 						</DataText>
-						{currentSeason?.phaseString === 'Fishing' ? 
+						{totalSupply > 10000 ? 
 							<DataText>
 								{`Chance to Catch: ${(((maxSupply - totalSupply) / maxSupply) * 100).toFixed(2)}%`}
 							</DataText>
 							:
 							<DataText>
-								{`Chance to Catch: ${(((maxSupply - totalSupply) / (maxSupply * 2)) * 100).toFixed(2)}%`}
+								{`Chance to Catch: 100% until ${totalSupply} = 10,000`}
 							</DataText>
 						}
 					</DataContainer>
@@ -210,7 +210,7 @@ const CatchContainer = styled.div`
 	align-items: center;
 	height: 100%;
 	padding: ${props => props.theme.spacing.gap};
-	margin: ${props => props.theme.spacing.gap};
+	margin-top: 50px;
 
 	@media ${props => props.theme.device.tablet} {
 		width: 25%;
@@ -282,12 +282,16 @@ const FishData = styled.p`
 	justify-content: center;
 	color: ${"black"};
 	text-align: center;
-	font-size: ${props => props.theme.font.medium};
+	font-size: ${props => props.theme.font.small};
 	background-color: rgba(255, 255, 255, 0.7);
 	margin: 0 ${props => props.theme.spacing.gapSmall};
 	padding: ${props => props.theme.spacing.gapSmall};
 	border-radius: 50%;
-	height: ${props => props.theme.font.small}vmin;
+
+	@media ${props => props.theme.device.tablet} {
+		font-size: ${props => props.theme.font.medium};
+
+  }
 `;
 
 const MissedCatchContainer = styled.div`

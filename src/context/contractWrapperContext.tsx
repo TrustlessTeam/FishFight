@@ -62,10 +62,10 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 			toast.error('Select Fish to Breed with');
 			return;
 		}
-		if(!await FishFight.readSeasons.methods.isBreedingPhase().call()) {
-			toast.error('Must be Breeding Season to Breed');
-			return;
-		}
+		// if(!await FishFight.readCycles.methods.isBreedingPhase().call()) {
+		// 	toast.error('Must be Breeding Season to Breed');
+		// 	return;
+		// }
 		if(balanceFoodWei && balanceFoodWei.lt(new BN(Constants._fishFoodBreedFee))) {
 			toast.error('Not enough $FISHFOOD');
 			return;
@@ -473,8 +473,8 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 			return;
 		}
 		const secondsSinceEpoch = Math.round(Date.now() / 1000)
-		if(fish.trainingStatus != null && !fish.trainingStatus.canFeed()) {
-			const expireTime = (fish.trainingStatus.feedCooldown - secondsSinceEpoch) / 60;
+		if(fish.fishModifiers != null && !fish.fishModifiers.canFeed()) {
+			const expireTime = (fish.fishModifiers.feedModifier.time - secondsSinceEpoch) / 60;
 			const lockedFor = (Math.round(expireTime * 10) / 10).toFixed(1);
 			toast.error(`Can't feed for ${lockedFor} minutes`)
 			return;
@@ -517,13 +517,13 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 			return;
 		}
 		if(!fish.canQuest) {
-			toast.error(`${fish.power}/${Constants._modifierCost} POWER Required`);
+			toast.error(`${fish.power}/${Constants._fightModifierCost} POWER Required`);
 			return;
 		}
-		if(fish.seasonStats != null && (fish.seasonStats.agiModifier > 0 || fish.seasonStats.strModifier > 0 || fish.seasonStats.intModifier > 0)) {
-			toast.error(`Only 1 Attribute Upgrade allowed per season!`)
-			return;
-		}
+		// if(fish.seasonStats != null && (fish.seasonStats.agiModifier > 0 || fish.seasonStats.strModifier > 0 || fish.seasonStats.intModifier > 0)) {
+		// 	toast.error(`Only 1 Attribute Upgrade allowed per season!`)
+		// 	return;
+		// }
 		try {
 			FishFight.fishFood?.methods.allowance(account, FishFight.readTrainingWaters.options.address).call()
 			.then(async (approvedAmount: any) => {
@@ -561,7 +561,7 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 
 	const feedAllFish = async () => {
 		const tokenIds = userFish.filter((fish) => {
-			return fish.trainingStatus.canFeed()
+			return fish.fishModifiers.canFeed()
 		}).map(fish => fish.tokenId)
 		console.log(tokenIds)
 		if(!account) {
@@ -601,8 +601,8 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 		}
 
 		const secondsSinceEpoch = Math.round(Date.now() / 1000)
-		if(fish.trainingStatus != null && !fish.trainingStatus.canClaim()) {
-			const expireTime = (fish.trainingStatus.claimCooldown - secondsSinceEpoch) / 60;
+		if(fish.fishModifiers != null && !fish.fishModifiers.canCollect()) {
+			const expireTime = (fish.fishModifiers.collectModifier.time - secondsSinceEpoch) / 60;
 			const lockedFor = (Math.round(expireTime * 10) / 10).toFixed(1);
 			toast.error(`Can't claim for ${lockedFor} minutes`)
 			return;

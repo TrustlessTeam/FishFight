@@ -35,7 +35,7 @@ const BreedingWaters = () => {
 	const { account } = useWeb3React();
 	const { userFish, breedingFish } = useFishPool()
 	const { breedFish, depositBreedingFish, withdrawBreedingFish, contractApproveFoodForBreeding, contractApproveAllFishForBreeding, pendingTransaction} = useContractWrapper();
-	const { breedingFishApproval, breedingFoodApproval, currentSeason } = useFishFight();
+	const { breedingFishApproval, breedingFoodApproval, currentPhase } = useFishFight();
 
 	useEffect(() => {
 		console.log("Breeding Fish")
@@ -80,13 +80,13 @@ const BreedingWaters = () => {
 	}, [unityContext.isFishPoolReady]);
 
 	const setAlpha = (fish : Fish) => {
-		const secondsSinceEpoch = Math.round(Date.now() / 1000)
-		if(fish.power < Constants._alphaBreedPowerFee) {
-			setAlphaFish(fish);
-			toast.error(`Alpha Fish has ${fish.power} power, at least ${Constants._alphaBreedPowerFee} power required to breed!`)
-			return;
-		}
-		if(fish.seasonStats.fightWins == 0) {
+		// const secondsSinceEpoch = Math.round(Date.now() / 1000)
+		// if(fish.power < Constants._alphaBreedPowerFee) {
+		// 	setAlphaFish(fish);
+		// 	toast.error(`Alpha Fish has ${fish.power} power, at least ${Constants._alphaBreedPowerFee} power required to breed!`)
+		// 	return;
+		// }
+		if(fish.fishModifiers.alphaModifier.uses === 0) {
 			setAlphaFish(fish);
 			toast.error(`Not Alpha this Season`)
 			return;
@@ -103,24 +103,24 @@ const BreedingWaters = () => {
 			setMyBettaFish(fish);
 			return;
 		} 
-		if(fish.seasonStats.fightWins > 0 && fish.stakedBreeding) {
+		if(fish.fishModifiers.alphaModifier.uses > 0 && fish.stakedBreeding) {
 			toast.error('Already in Alpha Pool');
 			setMyBettaFish(fish);
 			return;
 		}
-		if(fish.parentA > 0 && currentSeason != null && fish.birthTime > currentSeason?.startTs) {
-			console.log(fish.birthTime)
-			console.log(currentSeason.startTs)
-			toast.error('Too Young');
-			return;
-		}
-		if(fish.stakedBreeding && fish.seasonStats.fightWins != 0) {
+		// if(fish.parentA > 0 && currentSeason != null && fish.birthTime > currentSeason?.startTs) {
+		// 	console.log(fish.birthTime)
+		// 	console.log(currentSeason.startTs)
+		// 	toast.error('Too Young');
+		// 	return;
+		// }
+		if(fish.stakedBreeding && fish.fishModifiers.alphaModifier.uses > 0) {
 			toast.error('Not betta fish');
 			setMyBettaFish(fish);
 			return;
 		}
-		if(fish.stakedBreeding && fish.seasonStats.bettaBreeds >= Constants._maxBettaBreedsPerSeason) {
-			toast.error('Already bred this season');
+		if(fish.stakedBreeding && fish.fishModifiers.inBettaCooldown()) {
+			toast.error('In breed cooldown');
 			setMyBettaFish(fish);
 			return;
 		}
