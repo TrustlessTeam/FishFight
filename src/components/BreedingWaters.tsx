@@ -14,6 +14,7 @@ import ConnectWallet from './ConnectWallet';
 import Account from './Account';
 import web3 from 'web3';
 import { Constants } from '../utils/constants';
+import FishDrawer from './FishDrawer';
 
 enum FishSelectionEnum {
   MyFish,
@@ -193,22 +194,22 @@ const BreedingWaters = () => {
 						<GameButton onClick={() => depositBreedingFish(myBettaFish)}>{'Deposit'}</GameButton>
 					} */}
 					{myBettaFish && alphaFish &&
-						<GameButton onClick={() => breedFish(alphaFish, myBettaFish)}>{'Breed Fish'}</GameButton>
+						<BaseButton onClick={() => breedFish(alphaFish, myBettaFish)}>{'Breed Fish'}</BaseButton>
 					}
 				</OptionsContainer>
 				}
 				{account && userFish.length > 0 && fishSelectionToShow === FishSelectionEnum.MyFish && 
-					<FishViewer type="Breeding" selectedFish={myBettaFish} fishCollection={userFish} onClick={setUserBetta}>
+					<FishDrawer type="Breeding" selectedFish={myBettaFish} fishCollection={userFish} onClick={setUserBetta}>
 						<ViewOptions></ViewOptions>
-					</FishViewer>
+					</FishDrawer>
 				}
 				{account && userFish.length === 0 && fishSelectionToShow === FishSelectionEnum.MyFish &&
 					<BaseLinkButton to={'/catch'}>Catch a Fish!</BaseLinkButton>
 				}
 				{(fishSelectionToShow === FishSelectionEnum.AlphaFish || !account ) &&
-					<FishViewer selectedOpponent={alphaFish} fishCollection={breedingFish} onClick={setAlpha}>
+					<FishDrawer selectedOpponent={alphaFish} fishCollection={breedingFish} onClick={setAlpha}>
 						<ViewOptions></ViewOptions>
-					</FishViewer>
+					</FishDrawer>
 				}
 		</BaseOverlayContainer>
 		)

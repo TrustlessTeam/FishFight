@@ -13,6 +13,7 @@ import { useContractWrapper } from '../context/contractWrapperContext';
 import { useFishFight } from '../context/fishFightContext';
 import ConnectWallet from './ConnectWallet';
 import Account from './Account';
+import FishDrawer from './FishDrawer';
 
 enum FishSelectionEnum {
   MyFish,
@@ -165,17 +166,17 @@ const FightingWaters = () => {
 		return (
 			<>
 				{account && userFish.length > 0 && fishSelectionToShow === FishSelectionEnum.MyFish && 
-					<FishViewer type="Fighting" selectedFish={mySelectedFish} fishCollection={userFish} onClick={setUserFighter}>
+					<FishDrawer type="Fighting" selectedFish={mySelectedFish} fishCollection={userFish} onClick={setUserFighter}>
 						<ViewOptions></ViewOptions>
-					</FishViewer>
+					</FishDrawer>
 				}
 				{account && userFish.length === 0 && fishSelectionToShow === FishSelectionEnum.MyFish &&
 					<BaseLinkButton to={'/catch'}>Catch a Fish!</BaseLinkButton>
 				}
 				{(fishSelectionToShow === FishSelectionEnum.FightFish || !account ) &&
-					<FishViewer depositFighter selectedOpponent={opponentFish} fishCollection={fightingFish} onClick={setOpponentFighter}>
+					<FishDrawer depositFighter selectedOpponent={opponentFish} fishCollection={fightingFish} onClick={setOpponentFighter}>
 						<ViewOptions></ViewOptions>
-					</FishViewer>
+					</FishDrawer>
 				}
 			</>
 		)

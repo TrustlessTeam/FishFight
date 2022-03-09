@@ -12,6 +12,7 @@ import { ToggleGroup, ToggleOption } from './ToggleButton';
 import Fish from '../utils/fish';
 import { useContractWrapper } from '../context/contractWrapperContext';
 import { useFishFight } from '../context/fishFightContext';
+import FishDrawer from './FishDrawer';
 
 enum FishView {
 	Ocean,
@@ -182,15 +183,16 @@ const Ocean = () => {
 						</ContainerControls>
 
 				}
+				{/* <FishDrawer fishCollection={oceanFish}></FishDrawer> */}
 				{fishToShow === FishView.Ocean &&
-					<FishViewer selectedOpponent={mySelectedFish} fishCollection={oceanFish} onClick={oceanFishClick}>
+					<FishDrawer selectedOpponent={mySelectedFish} fishCollection={oceanFish} onClick={oceanFishClick}>
 						<ViewOptions></ViewOptions>
-					</FishViewer>
+					</FishDrawer>
 				}
 				{fishToShow === FishView.User &&
-					<FishViewer selectedFish={mySelectedFish} fishCollection={userFish} onClick={oceanFishClick}>
+					<FishDrawer selectedFish={mySelectedFish} fishCollection={userFish} onClick={oceanFishClick}>
 						<ViewOptions></ViewOptions>
-					</FishViewer>
+					</FishDrawer>
 				}
 				
 		</BaseOverlayContainer>

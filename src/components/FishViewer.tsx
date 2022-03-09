@@ -8,6 +8,7 @@ import { Fish } from "../utils/fish";
 import Menu, { MenuItem } from "../components/Menu";
 import { ContainerControls } from './BaseStyles';
 
+
 const sortId = (a: Fish, b: Fish) => a.tokenId - b.tokenId;
 const sortAlpha = (a: Fish, b: Fish) => {
 	let bIsAlpha: any = b.fishModifiers.alphaModifier.uses > 0;
@@ -58,9 +59,9 @@ const FishViewer = ({
   const [sortOption, setSortOption] = useState<number>(SortSelection.Id);
   const [searchId, setSearchId] = useState<string>("");
 
-	useEffect(() => {
-		if(type == "Breeding") setSortOption(SortSelection.Betta)
-	}, []);
+	// useEffect(() => {
+	// 	if(type == "Breeding") setSortOption(SortSelection.Betta)
+	// }, []);
 
   const SortOptions = [
     {
@@ -130,6 +131,7 @@ const FishViewer = ({
           ?.map((fish, index) => (
             <FishNFT
 							type={type}
+              itemId={fish.tokenId.toString()}
               selectedOpponent={selectedOpponent?.tokenId === fish.tokenId}
               selectedUser={selectedFish?.tokenId === fish.tokenId}
               onClick={onClick ? () => onClick(fish) : undefined}

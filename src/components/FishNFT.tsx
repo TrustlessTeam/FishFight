@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import { Fish } from "../utils/fish";
 import defaultImage from "../img/default.png";
-import { useState } from "react";
+import { useContext, useState } from "react";
 
 import fishingImg from "../img/icons/fishing.svg";
 import breedingImg from "../img/icons/breeding-dark.svg";
@@ -15,10 +15,12 @@ import { useFishFight } from "../context/fishFightContext";
 import { Constants } from "../utils/constants";
 import BN from 'bn.js';
 import { BaseButton } from "./BaseStyles";
+import { VisibilityContext } from "react-horizontal-scrolling-menu";
 
 
 type Props = {
   fish: Fish;
+  itemId: string;
   onClick?: () => void;
   selectedUser?: boolean;
   selectedOpponent?: boolean;
@@ -34,6 +36,7 @@ interface ImgProps {
 
 const FishNFT = ({
   fish,
+  itemId,
   onClick,
   selectedOpponent,
   selectedUser,
@@ -55,8 +58,15 @@ const FishNFT = ({
     setShowStats((prevShowStats) => !prevShowStats);
   };
 
+  const visibility = useContext(VisibilityContext);
+
+  const visible = visibility.isItemVisible(itemId);
+
   return (
-    <FishContainer>
+    <FishContainer
+    tabIndex={0}
+    role="bottom"
+    >
       {/* <ToggleButton onClick={() => toggleStats()}>info</ToggleButton> */}
       <FishStats>
         <FishId>{fish.tokenId}</FishId>
@@ -82,6 +92,7 @@ const FishNFT = ({
           selectedUser={selectedUser}
           onClick={onClick}
           src={fish.imgSrc}
+          draggable="false"
         ></FishImg>
       ) : (
         <FishImg
@@ -89,6 +100,7 @@ const FishNFT = ({
           selectedUser={selectedUser}
           onClick={onClick}
           src={defaultImage}
+          draggable="false"
         ></FishImg>
       )}
 
