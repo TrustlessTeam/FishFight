@@ -27,6 +27,7 @@ import Default from './components/Default';
 import FishingWaters from "./components/FishingWaters";
 
 const App = () => {
+
 	return (
 		<ThemeProvider theme={BaseTheme}>	
 				<Wrapper>

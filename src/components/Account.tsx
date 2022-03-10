@@ -193,6 +193,7 @@ const MobileContainer = styled.div`
 
 const Container = styled.div`
 	display: none;
+	pointer-events: auto;
 	@media ${props => props.theme.device.tablet} {
 		display: flex;
 		flex-flow: row wrap;

@@ -6,7 +6,7 @@ import { Fish } from '../utils/fish'
 import { useUnity } from '../context/unityContext';
 import { useFishPool } from '../context/fishPoolContext';
 import FishViewer from './FishViewer';
-import {  BaseLinkButton, BaseOverlayContainer, ContainerControls, ApprovalsContainer, BaseButton, ApprovalDisclaimer, StyledModal, BaseContainer } from './BaseStyles';
+import {  BaseLinkButton, BaseOverlayContainer, ContainerControls, ApprovalsContainer, BaseButton, ApprovalDisclaimer, StyledModal, BaseContainer, BaseContainerCentered } from './BaseStyles';
 import { ToggleGroup, ToggleOption } from './ToggleButton';
 import { useContractWrapper } from '../context/contractWrapperContext';
 import { useFishFight } from '../context/fishFightContext';
@@ -179,9 +179,12 @@ const BreedingWaters = () => {
 			text='Waiting for confirmation...'
 			>
 				{!account &&
-					<ApprovalsContainer>
-						<Account mobile={false} textOverride={"Connect Wallet to Breed $FISH"}/>
-					</ApprovalsContainer>
+					<BaseContainerCentered>
+						<OptionsContainer>
+							<Account mobile={false} textOverride={"Connect Wallet to Breed $FISH"}/>
+						</OptionsContainer>
+						
+					</BaseContainerCentered>
 				}
 				{account && breedingFishApproval && breedingFoodApproval &&
 					<>

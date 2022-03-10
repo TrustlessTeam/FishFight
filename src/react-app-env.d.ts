@@ -9,4 +9,9 @@ declare global {
 	}
 }
 
+declare module "*.mp3" {
+  const value: any;
+  export default value;
+}
+
 window.onewallet = window.onewallet || {};
