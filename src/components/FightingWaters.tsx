@@ -162,59 +162,51 @@ const FightingWaters = () => {
 		)
 	}
 
-	const FighterSelection = () => {
-		return (
-			<>
-				{account && userFish.length > 0 && fishSelectionToShow === FishSelectionEnum.MyFish && 
-					<FishDrawer type="Fighting" selectedFish={mySelectedFish} fishCollection={userFish} onClick={setUserFighter}>
-						<ViewOptions></ViewOptions>
-					</FishDrawer>
-				}
-				{account && userFish.length === 0 && fishSelectionToShow === FishSelectionEnum.MyFish &&
-					<BaseLinkButton to={'/catch'}>Catch a Fish!</BaseLinkButton>
-				}
-				{(fishSelectionToShow === FishSelectionEnum.FightFish || !account ) &&
-					<FishDrawer depositFighter selectedOpponent={opponentFish} fishCollection={fightingFish} onClick={setOpponentFighter}>
-						<ViewOptions></ViewOptions>
-					</FishDrawer>
-				}
-			</>
-		)
-	}
-
 	if(!unityContext.isFishPoolReady) return null;
 
-	if(account && fightingFishApproval) {
-		return (
-			<BaseOverlayContainer
-			active={pendingTransaction}
-			spinner
-			text='Waiting for confirmation...'
-			>
-			{!isFighting && !showFightingLocationResult && !fightResult	&&
-				<FighterSelection />
+	return(
+		<>
+			{account && fightingFishApproval ?
+				<BaseOverlayContainer
+					active={pendingTransaction}
+					spinner
+					text='Waiting for confirmation...'
+				>
+					{account && userFish.length > 0 && fishSelectionToShow === FishSelectionEnum.MyFish && 
+						<FishDrawer selectedFish={mySelectedFish} fishCollection={userFish} onClick={setUserFighter}>
+							<ViewOptions></ViewOptions>
+						</FishDrawer>
+					}
+					{/* {account && userFish.length === 0 && fishSelectionToShow === FishSelectionEnum.MyFish &&
+						<BaseLinkButton to={'/catch'}>Catch a Fish!</BaseLinkButton>
+					} */}
+					{(fishSelectionToShow === FishSelectionEnum.FightFish || !account ) &&
+						<FishDrawer depositFighter selectedOpponent={opponentFish} fishCollection={fightingFish} onClick={setOpponentFighter}>
+							<ViewOptions></ViewOptions>
+						</FishDrawer>
+					}
+				</BaseOverlayContainer>
+					
+				:
+
+				<ApprovalsContainer
+				active={pendingTransaction}
+				spinner
+				text='Waiting for confirmation...'
+				>
+					<ContainerControls>
+						{!account &&
+							<Account mobile={false} textOverride={"Connect Wallet to Fight $FISH"}/>
+						}
+						{account && 
+						<ApprovalUI></ApprovalUI>
+						}
+					</ContainerControls>
+				</ApprovalsContainer>
 			}
-		</BaseOverlayContainer>
-			
-		)
-	} else {
-		return (
-			<ApprovalsContainer
-			active={pendingTransaction}
-			spinner
-			text='Waiting for confirmation...'
-			>
-				<ContainerControls>
-					{!account &&
-						<Account mobile={false} textOverride={"Connect Wallet to Fight $FISH"}/>
-					}
-					{account && 
-					<ApprovalUI></ApprovalUI>
-					}
-				</ContainerControls>
-			</ApprovalsContainer>
-		)
-	}
+		</>
+		
+	)
 };
 
 const OptionsContainer = styled.div`
@@ -224,31 +216,6 @@ const OptionsContainer = styled.div`
 	align-items: center;
 `;
 
-const GameButton = styled.button`
-	display: flex;
-	flex-flow: column;
-	justify-content: center;
-	padding: 2.2vmin;
-	border-radius: 25px;
-	background-color: white;
-	border: none;
-	opacity: 0.7;
-	box-shadow: 1px 2px 4px 4px rgba(0, 0, 0, 0.25);
-	color: black;
-	margin-left: ${props => props.theme.spacing.gapSmall};
-	transition: opacity 0.3s ease, box-shadow 0.25s ease-in-out;
-	text-transform: uppercase;
-	font-weight: bolder;
-	text-decoration: none;
-	font-size: ${props => props.theme.font.medium};
-	pointer-events: auto;
-
-	&:hover {
-		opacity: 1;
-		box-shadow: 1px 2px 2px 2px rgba(0, 0, 0, 0.2);
-		cursor: pointer;
-	}
-`;
 
 
 export default FightingWaters;

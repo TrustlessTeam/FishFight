@@ -178,68 +178,65 @@ const BreedingWaters = () => {
 		)
 	}
 
-	const BreederSelection = () => {
-		return (
-			<BaseOverlayContainer
-			active={pendingTransaction}
-			spinner
-			text='Waiting for confirmation...'
-			>
-				{myBettaFish != null &&
-				<OptionsContainer>
-					{/* {myBettaFish.stakedBreeding &&
-						<GameButton onClick={() => withdrawBreedingFish(myBettaFish)}>{'Withdraw Breeder'}</GameButton>
-					}
-					{myBettaFish.seasonStats.fightWins > 0 && !myBettaFish.stakedFighting &&
-						<GameButton onClick={() => depositBreedingFish(myBettaFish)}>{'Deposit'}</GameButton>
-					} */}
-					{myBettaFish && alphaFish &&
-						<BaseButton onClick={() => breedFish(alphaFish, myBettaFish)}>{'Breed Fish'}</BaseButton>
-					}
-				</OptionsContainer>
-				}
-				{account && userFish.length > 0 && fishSelectionToShow === FishSelectionEnum.MyFish && 
-					<FishDrawer type="Breeding" selectedFish={myBettaFish} fishCollection={userFish} onClick={setUserBetta}>
-						<ViewOptions></ViewOptions>
-					</FishDrawer>
-				}
-				{account && userFish.length === 0 && fishSelectionToShow === FishSelectionEnum.MyFish &&
-					<BaseLinkButton to={'/catch'}>Catch a Fish!</BaseLinkButton>
-				}
-				{(fishSelectionToShow === FishSelectionEnum.AlphaFish || !account ) &&
-					<FishDrawer selectedOpponent={alphaFish} fishCollection={breedingFish} onClick={setAlpha}>
-						<ViewOptions></ViewOptions>
-					</FishDrawer>
-				}
-		</BaseOverlayContainer>
-		)
-	}
-
 
 	if(!unityContext.isFishPoolReady) return null;
 
-	if(account && breedingFishApproval && breedingFoodApproval) {
-		return (
-			<BreederSelection></BreederSelection>
-		)
-	} else {
-		return (
-			<ApprovalsContainer
+	return(
+		<BaseOverlayContainer
 			active={pendingTransaction}
 			spinner
 			text='Waiting for confirmation...'
 			>
-				<ContainerControls>
-					{!account &&
-						<Account mobile={false} textOverride={"Connect Wallet to Breed $FISH"}/>
-					}
-					{account && 
-					<ApprovalUI></ApprovalUI>
-					}
-				</ContainerControls>
-			</ApprovalsContainer>
-		)
-	}
+				{account && breedingFishApproval && breedingFoodApproval ?
+					<>
+						{myBettaFish != null &&
+						<OptionsContainer>
+							{/* {myBettaFish.stakedBreeding &&
+								<GameButton onClick={() => withdrawBreedingFish(myBettaFish)}>{'Withdraw Breeder'}</GameButton>
+							}
+							{myBettaFish.seasonStats.fightWins > 0 && !myBettaFish.stakedFighting &&
+								<GameButton onClick={() => depositBreedingFish(myBettaFish)}>{'Deposit'}</GameButton>
+							} */}
+							{myBettaFish && alphaFish &&
+								<BaseButton onClick={() => breedFish(alphaFish, myBettaFish)}>{'Breed Fish'}</BaseButton>
+							}
+						</OptionsContainer>
+						}
+						{account && userFish.length > 0 && fishSelectionToShow === FishSelectionEnum.MyFish && 
+							<FishDrawer type="Breeding" selectedFish={myBettaFish} fishCollection={userFish} onClick={setUserBetta}>
+								<ViewOptions></ViewOptions>
+							</FishDrawer>
+						}
+						{account && userFish.length === 0 && fishSelectionToShow === FishSelectionEnum.MyFish &&
+							<BaseLinkButton to={'/catch'}>Catch a Fish!</BaseLinkButton>
+						}
+						{(fishSelectionToShow === FishSelectionEnum.AlphaFish || !account ) &&
+							<FishDrawer selectedOpponent={alphaFish} fishCollection={breedingFish} onClick={setAlpha}>
+								<ViewOptions></ViewOptions>
+							</FishDrawer>
+						}
+					</>
+
+					:
+
+					<ApprovalsContainer
+						active={pendingTransaction}
+						spinner
+						text='Waiting for confirmation...'
+					>
+						<ContainerControls>
+							{!account &&
+								<Account mobile={false} textOverride={"Connect Wallet to Breed $FISH"}/>
+							}
+							{account && 
+							<ApprovalUI></ApprovalUI>
+							}
+						</ContainerControls>
+					</ApprovalsContainer>
+				}
+				
+			</BaseOverlayContainer>
+	);
 	
 
 	// return (
