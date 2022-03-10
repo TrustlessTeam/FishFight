@@ -21,7 +21,7 @@ export let Constants = {
   // Breeding Waters
   _fishFoodBreedFee : ethers.utils.parseEther('0').toString(), // FISHFOOD
   _oneBreedFee : ethers.utils.parseEther('960').toString(), // ONE,
-  _oneBreedFeeInPhase : ethers.utils.parseEther('420').toString(), // ONE;
+  _oneBreedFeeInPhase : ethers.utils.parseEther('420').toString(), // ONE,
   _alphaFoodOwedFee : ethers.utils.parseEther('10').toString(), // FISHFOOD
   _alphaFoodOwedFeeInPhase : ethers.utils.parseEther('20'),
   _bettaBreedPowerFee : 10,
@@ -41,6 +41,15 @@ export let Constants = {
   _breedPhaseLength : 60 * 60 * 4, // 60 * 60 * 24 * 4 // 4 hours
   _maxSupply : 20000,
   _supplyIncreaseNumerator : 10,
-  _supplyIncreaseDenominator : 100
+  _supplyIncreaseDenominator : 100,
+
+  MODIFIER_ALPHA : 0,
+  MODIFIER_BETTA : 1,
+  MODIFIER_COLLECT : 2,
+  MODIFIER_FEED : 3,
+  MODIFIER_STR : 4,
+  MODIFIER_INT : 5,
+  MODIFIER_AGI : 6,
+  MODIFIER_POWER : 7,
 }
 

@@ -51,9 +51,15 @@ const WalletImg = styled.img`
 `;
 
 const WalletsComponent = styled.div`
-	display: grid;
+	/* display: grid;
 	grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-	overflow: hidden;
+	overflow: hidden; */
+	display: flex;
+	min-width: 320px;
+	flex-flow: column;
+	justify-content: space-between;
+	align-items: center;
+	z-index: 20;
 `;
 
 const WalletItem = styled.div`

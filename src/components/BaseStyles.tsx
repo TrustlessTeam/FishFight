@@ -1,11 +1,51 @@
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import LoadingOverlay from 'react-loading-overlay';
+import Modal from 'react-modal';
+import iceImg from "../img/ice.jpg";
+import bloodImg from "../img/blood.png";
+
 
 
 interface DefaultOptions {
 	position?: string;
 }
+
+export const StyledModal = styled(Modal)`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  min-width: fit-content;
+  max-width: 800px;
+  max-height: 100%;
+  transform: translate(-50%, -50%);
+  /* border-radius: 20px; */
+  /* background-color: rgb(230, 230, 230); */
+	
+	/* padding: ${props => props.theme.spacing.gap}; */
+  outline: none;
+  overflow: hidden;
+  z-index: 20;
+
+	&::before {    
+		content: "";
+		background: url(${bloodImg}), url(${iceImg});
+		background-blend-mode: darken;
+		opacity: 0.8;
+		border: solid white 2px;
+		border-radius: 20px;
+		background-size: cover;
+		position: absolute;
+		top: 0px;
+		right: 0px;
+		bottom: 0px;
+		left: 0px;
+	}
+
+`;
 
 export const BaseOverlayContainer = styled(LoadingOverlay)`
 	display: flex;
@@ -44,6 +84,12 @@ export const ApprovalsContainer = styled(LoadingOverlay)`
 	height: 100%;
 `;
 
+export const ApprovalDisclaimer = styled.div`
+	padding: ${props => props.theme.spacing.gap};
+	margin-bottom: ${props => props.theme.spacing.gap};
+	border-radius: 25px;
+`;
+
 export const OptionsContainer = styled.div`
 	display: flex;
 	flex-flow: row nowrap;
@@ -62,23 +108,34 @@ export const UIContainer = styled.div`
 	pointer-events: auto;
 `;
 
-export const ApprovalDisclaimer = styled.div`
-	padding: ${props => props.theme.spacing.gap};
-	margin-bottom: ${props => props.theme.spacing.gap};
-	background-color: white;
-	border-radius: 25px;
-`;
-
 export const BaseText = styled.p`
 	display: flex;
 	flex-flow: column;
 	justify-content: center;
+	margin: 0;
+	color: white;
+
+	font-size: ${props => props.theme.font.small};
+
+	@media ${props => props.theme.device.tablet} {
+		font-size: ${props => props.theme.font.medium};
+  }
+`;
+
+export const BaseTitle = styled.p`
+	display: flex;
+	flex-flow: column;
+	justify-content: center;
+	align-items: center;
 	padding: ${props => props.theme.spacing.gap};
 	margin: 0;
-	background-color: white;
-	font-size: ${props => props.theme.font.large};
-	border-radius: 25px;
-	margin-left: ${props => props.theme.spacing.gapSmall};
+	color: white;
+	font-size: ${props => props.theme.font.medium};
+	/* -webkit-text-stroke: 1px black; */
+
+	@media ${props => props.theme.device.tablet} {
+		font-size: ${props => props.theme.font.large};
+  }
 `;
 
 export const BaseButton = styled.button`

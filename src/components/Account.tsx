@@ -28,7 +28,7 @@ import fightingImgDark from "../img/icons/fighting-dark.svg"
 import walletImg from "../img/icons/wallet.svg"
 import breedingImg from "../img/icons/breeding.svg"
 import fightingImg from "../img/icons/fighting.svg"
-import { BaseButton } from './BaseStyles';
+import { BaseButton, StyledModal } from './BaseStyles';
 
 
 // ?
@@ -61,7 +61,7 @@ const Account = ({ children, mobile, textOverride }: Props) => {
 			<MobileContainer>
 				<WalletImg open={modalIsOpen} onClick={openModal} src={walletImg} alt="User Wallet"></WalletImg>
 				{children}
-				<Modal
+				<StyledModal
 					// style={{overlay: { zIndex: 10}}}
 					isOpen={modalIsOpen}
 					className="Modal"
@@ -110,7 +110,7 @@ const Account = ({ children, mobile, textOverride }: Props) => {
 							}
 						</Group>
 					</ModalContainer>
-				</Modal>
+				</StyledModal>
 			</MobileContainer>
 		);
 	}
@@ -169,8 +169,8 @@ const Account = ({ children, mobile, textOverride }: Props) => {
 		}
 	
 			{children}
-			<Modal
-				style={{overlay: { zIndex: 10}}}
+			<StyledModal
+				// style={{overlay: { zIndex: 10}}}
 				isOpen={modalIsOpen}
 				className="Modal"
 				overlayClassName="Overlay"
@@ -178,7 +178,7 @@ const Account = ({ children, mobile, textOverride }: Props) => {
 				shouldCloseOnOverlayClick
 			>
 				{active ? <SignOut account={parsedAccount} closeModal={closeModal} /> : <Wallets closeModal={closeModal} />}
-			</Modal>
+			</StyledModal>
 		</Container>
 	);
 };

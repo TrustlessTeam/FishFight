@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { useWeb3React } from '@web3-react/core';
+import { BaseButton } from './BaseStyles';
 
 export interface Props {
 	account: string | null | undefined;
@@ -18,7 +19,7 @@ const SignOut = ({ account, closeModal }: Props) => {
 	return (
 		<SignOutComponent>
 			<span>{account}</span>
-			<SignOutBtn onClick={handleClick}>Sign out</SignOutBtn>
+			<BaseButton onClick={handleClick}>Sign out</BaseButton>
 		</SignOutComponent>
 	);
 };
@@ -30,6 +31,7 @@ const SignOutComponent = styled.div`
 	/* justify-content: space-around; */
 	flex-direction: column;
 	overflow: hidden;
+	z-index: 20;
 
 	& p {
 		margin: 0;
@@ -37,9 +39,11 @@ const SignOutComponent = styled.div`
 	}
 
 	& span {
-		font-size: ${props => props.theme.font.medium}vmax;
+		font-size: ${props => props.theme.font.medium}
 		font-weight: bold;
 		color: black;
+		text-shadow: 0px 0px 10px white;
+		padding: 5px;
 	}
 `;
 

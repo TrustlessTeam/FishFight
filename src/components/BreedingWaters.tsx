@@ -6,7 +6,7 @@ import { Fish } from '../utils/fish'
 import { useUnity } from '../context/unityContext';
 import { useFishPool } from '../context/fishPoolContext';
 import FishViewer from './FishViewer';
-import {  BaseLinkButton, BaseOverlayContainer, ContainerControls, ApprovalsContainer, BaseButton, ApprovalDisclaimer } from './BaseStyles';
+import {  BaseLinkButton, BaseOverlayContainer, ContainerControls, ApprovalsContainer, BaseButton, ApprovalDisclaimer, StyledModal, BaseContainer } from './BaseStyles';
 import { ToggleGroup, ToggleOption } from './ToggleButton';
 import { useContractWrapper } from '../context/contractWrapperContext';
 import { useFishFight } from '../context/fishFightContext';
@@ -26,6 +26,8 @@ const BreedingWaters = () => {
 	const [fishSelectionToShow, setFishSelectionToShow] = useState<number>(FishSelectionEnum.AlphaFish);
 	const [myBettaFish, setMyBettaFish] = useState<Fish | null>(null);
 	const [alphaFish, setAlphaFish] = useState<Fish | null>(null);
+	const [modalIsOpen, setModalIsOpen] = useState(false);
+
 
 	const [breedResult, setBreedResult] = useState<Fish | null>();
 	const [showBreedResult, setShowBreedResult] = useState(false);
@@ -79,6 +81,14 @@ const BreedingWaters = () => {
 			// setShowBreedResult(true);
 		});
 	}, [unityContext.isFishPoolReady]);
+
+	const toggleModel = () => {
+		setModalIsOpen(!modalIsOpen);
+	};
+
+	const closeModal = () => {
+		setModalIsOpen(false);
+	};
 
 	const setAlpha = (fish : Fish) => {
 		// const secondsSinceEpoch = Math.round(Date.now() / 1000)
@@ -146,25 +156,6 @@ const BreedingWaters = () => {
 		unityContext.showFightingLocation();
 	}
 
-	const ApprovalUI = () => {
-		return (
-			<ApprovalsContainer>
-				<ApprovalDisclaimer>
-					<p>Approval Required: Breeding contract approval to control your $FISH and send $FISHFOOD is required to Breed Fish.</p>
-					<OptionsContainer>
-					{!breedingFishApproval &&
-						<BaseButton onClick={() => contractApproveAllFishForBreeding()}>{'Approve $FISH'}</BaseButton>
-					}
-					{!breedingFoodApproval &&
-						<BaseButton onClick={() => contractApproveFoodForBreeding()}>{'Approve $FISHFOOD'}</BaseButton>
-					}
-				</OptionsContainer>
-				</ApprovalDisclaimer>
-				
-			</ApprovalsContainer>	
-		)
-	}
-
 	const ViewOptions = () => {
 		return (
 			<>
@@ -187,7 +178,12 @@ const BreedingWaters = () => {
 			spinner
 			text='Waiting for confirmation...'
 			>
-				{account && breedingFishApproval && breedingFoodApproval ?
+				{!account &&
+					<ApprovalsContainer>
+						<Account mobile={false} textOverride={"Connect Wallet to Breed $FISH"}/>
+					</ApprovalsContainer>
+				}
+				{account && breedingFishApproval && breedingFoodApproval &&
 					<>
 						{myBettaFish != null &&
 						<OptionsContainer>
@@ -216,50 +212,34 @@ const BreedingWaters = () => {
 							</FishDrawer>
 						}
 					</>
-
-					:
-
-					<ApprovalsContainer
-						active={pendingTransaction}
-						spinner
-						text='Waiting for confirmation...'
-					>
-						<ContainerControls>
-							{!account &&
-								<Account mobile={false} textOverride={"Connect Wallet to Breed $FISH"}/>
-							}
-							{account && 
-							<ApprovalUI></ApprovalUI>
-							}
-						</ContainerControls>
-					</ApprovalsContainer>
 				}
+
+				<StyledModal
+					isOpen={account != null && (!breedingFishApproval || !breedingFoodApproval)}
+					// className="Modal"
+					overlayClassName="Overlay"
+					onRequestClose={closeModal}
+					shouldCloseOnOverlayClick
+				>
+					<ApprovalsContainer>
+						<ApprovalDisclaimer>
+							<p>Approval Required: Breeding contract approval to control your $FISH and send $FISHFOOD is required to Breed Fish.</p>
+							<OptionsContainer>
+							{!breedingFishApproval &&
+								<BaseButton onClick={() => contractApproveAllFishForBreeding()}>{'Approve $FISH'}</BaseButton>
+							}
+							{!breedingFoodApproval &&
+								<BaseButton onClick={() => contractApproveFoodForBreeding()}>{'Approve $FISHFOOD'}</BaseButton>
+							}
+						</OptionsContainer>
+						</ApprovalDisclaimer>
+						
+					</ApprovalsContainer>	
+					
+				</StyledModal>
 				
 			</BaseOverlayContainer>
 	);
-	
-
-	// return (
-	// 	<BaseOverlayContainer
-	// 		active={pendingTransaction}
-	// 		spinner
-	// 		text='Waiting for confirmation...'
-	// 		>
-	// 		{!account &&
-				
-	// 		<ContainerControls>
-	// 			<Account mobile={false} textOverride={"Connect"}/>
-	// 		</ContainerControls>
-	// 		}
-	// 		{account && ! breedingFishApproval && breedingFoodApproval && 
-	// 			<ApprovalUI></ApprovalUI>
-	// 		}
-	// 		{account && breedingFishApproval && breedingFoodApproval &&
-	// 			<BreederSelection></BreederSelection>
-	// 		}
-			
-	// 	</BaseOverlayContainer>
-	// );
 };
 
 
@@ -271,30 +251,5 @@ const OptionsContainer = styled.div`
 	align-items: center;
 `;
 
-const GameButton = styled.button`
-	display: flex;
-	flex-flow: column;
-	justify-content: center;
-	padding: 2.2vmin;
-	border-radius: 25px;
-	background-color: white;
-	border: none;
-	opacity: 0.7;
-	box-shadow: 1px 2px 4px 4px rgba(0, 0, 0, 0.25);
-	color: black;
-	margin-left: ${props => props.theme.spacing.gapSmall};
-	transition: opacity 0.3s ease, box-shadow 0.25s ease-in-out;
-	text-transform: uppercase;
-	font-weight: bolder;
-	text-decoration: none;
-	font-size: ${props => props.theme.font.medium};
-	pointer-events: auto;
-
-	&:hover {
-		opacity: 1;
-		box-shadow: 1px 2px 2px 2px rgba(0, 0, 0, 0.2);
-		cursor: pointer;
-	}
-`;
 
 export default BreedingWaters;

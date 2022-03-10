@@ -21,8 +21,8 @@ code {
   max-width: 800px;
   max-height: 100%;
   transform: translate(-50%, -50%);
-  border-radius: 20px;
-  background-color: rgb(230, 230, 230);
+  /* border-radius: 20px; */
+  /* background-color: rgb(230, 230, 230); */
   outline: none;
   overflow: hidden;
   z-index: 20;

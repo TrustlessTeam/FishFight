@@ -89,7 +89,7 @@ export class FishModifiers {
     this.intModifier = new Modifier(fishStatsObject[5]);
     this.agiModifier = new Modifier(fishStatsObject[6]);
     this.powerModifier = new Modifier(fishStatsObject[7]);
-    this.canFeed = () => {return this.feedModifier.time <= Math.round(Date.now() / 1000)}
+    this.canFeed = () => {return this.feedModifier.time <= Math.round(Date.now() / 1000) && this.powerModifier.value < Constants._maxPower}
     this.canCollect = () => {return this.collectModifier.time <= Math.round(Date.now() / 1000)}
     this.inBettaCooldown = () => {return this.bettaModifier.time <= Math.round(Date.now() / 1000)}
 	}

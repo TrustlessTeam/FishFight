@@ -84,12 +84,13 @@ const FishingWaters = () => {
 		setCaughtFishHash(null);
 		unityContext.clearFishPool('showFishingLocation');
 		try {
+			const isFishing = await FishFight.readCycles.methods.isFishingPhase().call();
 			await FishFight.fishingWaters?.methods.goFishing().send({
 				from: account,
 				gasPrice: 30000000000,
 				gasLimit: 500000,
 				// gasLimit: await FishFight.fishingWaters?.methods.goFishing().estimateGas({from: account, value: web3.utils.toWei(COSTPERCASTONE)}),
-				value: Constants._fishingPrice
+				value: isFishing ? Constants._fishingPriceInPhase : Constants._fishingPrice
 			}).on('transactionHash', () => {
 				setPendingTransaction(true);
 			}).on('receipt', (result: any) => {

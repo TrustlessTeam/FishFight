@@ -26,7 +26,7 @@ interface ProviderInterface {
 	withdrawBreedingFish: (fish: Fish | null) => void;
 	depositBreedingFish: (fish: Fish | null) => void;
 	feedFish: (fish: Fish | null) => void;
-	questFish: (fish: Fish | null) => void;
+	questFish: (fish: Fish | null, choice: number) => void;
 	claimFishFood: (fish: Fish | null) => void;
 	claimAllFishFood: () => void;
 	feedAllFish: () => void;
@@ -71,19 +71,24 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 			return;
 		}
 		try {
-			FishFight.fishFood?.methods.allowance(account, FishFight.readBreedingWaters.options.address).call()
-			.then(async (approvedAmount: any) => {
-				console.log(approvedAmount)
-				console.log(web3.utils.fromWei(approvedAmount))
-				if(web3.utils.fromWei(approvedAmount) >= '100') {
-					contractBreed(fishAlpha, fishBetta)
-				} else {
-					const approveResult = await contractApproveFoodForBreeding()
-					approveResult.on('receipt', () => {
+			if(Constants._fishFoodBreedFee > '0') {
+				FishFight.fishFood?.methods.allowance(account, FishFight.readBreedingWaters.options.address).call()
+				.then(async (approvedAmount: any) => {
+					console.log(approvedAmount)
+					console.log(web3.utils.fromWei(approvedAmount))
+					if(web3.utils.fromWei(approvedAmount) >= Constants._fishFoodBreedFee) {
 						contractBreed(fishAlpha, fishBetta)
-					})
-				}
-			})
+					} else {
+						const approveResult = await contractApproveFoodForBreeding()
+						approveResult.on('receipt', () => {
+							contractBreed(fishAlpha, fishBetta)
+						})
+					}
+				})
+			} else {
+				contractBreed(fishAlpha, fishBetta)
+			}
+			
 
 		} catch (error: any) {
 			// toast.error("Transaction Failed")
@@ -99,12 +104,13 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 	const contractBreed = async (fishAlpha: Fish, fishBetta: Fish) => {
 		console.log(fishAlpha)
 		console.log(fishBetta)
+		const isBreeding = await FishFight.readCycles.methods.isBreedingPhase().call();
 		// const gas = await FishFight.breedingWaters?.methods.breedFish(fishAlpha.tokenId, fishBetta.tokenId).estimateGas({from: account});
 		return FishFight.breedingWaters?.methods.breedFish(fishAlpha.tokenId, fishBetta.tokenId).send({
 			from: account,
 			gasPrice: 30000000000,
 			gasLimit: 15000000,
-			value: Constants._oneBreedFee
+			value: isBreeding ? Constants._oneBreedFeeInPhase : Constants._oneBreedFee
 		})
 		.on('error', (error: any) => {
 			console.log(error)
@@ -503,7 +509,7 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 		
 	}
 
-	const questFish = async (fish: Fish | null) => {
+	const questFish = async (fish: Fish | null, choice: number) => {
 		if(!account) {
 			toast.error('Connect your wallet');
 			return;
@@ -532,12 +538,12 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 
 				console.log(new BN(approvedAmount).gte(new BN(Constants._feedFee)))
 				if(new BN(approvedAmount).gte(new BN(Constants._feedFee))) {
-					contractQuestFish(fish)
+					contractQuestFish(fish, choice)
 				} else {
 					const approveResult = await contractApproveFoodForTraining();
 					approveResult.on('receipt', () => {
 						console.log("approve")
-						contractQuestFish(fish)
+						contractQuestFish(fish, choice)
 					})
 				}
 			})
@@ -645,9 +651,9 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 		})
 	}
 
-	const contractQuestFish = async (fish: Fish) => {
-		const gas = await FishFight.trainingWaters?.methods.questFish(fish.tokenId, 2).estimateGas({from: account})
-		return FishFight.trainingWaters?.methods.questFish(fish.tokenId, getRandomIntInclusive(0, 2)).send({
+	const contractQuestFish = async (fish: Fish, choice: number) => {
+		const gas = await FishFight.trainingWaters?.methods.questFish(fish.tokenId, choice).estimateGas({from: account})
+		return FishFight.trainingWaters?.methods.questFish(fish.tokenId, choice).send({
 			from: account,
 			gasPrice: 30000000000,
 			gasLimit: gas,

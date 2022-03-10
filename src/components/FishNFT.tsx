@@ -2,6 +2,7 @@ import styled from "styled-components";
 import { Fish } from "../utils/fish";
 import defaultImage from "../img/default.png";
 import { useContext, useState } from "react";
+import Modal from 'react-modal';
 
 import fishingImg from "../img/icons/fishing.svg";
 import breedingImg from "../img/icons/breeding-dark.svg";
@@ -14,8 +15,11 @@ import { useContractWrapper } from "../context/contractWrapperContext";
 import { useFishFight } from "../context/fishFightContext";
 import { Constants } from "../utils/constants";
 import BN from 'bn.js';
-import { BaseButton } from "./BaseStyles";
+import { BaseButton, BaseText, BaseTitle, StyledModal } from "./BaseStyles";
 import { VisibilityContext } from "react-horizontal-scrolling-menu";
+
+import iceImg from "../img/ice.jpg";
+import bloodImg from "../img/blood.png";
 
 
 type Props = {
@@ -43,6 +47,8 @@ const FishNFT = ({
   type,
 }: Props) => {
   const [showStats, setShowStats] = useState<boolean>(false);
+	const [modalIsOpen, setModalIsOpen] = useState(false);
+
   const {
     depositBreedingFish,
     withdrawBreedingFish,
@@ -58,6 +64,14 @@ const FishNFT = ({
     setShowStats((prevShowStats) => !prevShowStats);
   };
 
+  const toggleModel = () => {
+		setModalIsOpen(!modalIsOpen);
+	};
+
+	const closeModal = () => {
+		setModalIsOpen(false);
+	};
+
   const visibility = useContext(VisibilityContext);
 
   const visible = visibility.isItemVisible(itemId);
@@ -67,6 +81,33 @@ const FishNFT = ({
     tabIndex={0}
     role="bottom"
     >
+      <StyledModal
+        isOpen={modalIsOpen}
+        // className="Modal"
+        overlayClassName="Overlay"
+        onRequestClose={closeModal}
+        shouldCloseOnOverlayClick
+      >
+        {/* {active ? <SignOut account={parsedAccount} closeModal={closeModal} /> : <Wallets closeModal={closeModal} />} */}
+        <ModalWrapper>
+          <BaseTitle>{`Drain ${Constants._fightModifierCost} Power to Buff an attribute of your $FISH for 3 Fights!`}</BaseTitle>
+          <ModalContainer>
+            <ModalItem>
+              <BaseText>{`Strength ${fish.strength} -> ${fish.strength+Constants._fightModifierValue > 100 ? 100 : fish.strength+Constants._fightModifierValue}`}</BaseText>
+              <BaseButton onClick={() => {questFish(fish, 0); closeModal()}}>Buff Strength</BaseButton>
+            </ModalItem>
+            <ModalItem>
+              <BaseText>{`Intelligence ${fish.intelligence} -> ${fish.intelligence+Constants._fightModifierValue > 100 ? 100 : fish.intelligence+Constants._fightModifierValue}`}</BaseText>
+              <BaseButton onClick={() => {questFish(fish, Constants.MODIFIER_INT); closeModal()}}>Buff Intelligence</BaseButton>
+            </ModalItem>
+            <ModalItem>
+              <BaseText>{`Strength ${fish.agility} -> ${fish.agility+Constants._fightModifierValue > 100 ? 100 : fish.agility+Constants._fightModifierValue}`}</BaseText>
+              <BaseButton onClick={() => {questFish(fish, Constants.MODIFIER_AGI); closeModal()}}>Buff Agility</BaseButton>
+            </ModalItem>          
+          </ModalContainer>
+        </ModalWrapper>
+        
+      </StyledModal>
       {/* <ToggleButton onClick={() => toggleStats()}>info</ToggleButton> */}
       <FishStats>
         <FishId>{fish.tokenId}</FishId>
@@ -111,7 +152,7 @@ const FishNFT = ({
             <FishButton onClick={() => claimFishFood(fish)}>Collect</FishButton>
           }
           {fish.canQuest && !fish.stakedBreeding && !fish.stakedFighting &&
-            <FishButton onClick={() => questFish(fish)}>Quest</FishButton>
+            <FishButton onClick={() => toggleModel()}>Buff</FishButton>
           }
           {fish.stakedFighting && (
             <FishButton onClick={() => withdrawFightingFish(fish)}>Withdraw</FishButton>
@@ -151,6 +192,39 @@ const FishNFT = ({
     </FishContainer>
   );
 };
+
+const ModalContainer = styled.div`
+	position: relative;
+	display: flex;
+	flex-flow: row nowrap;
+	padding: ${props => props.theme.spacing.gap};
+	/* justify-content: space-evenly;
+	align-items: flex-start; */
+`;
+
+const ModalItem = styled.div`
+	position: relative;
+	display: flex;
+	flex-flow: column;
+	padding: ${props => props.theme.spacing.gapSmall};
+	/* justify-content: space-evenly;
+	align-items: flex-start; */
+`;
+
+const ModalWrapper = styled.div`
+	position: relative;
+	display: flex;
+	flex-flow: column;
+	/* background-color: white; */
+  /* background: url(${bloodImg}), url(${iceImg});
+  background-blend-mode: darken;
+  border: solid white 2px;
+  border-radius: 20px; */
+	padding: ${props => props.theme.spacing.gap};
+	/* justify-content: space-evenly;
+	align-items: flex-start; */
+`;
+
 
 const Options = styled.div`
   position: absolute;

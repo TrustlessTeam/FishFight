@@ -17,7 +17,7 @@ import { StakedFighting } from '../utils/fish';
 import { Route, Routes } from 'react-router-dom';
 import infoImg from "../img/icons/info.svg";
 import waterImg from "../img/icons/water-dark.svg";
-import { BaseButton } from './BaseStyles';
+import { BaseButton, StyledModal } from './BaseStyles';
 import { useContractWrapper } from '../context/contractWrapperContext';
 
 
@@ -189,8 +189,8 @@ const StatusModal = ({}: Props) => {
 							<StatusText>{`Available to Feed: ${userFish.filter((fish) => {return fish.fishModifiers.canFeed()}).length}`}</StatusText>
 						</DataRow>
 						<DataItem>
-							<BaseButton onClick={feedAllFish}>{`Feed Eligible Fish`}</BaseButton>
-							<BaseButton onClick={claimAllFishFood}>{`Send $FISH to Collect: ${pendingCollectAward}`}</BaseButton>
+							<BaseButton onClick={() => {feedAllFish(); closeModal()}}>{`Feed Eligible Fish`}</BaseButton>
+							<BaseButton onClick={() => {claimAllFishFood(); closeModal()}}>{`Send $FISH to Collect: ${pendingCollectAward}`}</BaseButton>
 						</DataItem>
 				</StatusContainer>
 				<SubTitle>Fighters</SubTitle>
@@ -262,7 +262,7 @@ const StatusModal = ({}: Props) => {
 				<WaterStats onClick={toggleModel}>
 					Info<LogoImg open={modalIsOpen} src={waterImg}></LogoImg>
 				</WaterStats>
-				<Modal
+				<StyledModal
 					isOpen={modalIsOpen}
 					className="Modal"
 					overlayClassName="Overlay"
@@ -284,7 +284,7 @@ const StatusModal = ({}: Props) => {
 					</Routes>
 					{userData()}
 				</StatusModalContainer>
-				</Modal>
+				</StyledModal>
 			</ImgContainer>
 			
 			
@@ -313,7 +313,7 @@ const StatusModalContainer = styled.div`
 	position: relative;
 	display: flex;
 	flex-flow: column;
-	background-color: white;
+	/* background-color: white; */
 	padding: ${props => props.theme.spacing.gapMedium};
 	z-index: 10;
 	/* justify-content: space-evenly;

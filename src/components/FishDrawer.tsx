@@ -25,18 +25,24 @@ const sortBetta = (a: Fish, b: Fish) => {
 	let aIsBetta: any = a.fishModifiers.alphaModifier.uses === 0;
 	return bIsBetta - aIsBetta;
 }
-const sortAgi = (a: Fish, b: Fish) => a.agility - b.agility;
-const sortStr = (a: Fish, b: Fish) => a.strength - b.strength;
-const sortInt = (a: Fish, b: Fish) => a.intelligence - b.intelligence;
-const sortWins = (a: Fish, b: Fish) => a.lifetimeWins - b.lifetimeWins;
+const sortAgi = (a: Fish, b: Fish) => {return b.agility - a.agility};
+const sortStr = (a: Fish, b: Fish) => {return b.strength - a.strength};
+const sortInt = (a: Fish, b: Fish) => {return b.intelligence - a.intelligence};
+const sortWins = (a: Fish, b: Fish) => {return b.lifetimeWins - a.lifetimeWins};
+const sortRarity = (a: Fish, b: Fish) => {return a.rarity - b.rarity};
+const sortStrong = (a: Fish, b: Fish) => {return (b.agility + b.intelligence + b.strength) - (a.agility + a.intelligence + a.strength)};
+
 
 enum SortSelection {
   "Id",
+  "Rarity",
   "Alpha",
   "Betta",
   "Strength",
   "Intelligence",
   "Agility",
+  "Wins",
+  "Strongest",
 }
 
 type scrollVisibilityApiType = React.ContextType<typeof VisibilityContext>;
@@ -76,12 +82,21 @@ const FishDrawer = ({
 
   const [selected, setSelected] = React.useState<number>(0);
   const [sortOption, setSortOption] = useState<number>(SortSelection.Id);
+
+  // useEffect(() => {
+	// 	if(type == "Breeding") setSortOption(SortSelection.Betta)
+	// }, []);
   
   const SortOptions = [
     {
       name: "Id",
       onClick: () => setSortOption(SortSelection.Id),
       sortFn: sortId,
+    },
+    {
+      name: "Rarity",
+      onClick: () => setSortOption(SortSelection.Rarity),
+      sortFn: sortRarity,
     },
 		{
       name: "Alpha",
@@ -107,6 +122,16 @@ const FishDrawer = ({
       name: "Agility",
       onClick: () => setSortOption(SortSelection.Agility),
       sortFn: sortAgi,
+    },
+    {
+      name: "Wins",
+      onClick: () => setSortOption(SortSelection.Wins),
+      sortFn: sortWins,
+    },
+    {
+      name: "Strongest",
+      onClick: () => setSortOption(SortSelection.Strongest),
+      sortFn: sortStrong,
     },
   ];
 
@@ -167,8 +192,7 @@ const FishDrawer = ({
             onMouseUp={() => dragStop}
             onMouseMove={handleDrag}
           >
-            {fishCollection
-              .sort(SortOptions[sortOption].sortFn)
+            {fishCollection.sort((a: Fish, b: Fish) => SortOptions[sortOption].sortFn(a, b))
               .map((fish, index) => (
               <FishNFT
                 type={type}

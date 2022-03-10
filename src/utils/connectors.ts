@@ -18,7 +18,7 @@ const mathwallet = new MathWalletConnector({ chainId: 2 }); // Mainnet -> chainI
 export const injected = new InjectedConnector({ supportedChainIds: [1666600000, 1666700000] });
 
 export const connectorsByName: { [connectorName: string]: AbstractConnector } = {
-	[ConnectorNames.OneWallet]: onewallet,
-	[ConnectorNames.Mathwallet]: mathwallet,
+	// [ConnectorNames.OneWallet]: onewallet,
+	// [ConnectorNames.Mathwallet]: mathwallet,
 	[ConnectorNames.Metamask]: injected,
 };
