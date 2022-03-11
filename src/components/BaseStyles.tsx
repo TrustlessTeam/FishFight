@@ -149,7 +149,7 @@ export const BaseTitle = styled.p`
   }
 `;
 
-export const BaseButton = styled.button`
+export const BaseButtonStyle = styled.button`
 	display: flex;
 	flex-flow: row nowrap;
 	justify-content: center;

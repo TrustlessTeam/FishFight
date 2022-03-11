@@ -6,14 +6,13 @@ import { Fish } from '../utils/fish'
 import { Fight} from '../utils/fight'
 import { useUnity } from '../context/unityContext';
 import { useFishPool } from '../context/fishPoolContext';
-import FishViewer from './FishViewer';
-import { ApprovalDisclaimer, ApprovalsContainer, BaseButton, BaseLinkButton, BaseOverlayContainer, ContainerControls } from './BaseStyles';
+import { ApprovalDisclaimer, ApprovalsContainer, BaseOverlayContainer, ContainerControls } from './BaseStyles';
 import { ToggleGroup, ToggleOption } from './ToggleButton';
 import { useContractWrapper } from '../context/contractWrapperContext';
 import { useFishFight } from '../context/fishFightContext';
-import ConnectWallet from './ConnectWallet';
 import Account from './Account';
 import FishDrawer from './FishDrawer';
+import BaseButton from "../components/BaseButton";
 
 enum FishSelectionEnum {
   MyFish,

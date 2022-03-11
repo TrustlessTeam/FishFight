@@ -17,7 +17,7 @@ import { StakedFighting } from '../utils/fish';
 import { Route, Routes } from 'react-router-dom';
 import infoImg from "../img/icons/info.svg";
 import waterImg from "../img/icons/water-dark.svg";
-import { BaseButton } from './BaseStyles';
+import BaseButton from "../components/BaseButton";
 import { useContractWrapper } from '../context/contractWrapperContext';
 
 
@@ -96,126 +96,21 @@ const StatusModal = ({}: Props) => {
 		setPendingBreedFood(totalBreed.toString());
 	}
 
-	const oceanData = () => {
-		return (
-			<DataContainer>
-				<Title>Ocean Stats</Title>
-				<StatusContainer>
-					<DataItem title="">
-						<StatusText>{`All Fish: ${totalSupply}`}</StatusText>
-					</DataItem>
-					<DataItem title="">
-						<StatusText>{`Fish to Catch: ${maxSupply - totalSupply}`}</StatusText>
-					</DataItem>
-				</StatusContainer>
-			</DataContainer>
-		);
+	type RenderProps = {
+		hours: any;
+		minutes: any;
+		seconds: any;
+		completed: boolean;
 	}
-
-	const fishingData = () => {
-		return (
-			<DataContainer>
-				<Title>Fishing Waters</Title>
-				<StatusContainer>
-					<DataItem title="">
-						<StatusText>{`Fish Available: ${maxSupply - totalSupply}`}</StatusText>
-					</DataItem>
-					{totalSupply > 10000 ? 
-							<DataItem>
-								<StatusText>{`Chance to Catch: ${(((maxSupply - totalSupply) / maxSupply) * 100).toFixed(2)}%`}</StatusText>
-							</DataItem>
-							:
-							<DataItem>
-								<StatusText>{`Chance to Catch: 100% until ${totalSupply} = 10,000`}</StatusText>
-							</DataItem>
-						}
-					
-				</StatusContainer>
-			</DataContainer>
-		);
-	}
-
-	const fightingData = () => {
-		return (
-			<DataContainer>
-				<StatusContainer>
-					<Title>Fighting Pool</Title>
-	
-					<DataItem>
-						<StatusText>{`Available to Fight: ${fightingWatersSupply}`}</StatusText>
-					</DataItem>
-					{account &&
-					<>
-						<DataItem>
-							<StatusText>{`My Fighters: ${balanceFightFish}`}</StatusText>
-						</DataItem>
-					</>
-					}
-				</StatusContainer>
-			</DataContainer>
-		);
-	}
-
-	const breedingData = () => {
-		return (
-			<DataContainer>
-				<Title>Breeding Waters</Title>
-				<StatusContainer>
-					<DataItem>
-						<StatusText>{`Breeding Fish: ${breedingWatersSupply}`}</StatusText>
-					</DataItem>
-					{account &&
-					<>
-						<DataItem>
-							<StatusText>{`My Breeders: ${balanceBreedFish}`}</StatusText>
-						</DataItem>
-					</>
-					}
-				</StatusContainer>
-			</DataContainer>
-		);
-	}
-
-	const userData = () => {
-		if(!account) return null;
-		return (
-			<DataContainer>
-				<DataItem>
-					<Title>{`My FISH`}</Title>
-				</DataItem>
-				<StatusContainer>
-						<DataRow>
-							<StatusText>Total: {parseInt(balanceFish ? balanceFish : '0') + parseInt(balanceFightFish ? balanceFightFish : '0') + parseInt(balanceBreedFish ? balanceBreedFish : '0')}</StatusText>
-							<StatusText>{`Available to Feed: ${userFish.filter((fish) => {return fish.fishModifiers.canFeed()}).length}`}</StatusText>
-						</DataRow>
-						<DataItem>
-							<BaseButton onClick={feedAllFish}>{`Feed Eligible Fish`}</BaseButton>
-							<BaseButton onClick={claimAllFishFood}>{`Send $FISH to Collect: ${pendingCollectAward}`}</BaseButton>
-						</DataItem>
-				</StatusContainer>
-				<SubTitle>Fighters</SubTitle>
-				<StatusContainer>
-					<DataItem>
-						<StatusText>{`Deposited Fighters: ${balanceFightFish}`}</StatusText>
-					</DataItem>
-					<DataItem>
-						<StatusText>{`Pending $FISHFOOD from Wins: ${parseFloat(pendingFightFood ? pendingFightFood : '0').toFixed(2)}, from Staking: ${parseFloat(pendingAward ? pendingAward : '0').toFixed(2)}`}</StatusText>
-					</DataItem>
-						
-				</StatusContainer>
-				<SubTitle>Breeders</SubTitle>
-				<StatusContainer>
-					<DataItem>
-						<StatusText>{`Deposited Alphas: ${balanceBreedFish}`}</StatusText>
-					</DataItem>
-					<DataItem>
-						<StatusText>{`Pending $FISHFOOD from Breeds: ${pendingBreedFood}`}</StatusText>
-					</DataItem>
-				</StatusContainer>
-				
-			</DataContainer>
-		);
-	}
+	const renderer = ({ hours, minutes, seconds, completed }: RenderProps) => {
+		if (completed) {
+			// Render a completed state
+			return <span>{hours}:{minutes}:{seconds}</span>;
+		} else {
+			// Render a countdown
+			return <span>{hours}:{minutes}:{seconds}</span>;
+		}
+	};
 
 	const seasonData = () => {
 		if(currentPhase == null) return;
@@ -238,7 +133,7 @@ const StatusModal = ({}: Props) => {
 					}
 				</DataItem>
 				<DataItem>
-					<StatusText>{`Time Left: `}<Countdown date={currentPhase.phaseEndtimeDate} /></StatusText>
+					<StatusText>{`Time Left: `}<Countdown renderer={renderer} date={currentPhase.phaseEndtimeDate} /></StatusText>
 				</DataItem>
 				{/* <StatusText>OR</StatusText> */}
 				{/* <DataItem>
@@ -258,41 +153,24 @@ const StatusModal = ({}: Props) => {
 
 
 		return (
-			<ImgContainer>
-				<WaterStats onClick={toggleModel}>
+			<CoutdownContainer>
+				{/* <WaterStats onClick={toggleModel}>
 					Info<LogoImg open={modalIsOpen} src={waterImg}></LogoImg>
-				</WaterStats>
-				<Modal
-					isOpen={modalIsOpen}
-					className="Modal"
-					overlayClassName="Overlay"
-					onRequestClose={closeModal}
-					shouldCloseOnOverlayClick
-				>
+				</WaterStats> */}
+
 					{/* {active ? <SignOut account={parsedAccount} closeModal={closeModal} /> : <Wallets closeModal={closeModal} />} */}
-					<StatusModalContainer>
-					{seasonData()}
-					<Routes>
-						<Route path="ocean" element={oceanData()} />
-						<Route path="ocean:id" element={oceanData()} />
-						<Route path="fishing" element={fishingData()} />
-						<Route path="fishing/:id" element={fishingData()} />
-						<Route path="fighting" element={fightingData()} />
-						<Route path="fighting/:id" element={fightingData()} />
-						<Route path="breeding" element={breedingData()} />
-						<Route path="breeding/:id" element={breedingData()} />
-					</Routes>
-					{userData()}
+				<StatusModalContainer>
+
 				</StatusModalContainer>
-				</Modal>
-			</ImgContainer>
+
+			</CoutdownContainer>
 			
 			
 		)
 	
 };
 
-const ImgContainer = styled.div`
+const CoutdownContainer = styled.div`
 	display: flex;
 	flex-flow: column;
 	justify-content: center;

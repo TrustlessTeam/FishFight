@@ -1,7 +1,9 @@
 import { useState } from "react";
 import styled from "styled-components";
 import dropdownImg from "../img/icons/dropdown.svg"
-import { BaseButton } from "./BaseStyles";
+import useSound from 'use-sound';
+import { BaseButtonStyle } from "./BaseStyles";
+
 
 
 const Drop = styled.div`
@@ -11,7 +13,7 @@ const Drop = styled.div`
   cursor: pointer;
 `;
 
-const Dropbtn = styled.button`
+const Dropbtn = styled(BaseButtonStyle)`
   position: relative;
   display: flex;
   flex-flow: row nowrap;
@@ -114,11 +116,13 @@ export type MenuItem = {
 
 const Menu = ({name, items} : Props) => {
   const [open, setOpen] = useState<boolean>(false);
+  const [playClick] = useSound('click.wav', {volume: 0.25});
 
   const toggleDropdown = () => {
     console.log(items)
     console.log(open)
     setOpen(!open);
+    playClick();
   };
 	
 	return (
@@ -127,16 +131,17 @@ const Menu = ({name, items} : Props) => {
         {name}
         <LogoImg open={open} src={dropdownImg} alt={"Dropdown arrow"}></LogoImg>
         <DropContent open={open}>
-        {items.map((selection: MenuItem, index) => {
-          return (
-            <DropItem key={index} onClick={() => {
-              toggleDropdown();
-              console.log(selection)
-              selection.onClick();
-            }}>{selection.name}</DropItem>
-          )
-        })}
-      </DropContent>
+          {items.map((selection: MenuItem, index) => {
+            return (
+              <DropItem key={index} onClick={() => {
+                toggleDropdown();
+                console.log(selection)
+                selection.onClick();
+                playClick();
+              }}>{selection.name}</DropItem>
+            )
+          })}
+        </DropContent>
       </Dropbtn>
     </Drop>
   );

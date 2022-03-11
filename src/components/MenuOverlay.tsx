@@ -1,19 +1,5 @@
-
-// React
-import {
-  NavLink,
-	Outlet,
-	Route,
-	Routes
-} from "react-router-dom";
-
-// React web3
 import { useWeb3React } from '@web3-react/core';
-import { isMobile, parseUserAgent } from 'react-device-detect';
 
-
-// React toastify
-import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 // Styled Components
@@ -25,11 +11,11 @@ import Nav from './Nav';
 import Account from './Account';
 import { useState } from "react";
 import StatusModal from "./StatusModal";
+import BaseButton from "../components/BaseButton";
 import useSound from 'use-sound';
 
-const PlayMusic = () => {
-	
-};
+import muteImg from "../img/icons/mute-dark.svg";
+import noMuteImg from "../img/icons/nomute-dark.svg";
 
 const MenuOverlay = () => {
 	const { account } = useWeb3React();
@@ -50,9 +36,9 @@ const MenuOverlay = () => {
 	return (
 		<Wrapper open={open}>
 			<MenuContainer>
-				{/* <LogoImg src={infoImg} open={open} onClick={() => setOpen(!open)}></LogoImg> */}
+				
 				<StatusModal />
-				<button onClick={() => handleSoundClick()}>P</button>
+				<SoundButton onClick={() => handleSoundClick()}><LogoImg src={muted ? muteImg : noMuteImg}></LogoImg></SoundButton>
 				<StyledNav></StyledNav>
 				<User open={open}>
 					<Account mobile={false}></Account>
@@ -73,6 +59,39 @@ const MenuOverlay = () => {
 interface Props {
 	open?: boolean;
 }
+
+const SoundButton = styled(BaseButton)`
+	padding: 5px;
+	border-radius: 50%;
+
+	&::before {
+    position: absolute;
+    content: "";
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    border-radius: 50%;
+    background-image: linear-gradient(#ffffff, #e2e2e2);
+    z-index: -1;
+    transition: opacity 0.25s ease-in-out;
+    opacity: 0;
+  }
+
+	@media ${props => props.theme.device.tablet} {
+	  padding: 10px;
+  }
+`;
+
+
+const LogoImg = styled.img`
+	/* padding: ${props => props.theme.spacing.gapSmall}; */
+	height: 15px;
+
+	@media ${props => props.theme.device.tablet} {
+	  height: 20px;
+  }
+`;
 
 const Wrapper = styled.div<{open: boolean}>`
 	position: absolute;
@@ -123,7 +142,6 @@ const UserMobile = styled.div<{open: boolean}>`
 		display: none;
   }
 `;
-
 
 const StyledNav = styled(Nav)`
 	width: 100%;

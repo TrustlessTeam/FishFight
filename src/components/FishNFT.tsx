@@ -14,9 +14,11 @@ import bettaImg from "../img/icons/betta-dark.svg";
 import { useContractWrapper } from "../context/contractWrapperContext";
 import { useFishFight } from "../context/fishFightContext";
 import { Constants } from "../utils/constants";
-import BN from 'bn.js';
-import { BaseButton, BaseText, BaseTitle, StyledModal } from "./BaseStyles";
+import BaseButton from "../components/BaseButton";
+import { BaseText, BaseTitle, StyledModal } from "./BaseStyles";
 import { VisibilityContext } from "react-horizontal-scrolling-menu";
+import useSound from 'use-sound';
+
 
 import iceImg from "../img/ice.jpg";
 import bloodImg from "../img/blood.png";
@@ -49,6 +51,19 @@ const FishNFT = ({
   const [showStats, setShowStats] = useState<boolean>(false);
 	const [modalIsOpen, setModalIsOpen] = useState(false);
 
+  const [playSplash] = useSound('splash.ogg', {volume: 0.25});
+  const [playSplash2] = useSound('splash2.ogg', {volume: 0.25});
+
+	// const handleSoundClick = () => {
+	// 	if(muted) {
+	// 		play();
+	// 	}
+	// 	else {
+	// 		pause();
+	// 	}
+	// 	setMuted(!muted)
+	// }
+
   const {
     depositBreedingFish,
     withdrawBreedingFish,
@@ -75,6 +90,15 @@ const FishNFT = ({
   const visibility = useContext(VisibilityContext);
 
   const visible = visibility.isItemVisible(itemId);
+
+  const playSound = () => {
+    const rand = Math.floor(Math.random() * 2) + 1
+    if(rand === 1) {
+      playSplash();
+    } else {
+      playSplash2();
+    }
+  }
 
   return (
     <FishContainer
@@ -131,7 +155,7 @@ const FishNFT = ({
         <FishImg
           selectedOpponent={selectedOpponent}
           selectedUser={selectedUser}
-          onClick={onClick}
+          onClick={() => {if(onClick) onClick(); playSound();}}
           src={fish.imgSrc}
           draggable="false"
         ></FishImg>
@@ -139,7 +163,7 @@ const FishNFT = ({
         <FishImg
           selectedOpponent={selectedOpponent}
           selectedUser={selectedUser}
-          onClick={onClick}
+          onClick={() => {if(onClick) onClick(); playSound();}}
           src={defaultImage}
           draggable="false"
         ></FishImg>
@@ -237,7 +261,7 @@ const Options = styled.div`
 const FishButton = styled(BaseButton)`
   padding: 10px;
   margin: 0 2px;
-  border-radius: 20px;
+  border-radius: 20px !important;
 
   @media ${props => props.theme.device.tablet} {
     font-size: 14px;

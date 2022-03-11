@@ -2,7 +2,7 @@ import React from "react";
 
 import { VisibilityContext } from "react-horizontal-scrolling-menu";
 import styled from "styled-components";
-import { BaseButton } from "../components/BaseStyles";
+import BaseButton from "../components/BaseButton";
 
 function Arrow({
   children,

@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { useWeb3React } from '@web3-react/core';
-import { BaseButton } from './BaseStyles';
+import BaseButton from "../components/BaseButton";
 
 export interface Props {
 	account: string | null | undefined;

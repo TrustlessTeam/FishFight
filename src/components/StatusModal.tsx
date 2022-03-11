@@ -17,7 +17,8 @@ import { StakedFighting } from '../utils/fish';
 import { Route, Routes } from 'react-router-dom';
 import infoImg from "../img/icons/info.svg";
 import waterImg from "../img/icons/water-dark.svg";
-import { BaseButton, StyledModal } from './BaseStyles';
+import { StyledModal } from './BaseStyles';
+import BaseButton from "../components/BaseButton";
 import { useContractWrapper } from '../context/contractWrapperContext';
 
 

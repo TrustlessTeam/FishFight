@@ -90,46 +90,55 @@ const FishDrawer = ({
   const SortOptions = [
     {
       name: "Id",
+      id: SortSelection.Id,
       onClick: () => setSortOption(SortSelection.Id),
       sortFn: sortId,
     },
     {
       name: "Rarity",
+      id: SortSelection.Rarity,
       onClick: () => setSortOption(SortSelection.Rarity),
       sortFn: sortRarity,
     },
 		{
       name: "Alpha",
+      id: SortSelection.Alpha,
       onClick: () => setSortOption(SortSelection.Alpha),
       sortFn: sortAlpha,
     },
 		{
       name: "Betta",
+      id: SortSelection.Betta,
       onClick: () => setSortOption(SortSelection.Betta),
       sortFn: sortBetta,
     },
     {
       name: "Strength",
+      id: SortSelection.Strength,
       onClick: () => setSortOption(SortSelection.Strength),
       sortFn: sortStr,
     },
     {
       name: "Intelligence",
+      id: SortSelection.Intelligence,
       onClick: () => setSortOption(SortSelection.Intelligence),
       sortFn: sortInt,
     },
     {
       name: "Agility",
+      id: SortSelection.Agility,
       onClick: () => setSortOption(SortSelection.Agility),
       sortFn: sortAgi,
     },
     {
       name: "Wins",
+      id: SortSelection.Wins,
       onClick: () => setSortOption(SortSelection.Wins),
       sortFn: sortWins,
     },
     {
       name: "Strongest",
+      id: SortSelection.Strongest,
       onClick: () => setSortOption(SortSelection.Strongest),
       sortFn: sortStrong,
     },
@@ -157,6 +166,10 @@ const FishDrawer = ({
   //   }
     
   // }, [selected, selectedPrev]);
+  console.log(sortOption)
+  const setNewSort = (id: number) => {
+
+  }
 
   return (
     <>
@@ -166,6 +179,7 @@ const FishDrawer = ({
         <Menu
           name={`Sort by: ${SortSelection[sortOption]}`}
           items={SortOptions}
+          // onChange={}
         ></Menu>
         )}
         {/* <Search>

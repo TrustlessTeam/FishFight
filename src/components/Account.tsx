@@ -15,6 +15,7 @@ import { isBech32Address } from '@harmony-js/utils';
 // Components
 import SignOut from './SignOut';
 import Wallets from './Wallets';
+import BaseButton from "../components/BaseButton";
 
 import { useFishFight } from '../context/fishFightContext';
 import fishImg from "../img/icons/fish.svg"
@@ -28,7 +29,7 @@ import fightingImgDark from "../img/icons/fighting-dark.svg"
 import walletImg from "../img/icons/wallet.svg"
 import breedingImg from "../img/icons/breeding.svg"
 import fightingImg from "../img/icons/fighting.svg"
-import { BaseButton, StyledModal } from './BaseStyles';
+import { StyledModal } from './BaseStyles';
 
 
 // ?

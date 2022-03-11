@@ -5,16 +5,14 @@ import { useWeb3React } from '@web3-react/core';
 import { Fish } from '../utils/fish'
 import { useUnity } from '../context/unityContext';
 import { useFishPool } from '../context/fishPoolContext';
-import FishViewer from './FishViewer';
-import {  BaseLinkButton, BaseOverlayContainer, ContainerControls, ApprovalsContainer, BaseButton, ApprovalDisclaimer, StyledModal, BaseContainer, BaseContainerCentered } from './BaseStyles';
+import {  BaseLinkButton, BaseOverlayContainer, ApprovalsContainer, ApprovalDisclaimer, StyledModal, BaseContainerCentered } from './BaseStyles';
 import { ToggleGroup, ToggleOption } from './ToggleButton';
 import { useContractWrapper } from '../context/contractWrapperContext';
 import { useFishFight } from '../context/fishFightContext';
-import ConnectWallet from './ConnectWallet';
 import Account from './Account';
-import web3 from 'web3';
 import { Constants } from '../utils/constants';
 import FishDrawer from './FishDrawer';
+import BaseButton from "../components/BaseButton";
 
 enum FishSelectionEnum {
   MyFish,

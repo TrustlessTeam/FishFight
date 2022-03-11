@@ -5,10 +5,9 @@ import { useUnity } from '../context/unityContext';
 import { useWeb3React } from '@web3-react/core';
 
 import Account from './Account';
-import FishViewer from './FishViewer';
-import Menu, { MenuItem } from './Menu';
-import { BaseContainer, ContainerControls, BaseLinkButton, BaseOverlayContainer, ApprovalsContainer, ApprovalDisclaimer, OptionsContainer, BaseButton } from './BaseStyles';
-import { ToggleGroup, ToggleOption } from './ToggleButton';
+import BaseButton from "../components/BaseButton";
+import { ContainerControls, BaseLinkButton, BaseOverlayContainer, ApprovalsContainer, ApprovalDisclaimer, OptionsContainer } from './BaseStyles';
+import ToggleButton, { ToggleItem } from './ToggleButton';
 import Fish from '../utils/fish';
 import { useContractWrapper } from '../context/contractWrapperContext';
 import { useFishFight } from '../context/fishFightContext';
@@ -31,13 +30,15 @@ const Ocean = () => {
 	const { trainingFoodApproval } = useFishFight();
 
 
-	const FishViewOptions: MenuItem[] = [
+	const FishViewOptions: ToggleItem[] = [
 		{
 			name: 'Ocean Fish',
+			id: FishView.Ocean,
 			onClick: () => setFishToShow(FishView.Ocean)
 		},
 		{
 			name: 'My Fish',
+			id: FishView.User,
 			onClick: () => setFishToShow(FishView.User)
 		}
 	]
@@ -151,11 +152,7 @@ const Ocean = () => {
 	const ViewOptions = () => {
 		return (
 			<>
-				<ToggleGroup>
-					<ToggleOption className={fishToShow === FishView.Ocean ? 'active' : ''} onClick={() => setFishToShow(FishView.Ocean)}>Ocean Fish</ToggleOption>
-					<ToggleOption className={fishToShow === FishView.User ? 'active' : ''} onClick={() => setFishToShow(FishView.User)}>My Fish</ToggleOption>
-				</ToggleGroup>
-				{/* <Menu name={FishView[fishToShow]} items={FishViewOptions}></Menu> */}
+				<ToggleButton items={FishViewOptions} selected={fishToShow}></ToggleButton>
 				{!account && fishToShow === FishView.User &&
 					<Account mobile={false}/>
 				}
@@ -165,6 +162,8 @@ const Ocean = () => {
 			</>
 		)
 	}
+
+	
 
 
 	return (

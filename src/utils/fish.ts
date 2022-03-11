@@ -119,6 +119,7 @@ export class Fish {
   imgSrc: string | null;
   ipfsLink: string | null;
   fishModifiers: FishModifiers;
+  modifiers: Modifier[];
   offspringHistory: number[] | null;
   fightingHistory: FightHistory[] | null;
   stakedFighting: StakedFighting | null;
@@ -156,6 +157,7 @@ export class Fish {
     this.imgSrc = imgSrc;
     this.ipfsLink = ipfsLink;
     this.fishModifiers = new FishModifiers(fishStats);
+    this.modifiers = fishStats.map((stat: any) => {return new Modifier(stat)})
     this.power = this.fishModifiers.powerModifier.value;
     this.fightingHistory = null;
     this.stakedFighting = null;

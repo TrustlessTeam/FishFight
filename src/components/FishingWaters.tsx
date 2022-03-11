@@ -7,10 +7,10 @@ import { useFishFight } from '../context/fishFightContext';
 import { useUnity } from '../context/unityContext';
 import { useFishPool } from '../context/fishPoolContext';
 import web3 from 'web3';
-import { ApprovalDisclaimer, ApprovalsContainer, BaseButton, BaseOverlayContainer, ContainerControls, OptionsContainer } from './BaseStyles';
+import { BaseOverlayContainer } from './BaseStyles';
 import { Constants } from '../utils/constants';
 import { useContractWrapper } from '../context/contractWrapperContext';
-import Account from './Account';
+import BaseButton from "../components/BaseButton";
 
 
 const FishingWaters = () => {

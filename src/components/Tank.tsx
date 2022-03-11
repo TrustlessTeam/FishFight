@@ -5,9 +5,10 @@ import { useUnity } from '../context/unityContext';
 import { useWeb3React } from '@web3-react/core';
 
 import Account from './Account';
-import FishViewer from './FishViewer';
+// import FishViewer from './FishViewer';
 import Menu, { MenuItem } from './Menu';
 import { BaseContainer, ContainerControls, BaseLinkButton } from './BaseStyles';
+import FishDrawer from './FishDrawer';
 
 enum FishView {
 	'Ocean',
@@ -79,7 +80,7 @@ const Tank = () => {
 					}
 				</ContainerControls>
 
-				<FishViewer fishCollection={fishToShow === FishView.Ocean ? oceanFish : userFish} onClick={unityContext.showFish}></FishViewer>
+				<FishDrawer fishCollection={fishToShow === FishView.Ocean ? oceanFish : userFish} onClick={unityContext.showFish}></FishDrawer>
 		</BaseContainer>
 		
 	);
