@@ -86,21 +86,6 @@ export const ContainerControls = styled.div`
 	justify-content: space-between;
 `;
 
-export const ApprovalsContainer = styled(LoadingOverlay)`
-	display: flex;
-	flex-direction: column;
-	justify-content: center;
-	align-items: center;
-	width: 100%;
-	height: 100%;
-`;
-
-export const ApprovalDisclaimer = styled.div`
-	padding: ${props => props.theme.spacing.gap};
-	margin-bottom: ${props => props.theme.spacing.gap};
-	border-radius: 25px;
-`;
-
 export const OptionsContainer = styled.div`
 	display: flex;
 	flex-flow: row nowrap;
@@ -232,3 +217,5 @@ export const BaseLinkButton = styled(Link)`
 		font-size: ${props => props.theme.font.medium};
   }
 `
+
+

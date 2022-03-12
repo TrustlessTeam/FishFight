@@ -336,7 +336,6 @@ const FishImg = styled.img<ImgProps>`
 		height: 150px;
   `}
   }
-
   
 `;
 

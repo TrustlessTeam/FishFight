@@ -6,7 +6,7 @@ import { useWeb3React } from '@web3-react/core';
 
 import Account from './Account';
 import BaseButton from "../components/BaseButton";
-import { ContainerControls, BaseLinkButton, BaseOverlayContainer, ApprovalsContainer, ApprovalDisclaimer, OptionsContainer } from './BaseStyles';
+import { ContainerControls, BaseLinkButton, BaseOverlayContainer, OptionsContainer } from './BaseStyles';
 import ToggleButton, { ToggleItem } from './ToggleButton';
 import Fish from '../utils/fish';
 import { useContractWrapper } from '../context/contractWrapperContext';
@@ -122,32 +122,7 @@ const Ocean = () => {
 	// useEffect(() => {
 	// 	unityContext.showOceanLocation();
 	// }, [unityContext.isFishPoolReady]);
-	const ApprovalUI = () => {
-		return (
-				<ApprovalDisclaimer>
-					<p>Approval Required: Training contract approval to control your $FISH is required for $FISH interations.</p>
-					<OptionsContainer>
-						{!trainingFoodApproval &&
-							<BaseButton onClick={() => contractApproveFoodForTraining()}>{'Approve $FISHFOOD'}</BaseButton>
-						}
-					</OptionsContainer>
-				</ApprovalDisclaimer>
-		)
-	}
 
-	if(account && !trainingFoodApproval) {
-		return (
-			<ApprovalsContainer
-			active={pendingTransaction}
-			spinner
-			text='Waiting for confirmation...'
-			>
-				<ContainerControls>
-					<ApprovalUI></ApprovalUI>
-				</ContainerControls>
-			</ApprovalsContainer>
-		)
-	}
 
 	const ViewOptions = () => {
 		return (
@@ -173,15 +148,6 @@ const Ocean = () => {
 			spinner
 			text='Waiting for confirmation...'
 			>
-				{account && fishToShow === FishView.User && !trainingFoodApproval &&
-
-						<ContainerControls>
-
-							<ApprovalUI></ApprovalUI>
-
-						</ContainerControls>
-
-				}
 				{/* <FishDrawer fishCollection={oceanFish}></FishDrawer> */}
 				{fishToShow === FishView.Ocean &&
 					<FishDrawer selectedOpponent={mySelectedFish} fishCollection={oceanFish} onClick={oceanFishClick}>

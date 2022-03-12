@@ -198,7 +198,7 @@ const Container = styled.div`
 	@media ${props => props.theme.device.tablet} {
 		display: flex;
 		flex-flow: row wrap;
-		justify-content: flex-end;
+		justify-content: center;
 		width: 100%;
   }
 `;
@@ -220,7 +220,7 @@ const Group = styled.div`
 
 	@media ${props => props.theme.device.tablet} {
 		flex-flow: row nowrap;
-		justify-content: flex-end;
+		justify-content: center;
 		width: 100%;
 		padding: 0;
 

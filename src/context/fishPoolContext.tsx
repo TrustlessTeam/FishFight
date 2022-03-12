@@ -423,6 +423,7 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
     if(oceanFish.some(fish => fish.tokenId == tokenId)) {
       setOceanFish(prevFish => [...prevFish.filter(f => f.tokenId !== tokenId), fishData]);
     }
+    unityContext.refreshFishUnity(fishData);
     return fishData;
   }
 

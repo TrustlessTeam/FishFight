@@ -12,6 +12,7 @@ import FishNFT from "./FishNFT";
 import Menu from "../components/Menu";
 import { ContainerControls } from './BaseStyles';
 import usePrevious from "../scrolling/usePrevious";
+import DrawerButton, { FishDrawerButton } from "./DrawerButton";
 
 
 const sortId = (a: Fish, b: Fish) => a.tokenId - b.tokenId;
@@ -55,6 +56,7 @@ type Props = {
   depositFighter?: boolean;
   depositAlpha?: boolean;
   type?: string;
+  userFish?: boolean;
   children?: React.ReactNode;
 };
 
@@ -66,6 +68,7 @@ const FishDrawer = ({
   depositAlpha,
   depositFighter,
 	type,
+  userFish,
   children
 }: Props) => {
 
@@ -196,6 +199,7 @@ const FishDrawer = ({
           <input type="submit" value="GO" />
         </Search> */}
       </ContainerControls>
+      
       <Container>
         <div onMouseLeave={dragStop}>
           <ScrollMenu
@@ -221,9 +225,7 @@ const FishDrawer = ({
           </ScrollMenu>
         </div>
       </Container>
-
-    </>
-    
+    </>   
   );
 }
 export default FishDrawer;

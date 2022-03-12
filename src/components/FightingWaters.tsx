@@ -6,7 +6,7 @@ import { Fish } from '../utils/fish'
 import { Fight} from '../utils/fight'
 import { useUnity } from '../context/unityContext';
 import { useFishPool } from '../context/fishPoolContext';
-import { ApprovalDisclaimer, ApprovalsContainer, BaseOverlayContainer, ContainerControls } from './BaseStyles';
+import { BaseLinkButton, BaseOverlayContainer, ContainerControls } from './BaseStyles';
 import { ToggleGroup, ToggleOption } from './ToggleButton';
 import { useContractWrapper } from '../context/contractWrapperContext';
 import { useFishFight } from '../context/fishFightContext';
@@ -132,78 +132,39 @@ const FightingWaters = () => {
 		setshowFightingLocationResult(false);
 	}
 
-	const ApprovalUI = () => {
-		return (
-			<ApprovalsContainer>
-				<ApprovalDisclaimer>
-					<p>Approval Required: Fighting contract approval to control your $FISH is required to Fight Fish.</p>
-					<OptionsContainer>
-						{!fightingFishApproval &&
-							<BaseButton onClick={() => contractApproveAllForFighting()}>{'Approve $FISH'}</BaseButton>
-						}
-					</OptionsContainer>
-					{/* <p>Use per Transaction Approval</p><button onClick={() => updateApproval(true)}></button> */}
-				</ApprovalDisclaimer>
-			</ApprovalsContainer>	
-		)
-	}
-
 	const ViewOptions = () => {
 		return (
-			<>
-			{account &&
-				<ToggleGroup>
-					<ToggleOption className={fishSelectionToShow === FishSelectionEnum.MyFish ? 'active' : ''} onClick={() => setFishSelectionToShow(FishSelectionEnum.MyFish)}>My $FISH</ToggleOption>
-					<ToggleOption className={fishSelectionToShow === FishSelectionEnum.FightFish ? 'active' : ''} onClick={() => setFishSelectionToShow(FishSelectionEnum.FightFish)}>Opponent $FISH</ToggleOption>
-				</ToggleGroup>
-			}
-			</>
+			<ToggleGroup>
+				<ToggleOption className={fishSelectionToShow === FishSelectionEnum.MyFish ? 'active' : ''} onClick={() => setFishSelectionToShow(FishSelectionEnum.MyFish)}>My $FISH</ToggleOption>
+				<ToggleOption className={fishSelectionToShow === FishSelectionEnum.FightFish ? 'active' : ''} onClick={() => setFishSelectionToShow(FishSelectionEnum.FightFish)}>Opponent $FISH</ToggleOption>
+			</ToggleGroup>
 		)
 	}
 
 	if(!unityContext.isFishPoolReady) return null;
 
 	return(
-		<>
-			{account && fightingFishApproval ?
-				<BaseOverlayContainer
-					active={pendingTransaction}
-					spinner
-					text='Waiting for confirmation...'
-				>
-					{account && userFish.length > 0 && fishSelectionToShow === FishSelectionEnum.MyFish && 
-						<FishDrawer selectedFish={mySelectedFish} fishCollection={userFish} onClick={setUserFighter}>
-							<ViewOptions></ViewOptions>
-						</FishDrawer>
-					}
-					{/* {account && userFish.length === 0 && fishSelectionToShow === FishSelectionEnum.MyFish &&
-						<BaseLinkButton to={'/catch'}>Catch a Fish!</BaseLinkButton>
-					} */}
-					{(fishSelectionToShow === FishSelectionEnum.FightFish || !account ) &&
-						<FishDrawer depositFighter selectedOpponent={opponentFish} fishCollection={fightingFish} onClick={setOpponentFighter}>
-							<ViewOptions></ViewOptions>
-						</FishDrawer>
-					}
-				</BaseOverlayContainer>
-					
-				:
-
-				<ApprovalsContainer
-				active={pendingTransaction}
-				spinner
-				text='Waiting for confirmation...'
-				>
-					<ContainerControls>
-						{!account &&
-							<Account mobile={false} textOverride={"Connect Wallet to Fight $FISH"}/>
-						}
-						{account && 
-						<ApprovalUI></ApprovalUI>
-						}
-					</ContainerControls>
-				</ApprovalsContainer>
+		<BaseOverlayContainer
+			active={pendingTransaction}
+			spinner
+			text='Waiting for confirmation...'
+		>
+			<OptionsContainer>
+				{!account &&
+					<Account mobile={false} textOverride={"Connect Wallet to Fight $FISH"}/>
+				}
+			</OptionsContainer>
+			{fishSelectionToShow === FishSelectionEnum.MyFish &&
+				<FishDrawer userFish type="Fighting" depositFighter selectedFish={mySelectedFish} fishCollection={userFish} onClick={setUserFighter}>
+					<ViewOptions></ViewOptions>
+				</FishDrawer>
 			}
-		</>
+			{fishSelectionToShow === FishSelectionEnum.FightFish &&
+				<FishDrawer type="Fighting" depositFighter selectedOpponent={opponentFish} fishCollection={fightingFish} onClick={setOpponentFighter}>
+					<ViewOptions></ViewOptions>
+				</FishDrawer>
+			}
+		</BaseOverlayContainer>
 		
 	)
 };

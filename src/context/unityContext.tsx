@@ -11,7 +11,6 @@ interface UnityProviderContext {
   isLoaded: boolean;
   progression: number;
   isFishPoolReady: boolean;
-  mintFish: number;
   toggleIsUnityMounted: () => void;
   fishCaught: (fish: Fish) => void;
   showFishingLocation: () => void;
@@ -37,6 +36,7 @@ interface UnityProviderContext {
   addFishBreed2: (fish: Fish) => void;
   addBreedOffspring: (fish: Fish) => void;
   addFishFishing: (fish: Fish) => void;
+  refreshFishUnity: (fish: Fish) => void;
   showFish: (fish: Fish) => void;
   clearFishPool: (pool: string) => void;
   sendRound: (round: number, roundStat: number) => void;
@@ -69,8 +69,10 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [fishPoolReady, setFishPoolReady] = useState(false);
   const [progression, setProgression] = useState(0);
-  const [mintFish, setMintFish] = useState(0);
   const [cookies, setCookie] = useCookies(["accepted_terms"]);
+  const [fish1, setFish1] = useState<Fish | undefined>(undefined);
+  const [fish2, setFish2] = useState<Fish | undefined>(undefined);
+  const [fish3, setFish3] = useState<Fish | undefined>(undefined);
 
   useEffect(() => {
     console.log(UnityInstance);
@@ -296,7 +298,7 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
       "AddFish1_FishView",
       JSON.stringify(fish)
     );
-    // console.log("AddFish Completed")
+    setFish1(fish);
   };
 
   const addFishFight2 = (fish: Fish) => {
@@ -320,6 +322,7 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
       "AddFish2_FishView",
       JSON.stringify(fish)
     );
+    setFish2(fish);
   };
 
   const addFishBreedingPool = (fish: Fish) => {
@@ -352,6 +355,7 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
       "AddFish1_FishView",
       JSON.stringify(fish)
     );
+    setFish1(fish);
   };
   const addFishBreed2 = (fish: Fish) => {
     // console.log("AddFish Called")
@@ -372,6 +376,7 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
       "AddFish2_FishView",
       JSON.stringify(fish)
     );
+    setFish2(fish);
   };
 
   const addBreedOffspring = (fish: Fish) => {
@@ -381,6 +386,7 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
       UnityInstance.send("FishPool", "AddFish3_FishView", JSON.stringify(fish.parentBFish));
     }
     UnityInstance.send("FishPool", "AddFish1_FishView", JSON.stringify(fish));
+    setFish1(fish);
   }
 
   const addFish1 = (fish: Fish) => {
@@ -423,6 +429,7 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
       "SetFish1",
       JSON.stringify(fish)
     );
+    setFish1(fish);
   };
   const sendRound = (round: number, roundStat: number) => {
     console.log(roundStat);
@@ -448,13 +455,51 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
     console.log("SendFight Completed");
   };
 
-  const updateWinningFish = (fish: Fish) => {
-    UnityInstance.send(
-      "ShowFightingResults_UI",
-      "SetFish1",
-      JSON.stringify(fish)
-    );
-    UnityInstance.send("FishPool", "ShowFightingResults_UI")
+  const refreshFishUnity = (fish: Fish) => {
+    if(fish1?.tokenId === fish.tokenId) {
+      UnityInstance.send(
+        "ShowBreeding_UI",
+        "SetFish1",
+        JSON.stringify(fish)
+      );
+      UnityInstance.send(
+        "ShowFighting_UI",
+        "SetFish1",
+        JSON.stringify(fish)
+      );
+      UnityInstance.send(
+        "ShowFish_UI",
+        "SetFish1",
+        JSON.stringify(fish)
+      );
+      UnityInstance.send(
+        "FishPool",
+        "AddFish1_FishView",
+        JSON.stringify(fish)
+      );
+    }
+    if(fish2?.tokenId === fish.tokenId) {
+      UnityInstance.send(
+        "ShowBreeding_UI",
+        "SetFish2",
+        JSON.stringify(fish)
+      );
+      UnityInstance.send(
+        "ShowFighting_UI",
+        "SetFish2",
+        JSON.stringify(fish)
+      );
+      UnityInstance.send(
+        "ShowFish_UI",
+        "SetFish2",
+        JSON.stringify(fish)
+      );
+      UnityInstance.send(
+        "FishPool",
+        "AddFish2_FishView",
+        JSON.stringify(fish)
+      );
+    }
   }
 
   const sendTie = () => {
@@ -473,7 +518,6 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
     isLoaded: isLoaded,
     progression: progression,
     isFishPoolReady: fishPoolReady,
-    mintFish: mintFish,
     toggleIsUnityMounted: toggleIsUnityMounted,
     fishCaught: fishCaught,
     showFishingLocation: showFishingLocation,
@@ -500,6 +544,7 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
     addBreedOffspring: addBreedOffspring,
     addFishFishing: addFishFishing,
     showFish: showFish,
+    refreshFishUnity: refreshFishUnity,
     clearFishPool: clearFishPool,
 		clearUIFish: clearUIFish,
 		hideUI: hideUI,

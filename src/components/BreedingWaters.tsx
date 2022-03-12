@@ -5,7 +5,7 @@ import { useWeb3React } from '@web3-react/core';
 import { Fish } from '../utils/fish'
 import { useUnity } from '../context/unityContext';
 import { useFishPool } from '../context/fishPoolContext';
-import {  BaseLinkButton, BaseOverlayContainer, ApprovalsContainer, ApprovalDisclaimer, StyledModal, BaseContainerCentered } from './BaseStyles';
+import {  BaseLinkButton, BaseOverlayContainer, BaseContainerCentered } from './BaseStyles';
 import { ToggleGroup, ToggleOption } from './ToggleButton';
 import { useContractWrapper } from '../context/contractWrapperContext';
 import { useFishFight } from '../context/fishFightContext';
@@ -214,30 +214,6 @@ const BreedingWaters = () => {
 						}
 					</>
 				}
-
-				<StyledModal
-					isOpen={account != null && (!breedingFishApproval || !breedingFoodApproval)}
-					// className="Modal"
-					overlayClassName="Overlay"
-					onRequestClose={closeModal}
-					shouldCloseOnOverlayClick
-				>
-					<ApprovalsContainer>
-						<ApprovalDisclaimer>
-							<p>Approval Required: Breeding contract approval to control your $FISH and send $FISHFOOD is required to Breed Fish.</p>
-							<OptionsContainer>
-							{!breedingFishApproval &&
-								<BaseButton onClick={() => contractApproveAllFishForBreeding()}>{'Approve $FISH'}</BaseButton>
-							}
-							{!breedingFoodApproval &&
-								<BaseButton onClick={() => contractApproveFoodForBreeding()}>{'Approve $FISHFOOD'}</BaseButton>
-							}
-						</OptionsContainer>
-						</ApprovalDisclaimer>
-						
-					</ApprovalsContainer>	
-					
-				</StyledModal>
 				
 			</BaseOverlayContainer>
 	);

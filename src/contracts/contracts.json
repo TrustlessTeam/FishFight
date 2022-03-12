@@ -2527,7 +2527,7 @@
       ]
     },
     "FightComputation": {
-      "address": "0x4B68762f79E3e4E2A8E8Ecfa0563b5B8Bc3a895e",
+      "address": "0x75abec7d22240a894C90fE8B7edf81B14D26B52d",
       "abi": [
         {
           "inputs": [
@@ -3286,7 +3286,7 @@
       ]
     },
     "FightingWaters": {
-      "address": "0x80c28D6df8C602616C31EA394012d2374beFaD9f",
+      "address": "0xBca7711efac81d3E4832A3D8AA6b8317368f3Ef1",
       "abi": [
         {
           "inputs": [
