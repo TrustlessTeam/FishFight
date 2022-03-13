@@ -34,17 +34,31 @@ export type FightHistory = {
 //   uses: number;
 // }
 
+export enum ModifierMapping {
+	"alpha",
+	"betta",
+	"collect",
+  "feed",
+  "strength",
+  "intelligence",
+  "agility",
+  "power"
+}
+
 export class Modifier {
   time: number;
   value: number;
   uses: number;
+  name: string;
 
   constructor(
     modifierObject: any,
+    index: number
   ) {
     this.time = web3.utils.toNumber(modifierObject[0].hex);
     this.value = modifierObject[1];
     this.uses = modifierObject[2];
+    this.name = ModifierMapping[index];
   }
 }
 
@@ -81,14 +95,14 @@ export class FishModifiers {
     fishStatsObject: any
   ) 
   {
-		this.alphaModifier = new Modifier(fishStatsObject[0]);
-		this.bettaModifier = new Modifier(fishStatsObject[1]);
-    this.collectModifier = new Modifier(fishStatsObject[2]);
-    this.feedModifier = new Modifier(fishStatsObject[3]);
-    this.strModifier = new Modifier(fishStatsObject[4]);
-    this.intModifier = new Modifier(fishStatsObject[5]);
-    this.agiModifier = new Modifier(fishStatsObject[6]);
-    this.powerModifier = new Modifier(fishStatsObject[7]);
+		this.alphaModifier = new Modifier(fishStatsObject[0], 0);
+		this.bettaModifier = new Modifier(fishStatsObject[1], 1);
+    this.collectModifier = new Modifier(fishStatsObject[2], 2);
+    this.feedModifier = new Modifier(fishStatsObject[3], 3);
+    this.strModifier = new Modifier(fishStatsObject[4], 4);
+    this.intModifier = new Modifier(fishStatsObject[5], 5);
+    this.agiModifier = new Modifier(fishStatsObject[6], 6);
+    this.powerModifier = new Modifier(fishStatsObject[7], 7);
     this.canFeed = () => {return this.feedModifier.time <= Math.round(Date.now() / 1000) && this.powerModifier.value < Constants._maxPower}
     this.canCollect = () => {return this.collectModifier.time <= Math.round(Date.now() / 1000)}
     this.inBettaCooldown = () => {return this.bettaModifier.time <= Math.round(Date.now() / 1000)}
@@ -157,7 +171,7 @@ export class Fish {
     this.imgSrc = imgSrc;
     this.ipfsLink = ipfsLink;
     this.fishModifiers = new FishModifiers(fishStats);
-    this.modifiers = fishStats.map((stat: any) => {return new Modifier(stat)})
+    this.modifiers = fishStats.map((stat: any, index: number) => {return new Modifier(stat, index)})
     this.power = this.fishModifiers.powerModifier.value;
     this.fightingHistory = null;
     this.stakedFighting = null;
