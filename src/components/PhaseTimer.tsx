@@ -29,9 +29,9 @@ const StatusModal = ({}: Props) => {
 	const {
 					currentCycle,			
 					currentPhase, 
-					maxCaught,
-					maxBred,
-					maxKilled,
+					totalCaught,
+					totalBreeds,
+					totalFights,
 					maxSupply,
 					totalSupply,
 					fightingWatersSupply,
@@ -138,13 +138,13 @@ const StatusModal = ({}: Props) => {
 				{/* <StatusText>OR</StatusText> */}
 				{/* <DataItem>
 				{currentPhase.phase == 1 &&
-					<StatusText>{`Catches Left: ${currentPhase.fishCatch} / ${maxCaught}`}</StatusText>
+					<StatusText>{`Catches Left: ${currentPhase.fishCatch} / ${totalCaught}`}</StatusText>
 				}
 				{currentSeason.phase == 2 &&
-					<StatusText>{`Deaths Left: ${currentSeason.fishDeath} / ${maxKilled}`}</StatusText>
+					<StatusText>{`Deaths Left: ${currentSeason.fishDeath} / ${totalFights}`}</StatusText>
 				}
 				{currentSeason.phase == 3 &&
-					<StatusText>{`Births Left: ${currentSeason.fishBreed} / ${maxBred}`}</StatusText>
+					<StatusText>{`Births Left: ${currentSeason.fishBreed} / ${totalBreeds}`}</StatusText>
 				}
 				</DataItem> */}
 			</DataContainer>

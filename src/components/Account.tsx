@@ -30,6 +30,7 @@ import walletImg from "../img/icons/wallet.svg"
 import breedingImg from "../img/icons/breeding.svg"
 import fightingImg from "../img/icons/fighting.svg"
 import { StyledModal } from './BaseStyles';
+import { useContractWrapper } from '../context/contractWrapperContext';
 
 
 // ?
@@ -46,6 +47,7 @@ const Account = ({ children, mobile, textOverride }: Props) => {
 	const { account, active } = useWeb3React();
 	const { balance, balanceFish, balanceDeadFish, balanceFood, balanceFightFish, balanceBreedFish  } = useFishFight();
 
+const { contractApproveAllFishForBreeding, contractApproveFoodForBreeding, contractApproveFoodForTraining, contractApproveAllForFighting, pendingTransaction, openApprovals, setOpenAppovals} = useContractWrapper();
 
 	const parsedAccount = account && !isBech32Address(account) ? toBech32(account) : account;
 
@@ -62,7 +64,7 @@ const Account = ({ children, mobile, textOverride }: Props) => {
 			<MobileContainer>
 				<WalletImg open={modalIsOpen} onClick={openModal} src={walletImg} alt="User Wallet"></WalletImg>
 				{children}
-				<StyledModal
+				<ModalRight
 					// style={{overlay: { zIndex: 10}}}
 					isOpen={modalIsOpen}
 					className="Modal"
@@ -111,7 +113,7 @@ const Account = ({ children, mobile, textOverride }: Props) => {
 							}
 						</Group>
 					</ModalContainer>
-				</StyledModal>
+				</ModalRight>
 			</MobileContainer>
 		);
 	}
@@ -170,7 +172,7 @@ const Account = ({ children, mobile, textOverride }: Props) => {
 		}
 	
 			{children}
-			<StyledModal
+			<ModalRight
 				// style={{overlay: { zIndex: 10}}}
 				isOpen={modalIsOpen}
 				className="Modal"
@@ -178,11 +180,34 @@ const Account = ({ children, mobile, textOverride }: Props) => {
 				onRequestClose={closeModal}
 				shouldCloseOnOverlayClick
 			>
-				{active ? <SignOut account={parsedAccount} closeModal={closeModal} /> : <Wallets closeModal={closeModal} />}
-			</StyledModal>
+				{active ? 
+				<ModalContainer>
+					<SignOut account={parsedAccount} closeModal={closeModal} />
+					<BaseButton onClick={() => contractApproveFoodForTraining('0')}>Revoke $FISHFOOD Allowance</BaseButton>
+					<BaseButton onClick={() => contractApproveAllForFighting(true)}>Revoke $FISH Control</BaseButton>
+					<BaseButton onClick={() => contractApproveAllFishForBreeding(true)}>Revoke $FISH Control</BaseButton>
+				</ModalContainer>
+				
+				
+				:
+				
+				<Wallets closeModal={closeModal} />}
+			</ModalRight>
 		</Container>
 	);
 };
+
+const ModalRight = styled(StyledModal)`
+	top: 80px;
+  right: 0;
+  transform: translate(0%, 0%);
+	width: 100%;
+	
+	@media ${props => props.theme.device.tablet} {
+		width: 50%;
+	}
+
+`
 
 const MobileContainer = styled.div`
 	display: flex;

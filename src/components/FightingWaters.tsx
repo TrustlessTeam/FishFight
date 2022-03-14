@@ -53,7 +53,7 @@ const FightingWaters = () => {
 		unityContext.UnityInstance.on("UI_Fighting_Start_Request", function () {
       console.log("UI_Fighting_Start_Request!");
     });
-	}, [unityContext.isFishPoolReady, account, mySelectedFish, opponentFish]);
+	}, [unityContext.isFishPoolReady, account, mySelectedFish, opponentFish, fightingFishApproval]);
 
 	useEffect(() => {
 		if(account) {

@@ -127,7 +127,7 @@ const ApprovalModal = ({}: Props) => {
 							<p>Approval Required: Breeding contract approval to control your $FISH and send $FISHFOOD is required to Breed Fish.</p>
 							<OptionsContainer>
 							{!breedingFishApproval &&
-								<BaseButton onClick={() => contractApproveAllFishForBreeding()}>{'Approve $FISH'}</BaseButton>
+								<BaseButton onClick={() => contractApproveAllFishForBreeding()}>{'Approve All $FISH'}</BaseButton>
 							}
 							</OptionsContainer>
 							<IndividualApprovals></IndividualApprovals>
@@ -156,7 +156,7 @@ const ApprovalModal = ({}: Props) => {
 							<p>Approval Required: Fighting contract approval to control your $FISH is required to Fight Fish.</p>
 							<OptionsContainer>
 								{!fightingFishApproval &&
-									<BaseButton onClick={() => contractApproveAllForFighting()}>{'Approve $FISH'}</BaseButton>
+									<BaseButton onClick={() => contractApproveAllForFighting()}>{'Approve All $FISH'}</BaseButton>
 								}
 							</OptionsContainer>
 						</ApprovalDisclaimer>
@@ -170,24 +170,21 @@ const ApprovalModal = ({}: Props) => {
 	if(!account) return null;
 
 	return (
-		<ApprovalsContainer
-			active={pendingTransaction}
-			spinner
-			text='Waiting for confirmation...'
-			>
-				{account && 
-				<Routes>
-					<Route path="ocean" element={<TrainingApproval />} />
-					<Route path="ocean:id" element={<TrainingApproval />} />
-					{/* <Route path="fishing" element={fishingData()} />
-					<Route path="fishing/:id" element={fishingData()} /> */}
-					<Route path="fighting" element={<FightingApproval />} />
-					<Route path="fighting/:id" element={<FightingApproval />} />
-					<Route path="breeding" element={<BreedingApproval />} />
-					<Route path="breeding/:id" element={<BreedingApproval />} />
-				</Routes>
-				}
-		</ApprovalsContainer>	
+		<>
+			{account && 
+			<Routes>
+				<Route path="ocean" element={<TrainingApproval />} />
+				<Route path="ocean:id" element={<TrainingApproval />} />
+				{/* <Route path="fishing" element={fishingData()} />
+				<Route path="fishing/:id" element={fishingData()} /> */}
+				<Route path="fighting" element={<FightingApproval />} />
+				<Route path="fighting/:id" element={<FightingApproval />} />
+				<Route path="breeding" element={<BreedingApproval />} />
+				<Route path="breeding/:id" element={<BreedingApproval />} />
+			</Routes>
+		}
+		</>
+
 	)
 	
 };

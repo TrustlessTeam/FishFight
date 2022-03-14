@@ -30,8 +30,8 @@ interface ProviderInterface {
 	claimFishFood: (fish: Fish | null) => void;
 	claimAllFishFood: () => void;
 	feedAllFish: () => void;
-	contractApproveAllForFighting: () => void;
-	contractApproveAllFishForBreeding: () => void;
+	contractApproveAllForFighting: (revoke?: boolean) => void;
+	contractApproveAllFishForBreeding: (revoke?: boolean) => void;
 	contractApproveFoodForBreeding: (amount: string) => void;
 	contractApproveFoodForTraining: (amount: string) => void;
 	pendingTransaction: boolean;
@@ -208,9 +208,13 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 						contractBreedDeposit(fish);
 					} else {
 						const approveResults = await contractApproveFishForBreeding(fish.tokenId);
-						approveResults.on('receipt', () => {
+						console.log(approveResults)
+						if(approveResults.events.Approval.returnValues.approved === FishFight.readBreedingWaters.options.address) {
 							contractBreedDeposit(fish);
-						})
+						}
+						// approveResults.on('receipt', () => {
+						// 	contractBreedDeposit(fish);
+						// })
 					}
 				})
 			}
@@ -223,11 +227,13 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 		}
 	}
 
-	const contractApproveAllFishForBreeding = async () => {
-		return FishFight.fishFactory?.methods.setApprovalForAll(FishFight.readBreedingWaters.options.address, true).send({
+	const contractApproveAllFishForBreeding = async (revoke?: boolean) => {
+		let grant = true;
+		if(revoke) grant = false;
+		return FishFight.fishFactory?.methods.setApprovalForAll(FishFight.readBreedingWaters.options.address, grant).send({
 			from: account,
 			gasPrice: 30000000000,
-			gasLimit: await FishFight.fishFactory?.methods.setApprovalForAll(FishFight.readBreedingWaters.options.address, true).estimateGas({from: account}),
+			gasLimit: await FishFight.fishFactory?.methods.setApprovalForAll(FishFight.readBreedingWaters.options.address, grant).estimateGas({from: account}),
 		})
 		.on('error', (error: any) => {
 			console.log(error)
@@ -328,14 +334,16 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 		const owner = await FishFight.readFishFactory.methods.ownerOf(tokenId).call();
 		console.log(owner)
 		console.log(FishFight.readFishingWaters.options.address)
-		return owner == FishFight.readFightingWaters.options.address;
+		return owner === FishFight.readFightingWaters.options.address;
 	}
 
-	const contractApproveAllForFighting = async () => {
-		return FishFight.fishFactory?.methods.setApprovalForAll(FishFight.readFightingWaters.options.address, true).send({
+	const contractApproveAllForFighting = async (revoke?: boolean) => {
+		let grant = true;
+		if(revoke) grant = false;
+		return FishFight.fishFactory?.methods.setApprovalForAll(FishFight.readFightingWaters.options.address, grant).send({
 			from: account,
 			gasPrice: 30000000000,
-			gasLimit: await FishFight.fishFactory?.methods.setApprovalForAll(FishFight.readFightingWaters.options.address, true).estimateGas({from: account}),
+			gasLimit: await FishFight.fishFactory?.methods.setApprovalForAll(FishFight.readFightingWaters.options.address, grant).estimateGas({from: account}),
 		})
 		.on('error', (error: any) => {
 			console.log(error)
@@ -518,23 +526,36 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 		}
 
 		try {
+			console.log("fight fish")
+			console.log(fightingFishApproval)
 			const deposited = await contractIsFighterDeposited(myFish.tokenId);
-			// Must approve not deposited fish before fighting, then trigger death fight with deposit flag = true
+			// User Fish is already iin fight pool, so no deposit required
 			if(deposited) {
 				contractDeathFight(myFish, opponentFish, false);
 			}
-			else { // If User selected fish is already deposited, we can just fight them
-				FishFight.fishFactory?.methods.isApprovedForAll(account, FishFight.readFightingWaters.options.address).call()
-				.then(async (isApproved: boolean) => {
-					if(isApproved) {
-						contractDeathFight(myFish, opponentFish, true);
-					} else {
-						const approveResult = await contractApproveAllForFighting()
-						approveResult.on('receipt', () => {
+			else { // User Fish is not deposited, so need to verify approval, and then start fight with deposit required
+				if(fightingFishApproval === 0) {
+					setOpenApprovals(true);
+					return;
+				}
+				if(fightingFishApproval === -1) {
+					console.log("here")
+					FishFight.fishFactory?.methods.getApproved(myFish.tokenId).call()
+					.then(async (address: string) => {
+						if(address === FishFight.readFightingWaters.options.address) {
 							contractDeathFight(myFish, opponentFish, true);
-						})
-					}
-				})
+						} else {
+							const approveResult = await contractApproveFishForFighting(myFish.tokenId)
+							console.log(approveResult)
+							if(approveResult.events.Approval.returnValues.approved === FishFight.readFightingWaters.options.address) {
+								contractDeathFight(myFish, opponentFish, true);
+							}
+						}
+					})
+				}
+				if(fightingFishApproval === 1) {
+					contractDeathFight(myFish, opponentFish, true);
+				}
 			}
 		} catch (error: any) {
 			console.log(error);
@@ -557,6 +578,10 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 		}
 		if(balanceFoodWei && balanceFoodWei.lt(new BN(Constants._feedFee))) {
 			toast.error('Not enough $FISHFOOD');
+			return;
+		}
+		if(fish.fishModifiers.powerModifier.value === Constants._maxPower) {
+			toast.error('Power Max');
 			return;
 		}
 		const secondsSinceEpoch = Math.round(Date.now() / 1000)
@@ -583,10 +608,11 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 						contractFeedFish(fish)
 					} else {
 						const approveResult = await contractApproveFoodForTraining(Constants._feedFee);
-						approveResult.on('receipt', () => {
-							console.log("approve")
-							contractFeedFish(fish)
-						})
+						console.log(approveResult)
+						if(approveResult.events.Approval.returnValues.spender === FishFight.readTrainingWaters.options.address &&
+							new BN(approveResult.events.Approval.returnValues.value).gte(new BN(Constants._feedFee))) {
+							contractFeedFish(fish);
+						}
 					}
 				})
 			}

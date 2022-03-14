@@ -25,9 +25,9 @@ interface FishFightProviderContext {
     currentPhase: Phase | undefined
     currentCycle: number;
     maxSupply: number
-    maxCaught: number
-    maxKilled: number
-    maxBred: number
+    totalCaught: number
+    totalFights: number
+    totalBreeds: number
     totalSupply: number
     fightingWatersSupply: number
     breedingWatersSupply: number
@@ -259,9 +259,9 @@ const useStats = () => {
 	const [currentCycle, setCurrentCycle] = useState<number>(0);
   const [currentPhase, setCurrentPhase] = useState<Phase>(new Phase(0))
 	const [maxSupply, setMaxSupply] = useState<number>(0);
-  const [maxCaught, setMaxCaught] = useState<number>(0);
-  const [maxKilled, setMaxKilled] = useState<number>(0);
-  const [maxBred, setMaxBred] = useState<number>(0);
+  const [totalCaught, setTotalCaught] = useState<number>(0);
+  const [totalFights, setTotalFights] = useState<number>(0);
+  const [totalBreeds, setMaxBred] = useState<number>(0);
 	const [totalSupply, setTotalSupply] = useState<number>(0);
 	const [fightingWatersSupply, setFightingWatersSupply] = useState<number>(0);
 	const [breedingWatersSupply, setBreedingWatersSupply] = useState<number>(0);
@@ -275,9 +275,9 @@ const useStats = () => {
       const cycle = await FishFight.readCycles.methods.getCycle().call();
       const totalSupply = await FishFight.readFishFactory.methods.totalSupply().call();
       const maxSupply = await FishFight.readCycles.methods._maxSupply().call();
-      const maxCatch = await FishFight.readCycles.methods._maxFishCaught().call();
-      const maxDeath = await FishFight.readCycles.methods._maxFishKilled().call();
-      const maxBirths = await FishFight.readCycles.methods._maxFishBred().call();
+      const totalCatches = await FishFight.readCycles.methods._totalCatches().call();
+      const totalFights = await FishFight.readCycles.methods._totalFights().call();
+      const totalBreeds = await FishFight.readCycles.methods._totalBreeds().call();
       const fightingSupply = await FishFight.readFishFactory.methods.balanceOf(FishFight.readFightingWaters.options.address).call();
       const breedingSupply = await FishFight.readFishFactory.methods.balanceOf(FishFight.readBreedingWaters.options.address).call();
       const phase = await FishFight.readCycles.methods.getPhase().call();
@@ -288,9 +288,9 @@ const useStats = () => {
       setMaxSupply(Web3.utils.toNumber(maxSupply));
       setFightingWatersSupply(Web3.utils.toNumber(fightingSupply));
       setBreedingWatersSupply(Web3.utils.toNumber(breedingSupply));
-      setMaxCaught(Web3.utils.toNumber(maxCatch))
-      setMaxKilled(Web3.utils.toNumber(maxDeath))
-      setMaxBred(Web3.utils.toNumber(maxBirths))
+      setTotalCaught(Web3.utils.toNumber(totalCatches))
+      setTotalFights(Web3.utils.toNumber(totalFights))
+      setMaxBred(Web3.utils.toNumber(totalBreeds))
 		},
 		[setCurrentCycle, setCurrentPhase],
 	);
@@ -302,9 +302,9 @@ const useStats = () => {
     totalSupply,
     fightingWatersSupply,
     breedingWatersSupply,
-    maxCaught,
-    maxKilled,
-    maxBred,
+    totalCaught,
+    totalFights,
+    totalBreeds,
 		fetchStats,
 	};
 };

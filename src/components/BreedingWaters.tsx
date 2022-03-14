@@ -71,7 +71,7 @@ const BreedingWaters = () => {
 			}
 			
 		});
-	}, [unityContext.isFishPoolReady, account, alphaFish, myBettaFish]);
+	}, [unityContext.isFishPoolReady, account, alphaFish, myBettaFish, breedingFishApproval]);
 
 	useEffect(() => {
 		unityContext.UnityInstance.on('UI_Breeding_Start_Request', function () {

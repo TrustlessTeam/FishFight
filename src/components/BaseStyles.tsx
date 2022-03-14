@@ -15,11 +15,11 @@ interface DefaultOptions {
 export const StyledModal = styled(Modal)`
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   position: absolute;
   top: 50%;
   left: 50%;
-  min-width: fit-content;
+  /* min-width: fit-content; */
   max-width: 800px;
   max-height: 100%;
   transform: translate(-50%, -50%);
