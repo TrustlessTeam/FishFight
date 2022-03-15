@@ -7,14 +7,13 @@ import { Fight} from '../utils/fight'
 import { useUnity } from '../context/unityContext';
 import { useFishPool } from '../context/fishPoolContext';
 import { BaseLinkButton, BaseOverlayContainer, ContainerControls } from './BaseStyles';
-import { ToggleGroup, ToggleOption } from './ToggleButton';
+import ToggleButton, { ToggleGroup, ToggleItem, ToggleOption } from './ToggleButton';
 import { useContractWrapper } from '../context/contractWrapperContext';
 import { useFishFight } from '../context/fishFightContext';
 import Account from './Account';
 import FishDrawer from './FishDrawer';
-import BaseButton from "../components/BaseButton";
 
-enum FishSelectionEnum {
+enum FishView {
   MyFish,
   FightFish
 }
@@ -23,7 +22,7 @@ const FightingWaters = () => {
 	// State
 	const [mySelectedFish, setMySelectedFish] = useState<Fish | null>(null);
 	const [opponentFish, setOpponentFish] = useState<Fish | null>(null);
-	const [fishSelectionToShow, setFishSelectionToShow] = useState<number>(FishSelectionEnum.FightFish);
+	const [fishToShow, setFishToShow] = useState<number>(FishView.FightFish);
 	const [fightResult, setFightResult] = useState<Fight | null>();
 	const [showFightingLocationResult, setshowFightingLocationResult] = useState(false);
 	const [isFighting, setIsFighting] = useState<boolean>(false);
@@ -35,6 +34,19 @@ const FightingWaters = () => {
 	const unityContext = useUnity();
 	const { fightFish, depositFightingFish, withdrawFightingFish, contractApproveAllForFighting, pendingTransaction} = useContractWrapper();
 	const { fightingFishApproval, requireApproval, updateApproval } = useFishFight();
+
+	const FishViewOptions: ToggleItem[] = [
+		{
+			name: 'My $FISH',
+			id: FishView.MyFish,
+			onClick: () => setFishToShow(FishView.MyFish)
+		},
+		{
+			name: 'Opponent $FISH',
+			id: FishView.FightFish,
+			onClick: () => setFishToShow(FishView.FightFish)
+		}
+	]
 
 	useEffect(() => {
 		unityContext.UnityInstance.on('UISelectionConfirm', function (data: any) {
@@ -57,9 +69,9 @@ const FightingWaters = () => {
 
 	useEffect(() => {
 		if(account) {
-			setFishSelectionToShow(FishSelectionEnum.MyFish)
+			setFishToShow(FishView.MyFish)
 		} else {
-			setFishSelectionToShow(FishSelectionEnum.FightFish)
+			setFishToShow(FishView.FightFish)
 		}
 	}, [account]);
 
@@ -132,15 +144,6 @@ const FightingWaters = () => {
 		setshowFightingLocationResult(false);
 	}
 
-	const ViewOptions = () => {
-		return (
-			<ToggleGroup>
-				<ToggleOption className={fishSelectionToShow === FishSelectionEnum.MyFish ? 'active' : ''} onClick={() => setFishSelectionToShow(FishSelectionEnum.MyFish)}>My $FISH</ToggleOption>
-				<ToggleOption className={fishSelectionToShow === FishSelectionEnum.FightFish ? 'active' : ''} onClick={() => setFishSelectionToShow(FishSelectionEnum.FightFish)}>Opponent $FISH</ToggleOption>
-			</ToggleGroup>
-		)
-	}
-
 	if(!unityContext.isFishPoolReady) return null;
 
 	return(
@@ -154,14 +157,14 @@ const FightingWaters = () => {
 					<Account mobile={false} textOverride={"Connect Wallet to Fight $FISH"}/>
 				}
 			</OptionsContainer>
-			{fishSelectionToShow === FishSelectionEnum.MyFish &&
+			{fishToShow === FishView.MyFish &&
 				<FishDrawer userFish type="Fighting" depositFighter selectedFish={mySelectedFish} fishCollection={userFish} onClick={setUserFighter}>
-					<ViewOptions></ViewOptions>
+						<ToggleButton items={FishViewOptions} selected={fishToShow}></ToggleButton>
 				</FishDrawer>
 			}
-			{fishSelectionToShow === FishSelectionEnum.FightFish &&
+			{fishToShow === FishView.FightFish &&
 				<FishDrawer type="Fighting" depositFighter selectedOpponent={opponentFish} fishCollection={fightingFish} onClick={setOpponentFighter}>
-					<ViewOptions></ViewOptions>
+					<ToggleButton items={FishViewOptions} selected={fishToShow}></ToggleButton>
 				</FishDrawer>
 			}
 		</BaseOverlayContainer>

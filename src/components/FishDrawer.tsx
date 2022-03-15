@@ -13,6 +13,7 @@ import Menu from "../components/Menu";
 import { ContainerControls } from './BaseStyles';
 import usePrevious from "../scrolling/usePrevious";
 import DrawerButton, { FishDrawerButton } from "./DrawerButton";
+import useSound from "use-sound";
 
 
 const sortId = (a: Fish, b: Fish) => a.tokenId - b.tokenId;
@@ -86,6 +87,18 @@ const FishDrawer = ({
   const [selected, setSelected] = React.useState<number>(0);
   const [sortOption, setSortOption] = useState<number>(SortSelection.Id);
 
+  const [playSplash] = useSound('splash.ogg', {volume: 0.25});
+  const [playSplash2] = useSound('splash2.ogg', {volume: 0.25});
+
+  const playSound = () => {
+    const rand = Math.floor(Math.random() * 2) + 1
+    if(rand === 1) {
+      playSplash();
+    } else {
+      playSplash2();
+    }
+  }
+
   // useEffect(() => {
 	// 	if(type == "Breeding") setSortOption(SortSelection.Betta)
 	// }, []);
@@ -152,6 +165,7 @@ const FishDrawer = ({
       return false;
     }
     setSelected(selected !== fish.tokenId ? fish.tokenId : 0);
+    playSound();
     if(onClick) onClick(fish);
   };
 
@@ -169,10 +183,6 @@ const FishDrawer = ({
   //   }
     
   // }, [selected, selectedPrev]);
-  console.log(sortOption)
-  const setNewSort = (id: number) => {
-
-  }
 
   return (
     <>

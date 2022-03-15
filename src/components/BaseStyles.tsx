@@ -12,6 +12,22 @@ interface DefaultOptions {
 	position?: string;
 }
 
+export const ContainerRow = styled.div`
+	position: relative;
+	display: flex;
+	flex-flow: row nowrap;
+	padding: ${props => props.theme.spacing.gap};
+`;
+
+export const ContainerColumn = styled.div`
+	position: relative;
+	display: flex;
+	flex-flow: column;
+	justify-content: center;
+  align-items: center;
+	padding: ${props => props.theme.spacing.gap};
+`;
+
 export const Title = styled.h1`
 	color: black;
 	font-size: ${props => props.theme.font.medium};

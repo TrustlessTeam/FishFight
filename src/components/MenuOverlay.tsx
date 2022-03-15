@@ -24,13 +24,16 @@ const MenuOverlay = () => {
 	const [play, { pause } ] = useSound('in_deep_90s.mp3', {loop: true, volume: 0.25});
 
 	const handleSoundClick = () => {
+		console.log(muted)
 		if(muted) {
 			play();
+			setMuted(false);
 		}
 		else {
 			pause();
+			setMuted(true);
 		}
-		setMuted(!muted)
+		
 	}
 	
 	return (

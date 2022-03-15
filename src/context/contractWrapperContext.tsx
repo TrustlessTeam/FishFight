@@ -76,34 +76,31 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 			return;
 		}
 		try {
-			if(Constants._fishFoodBreedFee > '0') {
-				if(trainingFoodApproval === 0) {
-					setOpenApprovals(true);
-					return;
-				}
-				if(trainingFoodApproval === -1) {
-					FishFight.fishFood?.methods.allowance(account, FishFight.readBreedingWaters.options.address).call()
-					.then(async (approvedAmount: any) => {
-						console.log(approvedAmount)
-						console.log(web3.utils.fromWei(approvedAmount))
-						if(web3.utils.fromWei(approvedAmount) >= Constants._fishFoodBreedFee) {
+			if(Constants._fishFoodBreedFee === '0') {
+				contractBreed(fishAlpha, fishBetta);
+				return;
+			}
+			if(trainingFoodApproval === 0) {
+				setOpenApprovals(true);
+				return;
+			}
+			if(trainingFoodApproval === -1) {
+				FishFight.fishFood?.methods.allowance(account, FishFight.readBreedingWaters.options.address).call()
+				.then(async (approvedAmount: any) => {
+					console.log(approvedAmount)
+					console.log(web3.utils.fromWei(approvedAmount))
+					if(web3.utils.fromWei(approvedAmount) >= Constants._fishFoodBreedFee) {
+						contractBreed(fishAlpha, fishBetta)
+					} else {
+						const approveResult = await contractApproveFoodForBreeding(Constants._fishFoodBreedFee)
+						approveResult.on('receipt', () => {
 							contractBreed(fishAlpha, fishBetta)
-						} else {
-							const approveResult = await contractApproveFoodForBreeding(Constants._fishFoodBreedFee)
-							approveResult.on('receipt', () => {
-								contractBreed(fishAlpha, fishBetta)
-							})
-						}
-					})
-				} else {
-					contractBreed(fishAlpha, fishBetta)
-				}
-				
+						})
+					}
+				})
 			} else {
 				contractBreed(fishAlpha, fishBetta)
 			}
-			
-
 		} catch (error: any) {
 			// toast.error("Transaction Failed")
 			console.log(error)
@@ -138,7 +135,7 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 			console.log(data)
 			setPendingTransaction(false);
 			toast.success('Breeding completed!', {
-				onClose: async () => {
+				onOpen: async () => {
 					const fish = await createUserFish(web3.utils.toNumber(data.events.BreedingResult.returnValues.tokenId));
 					if(fish != null) {
 						// unityContext.showFish(fish);
@@ -176,9 +173,9 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 				// withdrawUserBreedingFish(fish);
 				// setFishSelectionToShow(FishSelectionEnum.UserFish)
 				toast.success('Transaction done', {
-					onClose: async () => {
+					onOpen: async () => {
 						refetchBalance()
-						// refreshFish(fish.tokenId, false, false)
+						refreshFish(fish.tokenId, false, false)
 					},
 				});
 			})
@@ -246,6 +243,7 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 		.on('receipt', () => {
 			console.log('Breeding Approval completed')
 			toast.success('Breeding Approval completed')
+			setOpenApprovals(false);
 			checkApprovals(account);
 			setPendingTransaction(false);
 		})
@@ -290,6 +288,7 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 			.on('receipt', () => {
 				console.log('FishFood Approval completed')
 				toast.success('FishFood Approval Completed')
+				setOpenApprovals(false);
 				checkApprovals(account);
 				setPendingTransaction(false);
 			})
@@ -314,8 +313,9 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 		.on('receipt', async () => {
 			setPendingTransaction(false);
 			toast.success('Fish Deposited', {
-				onClose: async () => {
-					refetchBalance()
+				onOpen: async () => {
+					refetchBalance();
+					refreshFish(fish.tokenId, false, true);
 				},
 			});
 		})
@@ -356,6 +356,7 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 		.on('receipt', () => {
 			console.log('Fighting Approval completed')
 			toast.success('Fighting Approval completed')
+			setOpenApprovals(false);
 			checkApprovals(account);
 			setPendingTransaction(false);
 		})
@@ -404,7 +405,7 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 				setPendingTransaction(false);
 				// depositUserFightingFish(fish);
 				toast.success('Fish Deposited', {
-					onClose: async () => {
+					onOpen: async () => {
 						refetchBalance()
 						refreshFish(fish.tokenId, true, false);
 					},
@@ -478,7 +479,7 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 			// withdrawUserFightingFish(fish);
 			// setFishSelectionToShow(FishSelectionEnum.FightFish)
 			toast.success('Transaction done', {
-				onClose: async () => {
+				onOpen: async () => {
 					refetchBalance()
 					refreshFish(fish.tokenId, false, false)
 				},
@@ -499,10 +500,9 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 			setPendingTransaction(false);
 			const fightResult = await getFightByIndex(fightIndex, myFish)
 			unityContext.sendFightResult(fightResult);
-			refreshFish(fightResult.winner, true, false);
 			// unityContext.
 			toast.success('Fight Completed!', {
-				onClose: async () => {
+				onOpen: async () => {
 					refetchBalance()
 					if(myFish.tokenId === fightResult.winner) refreshFish(myFish.tokenId, true, false);
 					if(opponentFish.tokenId === fightResult.winner) refreshFish(opponentFish.tokenId, true, false);	
@@ -648,6 +648,10 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 		// 	return;
 		// }
 		try {
+			if(Constants._questFee === '0') {
+				contractQuestFish(fish, choice);
+				return;
+			}
 			if(trainingFoodApproval === 0) {
 				setOpenApprovals(true);
 				return;
@@ -655,17 +659,22 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 			if(trainingFoodApproval === -1) {
 				FishFight.fishFood?.methods.allowance(account, FishFight.readTrainingWaters.options.address).call()
 				.then(async (approvedAmount: any) => {
+					console.log(new BN(approvedAmount))
 					console.log(new BN(approvedAmount).gte(new BN(Constants._questFee)))
 					if(new BN(approvedAmount).gte(new BN(Constants._feedFee))) {
 						contractQuestFish(fish, choice)
 					} else {
 						const approveResult = await contractApproveFoodForTraining(Constants._questFee);
-						approveResult.on('receipt', () => {
-							console.log("approve")
-							contractQuestFish(fish, choice)
-						})
+						console.log(approveResult)
+						if(approveResult.events.Approval.returnValues.spender === FishFight.readTrainingWaters.options.address &&
+							new BN(approveResult.events.Approval.returnValues.value).gte(new BN(Constants._questFee))) {
+								contractQuestFish(fish, choice)
+						}
 					}
 				})
+			}
+			if(trainingFoodApproval === 1) {
+				contractQuestFish(fish, choice)
 			}
 			
 		} catch (error: any) {
@@ -707,10 +716,11 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 					contractFeedMultipleFish(tokenIds)
 				} else {
 					const approveResult = await contractApproveFoodForTraining(requiredAllowance.toString());
-					approveResult.on('receipt', () => {
-						console.log("approve")
-						contractFeedMultipleFish(tokenIds)
-					})
+					console.log(approveResult)
+					if(approveResult.events.Approval.returnValues.spender === FishFight.readTrainingWaters.options.address &&
+						new BN(approveResult.events.Approval.returnValues.value).gte(new BN(requiredAllowance.toString()))) {
+							contractFeedMultipleFish(tokenIds)
+					}
 				}
 			})
 		} catch (error: any) {
@@ -764,10 +774,10 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 		})
 		.on('receipt', async (result: any) => {
 			setPendingTransaction(false);
-			refreshFish(fish.tokenId, fish.stakedBreeding != null, fish.stakedFighting != null)
 			toast.success('Fish Fed!', {
-				onClose: async () => {
+				onOpen: async () => {
 					refetchBalance()
+					refreshFish(fish.tokenId, fish.stakedBreeding != null, fish.stakedFighting != null)
 				},
 			});
 		})
@@ -790,10 +800,10 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 		})
 		.on('receipt', async (result: any) => {
 			setPendingTransaction(false);
-			refreshFish(fish.tokenId, false, false)
 			toast.success('Quest Successful!', {
-				onClose: async () => {
+				onOpen: async () => {
 					refetchBalance()
+					refreshFish(fish.tokenId, false, false)
 				},
 			});
 		})
@@ -816,10 +826,10 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 		})
 		.on('receipt', async (result: any) => {
 			setPendingTransaction(false);
-			refreshFish(fish.tokenId, false, false)
 			toast.success('Claim Successful!', {
-				onClose: async () => {
+				onOpen: async () => {
 					refetchBalance()
+					refreshFish(fish.tokenId, false, false)
 				},
 			});
 		})
@@ -842,10 +852,11 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 		})
 		.on('receipt', async (result: any) => {
 			setPendingTransaction(false);
-			refreshLoadedFish()
+			
 			toast.success('Claim Successful!', {
-				onClose: async () => {
+				onOpen: async () => {
 					refetchBalance()
+					refreshLoadedFish()
 				},
 			});
 		})
@@ -868,10 +879,10 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 		})
 		.on('receipt', async (result: any) => {
 			setPendingTransaction(false);
-			refreshLoadedFish()
 			toast.success('Feed All Successful!', {
-				onClose: async () => {
+				onOpen: async () => {
 					refetchBalance()
+					refreshLoadedFish()
 				},
 			});
 		})
@@ -894,6 +905,7 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 		.on('receipt', () => {
 			console.log('FishFood Approval completed')
 			toast.success('FishFood Approval Completed')
+			setOpenApprovals(false);
 			checkApprovals(account);
 			setPendingTransaction(false);
 		})

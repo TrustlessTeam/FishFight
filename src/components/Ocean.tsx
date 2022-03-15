@@ -6,12 +6,13 @@ import { useWeb3React } from '@web3-react/core';
 
 import Account from './Account';
 import BaseButton from "../components/BaseButton";
-import { ContainerControls, BaseLinkButton, BaseOverlayContainer, OptionsContainer } from './BaseStyles';
+import { ContainerControls, BaseLinkButton, BaseOverlayContainer, OptionsContainer, StyledModal, BaseTitle, ContainerColumn, ContainerRow, BaseText } from './BaseStyles';
 import ToggleButton, { ToggleItem } from './ToggleButton';
 import Fish from '../utils/fish';
 import { useContractWrapper } from '../context/contractWrapperContext';
 import { useFishFight } from '../context/fishFightContext';
 import FishDrawer from './FishDrawer';
+import { Constants } from '../utils/constants';
 
 enum FishView {
 	Ocean,
@@ -22,12 +23,13 @@ const Ocean = () => {
 	const { userFish, oceanFish } = useFishPool();
 	const [fishToShow, setFishToShow] = useState<number>(FishView.Ocean);
 	const [mySelectedFish, setMySelectedFish] = useState<Fish | null>(null);
+	const [modalIsOpen, setModalIsOpen] = useState(false);
+
 
 	const [renderedFish, setRenderedFish] = useState<number[]>([]);
 	const unityContext = useUnity();
-	const { feedFish, contractApproveFoodForTraining, pendingTransaction } = useContractWrapper();
+	const { feedFish, claimFishFood, questFish, depositBreedingFish, depositFightingFish, pendingTransaction } = useContractWrapper();
 	const { account } = useWeb3React();
-	const { trainingFoodApproval } = useFishFight();
 
 
 	const FishViewOptions: ToggleItem[] = [
@@ -46,13 +48,27 @@ const Ocean = () => {
 	useEffect(() => {
 		unityContext.UnityInstance.on('UISelectionConfirm', function (data: any) {
 			console.log(data)
-			if(data == 'feed_confirm') {
-				console.log('feed')
-				feedFish(mySelectedFish)
-			}
-			
+			switch (data) {
+        case "feed_confirm":
+          feedFish(mySelectedFish);
+          return;
+        case "collect_confirm":
+					claimFishFood(mySelectedFish);
+          return;
+        case "quest_confirm":
+          toggleModel()
+          return;
+				case "deposit_fight_confirm":
+					depositFightingFish(mySelectedFish);
+					return;
+				case "deposit_breed_confirm":
+					depositBreedingFish(mySelectedFish);
+					return;
+        default:
+          return;
+      }
 		});
-	}, [unityContext.isFishPoolReady, mySelectedFish]);
+	}, [unityContext.isFishPoolReady, mySelectedFish, account]);
 
 	useEffect(() => {
 		console.log("CLEAR OCEAN")
@@ -104,6 +120,14 @@ const Ocean = () => {
 		unityContext.showFish(fish)
 	}
 
+	const toggleModel = () => {
+		setModalIsOpen(!modalIsOpen);
+	};
+
+	const closeModal = () => {
+		setModalIsOpen(false);
+	};
+
 	// useEffect(() => {
 	// 	console.log("Ocean Fish Changed")
 	// 	// console.log(oceanFish)
@@ -123,40 +147,60 @@ const Ocean = () => {
 	// 	unityContext.showOceanLocation();
 	// }, [unityContext.isFishPoolReady]);
 
-
-	const ViewOptions = () => {
-		return (
-			<>
-				<ToggleButton items={FishViewOptions} selected={fishToShow}></ToggleButton>
-				{!account && fishToShow === FishView.User &&
-					<Account mobile={false}/>
-				}
-				{fishToShow === FishView.User && userFish?.length === 0 &&
-					<BaseLinkButton to={'/fishing'}>Catch a Fish!</BaseLinkButton>
-				}
-			</>
-		)
-	}
-
-	
-
-
 	return (
 
 		<BaseOverlayContainer
 			active={pendingTransaction}
 			spinner
 			text='Waiting for confirmation...'
+			>	
+			{mySelectedFish != null && mySelectedFish.canQuest &&
+				<StyledModal
+				isOpen={modalIsOpen}
+				// className="Modal"
+				overlayClassName="Overlay"
+				onRequestClose={closeModal}
+				shouldCloseOnOverlayClick
 			>
+				{/* {active ? <SignOut account={parsedAccount} closeModal={closeModal} /> : <Wallets closeModal={closeModal} />} */}
+				<ContainerColumn>
+					<BaseTitle>{`Drain ${Constants._fightModifierCost} Power to Buff an attribute of your $FISH for 3 Fights!`}</BaseTitle>
+					<ContainerRow>
+						<ContainerColumn>
+							<BaseText>{`Strength ${mySelectedFish.strength} -> ${mySelectedFish.strength+Constants._fightModifierValue > 100 ? 100 : mySelectedFish.strength+Constants._fightModifierValue}`}</BaseText>
+							<BaseButton onClick={() => {questFish(mySelectedFish, 0); closeModal()}}>Buff Strength</BaseButton>
+						</ContainerColumn>
+						<ContainerColumn>
+							<BaseText>{`Intelligence ${mySelectedFish.intelligence} -> ${mySelectedFish.intelligence+Constants._fightModifierValue > 100 ? 100 : mySelectedFish.intelligence+Constants._fightModifierValue}`}</BaseText>
+							<BaseButton onClick={() => {questFish(mySelectedFish, Constants.MODIFIER_INT); closeModal()}}>Buff Intelligence</BaseButton>
+						</ContainerColumn>
+						<ContainerColumn>
+							<BaseText>{`Strength ${mySelectedFish.agility} -> ${mySelectedFish.agility+Constants._fightModifierValue > 100 ? 100 : mySelectedFish.agility+Constants._fightModifierValue}`}</BaseText>
+							<BaseButton onClick={() => {questFish(mySelectedFish, Constants.MODIFIER_AGI); closeModal()}}>Buff Agility</BaseButton>
+						</ContainerColumn>          
+					</ContainerRow>
+				</ContainerColumn>
+				
+			</StyledModal>
+			}
+				
 				{/* <FishDrawer fishCollection={oceanFish}></FishDrawer> */}
 				{fishToShow === FishView.Ocean &&
 					<FishDrawer selectedOpponent={mySelectedFish} fishCollection={oceanFish} onClick={oceanFishClick}>
-						<ViewOptions></ViewOptions>
+						<ToggleButton items={FishViewOptions} selected={fishToShow}></ToggleButton>
 					</FishDrawer>
 				}
 				{fishToShow === FishView.User &&
 					<FishDrawer selectedFish={mySelectedFish} fishCollection={userFish} onClick={oceanFishClick}>
-						<ViewOptions></ViewOptions>
+						<>
+							<ToggleButton items={FishViewOptions} selected={fishToShow}></ToggleButton>
+							{!account &&
+								<Account mobile={false}/>
+							}
+							{account && userFish?.length === 0 &&
+								<BaseLinkButton to={'/fishing'}>Catch a Fish!</BaseLinkButton>
+							}
+						</>
 					</FishDrawer>
 				}
 				

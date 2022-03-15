@@ -58,7 +58,7 @@ export class Modifier {
     this.time = web3.utils.toNumber(modifierObject[0].hex);
     this.value = modifierObject[1];
     this.uses = modifierObject[2];
-    this.name = ModifierMapping[index];
+    this.name = ModifierMapping[index] ? ModifierMapping[index] : "";
   }
 }
 
@@ -165,7 +165,7 @@ export class Fish {
     this.breedKey = fishInfo.breedKey;
     this.deathTime = web3.utils.toNumber(fishInfo.deathTime);
     this.revived = fishInfo.revived;
-    this.offspringHistory = fishInfo.offspring;
+    this.offspringHistory = fishInfo.offspring.map((item: any) => web3.utils.toNumber(item.hex));
     this.genesArray = this.parseGenes(this.genes);
     this.visualTraits = this.parseTraits();
     this.imgSrc = imgSrc;

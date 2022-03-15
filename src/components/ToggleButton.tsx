@@ -26,9 +26,9 @@ const ToggleButton = ({ items, selected } : Props) => {
 	return (
 		<>
 			<ToggleGroup>
-				{items.map(item => {
+				{items.map((item, key) => {
 					return(
-						<ToggleOption className={selected === item.id ? 'active' : ''} onClick={() => {item.onClick(); playClick();}}>{item.name}</ToggleOption>
+						<ToggleOption key={key} className={selected === item.id ? 'active' : ''} onClick={() => {item.onClick(); playClick();}}>{item.name}</ToggleOption>
 					)
 				})}
 				{/* <ToggleOption className={selected === FishView.Ocean ? 'active' : ''} onClick={() => setFishToShow(FishView.Ocean)}>Ocean Fish</ToggleOption>

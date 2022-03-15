@@ -6,7 +6,7 @@ import { Fish } from '../utils/fish'
 import { useUnity } from '../context/unityContext';
 import { useFishPool } from '../context/fishPoolContext';
 import {  BaseLinkButton, BaseOverlayContainer, BaseContainerCentered } from './BaseStyles';
-import { ToggleGroup, ToggleOption } from './ToggleButton';
+import ToggleButton, { ToggleGroup, ToggleItem, ToggleOption } from './ToggleButton';
 import { useContractWrapper } from '../context/contractWrapperContext';
 import { useFishFight } from '../context/fishFightContext';
 import Account from './Account';
@@ -14,14 +14,15 @@ import { Constants } from '../utils/constants';
 import FishDrawer from './FishDrawer';
 import BaseButton from "../components/BaseButton";
 
-enum FishSelectionEnum {
+enum FishView {
   MyFish,
   AlphaFish
 }
 
+
 const BreedingWaters = () => {
 	// State
-	const [fishSelectionToShow, setFishSelectionToShow] = useState<number>(FishSelectionEnum.AlphaFish);
+	const [fishToShow, setFishToShow] = useState<number>(FishView.AlphaFish);
 	const [myBettaFish, setMyBettaFish] = useState<Fish | null>(null);
 	const [alphaFish, setAlphaFish] = useState<Fish | null>(null);
 	const [modalIsOpen, setModalIsOpen] = useState(false);
@@ -35,8 +36,21 @@ const BreedingWaters = () => {
 	const unityContext = useUnity();
 	const { account } = useWeb3React();
 	const { userFish, breedingFish } = useFishPool()
-	const { breedFish, depositBreedingFish, withdrawBreedingFish, contractApproveFoodForBreeding, contractApproveAllFishForBreeding, pendingTransaction} = useContractWrapper();
-	const { breedingFishApproval, breedingFoodApproval, currentPhase } = useFishFight();
+	const { breedFish, pendingTransaction} = useContractWrapper();
+	const { breedingFishApproval, breedingFoodApproval } = useFishFight();
+
+	const FishViewOptions: ToggleItem[] = [
+		{
+			name: 'My $FISH',
+			id: FishView.MyFish,
+			onClick: () => setFishToShow(FishView.MyFish)
+		},
+		{
+			name: 'Alpha $FISH',
+			id: FishView.AlphaFish,
+			onClick: () => setFishToShow(FishView.AlphaFish)
+		}
+	]
 
 	useEffect(() => {
 		console.log("Breeding Fish")
@@ -159,8 +173,8 @@ const BreedingWaters = () => {
 			<>
 			{account &&
 				<ToggleGroup>
-					<ToggleOption className={fishSelectionToShow === FishSelectionEnum.MyFish ? 'active' : ''} onClick={() => setFishSelectionToShow(FishSelectionEnum.MyFish)}>My $FISH</ToggleOption>
-					<ToggleOption className={fishSelectionToShow === FishSelectionEnum.AlphaFish ? 'active' : ''} onClick={() => setFishSelectionToShow(FishSelectionEnum.AlphaFish)}>Alpha $FISH</ToggleOption>
+					<ToggleOption className={fishToShow === FishView.MyFish ? 'active' : ''} onClick={() => setFishToShow(FishView.MyFish)}>My $FISH</ToggleOption>
+					<ToggleOption className={fishToShow === FishView.AlphaFish ? 'active' : ''} onClick={() => setFishToShow(FishView.AlphaFish)}>Alpha $FISH</ToggleOption>
 				</ToggleGroup>
 			}
 			</>
@@ -176,45 +190,25 @@ const BreedingWaters = () => {
 			spinner
 			text='Waiting for confirmation...'
 			>
-				{!account &&
-					<BaseContainerCentered>
-						<OptionsContainer>
-							<Account mobile={false} textOverride={"Connect Wallet to Breed $FISH"}/>
-						</OptionsContainer>
-						
-					</BaseContainerCentered>
+			{!account &&
+				<OptionsContainer>
+					<Account mobile={false} textOverride={"Connect Wallet to Breed $FISH"}/>
+				</OptionsContainer>
+			}
+
+				{fishToShow === FishView.MyFish && 
+					<FishDrawer type="Breeding" selectedFish={myBettaFish} fishCollection={userFish} onClick={setUserBetta}>
+						<ToggleButton items={FishViewOptions} selected={fishToShow}></ToggleButton>
+					</FishDrawer>
 				}
-				{account && breedingFishApproval && breedingFoodApproval &&
-					<>
-						{myBettaFish != null &&
-						<OptionsContainer>
-							{/* {myBettaFish.stakedBreeding &&
-								<GameButton onClick={() => withdrawBreedingFish(myBettaFish)}>{'Withdraw Breeder'}</GameButton>
-							}
-							{myBettaFish.seasonStats.fightWins > 0 && !myBettaFish.stakedFighting &&
-								<GameButton onClick={() => depositBreedingFish(myBettaFish)}>{'Deposit'}</GameButton>
-							} */}
-							{myBettaFish && alphaFish &&
-								<BaseButton onClick={() => breedFish(alphaFish, myBettaFish)}>{'Breed Fish'}</BaseButton>
-							}
-						</OptionsContainer>
-						}
-						{account && userFish.length > 0 && fishSelectionToShow === FishSelectionEnum.MyFish && 
-							<FishDrawer type="Breeding" selectedFish={myBettaFish} fishCollection={userFish} onClick={setUserBetta}>
-								<ViewOptions></ViewOptions>
-							</FishDrawer>
-						}
-						{account && userFish.length === 0 && fishSelectionToShow === FishSelectionEnum.MyFish &&
-							<BaseLinkButton to={'/catch'}>Catch a Fish!</BaseLinkButton>
-						}
-						{(fishSelectionToShow === FishSelectionEnum.AlphaFish || !account ) &&
-							<FishDrawer selectedOpponent={alphaFish} fishCollection={breedingFish} onClick={setAlpha}>
-								<ViewOptions></ViewOptions>
-							</FishDrawer>
-						}
-					</>
+				{account && userFish.length === 0 && fishToShow === FishView.MyFish &&
+					<BaseLinkButton to={'/catch'}>Catch a Fish!</BaseLinkButton>
 				}
-				
+				{fishToShow === FishView.AlphaFish &&
+					<FishDrawer selectedOpponent={alphaFish} fishCollection={breedingFish} onClick={setAlpha}>
+						<ToggleButton items={FishViewOptions} selected={fishToShow}></ToggleButton>
+					</FishDrawer>
+				}
 			</BaseOverlayContainer>
 	);
 };
