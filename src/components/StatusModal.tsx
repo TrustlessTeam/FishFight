@@ -24,6 +24,7 @@ import { useContractWrapper } from '../context/contractWrapperContext';
 import Phase from './Phase';
 import { Constants } from '../utils/constants';
 import ToggleButton, { ToggleItem } from './ToggleButton';
+import { toast } from 'react-toastify';
 
 
 type Props = {
@@ -94,7 +95,7 @@ const StatusModal = ({}: Props) => {
 	}
 
 	const nextPhase = async () => {
-		if(!account) return;
+		if(!account) toast.error("Connect Wallet");
 		FishFight.cycles?.methods.checkLimit().send({
 			from: account,
 			gasPrice: 30000000000,
@@ -127,7 +128,7 @@ const StatusModal = ({}: Props) => {
 	const renderer = ({ hours, minutes, seconds, completed }: RenderProps) => {
 		if (completed) {
 			// Render a completed state
-			return <BaseButton onClick={nextPhase}>Next Phase</BaseButton>;
+			return <NextButton onClick={nextPhase}>Next Phase</NextButton>;
 			
 		} else {
 			// Render a countdown
@@ -354,7 +355,6 @@ const StatusModal = ({}: Props) => {
 				{/* </WaterStats> */}
 				<LeftModal
 					isOpen={modalIsOpen}
-					className="Modal"
 					overlayClassName="Overlay"
 					onRequestClose={closeModal}
 					shouldCloseOnOverlayClick
@@ -382,6 +382,15 @@ const StatusModal = ({}: Props) => {
 		)
 	
 };
+
+const NextButton = styled(BaseButton)`
+	margin-right: ${props => props.theme.spacing.gapSmall};
+	height: ${props => props.theme.font.medium};
+
+	@media ${props => props.theme.device.tablet} {
+	  height: ${props => props.theme.font.large};
+  }
+`
 
 const Time = styled.div`
 	display: flex;
@@ -434,6 +443,7 @@ const LeftModal = styled(StyledModal)`
 	
 	@media ${props => props.theme.device.tablet} {
 		width: 50%;
+		top: 100px;
 	}
 `;
 
