@@ -12,6 +12,24 @@ interface DefaultOptions {
 	position?: string;
 }
 
+export const Title = styled.h1`
+	color: black;
+	font-size: ${props => props.theme.font.medium};
+	margin: 0;
+	padding-right: ${props => props.theme.spacing.gapSmall};
+
+	@media ${props => props.theme.device.tablet} {
+		display: block;
+	  font-size: ${props => props.theme.font.large};
+  }
+	/* text-decoration: underline; */
+	text-transform: uppercase;
+
+	span {
+		color: white;
+	}
+`;
+
 export const StyledModal = styled(Modal)`
   display: flex;
   align-items: center;
@@ -23,10 +41,12 @@ export const StyledModal = styled(Modal)`
   max-width: 800px;
   max-height: 100%;
   transform: translate(-50%, -50%);
-  /* border-radius: 20px; */
+  border-radius: 20px;
   /* background-color: rgb(230, 230, 230); */
 	
 	/* padding: ${props => props.theme.spacing.gap}; */
+	box-shadow:  20px 20px 60px #254f67,
+             -20px -20px 60px #336b8b;
   outline: none;
   overflow: hidden;
   z-index: 20;
@@ -35,7 +55,7 @@ export const StyledModal = styled(Modal)`
 		content: "";
 		background: url(${bloodImg}), url(${iceImg});
 		background-blend-mode: darken;
-		opacity: 0.8;
+		opacity: 0.9;
 		border: solid white 2px;
 		border-radius: 20px;
 		background-size: cover;
