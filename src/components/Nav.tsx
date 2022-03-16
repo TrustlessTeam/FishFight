@@ -96,10 +96,10 @@ const Logo = styled(Link)`
 `;
 
 const LogoImg = styled.img<ActiveProps>`
-	height: 40px;
+	height: 30px;
 	/* border: 2px solid white;s */
 	border-radius: 50%;
-  padding: 5px;
+  padding: 3px;
   background-image: linear-gradient(#b6deffe1, #50cdffc1);
   box-shadow: inset 2px 2px 2px #c7c7c74b, inset -2px -2px 2px #3f3f3f4c;
 

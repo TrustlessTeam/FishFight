@@ -2,6 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { useWeb3React } from '@web3-react/core';
 import BaseButton from "../components/BaseButton";
+import { Title } from './BaseStyles';
 
 export interface Props {
 	account: string | null | undefined;
@@ -18,8 +19,7 @@ const SignOut = ({ account, closeModal }: Props) => {
 
 	return (
 		<SignOutComponent>
-			<span>{account}</span>
-			<BaseButton onClick={handleClick}>Sign out</BaseButton>
+			<Title>Connected: <span>{account}</span></Title><BaseButton onClick={handleClick}>Sign out</BaseButton>
 		</SignOutComponent>
 	);
 };
@@ -27,23 +27,19 @@ const SignOut = ({ account, closeModal }: Props) => {
 const SignOutComponent = styled.div`
 	display: flex;
 	align-items: center;
-	padding: 20px 40px;
+	padding: ${props => props.theme.spacing.gap};
 	/* justify-content: space-around; */
-	flex-direction: column;
+	flex-direction: row;
 	overflow: hidden;
 	z-index: 20;
 
-	& p {
+	/* & p {
 		margin: 0;
 		font-size: 1.5rem;
-	}
+	} */
 
 	& span {
 		font-size: ${props => props.theme.font.medium}
-		font-weight: bold;
-		color: black;
-		text-shadow: 0px 0px 10px white;
-		padding: 5px;
 	}
 `;
 

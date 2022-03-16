@@ -29,8 +29,9 @@ import fightingImgDark from "../img/icons/fighting-dark.svg"
 import walletImg from "../img/icons/wallet.svg"
 import breedingImg from "../img/icons/breeding.svg"
 import fightingImg from "../img/icons/fighting.svg"
-import { StyledModal } from './BaseStyles';
+import { BaseContainerCentered, BaseText, ContainerColumn, ContainerRow, StyledModal, Title } from './BaseStyles';
 import { useContractWrapper } from '../context/contractWrapperContext';
+import { Constants } from '../utils/constants';
 
 
 // ?
@@ -45,9 +46,9 @@ type Props = {
 const Account = ({ children, mobile, textOverride }: Props) => {
 	const [modalIsOpen, setModalIsOpen] = useState(false);
 	const { account, active } = useWeb3React();
-	const { balance, balanceFish, balanceDeadFish, balanceFood, balanceFightFish, balanceBreedFish  } = useFishFight();
+	const { balance, balanceFish, balanceDeadFish, balanceFood, balanceFightFish, balanceBreedFish, FishFight  } = useFishFight();
 
-const { contractApproveAllFishForBreeding, contractApproveFoodForBreeding, contractApproveFoodForTraining, contractApproveAllForFighting, pendingTransaction, openApprovals, setOpenAppovals} = useContractWrapper();
+const { contractApproveAllFishForBreeding, perTransactionApproval, setPerTransactionApproval, contractApproveFoodForTraining, contractApproveAllForFighting,  } = useContractWrapper();
 
 	const parsedAccount = account && !isBech32Address(account) ? toBech32(account) : account;
 
@@ -59,12 +60,29 @@ const { contractApproveAllFishForBreeding, contractApproveFoodForBreeding, contr
 		setModalIsOpen(false);
 	};
 
+	const handleChange = () => {
+		setPerTransactionApproval(!perTransactionApproval)
+  };
+
+	const IndividualApprovals = () => {
+		return(
+			<CheckboxContainer>
+				<input
+					type="checkbox"
+					checked={perTransactionApproval}
+					onChange={handleChange}
+				/>
+				<Text><span>(NOT RECOMMENDED)</span> Set approvals per action when playing FishFight.</Text>
+			</CheckboxContainer>
+		)
+	}
+
 	if(mobile) {
 		return (
 			<MobileContainer>
 				<WalletImg open={modalIsOpen} onClick={openModal} src={walletImg} alt="User Wallet"></WalletImg>
 				{children}
-				<ModalRight
+				<StyledModal
 					// style={{overlay: { zIndex: 10}}}
 					isOpen={modalIsOpen}
 					className="Modal"
@@ -113,7 +131,7 @@ const { contractApproveAllFishForBreeding, contractApproveFoodForBreeding, contr
 							}
 						</Group>
 					</ModalContainer>
-				</ModalRight>
+				</StyledModal>
 			</MobileContainer>
 		);
 	}
@@ -181,12 +199,25 @@ const { contractApproveAllFishForBreeding, contractApproveFoodForBreeding, contr
 				shouldCloseOnOverlayClick
 			>
 				{active ? 
-				<ModalContainer>
+				<ContainerColumnLeft>
 					<SignOut account={parsedAccount} closeModal={closeModal} />
-					<BaseButton onClick={() => contractApproveFoodForTraining('0')}>Revoke $FISHFOOD Allowance</BaseButton>
-					<BaseButton onClick={() => contractApproveAllForFighting(true)}>Revoke $FISH Control</BaseButton>
-					<BaseButton onClick={() => contractApproveAllFishForBreeding(true)}>Revoke $FISH Control</BaseButton>
-				</ModalContainer>
+					<ContainerColumnLeft>
+						<Title>Offical Contracts and Approvals</Title>
+						<ContainerColumnLeft>
+							<BaseText>Training Contract <a target="_blank" rel="noopener noreferrer" href={`${Constants._explorer}address/${FishFight.readTrainingWaters.options.address}`}>{FishFight.readTrainingWaters.options.address}</a></BaseText>
+							<BaseButton onClick={() => contractApproveFoodForTraining('0')}>Revoke $FISHFOOD Allowance</BaseButton>		
+						</ContainerColumnLeft>
+						<ContainerColumnLeft>
+							<BaseText>Fighting Contract <a target="_blank" rel="noopener noreferrer" href={`${Constants._explorer}address/${FishFight.readFightingWaters.options.address}`}>{FishFight.readFightingWaters.options.address}</a></BaseText>
+							<BaseButton onClick={() => contractApproveAllForFighting(true)}>Revoke $FISH Control</BaseButton>
+						</ContainerColumnLeft>
+						<ContainerColumnLeft>
+						<BaseText>Breeding Contract <a target="_blank" rel="noopener noreferrer" href={`${Constants._explorer}address/${FishFight.readBreedingWaters.options.address}`}>{FishFight.readBreedingWaters.options.address}</a></BaseText>
+							<BaseButton onClick={() => contractApproveAllFishForBreeding(true)}>Revoke $FISH Control</BaseButton>
+						</ContainerColumnLeft>
+					</ContainerColumnLeft>
+					<IndividualApprovals></IndividualApprovals>
+				</ContainerColumnLeft>
 				
 				
 				:
@@ -197,17 +228,35 @@ const { contractApproveAllFishForBreeding, contractApproveFoodForBreeding, contr
 	);
 };
 
+const CheckboxContainer = styled.div`
+	display: flex;
+	flex-flow: row nowrap;
+	justify-content: flex-start;
+	padding: ${props => props.theme.spacing.gap} ${props => props.theme.spacing.gap} 0;
+	width: 100%;
+
+	p {
+		font-size: ${props => props.theme.font.small};
+	}
+`
+
 const ModalRight = styled(StyledModal)`
-	top: 80px;
+	top: 100px;
   right: 0;
   transform: translate(0%, 0%);
 	width: 100%;
+	justify-content: center;
 	
 	@media ${props => props.theme.device.tablet} {
-		width: 50%;
+		max-width: 50%;
 	}
 
 `
+
+const ContainerColumnLeft = styled(ContainerColumn)`
+	justify-content: flex-start;
+  align-items: flex-start;
+`;
 
 const MobileContainer = styled.div`
 	display: flex;
@@ -297,6 +346,16 @@ const BalanceText = styled.b`
 		font-size: ${props => props.theme.font.medium};
 		color: white;
   }
+`;
+
+const Text = styled.p`
+	color: white;
+	margin: 0;
+	font-weight: bold;
+
+	span {
+		color: black;
+	}
 `;
 
 const BalanceComponent = styled.div`

@@ -28,7 +28,7 @@ import { toast } from 'react-toastify';
 
 
 type Props = {
-  // open: boolean;
+  children?: React.ReactNode;
 };
 
 enum StatView {
@@ -37,7 +37,7 @@ enum StatView {
 	Breeding
 }
 
-const StatusModal = ({}: Props) => {
+const StatusModal = ({children}: Props) => {
 	const {
 					currentCycle,			
 					currentPhase, 
@@ -281,6 +281,11 @@ const StatusModal = ({}: Props) => {
 		return (
 			<DataContainer>
 				<StatusContainer>
+					<MobileButtons>
+						{children}
+					</MobileButtons>
+				</StatusContainer>
+				<StatusContainer>
 					<Time>
 						<Title>Phase <span>{currentPhase.phaseString}</span></Title>
 						<Countdown renderer={renderer} date={currentPhase.phaseEndtimeDate} />
@@ -352,6 +357,7 @@ const StatusModal = ({}: Props) => {
 			<ImgContainer>
 				{/* <WaterStats onClick={toggleModel}> */}
 					<LogoImg onClick={toggleModel} open={modalIsOpen} src={fishFightLogo}></LogoImg>
+					<DesktopButtons>{children}</DesktopButtons>
 				{/* </WaterStats> */}
 				<LeftModal
 					isOpen={modalIsOpen}
@@ -382,6 +388,20 @@ const StatusModal = ({}: Props) => {
 		)
 	
 };
+
+const MobileButtons = styled.div`
+	display: block;
+	@media ${props => props.theme.device.tablet} {
+	  display: none;
+  }
+`;
+
+const DesktopButtons = styled.div`
+	display: none;
+	@media ${props => props.theme.device.tablet} {
+	  display: block;
+  }
+`;
 
 const NextButton = styled(BaseButton)`
 	margin-right: ${props => props.theme.spacing.gapSmall};

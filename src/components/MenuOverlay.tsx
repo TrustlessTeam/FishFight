@@ -40,8 +40,10 @@ const MenuOverlay = () => {
 		<Wrapper open={open}>
 			<MenuContainer>
 				
-				<StatusModal />
-				<SoundButton onClick={() => handleSoundClick()}><LogoImg src={muted ? muteImg : noMuteImg}></LogoImg></SoundButton>
+				<StatusModal>
+					<SoundButton onClick={() => handleSoundClick()}><LogoImg src={muted ? muteImg : noMuteImg}></LogoImg></SoundButton>
+				</StatusModal>
+				
 				<StyledNav></StyledNav>
 				<User open={open}>
 					<Account mobile={false}></Account>
