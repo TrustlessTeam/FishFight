@@ -40,14 +40,16 @@ const MenuOverlay = () => {
 		<Wrapper open={open}>
 			<MenuContainer>
 				
-				<StatusModal />
-				<SoundButton onClick={() => handleSoundClick()}><LogoImg src={muted ? muteImg : noMuteImg}></LogoImg></SoundButton>
+				<StatusModal>
+					<SoundButton onClick={() => handleSoundClick()}><LogoImg src={muted ? muteImg : noMuteImg}></LogoImg></SoundButton>
+				</StatusModal>
+				
 				<StyledNav></StyledNav>
-				<User open={open}>
-					<Account mobile={false}></Account>
-					{/* <Balance></Balance> */}
+
+				<User>
+					<Account></Account>
 				</User>
-				<Account mobile={true}></Account>
+				
 				
 				
 				
@@ -88,7 +90,6 @@ const SoundButton = styled(BaseButton)`
 
 
 const LogoImg = styled.img`
-	/* padding: ${props => props.theme.spacing.gapSmall}; */
 	height: 15px;
 
 	@media ${props => props.theme.device.tablet} {
@@ -116,7 +117,7 @@ const MenuContainer = styled.div`
 	justify-content: center;
 	flex-flow: row nowrap;
 	align-items: center;
-	/* justify-content: space-between; */
+	justify-content: space-between;
 	background-color: rgba(0, 0, 0, 0.6);
 
 	@media ${props => props.theme.device.tablet} {
@@ -128,26 +129,18 @@ const MenuContainer = styled.div`
   }
 `;
 
-const User = styled.div<{open: boolean}>`
-	display: none;
-	@media ${props => props.theme.device.tablet} {
-		display: flex;
-		flex-flow: row wrap;
-		justify-content: flex-end;
-		width: 40%;
-  }
+const User = styled.div`
+	display: flex;
+	flex-flow: row wrap;
+	justify-content: flex-end;
+	width: 33%;
+	max-width: 350px;
+
 `;
 
-const UserMobile = styled.div<{open: boolean}>`
-	display: flex;
-	@media ${props => props.theme.device.tablet} {
-		
-		display: none;
-  }
-`;
 
 const StyledNav = styled(Nav)`
-	width: 100%;
+	width: 33%;
 	/* order: 0;
 	@media ${props => props.theme.device.tablet} {
 		order: 1;

@@ -20,11 +20,11 @@ const gradientTopLeft = `linear-gradient(225deg, ${navyBlue}, ${darkCornflowerBl
 const gradientBottomLeft = `linear-gradient(315deg, ${navyBlue}, ${darkCornflowerBlue}, ${starCommandBlue}, ${blueGreen}, ${ceruleanCrayola}, ${skyBlueCrayola}, ${skyBlueCrayola2}, ${blizzardBlue}, ${powderBlue});`;
 const gradientRadial = `radial-gradient(${navyBlue}, ${darkCornflowerBlue}, ${starCommandBlue}, ${blueGreen}, ${ceruleanCrayola}, ${skyBlueCrayola}, ${skyBlueCrayola2}, ${blizzardBlue}, ${powderBlue});`;
 
-const spacingBase = 2;
-const gapSmall = spacingBase / 2 + `vmin`;
-const gap = spacingBase + `vmin`;
-const gapMedium = spacingBase * 2 + `vmin`;
-const gapLarge = spacingBase * 3 + `vmin`
+const spacingBase = 12;
+const gapSmall = spacingBase / 2 + `px`;
+const gap = spacingBase + `px`;
+const gapMedium = spacingBase * 2 + `px`;
+const gapLarge = spacingBase * 3 + `px`
 
 const fontSmall = "12px";
 const fontMedium = "16px";

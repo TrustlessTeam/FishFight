@@ -7,6 +7,8 @@ import { useFishFight } from '../context/fishFightContext';
 import fishImg from "../img/icons/fish.svg"
 import deadImg from "../img/icons/dead.svg"
 import foodImg from "../img/icons/food.svg"
+import breedingImg from "../img/icons/breeding.svg"
+import fightingImg from "../img/icons/fighting.svg"
 
 
 const Balance = () => {
@@ -16,9 +18,6 @@ const Balance = () => {
 
 	return (
 		<>
-			<BalanceComponent>
-				<BalanceText>{balance.split('.')[0]} ONE</BalanceText>
-			</BalanceComponent>
 			<BalanceComponent title="FISHFOOD Balance">
 				<BalanceText>
 					{parseFloat(balanceFood ? balanceFood : '0').toFixed(2)}<LogoImg src={foodImg} alt="FISHFOOD"></LogoImg>
@@ -37,12 +36,12 @@ const Balance = () => {
 			
 			<BalanceComponent title="FIGHTFISH Balance">
 				<BalanceText>
-					{balanceFightFish}<LogoImg src={fishImg} alt="FIGHTFISH"></LogoImg>F
+					{balanceFightFish}<LogoImg src={fightingImg} alt="FIGHTFISH"></LogoImg>
 				</BalanceText>
 			</BalanceComponent>
 			<BalanceComponent title="BREEDFISH Balance">
 				<BalanceText>
-					{balanceBreedFish}<LogoImg src={fishImg} alt="BREEDFISH"></LogoImg>B
+					{balanceBreedFish}<LogoImg src={breedingImg} alt="BREEDFISH"></LogoImg>
 				</BalanceText>
 			</BalanceComponent>
 		</>
@@ -51,9 +50,11 @@ const Balance = () => {
 };
 
 const Balances = styled.div`
+	position: relative;
 	display: flex;
 	flex-flow: row wrap;
 	align-items: space-evenly;
+	z-index: 5;
 
 	/* @media ${props => props.theme.device.tablet} {
 	  flex-flow: column;
@@ -66,7 +67,7 @@ const BalanceText = styled.b`
 	flex-flow: row nowrap;
 	justify-content: center;
 	align-items: center;
-	font-size: ${props => props.theme.font.medium}vmax;
+	font-size: ${props => props.theme.font.medium};
 	/* margin-right: ${props => props.theme.spacing.gapSmall}; */
 	cursor: default;
 	@media ${props => props.theme.device.tablet} {

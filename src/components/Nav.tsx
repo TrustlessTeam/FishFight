@@ -96,21 +96,21 @@ const Logo = styled(Link)`
 `;
 
 const LogoImg = styled.img<ActiveProps>`
-	height: 40px;
+	height: 35px;
 	/* border: 2px solid white;s */
 	border-radius: 50%;
-  padding: 5px;
-  background-image: linear-gradient(#b6deffe1, #50cdffc1);
+  padding: 3px;
+  background-image: linear-gradient(#038ec5ea, rgba(219, 4, 4, 0.712));
   box-shadow: inset 2px 2px 2px #c7c7c74b, inset -2px -2px 2px #3f3f3f4c;
 
 
   &.active {
-    background-color: rgba(255, 255, 255, 0.5);
+    background-color: rgba(219, 4, 4, 0.712);
   }
 
   @media ${props => props.theme.device.tablet} {
     padding: 10px;
-		height: 50px;
+		height: 40px;
   }
 `;
 
@@ -118,9 +118,7 @@ const NavMenu = styled.nav`
 	display: flex;
 	flex-flow: row nowrap;
 	justify-content: center;
-	align-items: flex-start;
-	width: 100%;
-	height: 100%;
+	align-items: center;
   pointer-events: auto;
 	@media ${props => props.theme.device.tablet} {
 	  align-items: center;
@@ -136,12 +134,12 @@ const NavItem = styled.div`
   height: 100%;
   position: relative;
   display: inline-block;
-  padding: 0 ${props => props.theme.spacing.gap};
+  padding: 0 ${props => props.theme.spacing.gapSmall};
   @media ${props => props.theme.device.tablet} {
 		height: 100%;
     position: relative;
     display: inline-block;
-    padding: 0 ${props => props.theme.spacing.gap};
+    padding: 0 ${props => props.theme.spacing.gapSmall};
   }
 `;
 
@@ -185,7 +183,8 @@ const NavImg = styled(NavLink)<ActiveProps>`
   &.active {
     font-weight: bold;
     & > img {
-      background-color: rgba(255, 255, 255, 1);
+      /* background-color: rgba(219, 4, 4, 0.712); */
+      background-image: linear-gradient(#038ec59b, #038ec59b);
     }
     & + div {
       display: flex;

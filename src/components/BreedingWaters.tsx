@@ -5,7 +5,7 @@ import { useWeb3React } from '@web3-react/core';
 import { Fish } from '../utils/fish'
 import { useUnity } from '../context/unityContext';
 import { useFishPool } from '../context/fishPoolContext';
-import {  BaseLinkButton, BaseOverlayContainer, BaseContainerCentered } from './BaseStyles';
+import {  BaseLinkButton, BaseOverlayContainer, BaseContainerCentered, ContainerColumn, BaseText } from './BaseStyles';
 import ToggleButton, { ToggleGroup, ToggleItem, ToggleOption } from './ToggleButton';
 import { useContractWrapper } from '../context/contractWrapperContext';
 import { useFishFight } from '../context/fishFightContext';
@@ -26,6 +26,8 @@ const BreedingWaters = () => {
 	const [myBettaFish, setMyBettaFish] = useState<Fish | null>(null);
 	const [alphaFish, setAlphaFish] = useState<Fish | null>(null);
 	const [modalIsOpen, setModalIsOpen] = useState(false);
+	const [bettaError, setBettaError] = useState<string | null>(null);
+	const [alphaError, setAlphaError] = useState<string | null>(null);
 
 
 	const [breedResult, setBreedResult] = useState<Fish | null>();
@@ -36,8 +38,7 @@ const BreedingWaters = () => {
 	const unityContext = useUnity();
 	const { account } = useWeb3React();
 	const { userFish, breedingFish } = useFishPool()
-	const { breedFish, pendingTransaction} = useContractWrapper();
-	const { breedingFishApproval, breedingFoodApproval } = useFishFight();
+	const { breedFish, pendingTransaction } = useContractWrapper();
 
 	const FishViewOptions: ToggleItem[] = [
 		{
@@ -85,7 +86,7 @@ const BreedingWaters = () => {
 			}
 			
 		});
-	}, [unityContext.isFishPoolReady, account, alphaFish, myBettaFish, breedingFishApproval]);
+	}, [unityContext.isFishPoolReady, account, alphaFish, myBettaFish]);
 
 	useEffect(() => {
 		unityContext.UnityInstance.on('UI_Breeding_Start_Request', function () {
@@ -103,12 +104,6 @@ const BreedingWaters = () => {
 	};
 
 	const setAlpha = (fish : Fish) => {
-		// const secondsSinceEpoch = Math.round(Date.now() / 1000)
-		// if(fish.power < Constants._alphaBreedPowerFee) {
-		// 	setAlphaFish(fish);
-		// 	toast.error(`Alpha Fish has ${fish.power} power, at least ${Constants._alphaBreedPowerFee} power required to breed!`)
-		// 	return;
-		// }
 		if(fish.fishModifiers.alphaModifier.uses === 0) {
 			setAlphaFish(fish);
 			toast.error(`Not Alpha this Season`)
@@ -121,36 +116,24 @@ const BreedingWaters = () => {
 	}
 
 	const setUserBetta = async (fish : Fish) => {
-		if(fish.stakedFighting) {
-			toast.error('Withdraw from Fight Pool');
-			setMyBettaFish(fish);
-			return;
+		if(fish.fishModifiers.alphaModifier.uses > 0 || fish.stakedBreeding) {
+			toast.error('Betta Selection: Fish is Alpha');
+			setBettaError('Not Betta');
+		}
+		else if(fish.stakedFighting) {
+			toast.error('Betta Selection: Withdraw from Fight Pool');
+			setBettaError('Withdraw from Fight Pool');
 		} 
-		if(fish.fishModifiers.alphaModifier.uses > 0 && fish.stakedBreeding) {
-			toast.error('Already in Alpha Pool');
-			setMyBettaFish(fish);
-			return;
+		else if(fish.stakedBreeding && fish.fishModifiers.inBettaCooldown()) {
+			toast.error('Betta Selection: In breed cooldown');
+			setBettaError('In Cooldown');
 		}
-		// if(fish.parentA > 0 && currentSeason != null && fish.birthTime > currentSeason?.startTs) {
-		// 	console.log(fish.birthTime)
-		// 	console.log(currentSeason.startTs)
-		// 	toast.error('Too Young');
-		// 	return;
-		// }
-		if(fish.stakedBreeding && fish.fishModifiers.alphaModifier.uses > 0) {
-			toast.error('Not betta fish');
-			setMyBettaFish(fish);
-			return;
+		else if(fish.power < Constants._bettaBreedPowerFee) {
+			toast.error(`Betta Selection: ${fish.power} of ${Constants._bettaBreedPowerFee} power required to breed`)
+			setBettaError('Not enough Power');
 		}
-		if(fish.stakedBreeding && fish.fishModifiers.inBettaCooldown()) {
-			toast.error('In breed cooldown');
-			setMyBettaFish(fish);
-			return;
-		}
-		if(fish.power < Constants._bettaBreedPowerFee) {
-			setMyBettaFish(fish);
-			toast.error(`Betta Fish has ${fish.power} power, at least ${Constants._bettaBreedPowerFee} power required to breed!`)
-			return;
+		else {
+			setBettaError(null);
 		}
 
 		console.log("Betta Fish: " + fish.tokenId)
@@ -168,19 +151,6 @@ const BreedingWaters = () => {
 		unityContext.showFightingLocation();
 	}
 
-	const ViewOptions = () => {
-		return (
-			<>
-			{account &&
-				<ToggleGroup>
-					<ToggleOption className={fishToShow === FishView.MyFish ? 'active' : ''} onClick={() => setFishToShow(FishView.MyFish)}>My $FISH</ToggleOption>
-					<ToggleOption className={fishToShow === FishView.AlphaFish ? 'active' : ''} onClick={() => setFishToShow(FishView.AlphaFish)}>Alpha $FISH</ToggleOption>
-				</ToggleGroup>
-			}
-			</>
-		)
-	}
-
 
 	if(!unityContext.isFishPoolReady) return null;
 
@@ -190,11 +160,19 @@ const BreedingWaters = () => {
 			spinner
 			text='Waiting for confirmation...'
 			>
-			{!account &&
+			
 				<OptionsContainer>
-					<Account mobile={false} textOverride={"Connect Wallet to Breed $FISH"}/>
+				{!account &&
+					<Account textOverride={"Connect Wallet to Breed $FISH"}/>
+				}
+				{bettaError &&
+					<ContainerColumn>
+						<Error><BaseText>{bettaError}</BaseText></Error>
+					</ContainerColumn>
+				}
+					
 				</OptionsContainer>
-			}
+			
 
 				{fishToShow === FishView.MyFish && 
 					<FishDrawer type="Breeding" selectedFish={myBettaFish} fishCollection={userFish} onClick={setUserBetta}>
@@ -213,7 +191,13 @@ const BreedingWaters = () => {
 	);
 };
 
-
+const Error = styled.div`
+	background-color: #8f0000;
+	padding: ${props => props.theme.spacing.gapSmall};
+	border-radius: 10px;
+	box-shadow:  10px 10px 30px #6e004d,
+             -10px -10px 30px #910d14;
+`
 
 const OptionsContainer = styled.div`
 	display: flex;

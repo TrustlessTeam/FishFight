@@ -31,17 +31,9 @@ interface FishFightProviderContext {
     totalSupply: number
     fightingWatersSupply: number
     breedingWatersSupply: number
-    requireApproval: boolean;
-    fightingFishApproval: number
-    fightingFoodApproval: number
-    breedingFishApproval: number
-    breedingFoodApproval: number
-    trainingFoodApproval: number
-    updateApproval: (value: boolean, account: any) => void
     refetchBalance: () => void
 	  resetBalance: () => void
     refetchStats: () => void
-    checkApprovals: (account: any) => void
     // seasonNumber: number
     // seasonPhase: string
 }
@@ -56,16 +48,6 @@ export const FishFightProvider = ({ children }: FishFightProviderProps ) => {
   // FishFight instance initiates with default url provider upon visiting page
   const [FishFightInstance, setFishFightInstance] = useState<FishFight>(new FishFight())
   const [userConnected, setUserConnected] = useState<boolean>(false);
-  const [fightingFishApproval, setFightingFishApproval] = useState<number>(0);
-  const [fightingFoodApproval, setFightingFoodApproval] = useState<number>(0);
-
-  const [breedingFishApproval, setBreedingFishApproval] = useState<number>(0);
-  const [breedingFoodApproval, setBreedingFoodApproval] = useState<number>(0);
-
-  // const [trainingFishApproval, setTrainingFishApproval] = useState<boolean>(false);
-  const [trainingFoodApproval, setTrainingFoodApproval] = useState<number>(0);
-  const [requireApproval, setRequireApproval] = useState<boolean>(true);
-
   const [currentBlock, setCurrentBlock] = useState<number>(0);
   // State of web3React
   const { account, connector, library} = useWeb3React();
@@ -103,7 +85,6 @@ export const FishFightProvider = ({ children }: FishFightProviderProps ) => {
         setUserConnected(true);
         refetchBalance();
         refetchStats();
-        checkApprovals(account);
         console.log(FishFightInstance)
       })
     }
@@ -129,67 +110,16 @@ export const FishFightProvider = ({ children }: FishFightProviderProps ) => {
     contextSeasons.fetchStats(FishFightInstance);
   }
 
-  const updateApproval = (value: boolean, account: any) => {
-    if(value) {
-      setFightingFishApproval(-1);
-      setFightingFoodApproval(-1);
-      setBreedingFishApproval(-1);
-      setBreedingFoodApproval(-1);
-      setTrainingFoodApproval(-1);
-    }
-    else {
-      setFightingFishApproval(0);
-      setFightingFoodApproval(0);
-      setBreedingFishApproval(0);
-      setBreedingFoodApproval(0);
-      setTrainingFoodApproval(0);
-      checkApprovals(account);
-    }
-  }
-
-  const checkApprovals = async (account: any) => {
-    // Fighting Waters approvals
-    const approvedFishFighting = await FishFightInstance.readFishFactory.methods.isApprovedForAll(account, FishFightInstance.readFightingWaters.options.address).call();
-    if(approvedFishFighting) setFightingFishApproval(1);
-    console.log(approvedFishFighting)
-    let approvedFoodFighting = new BN(await FishFightInstance.readFishFood.methods.allowance(account, FishFightInstance.readFightingWaters.options.address).call());
-    // approvedFoodFighting = new BN(approvedFoodFighting);
-    if(approvedFoodFighting.gt(new BN('99999999'))) setFightingFoodApproval(1);
-
-    // Breeding Waters approvals
-    const approvedFishBreeding = await FishFightInstance.readFishFactory.methods.isApprovedForAll(account, FishFightInstance.readBreedingWaters.options.address).call();
-    if(approvedFishBreeding) setBreedingFishApproval(1);
-    console.log(approvedFishBreeding)
-
-    let approvedFoodBreeding = new BN(await FishFightInstance.readFishFood.methods.allowance(account, FishFightInstance.readBreedingWaters.options.address).call());
-    // approvedFoodBreeding = new BN(approvedFoodBreeding);
-    if(approvedFoodBreeding.gt(new BN('99999999'))) setBreedingFoodApproval(1);
-
-    // Training Waters approvals
-    // const approvedFishTraining = await FishFightInstance.readFishFactory.methods.isApprovedForAll(account, FishFightInstance.readTrainingWaters.options.address).call();
-    // if(approvedFishTraining) setTrainingFishApproval(true);
-    const approvedFoodTraining = new BN(await FishFightInstance.readFishFood.methods.allowance(account, FishFightInstance.readTrainingWaters.options.address).call());
-    if(approvedFoodTraining.gt(new BN('99999999'))) setTrainingFoodApproval(1);
-    console.log(approvedFoodTraining)
-    
-  }
+  
 
   const value: FishFightProviderContext = {
     FishFight: FishFightInstance,
     userConnected: userConnected,
     currentBlock: currentBlock,
-    requireApproval: requireApproval,
-    fightingFishApproval: fightingFishApproval,
-    fightingFoodApproval: fightingFoodApproval,
-    breedingFishApproval: breedingFishApproval,
-    breedingFoodApproval: breedingFoodApproval,
-    trainingFoodApproval: trainingFoodApproval,
-    updateApproval: updateApproval,
     refetchBalance,
     ...contextBalance,
     ...contextSeasons,
-    refetchStats,
-    checkApprovals,
+    refetchStats
   }
   return (
       <FishFightContext.Provider value={value}>{children}</FishFightContext.Provider>

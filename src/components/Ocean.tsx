@@ -195,7 +195,7 @@ const Ocean = () => {
 						<>
 							<ToggleButton items={FishViewOptions} selected={fishToShow}></ToggleButton>
 							{!account &&
-								<Account mobile={false}/>
+								<Account />
 							}
 							{account && userFish?.length === 0 &&
 								<BaseLinkButton to={'/fishing'}>Catch a Fish!</BaseLinkButton>

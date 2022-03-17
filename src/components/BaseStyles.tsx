@@ -26,6 +26,10 @@ export const ContainerColumn = styled.div`
 	justify-content: center;
   align-items: center;
 	padding: ${props => props.theme.spacing.gap};
+
+	@media ${props => props.theme.device.tablet} {
+		padding: ${props => props.theme.spacing.gapLarge};
+  }
 `;
 
 export const Title = styled.h1`
@@ -185,7 +189,7 @@ export const BaseButtonStyle = styled.button`
 	font-size: ${props => props.theme.font.small};
   text-decoration: none;
   text-transform: uppercase;
-
+	cursor: pointer;
   background-image: linear-gradient(#ffffff, #adadad);
   z-index: 1;
   box-shadow: inset 2px 2px 2px rgba(255, 255, 255, .3), inset -2px -2px 2px rgba(0, 0, 0, .3);
@@ -193,12 +197,10 @@ export const BaseButtonStyle = styled.button`
 
   @media ${props => props.theme.device.tablet} {
 		font-size: ${props => props.theme.font.medium};
-    padding: 14px 24px;
+    /* padding: 12px 20px; */
   }
 
-  &:hover {
-		cursor: pointer;
-	}
+
 
   &::before {
     position: absolute;

@@ -32,8 +32,7 @@ const FightingWaters = () => {
 	const { userFish, fightingFish } = useFishPool()
 	const { account } = useWeb3React();
 	const unityContext = useUnity();
-	const { fightFish, depositFightingFish, withdrawFightingFish, contractApproveAllForFighting, pendingTransaction} = useContractWrapper();
-	const { fightingFishApproval, requireApproval, updateApproval } = useFishFight();
+	const { fightFish, pendingTransaction} = useContractWrapper();
 
 	const FishViewOptions: ToggleItem[] = [
 		{
@@ -65,7 +64,7 @@ const FightingWaters = () => {
 		unityContext.UnityInstance.on("UI_Fighting_Start_Request", function () {
       console.log("UI_Fighting_Start_Request!");
     });
-	}, [unityContext.isFishPoolReady, account, mySelectedFish, opponentFish, fightingFishApproval]);
+	}, [unityContext.isFishPoolReady, account, mySelectedFish, opponentFish]);
 
 	useEffect(() => {
 		if(account) {
@@ -154,7 +153,7 @@ const FightingWaters = () => {
 		>
 			<OptionsContainer>
 				{!account &&
-					<Account mobile={false} textOverride={"Connect Wallet to Fight $FISH"}/>
+					<Account textOverride={"Connect Wallet to Fight $FISH"}/>
 				}
 			</OptionsContainer>
 			{fishToShow === FishView.MyFish &&

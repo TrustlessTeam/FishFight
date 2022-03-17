@@ -17,7 +17,7 @@ import { StakedFighting } from '../utils/fish';
 import { Route, Routes } from 'react-router-dom';
 import infoImg from "../img/icons/info.svg";
 import waterImg from "../img/icons/water-dark.svg";
-import { BaseOverlayContainer, ContainerControls, StyledModal, Title } from './BaseStyles';
+import { BaseOverlayContainer, BaseText, ContainerControls, StyledModal, Title } from './BaseStyles';
 import BaseButton from "./BaseButton";
 import { useContractWrapper } from '../context/contractWrapperContext';
 import Account from './Account';
@@ -25,62 +25,33 @@ import LoadingOverlay from 'react-loading-overlay';
 
 
 type Props = {
-  // open: boolean;
+  showTrainingFoodApproval: boolean;
+	showFightingFishApproval: boolean;
+	showBreedingFishApproval: boolean;
 };
 
 const MAX_APPROVE = '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff';
 
 
-const ApprovalModal = ({}: Props) => {
+const ApprovalModal = () => {
 	const [modalIsOpen, setModalIsOpen] = useState(false);
 	const { account } = useWeb3React();
-	const { breedingFoodApproval, breedingFishApproval, trainingFoodApproval, fightingFishApproval, requireApproval, updateApproval, checkApprovals } = useFishFight();
-	const { contractApproveAllFishForBreeding, contractApproveFoodForBreeding, contractApproveFoodForTraining, contractApproveAllForFighting, pendingTransaction, openApprovals, setOpenAppovals} = useContractWrapper();
-	const [checked, setChecked] = React.useState(false);
-
-	useEffect(() => {
-		if(account) {
-			checkApprovals(account)
-		}
-	}, [account]);
-
-	const handleChange = () => {
-    setChecked(!checked);
-  };
+	// const { breedingFishApproval, trainingFoodApproval, fightingFishApproval } = useFishFight();
+	const { showTrainingFoodApproval, showBreedingFishApproval, showFightingFishApproval } = useContractWrapper();
+	
 
 	const toggleModel = () => {
 		setModalIsOpen(!modalIsOpen);
 	};
-
-	const closeModal = () => {
-		setOpenAppovals(false)
-	};
-	console.log(fightingFishApproval)
-
-	const IndividualApprovals = () => {
-		return(
-			<CheckboxContainer>
-				<input
-					type="checkbox"
-					checked={checked}
-					onChange={handleChange}
-				/>
-				<Text><span>(NOT RECOMMENDED)</span> Set approvals per action when playing FishFight.</Text>
-			</CheckboxContainer>
-		)
-	}
 
 	const TrainingApproval = () => {
 		return (
 			<ContainerText>
 				<Text><span>Approval Required! </span>Feeding and Upgrading Fish requires spending $FISHFOOD. Max allowance is set to reduce future approvals.</Text>
 				<OptionsContainer>
-					{!trainingFoodApproval && !checked &&
+					{/* {!trainingFoodApproval && !checked &&
 						<BaseButton onClick={() => contractApproveFoodForTraining(MAX_APPROVE)}>{'Approve All $FISHFOOD'}</BaseButton>
-					}
-					{checked &&
-						<BaseButton onClick={() => {updateApproval(true, account); setOpenAppovals(false)}}>{'Approve $FISHFOOD per Transaction'}</BaseButton>
-					}
+					} */}
 				</OptionsContainer>
 			</ContainerText>
 		)
@@ -91,12 +62,9 @@ const ApprovalModal = ({}: Props) => {
 			<ContainerText>
 				<Text><span>Approval Required! </span>Depositing Alpha Fish requires approval of your $FISH. Approval for all $FISH is set to prevent many future approvals.</Text>
 				<OptionsContainer>
-				{!breedingFishApproval && !checked &&
+				{/* {!breedingFishApproval && !checked &&
 					<BaseButton onClick={() => contractApproveAllFishForBreeding()}>{'Approve All $FISH'}</BaseButton>
-				}
-				{checked &&
-					<BaseButton onClick={() => {updateApproval(true, account); setOpenAppovals(false)}}>{'Approve individual $FISH'}</BaseButton>
-				}
+				} */}
 				</OptionsContainer>
 			</ContainerText>
 			
@@ -108,12 +76,9 @@ const ApprovalModal = ({}: Props) => {
 			<ContainerText>
 				<Text><span>Approval Required! </span>Fighting Fish requires approval of your $FISH. Approval for all $FISH is set to prevent many future approvals.</Text>
 					<OptionsContainer>
-						{!fightingFishApproval && !checked &&
+						{/* {!fightingFishApproval && !checked &&
 							<BaseButton onClick={() => contractApproveAllForFighting()}>{'Approve All $FISH'}</BaseButton>
-						}
-						{checked &&
-							<BaseButton onClick={() => {updateApproval(true, account); setOpenAppovals(false)}}>{'Approve individual $FISH'}</BaseButton>
-						}
+						} */}
 					</OptionsContainer>
 			</ContainerText>
 		)
@@ -123,26 +88,25 @@ const ApprovalModal = ({}: Props) => {
 
 	return (
 		<StyledModal
-				isOpen={openApprovals}
+				isOpen={showBreedingFishApproval || showFightingFishApproval || showTrainingFoodApproval}
 				className="Modal"
 				overlayClassName="Overlay"
-				onRequestClose={closeModal}
+				// onRequestClose={closeModal}
 				shouldCloseOnOverlayClick
 			>
 				<ApprovalsContainer>
 					<ApprovalDisclaimer>
 						<Title>Contract Approval</Title>
-						<Routes>
-							<Route path="ocean" element={<TrainingApproval />} />
-							<Route path="ocean:id" element={<TrainingApproval />} />
-							{/* <Route path="fishing" element={fishingData()} />
-							<Route path="fishing/:id" element={fishingData()} /> */}
-							<Route path="fighting" element={<FightingApproval />} />
-							<Route path="fighting/:id" element={<FightingApproval />} />
-							<Route path="breeding" element={<BreedingApproval />} />
-							<Route path="breeding/:id" element={<BreedingApproval />} />
-						</Routes>
-						<IndividualApprovals></IndividualApprovals>
+						{showFightingFishApproval &&
+							<FightingApproval></FightingApproval>
+						}
+						{showBreedingFishApproval &&
+							<BreedingApproval></BreedingApproval>
+						}
+						{showTrainingFoodApproval &&
+							<TrainingApproval></TrainingApproval>
+						}
+						<BaseText>If you prefer to do individual approvals or allowance, go to Account tab and check box.</BaseText>
 					</ApprovalDisclaimer>
 					
 				</ApprovalsContainer>
@@ -186,19 +150,6 @@ export const ApprovalDisclaimer = styled.div`
 	padding: ${props => props.theme.spacing.gap};
 	border-radius: 25px;
 `;
-
-
-const CheckboxContainer = styled.div`
-	display: flex;
-	flex-flow: row nowrap;
-	justify-content: flex-start;
-	padding: ${props => props.theme.spacing.gap} ${props => props.theme.spacing.gap} 0;
-	width: 100%;
-
-	p {
-		font-size: ${props => props.theme.font.small};
-	}
-`
 
 export const OptionsContainer = styled.div`
 	display: flex;
