@@ -153,7 +153,7 @@ const FightingWaters = () => {
 		>
 			<OptionsContainer>
 				{!account &&
-					<Account mobile={false} textOverride={"Connect Wallet to Fight $FISH"}/>
+					<Account textOverride={"Connect Wallet to Fight $FISH"}/>
 				}
 			</OptionsContainer>
 			{fishToShow === FishView.MyFish &&

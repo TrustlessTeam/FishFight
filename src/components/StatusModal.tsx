@@ -280,11 +280,9 @@ const StatusModal = ({children}: Props) => {
 
 		return (
 			<DataContainer>
-				<StatusContainer>
-					<MobileButtons>
-						{children}
-					</MobileButtons>
-				</StatusContainer>
+				<MobileButtons>
+					{children}
+				</MobileButtons>
 				<StatusContainer>
 					<Time>
 						<Title>Phase <span>{currentPhase.phaseString}</span></Title>
@@ -356,7 +354,7 @@ const StatusModal = ({children}: Props) => {
 		return (
 			<ImgContainer>
 				{/* <WaterStats onClick={toggleModel}> */}
-					<LogoImg onClick={toggleModel} open={modalIsOpen} src={fishFightLogo}></LogoImg>
+					<LogoButton onClick={toggleModel}><img src={fishFightLogo} alt="FishFight Logo"></img></LogoButton>
 					<DesktopButtons>{children}</DesktopButtons>
 				{/* </WaterStats> */}
 				<LeftModal
@@ -391,6 +389,7 @@ const StatusModal = ({children}: Props) => {
 
 const MobileButtons = styled.div`
 	display: block;
+	padding: ${props => props.theme.spacing.gapSmall};
 	@media ${props => props.theme.device.tablet} {
 	  display: none;
   }
@@ -400,12 +399,13 @@ const DesktopButtons = styled.div`
 	display: none;
 	@media ${props => props.theme.device.tablet} {
 	  display: block;
+		padding: ${props => props.theme.spacing.gap};
   }
 `;
 
 const NextButton = styled(BaseButton)`
 	margin-right: ${props => props.theme.spacing.gapSmall};
-	height: ${props => props.theme.font.medium};
+	height: 100%;
 
 	@media ${props => props.theme.device.tablet} {
 	  height: ${props => props.theme.font.large};
@@ -416,6 +416,7 @@ const Time = styled.div`
 	display: flex;
 	flex-flow: row nowrap;
 	align-items: center;
+	justify-content: space-between;
 `;
 
 const Text = styled.p`
@@ -456,7 +457,7 @@ const Second = styled(Text)`
 `;
 
 const LeftModal = styled(StyledModal)`
-	top: 80px;
+	top: 60px;
   left: 0;
   transform: translate(0%, 0%);
 	width: 100%;
@@ -470,17 +471,19 @@ const LeftModal = styled(StyledModal)`
 const ImgContainer = styled.div`
 	display: flex;
 	flex-flow: column;
+	align-items: flex-start;
 	justify-content: center;
 	/* padding: ${props => props.theme.spacing.gap}; */
 	/* justify-content: space-evenly;
 	align-items: flex-start; */
+	width: 33%;
+	max-width: 350px;
 
 	@media ${props => props.theme.device.tablet} {
 		display: flex;
 		flex-flow: row nowrap;
 		justify-content: flex-start;
 		align-items: center;
-		width: 33%;
   }
 `;
 
@@ -614,12 +617,41 @@ const WaterStats = styled(BaseButton)`
 	height: 100%;
 `;
 
-const LogoImg = styled.img<{open: boolean}>`
+const LogoButton = styled.button`
+	position: relative;
+	background: none;
+	border: none;
 	/* padding: ${props => props.theme.spacing.gapSmall}; */
-	height: 40px;
+	cursor: pointer;
+	/* background-image: radial-gradient(circle at 50% 50%, rgba(220, 13, 51, 1) 0%, rgba(0, 188, 212, 0) 60%, rgba(238, 130, 238, 0) 100%); */
+  transition: all 0.2s ease-in-out;
+	z-index: 5;
+	
+	img {
+		position: relative;
+		height: 40px;
+		z-index: 5;
 
-	@media ${props => props.theme.device.tablet} {
-	  height: 80px;
+		@media ${props => props.theme.device.tablet} {
+			height: 80px;
+		}
+	}
+
+	&::before {
+    position: absolute;
+    content: "";
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background-image: radial-gradient(circle at 50% 50%, rgba(220, 13, 51, 1) 0%, rgba(0, 188, 212, 0) 60%, rgba(238, 130, 238, 0) 100%);
+    z-index: 4;
+    transition: opacity 0.25s ease-in-out;
+    opacity: 0;
+  }
+
+	&:hover::before {
+    opacity: 1;
   }
 `;
 

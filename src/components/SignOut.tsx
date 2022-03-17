@@ -18,9 +18,7 @@ const SignOut = ({ account, closeModal }: Props) => {
 	};
 
 	return (
-		<SignOutComponent>
-			<Title>Connected: <span>{account}</span></Title><BaseButton onClick={handleClick}>Sign out</BaseButton>
-		</SignOutComponent>
+		<SignOutBtn onClick={handleClick}>Disconnect</SignOutBtn>
 	);
 };
 
@@ -43,13 +41,8 @@ const SignOutComponent = styled.div`
 	}
 `;
 
-const SignOutBtn = styled.div`
-	margin-top: 20px;
-	padding: ${props => props.theme.spacing.gap} ${props => props.theme.spacing.gap};
-	border-radius: 10px;
-	background-color: rgb(182, 35, 35);
-	color: white;
-	cursor: pointer;
+const SignOutBtn = styled(BaseButton)`
+	margin-left: ${props => props.theme.spacing.gap};
 `;
 
 export default SignOut;

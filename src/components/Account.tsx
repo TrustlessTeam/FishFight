@@ -32,6 +32,7 @@ import fightingImg from "../img/icons/fighting.svg"
 import { BaseContainerCentered, BaseText, ContainerColumn, ContainerRow, StyledModal, Title } from './BaseStyles';
 import { useContractWrapper } from '../context/contractWrapperContext';
 import { Constants } from '../utils/constants';
+import Balance from './Balance';
 
 
 // ?
@@ -39,11 +40,10 @@ if (process.env.NODE_ENV !== 'test') Modal.setAppElement('#root');
 
 type Props = {
   children?: React.ReactNode;
-	mobile: boolean;
 	textOverride?: string;
 };
 
-const Account = ({ children, mobile, textOverride }: Props) => {
+const Account = ({ children, textOverride }: Props) => {
 	const [modalIsOpen, setModalIsOpen] = useState(false);
 	const { account, active } = useWeb3React();
 	const { balance, balanceFish, balanceDeadFish, balanceFood, balanceFightFish, balanceBreedFish, FishFight  } = useFishFight();
@@ -77,120 +77,155 @@ const { contractApproveAllFishForBreeding, perTransactionApproval, setPerTransac
 		)
 	}
 
-	if(mobile) {
-		return (
-			<MobileContainer>
-				<WalletImg open={modalIsOpen} onClick={openModal} src={walletImg} alt="User Wallet"></WalletImg>
-				{children}
-				<StyledModal
-					// style={{overlay: { zIndex: 10}}}
-					isOpen={modalIsOpen}
-					className="Modal"
-					overlayClassName="Overlay"
-					onRequestClose={closeModal}
-					shouldCloseOnOverlayClick
-				>
-					<ModalContainer>
-						{active ? <SignOut account={parsedAccount} closeModal={closeModal} /> : <Wallets closeModal={closeModal} />}
+	const addFishFoodToMetaMask = async () => {
+		const tokenAddress = FishFight.readFishFood.options.address;
+		const tokenSymbol = 'FISHFOOD';
+		const tokenDecimals = 18;
+		// const tokenImage = 'http://placekitten.com/200/300';
 
-						<Group>
-							{account &&
-							<>
-								<BalanceComponent>
-									<BalanceText>{balance?.split('.')[0]} ONE</BalanceText>
-								</BalanceComponent>
-								<BalanceComponent title="FISHFOOD Balance">
-									<BalanceText>
-										{parseFloat(balanceFood ? balanceFood : '0').toFixed(2)}<LogoImg src={foodImgDark} alt="FISHFOOD"></LogoImg>
-									</BalanceText>
-								</BalanceComponent>
-								<BalanceComponent title="FISH Balance">
-									<BalanceText>
-										{balanceFish}<LogoImg src={fishImgDark} alt="FISH" ></LogoImg>
-									</BalanceText>
-								</BalanceComponent>
+		try {
+			// wasAdded is a boolean. Like any RPC method, an error may be thrown.
+			const wasAdded = await window.ethereum.request({
+				method: 'wallet_watchAsset',
+				params: {
+					type: 'ERC20', // Initially only supports ERC20, but eventually more!
+					options: {
+						address: tokenAddress, // The address that the token is at.
+						symbol: tokenSymbol, // A ticker symbol or shorthand, up to 5 chars.
+						decimals: tokenDecimals, // The number of decimals in the token
+						// image: tokenImage, // A string url of the token logo
+					},
+				},
+			});
 
-								<BalanceComponent title="FIGHTFISH Balance">
-									<BalanceText>
-										{balanceFightFish}<LogoImg src={fightingImgDark} alt="FIGHTFISH"></LogoImg>
-									</BalanceText>
-								</BalanceComponent>
-								<BalanceComponent title="BREEDFISH Balance">
-									<BalanceText>
-										{balanceBreedFish}<LogoImg src={breedingImgDark} alt="BREEDFISH"></LogoImg>
-									</BalanceText>
-								</BalanceComponent>
-								<BalanceComponent title="DEADFISH Balance">
-									<BalanceText>
-										{balanceDeadFish}<LogoImg src={deadImgDark} alt="DEADFISH"></LogoImg>
-									</BalanceText>
-								</BalanceComponent>
-									
-									
-							</>
-							}
-						</Group>
-					</ModalContainer>
-				</StyledModal>
-			</MobileContainer>
-		);
+			if (wasAdded) {
+				console.log('Thanks for your interest!');
+			} else {
+				console.log('Your loss!');
+			}
+		} catch (error) {
+			console.log(error);
+		}
+	}
+
+	const addFishToMetaMask = async () => {
+		const tokenAddress = FishFight.readFishFactory.options.address;
+		const tokenSymbol = 'FISH';
+		const tokenDecimals = 0;
+		// const tokenImage = 'http://placekitten.com/200/300';
+
+		try {
+			// wasAdded is a boolean. Like any RPC method, an error may be thrown.
+			const wasAdded = await window.ethereum.request({
+				method: 'wallet_watchAsset',
+				params: {
+					type: 'ERC20', // Initially only supports ERC20, but eventually more!
+					options: {
+						address: tokenAddress, // The address that the token is at.
+						symbol: tokenSymbol, // A ticker symbol or shorthand, up to 5 chars.
+						decimals: tokenDecimals, // The number of decimals in the token
+						// image: tokenImage, // A string url of the token logo
+					},
+				},
+			});
+
+			if (wasAdded) {
+				console.log('Thanks for your interest!');
+			} else {
+				console.log('Your loss!');
+			}
+		} catch (error) {
+			console.log(error);
+		}
+	}
+
+	const AccountData = () => {
+		return(
+			<>
+				{active ? 
+					<Wrapper>
+						<ContainerColumnLeft>
+							<Title>Connected Wallet</Title>
+							<Row>
+								<AccountText>
+									{parsedAccount?.substring(0, 6)}...{parsedAccount?.substring(parsedAccount?.length - 4)}
+								</AccountText>
+								<SignOut account={parsedAccount} closeModal={closeModal} />
+							</Row>
+
+							<BalanceModal>
+								<BalanceText>{balance?.split('.')[0]} ONE</BalanceText>
+								<Balance></Balance>
+							</BalanceModal>
+						</ContainerColumnLeft>
+						
+							
+
+						
+						<ContainerColumnLeft>
+							<Title>Offical Contracts and Approvals</Title>
+							<Row>
+								<Text>$FISH ERC721 Contract <a target="_blank" rel="noopener noreferrer" href={`${Constants._explorer}address/${FishFight.readFishFactory.options.address}`}>{FishFight.readFishFactory.options.address}</a></Text>
+								<BaseButton onClick={addFishToMetaMask}>Add $FISH to MetaMask</BaseButton>		
+							</Row>
+							<Row>
+								<Text>$FISHFOOD ERC20 Contract <a target="_blank" rel="noopener noreferrer" href={`${Constants._explorer}address/${FishFight.readFishFood.options.address}`}>{FishFight.readFishFood.options.address}</a></Text>
+								<BaseButton onClick={addFishFoodToMetaMask}>Add $FISHFOOD to MetaMask</BaseButton>		
+							</Row>
+							<Row>
+								<Text>Training Contract <a target="_blank" rel="noopener noreferrer" href={`${Constants._explorer}address/${FishFight.readTrainingWaters.options.address}`}>{FishFight.readTrainingWaters.options.address}</a></Text>
+								<BaseButton onClick={() => contractApproveFoodForTraining('0')}>Revoke $FISHFOOD Allowance</BaseButton>		
+							</Row>
+							<Row>
+								<Text>Fighting Contract <a target="_blank" rel="noopener noreferrer" href={`${Constants._explorer}address/${FishFight.readFightingWaters.options.address}`}>{FishFight.readFightingWaters.options.address}</a></Text>
+								<BaseButton onClick={() => contractApproveAllForFighting(true)}>Revoke $FISH Control</BaseButton>
+							</Row>
+							<Row>
+								<Text>Breeding Contract <a target="_blank" rel="noopener noreferrer" href={`${Constants._explorer}address/${FishFight.readBreedingWaters.options.address}`}>{FishFight.readBreedingWaters.options.address}</a></Text>
+								<BaseButton onClick={() => contractApproveAllFishForBreeding(true)}>Revoke $FISH Control</BaseButton>
+							</Row>
+						</ContainerColumnLeft>
+						<IndividualApprovals></IndividualApprovals>
+					</Wrapper>
+					
+					:
+
+					<Wallets closeModal={closeModal} />
+				}
+			</>
+		)
 	}
 
 	return (
-		<Container>
-		<Group>
-			{account &&
-			<>
-				<BalanceComponent>
+		<>
+		<DesktopContainer onClick={openModal}>
+			{parsedAccount ? (
+				<ConnectedAccount onClick={openModal}>
 					<BalanceText>{balance?.split('.')[0]} ONE</BalanceText>
-				</BalanceComponent>
-				<BalanceComponent title="FISHFOOD Balance">
-					<BalanceText>
-						{parseFloat(balanceFood ? balanceFood : '0').toFixed(2)}<LogoImg src={foodImg} alt="FISHFOOD"></LogoImg>
-					</BalanceText>
-				</BalanceComponent>
-			</>
-			}
-			
-			<AccountComponent onClick={openModal}>
-				{parsedAccount ? (
-					<span>
+					<AccountText>
 						{parsedAccount.substring(0, 6)}...{parsedAccount.substring(parsedAccount.length - 4)}
-					</span>
-				) : (
-					<Row>{textOverride ? textOverride : "Connect"}<LogoImgWallet src={walletImg} alt="User Wallet"></LogoImgWallet></Row>
-				)}
-			</AccountComponent>
-		</Group>
-		{account &&
-			<>
-				<Group>
-					<BalanceComponent title="FISH Balance">
-						<BalanceText>
-							{balanceFish}<LogoImg src={fishImg} alt="FISH" ></LogoImg>
-						</BalanceText>
-					</BalanceComponent>
-					<BalanceComponent title="FIGHTFISH Balance">
-						<BalanceText>
-							{balanceFightFish}<LogoImg src={fightingImg} alt="FIGHTFISH"></LogoImg>
-						</BalanceText>
-					</BalanceComponent>
-					<BalanceComponent title="BREEDFISH Balance">
-						<BalanceText>
-							{balanceBreedFish}<LogoImg src={breedingImg} alt="BREEDFISH"></LogoImg>
-						</BalanceText>
-					</BalanceComponent>
-					<BalanceComponent title="DEADFISH Balance">
-						<BalanceText>
-							{balanceDeadFish}<LogoImg src={deadImg} alt="DEADFISH"></LogoImg>
-						</BalanceText>
-					</BalanceComponent>
-				</Group>
-			</>
-		}
+					</AccountText>
+				</ConnectedAccount>
+				
+			) : (
+				<AccountComponent onClick={openModal}>{textOverride ? textOverride : "Connect"}<LogoImgWallet src={walletImg} alt="User Wallet"></LogoImgWallet></AccountComponent>
+			)}
+			{account &&
+				<Balance></Balance>
+			}
+		</DesktopContainer>
+
+		<MobileContainer>
+			<WalletMobileButton onClick={openModal}>
+				<LogoImg src={walletImg} alt="User Wallet"></LogoImg>
+			</WalletMobileButton>
+
+		</MobileContainer>
+		
 	
-			{children}
-			<ModalRight
+
+
+			<RightModal
 				// style={{overlay: { zIndex: 10}}}
 				isOpen={modalIsOpen}
 				className="Modal"
@@ -198,35 +233,35 @@ const { contractApproveAllFishForBreeding, perTransactionApproval, setPerTransac
 				onRequestClose={closeModal}
 				shouldCloseOnOverlayClick
 			>
-				{active ? 
-				<ContainerColumnLeft>
-					<SignOut account={parsedAccount} closeModal={closeModal} />
-					<ContainerColumnLeft>
-						<Title>Offical Contracts and Approvals</Title>
-						<ContainerColumnLeft>
-							<BaseText>Training Contract <a target="_blank" rel="noopener noreferrer" href={`${Constants._explorer}address/${FishFight.readTrainingWaters.options.address}`}>{FishFight.readTrainingWaters.options.address}</a></BaseText>
-							<BaseButton onClick={() => contractApproveFoodForTraining('0')}>Revoke $FISHFOOD Allowance</BaseButton>		
-						</ContainerColumnLeft>
-						<ContainerColumnLeft>
-							<BaseText>Fighting Contract <a target="_blank" rel="noopener noreferrer" href={`${Constants._explorer}address/${FishFight.readFightingWaters.options.address}`}>{FishFight.readFightingWaters.options.address}</a></BaseText>
-							<BaseButton onClick={() => contractApproveAllForFighting(true)}>Revoke $FISH Control</BaseButton>
-						</ContainerColumnLeft>
-						<ContainerColumnLeft>
-						<BaseText>Breeding Contract <a target="_blank" rel="noopener noreferrer" href={`${Constants._explorer}address/${FishFight.readBreedingWaters.options.address}`}>{FishFight.readBreedingWaters.options.address}</a></BaseText>
-							<BaseButton onClick={() => contractApproveAllFishForBreeding(true)}>Revoke $FISH Control</BaseButton>
-						</ContainerColumnLeft>
-					</ContainerColumnLeft>
-					<IndividualApprovals></IndividualApprovals>
-				</ContainerColumnLeft>
-				
-				
-				:
-				
-				<Wallets closeModal={closeModal} />}
-			</ModalRight>
-		</Container>
+				<AccountData></AccountData>
+			</RightModal>
+		</>
 	);
 };
+
+const DesktopContainer = styled.div`
+	display: none;
+	position: relative;
+	pointer-events: auto;
+	cursor: pointer;
+	@media ${props => props.theme.device.tablet} {
+		display: flex;
+		flex-flow: row wrap;
+		justify-content: flex-end;
+		width: 100%;
+		z-index: 5;
+		transition: all 0.2s ease-in-out;
+
+  }
+`;
+
+const MobileContainer = styled.div`
+	display: flex;
+	flex-flow: row nowrap;
+	@media ${props => props.theme.device.tablet} {
+		display: none;
+  }
+`;
 
 const CheckboxContainer = styled.div`
 	display: flex;
@@ -240,70 +275,112 @@ const CheckboxContainer = styled.div`
 	}
 `
 
-const ModalRight = styled(StyledModal)`
-	top: 100px;
-  right: 0;
-  transform: translate(0%, 0%);
+const RightModal = styled(StyledModal)`
+	top: 60px;
+  transform: translate(-50%, 0%);
 	width: 100%;
-	justify-content: center;
 	
 	@media ${props => props.theme.device.tablet} {
-		max-width: 50%;
+		width: 50%;
+		top: 115px;
+		right: 0;
+		transform: translate(0%, 0%);
+	}
+`;
+
+const Wrapper = styled(ContainerColumn)`
+	justify-content: flex-start;
+  align-items: flex-start;
+`;
+
+const Text = styled.p`
+	color: white;
+	margin: 0;
+	font-weight: bold;
+	font-size: ${props => props.theme.font.small};
+
+	span {
+		color: black;
 	}
 
+	@media ${props => props.theme.device.tablet} {
+		font-size: ${props => props.theme.font.medium};
+	}
+`;
+
+const Row = styled.div`
+	position: relative;
+	display: flex;
+	flex-flow: row wrap;
+	justify-content: flex-start;
+	align-items: center;
+	width: 100%;
+	padding: ${props => props.theme.spacing.gap} ${props => props.theme.spacing.gap} 0;
+	z-index: 5;
+`;
+
+const BalanceModal = styled(Row)`
+	@media ${props => props.theme.device.tablet} {
+		display: none;
+	}
 `
 
 const ContainerColumnLeft = styled(ContainerColumn)`
 	justify-content: flex-start;
   align-items: flex-start;
+	padding: 0 0 ${props => props.theme.spacing.gap};
 `;
 
-const MobileContainer = styled.div`
+const ConnectedAccount = styled(BaseButton)`
 	display: flex;
 	flex-flow: row nowrap;
-	@media ${props => props.theme.device.tablet} {
-		display: none;
+	justify-content: flex-end;
+	align-items: center;
+	border-radius: 25px;
+	border: solid white 1px;
+	background: none;
+	box-shadow: none;
+	padding: 0;
+  transition: all 0.25s ease-in-out;
+	cursor: pointer;
+
+	/* padding: 3px 5px; */
+	&::before {
+    position: absolute;
+    content: "";
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background-image: none;
   }
 `;
 
-const Container = styled.div`
-	display: none;
-	pointer-events: auto;
+const AccountText = styled.b`
+	font-size: ${props => props.theme.font.medium};
+	background-color: white;
+	border-radius: 25px;
+	color: black;
+	padding: 6px 10px;
+	border: solid white 1px;
+	/* margin-right: ${props => props.theme.spacing.gapSmall}; */
+	
 	@media ${props => props.theme.device.tablet} {
-		display: flex;
-		flex-flow: row wrap;
-		justify-content: center;
-		width: 100%;
+		font-size: ${props => props.theme.font.medium};
   }
 `;
 
-const ModalContainer = styled.div`
-	display: flex;
-	flex-flow: column;
-	/* @media ${props => props.theme.device.tablet} {
-		display: flex;
-		flex-flow: row wrap;
-		justify-content: flex-end;
-  } */
-`;
-
-const Group = styled.div`
-	display: flex;
-	flex-flow: row wrap;
-	padding: ${props => props.theme.spacing.gap};
-
-	@media ${props => props.theme.device.tablet} {
-		flex-flow: row nowrap;
-		justify-content: center;
-		width: 100%;
-		padding: 0;
-
-  }
+const BalanceText = styled(AccountText)`
+	display; flex;
+	flex-flow: row nowrap;
+	background: none;
+	color: white;
+	border: 0;
 `;
 
 const AccountComponent = styled(BaseButton)`
 	border-radius: 25px;
-
+	pointer-events: default;
 /* 
 	&:hover {
 		opacity: 1;
@@ -319,69 +396,35 @@ const AccountComponent = styled(BaseButton)`
   }
 `;
 
-const Span = styled.span`
-	display: flex;
-	flex-flow: column;
-	justify-content: center;
-	align-items: center;
-`;
 
-const Row = styled.span`
-	display: flex;
-	flex-flow: row nowrap;
-	justify-content: center;
-	align-items: center;
-`;
+const WalletMobileButton = styled(BaseButton)`
+	padding: 5px;
+	border-radius: 50%;
 
-const BalanceText = styled.b`
-	display: flex;
-	flex-flow: row nowrap;
-	justify-content: center;
-	align-items: center;
-	font-size: ${props => props.theme.font.medium};
-	/* margin-right: ${props => props.theme.spacing.gapSmall}; */
-	cursor: default;
-	color: black;
+	&::before {
+    position: absolute;
+    content: "";
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    border-radius: 50%;
+    background-image: linear-gradient(#ffffff, #e2e2e2);
+    z-index: -1;
+    transition: opacity 0.25s ease-in-out;
+    opacity: 0;
+  }
+
 	@media ${props => props.theme.device.tablet} {
-		font-size: ${props => props.theme.font.medium};
-		color: white;
+	  padding: 10px;
   }
 `;
 
-const Text = styled.p`
-	color: white;
-	margin: 0;
-	font-weight: bold;
-
-	span {
-		color: black;
-	}
-`;
-
-const BalanceComponent = styled.div`
-	display: flex;
-	flex-flow: row;
-	justify-content: center;
-	margin-left: ${props => props.theme.spacing.gap};
-	/* padding: ${props => props.theme.spacing.gap} ${props => props.theme.spacing.gap}; */
-	/* background-color: white; */
-	color: white;
-	/* border: 2px solid white; */
-	border-radius: 50%;
-
-	& > span {
-		margin-left: 4px;
-	}
-`;
 
 const LogoImg = styled.img`
 	height: 25px;
-	margin-left: ${props => props.theme.spacing.gapSmall};
-
-	@media ${props => props.theme.device.tablet} {
-	  height: 30px;
-  }
 `;
+
 
 const LogoImgWallet = styled.img`
 	height: 25px;

@@ -13,6 +13,8 @@ import { connectorsByName } from '../utils/connectors';
 
 // Helpers
 import { mapWallets } from '../helpers/walletHelpers';
+import BaseButton from './BaseButton';
+import { ContainerColumn, Title } from './BaseStyles';
 
 export interface Props {
 	closeModal: () => void;
@@ -31,9 +33,10 @@ const Wallets = ({ closeModal }: Props) => {
 
 	return (
 		<WalletsComponent>
+			<Title>
+				Wallet Connect
+			</Title>
 			{
-				// From the wallets that we support
-			
 			Object.keys(connectorsByName).map(name => (
 				<WalletItem key={name} onClick={handleClick(connectorsByName[name])}>
 					<WalletImg src={mapWallets[name].image} />
@@ -50,30 +53,20 @@ const WalletImg = styled.img`
 	margin-bottom: 1rem;
 `;
 
-const WalletsComponent = styled.div`
+const WalletsComponent = styled(ContainerColumn)`
 	/* display: grid;
 	grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
 	overflow: hidden; */
 	display: flex;
-	min-width: 320px;
 	flex-flow: column;
 	justify-content: space-between;
 	align-items: center;
+	width: 100%;
 	z-index: 20;
 `;
 
-const WalletItem = styled.div`
-	width: 100%;
-	min-height: 140px;
-	padding: 8px;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	flex-direction: column;
-	cursor: pointer;
-	font-size: 1.55rem;
-	border-radius: 0px;
-	border: 1px solid rgba(195, 195, 195, 0.14);
+const WalletItem = styled(BaseButton)`
+	margin-top: ${props => props.theme.spacing.gap};
 `;
 
 export default Wallets;

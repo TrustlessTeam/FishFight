@@ -163,7 +163,7 @@ const BreedingWaters = () => {
 			
 				<OptionsContainer>
 				{!account &&
-					<Account mobile={false} textOverride={"Connect Wallet to Breed $FISH"}/>
+					<Account textOverride={"Connect Wallet to Breed $FISH"}/>
 				}
 				{bettaError &&
 					<ContainerColumn>
