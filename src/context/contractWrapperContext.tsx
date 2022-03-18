@@ -40,6 +40,9 @@ interface ProviderInterface {
 	showTrainingFoodApproval: boolean;
 	showFightingFishApproval: boolean;
 	showBreedingFishApproval: boolean;
+	showFightingDisclaimer: boolean;
+	showBreedingDisclaimer: boolean;
+	showFishingDisclaimer: boolean;
 }
 
 type ProviderProps = { children: React.ReactNode };
@@ -64,6 +67,11 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 	const [showBreedingFishApproval, setShowBreedingFishApproval] = useState<boolean>(false);
 	const [showTrainingFoodApproval, setShowTrainingFoodApproval] = useState<boolean>(false);
 	const [showBreedingFoodApproval, setShowBreedingFoodApproval] = useState<boolean>(false);
+
+	const [showFightingDisclaimer, setShowFightingDisclaimer] = useState<boolean>(false);
+	const [showBreedingDisclaimer, setShowBreedingDisclaimer] = useState<boolean>(false);
+	const [showFishingDisclaimer, setShowFishingDisclaimer] = useState<boolean>(false);
+
 
 
 	const { account } = useWeb3React();
@@ -556,7 +564,13 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 			from: account,
 			gasPrice: 30000000000,
 			gasLimit: gas,
-		}).on('transactionHash', () => {
+		})
+		.on('error', (error: any) => {
+			console.log(error)
+			toast.error('Withdraw Failed');
+			setPendingTransaction(false);
+		})
+		.on('transactionHash', () => {
 			setPendingTransaction(true);
 		}).on('receipt', async (data: any) => {
 			setPendingTransaction(false);
@@ -572,13 +586,24 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 	}
 
 	const contractDeathFight = (myFish: Fish, opponentFish: Fish, contractIsFighterDeposited: boolean) => {
+		console.log('adasdasdasda')
+		setShowFightingDisclaimer(true);
 		return FishFight.fightingWaters?.methods.deathFight(myFish.tokenId, opponentFish.tokenId, contractIsFighterDeposited).send({
 			from: account,
 			gasPrice: 30000000000,
 			gasLimit: 5000000,
 			value: Constants._fightFee
-		}).on('transactionHash', () => {
+		})
+		.on('error', (error: any) => {
+			console.log(error)
+			toast.error('Fight Failed');
+			setPendingTransaction(false);
+			setShowFightingDisclaimer(false);
+
+		})
+		.on('transactionHash', () => {
 			setPendingTransaction(true);
+			setShowFightingDisclaimer(false);
 		}).on('receipt', async (result: any) => {
 			const fightIndex = web3.utils.toNumber(result.events.FightCompleted.returnValues._fightIndex);
 			setPendingTransaction(false);
@@ -606,6 +631,16 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 		}
 		if(opponentFish == null) {
 			toast.error('Select your opponent');
+			return;
+		}
+
+		if(myFish.tokenId === opponentFish.tokenId) {
+			toast.error("Can't Fight the same Fish")
+			return;
+		}
+
+		if(myFish.stakedBreeding) {
+			toast.error("Can't use Fish that's in the Breed Pool");
 			return;
 		}
 
@@ -1056,7 +1091,10 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 		pendingTransaction: pendingTransaction,
 		showTrainingFoodApproval: showTrainingFoodApproval,
 		showFightingFishApproval: showFightingFishApproval,
-		showBreedingFishApproval: showBreedingFishApproval
+		showBreedingFishApproval: showBreedingFishApproval,
+		showFightingDisclaimer: showFightingDisclaimer,
+		showBreedingDisclaimer: showBreedingDisclaimer,
+		showFishingDisclaimer: showFishingDisclaimer
 	};
 	return <ContractWrapperContext.Provider value={value}>{children}</ContractWrapperContext.Provider>;
 };

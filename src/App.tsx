@@ -20,7 +20,7 @@ import BreedingWaters from "./components/BreedingWaters";
 import MenuOverlay from "./components/MenuOverlay";
 import Default from "./components/Default";
 import FishingWaters from "./components/FishingWaters";
-import ApprovalModal from "./components/ApprovalModal";
+import DisclaimerModal from "./components/DisclaimerModal";
 
 const App = () => {
   return (
@@ -28,7 +28,7 @@ const App = () => {
       <Wrapper>
         <Container>
           <MenuOverlay></MenuOverlay>
-          <ApprovalModal></ApprovalModal>
+          <DisclaimerModal></DisclaimerModal>
           <Routes>
             <Route element={<UnityWindow />}>
               <Route path="/" element={<Default />} />

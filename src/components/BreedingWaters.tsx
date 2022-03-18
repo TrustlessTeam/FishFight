@@ -5,7 +5,7 @@ import { useWeb3React } from '@web3-react/core';
 import { Fish } from '../utils/fish'
 import { useUnity } from '../context/unityContext';
 import { useFishPool } from '../context/fishPoolContext';
-import {  BaseLinkButton, BaseOverlayContainer, BaseContainerCentered, ContainerColumn, BaseText } from './BaseStyles';
+import {  BaseLinkButton, BaseOverlayContainer, Error, ContainerColumn, BaseText } from './BaseStyles';
 import ToggleButton, { ToggleGroup, ToggleItem, ToggleOption } from './ToggleButton';
 import { useContractWrapper } from '../context/contractWrapperContext';
 import { useFishFight } from '../context/fishFightContext';
@@ -27,8 +27,6 @@ const BreedingWaters = () => {
 	const [alphaFish, setAlphaFish] = useState<Fish | null>(null);
 	const [modalIsOpen, setModalIsOpen] = useState(false);
 	const [bettaError, setBettaError] = useState<string | null>(null);
-	const [alphaError, setAlphaError] = useState<string | null>(null);
-
 
 	const [breedResult, setBreedResult] = useState<Fish | null>();
 	const [showBreedResult, setShowBreedResult] = useState(false);
@@ -191,13 +189,7 @@ const BreedingWaters = () => {
 	);
 };
 
-const Error = styled.div`
-	background-color: #8f0000;
-	padding: ${props => props.theme.spacing.gapSmall};
-	border-radius: 10px;
-	box-shadow:  10px 10px 30px #6e004d,
-             -10px -10px 30px #910d14;
-`
+
 
 const OptionsContainer = styled.div`
 	display: flex;

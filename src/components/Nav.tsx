@@ -103,7 +103,6 @@ const LogoImg = styled.img<ActiveProps>`
   background-image: linear-gradient(#038ec5ea, rgba(219, 4, 4, 0.712));
   box-shadow: inset 2px 2px 2px #c7c7c74b, inset -2px -2px 2px #3f3f3f4c;
 
-
   &.active {
     background-color: rgba(219, 4, 4, 0.712);
   }
@@ -163,7 +162,7 @@ const Option = styled(NavLink)<ActiveProps>`
   padding: ${props => props.theme.spacing.gapSmall};
   display: flex;
   flex-flow: row nowrap;
-	font-size: ${props => props.theme.font.medium}vmax;
+	font-size: ${props => props.theme.font.medium};
   white-space: nowrap;
   overflow: hidden;
   text-decoration: none;

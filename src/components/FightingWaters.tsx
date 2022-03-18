@@ -6,7 +6,7 @@ import { Fish } from '../utils/fish'
 import { Fight} from '../utils/fight'
 import { useUnity } from '../context/unityContext';
 import { useFishPool } from '../context/fishPoolContext';
-import { BaseLinkButton, BaseOverlayContainer, ContainerControls } from './BaseStyles';
+import { Error, BaseOverlayContainer, BaseText, ContainerColumn, ContainerControls } from './BaseStyles';
 import ToggleButton, { ToggleGroup, ToggleItem, ToggleOption } from './ToggleButton';
 import { useContractWrapper } from '../context/contractWrapperContext';
 import { useFishFight } from '../context/fishFightContext';
@@ -23,6 +23,8 @@ const FightingWaters = () => {
 	const [mySelectedFish, setMySelectedFish] = useState<Fish | null>(null);
 	const [opponentFish, setOpponentFish] = useState<Fish | null>(null);
 	const [fishToShow, setFishToShow] = useState<number>(FishView.FightFish);
+	const [fighterError, setFighterError] = useState<string | null>(null);
+
 	const [fightResult, setFightResult] = useState<Fight | null>();
 	const [showFightingLocationResult, setshowFightingLocationResult] = useState(false);
 	const [isFighting, setIsFighting] = useState<boolean>(false);
@@ -100,9 +102,23 @@ const FightingWaters = () => {
 	const setUserFighter = async (fish : Fish) => {
 		console.log("User Selected Fish: " + fish.tokenId)
 		// unityContext.showFightingUI();
-		if(fish.tokenId == opponentFish?.tokenId) {
-			toast.error("Can't Fight the same Fish")
-			return;
+		if(fish.fishModifiers.alphaModifier.uses > 0) {
+			toast.error("Fighter Selection: Fish is Alpha");
+			setFighterError(`Alpha can't start Fight`);
+		}
+		else if(fish.tokenId === opponentFish?.tokenId) {
+			toast.error("Fighter Selection: Same Fish");
+			setFighterError(`Same Fish`);
+		}
+		else if(fish.isUser && opponentFish?.isUser) {
+			setFighterError(`Warning! About to Fight Owned Fish`);
+		}
+		else if(fish.stakedBreeding) {
+			toast.error("Fighter Selection: Must Withdraw");
+			setFighterError(`Must Withdraw from Breed Pool`);
+		}
+		else {
+			setFighterError(null);
 		}
 		setMySelectedFish(fish);
 		unityContext.addFishFight1(fish)
@@ -112,8 +128,14 @@ const FightingWaters = () => {
 		console.log("Opponent Fish: " + fish.tokenId)
 		// unityContext.showFightingUI();
 		if(fish.tokenId == mySelectedFish?.tokenId) {
-			toast.error("Can't Fight the same Fish")
-			return;
+			toast.error("Fighter Selection: Same Fish");
+			setFighterError(`Same Fish`);
+		}
+		else if(fish.isUser && mySelectedFish?.isUser) {
+			setFighterError(`Warning! About to Fight Owned Fish`);
+		}
+		else {
+			setFighterError(null);
 		}
 		setOpponentFish(fish);
 		unityContext.addFishFight2(fish)
@@ -154,6 +176,11 @@ const FightingWaters = () => {
 			<OptionsContainer>
 				{!account &&
 					<Account textOverride={"Connect Wallet to Fight $FISH"}/>
+				}
+				{fighterError &&
+					<ContainerColumn>
+						<Error><BaseText>{fighterError}</BaseText></Error>
+					</ContainerColumn>
 				}
 			</OptionsContainer>
 			{fishToShow === FishView.MyFish &&

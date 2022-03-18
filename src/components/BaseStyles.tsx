@@ -144,6 +144,18 @@ export const UIContainer = styled.div`
 	pointer-events: auto;
 `;
 
+export const Error = styled.div`
+	background-color: #8f0000;
+	padding: ${props => props.theme.spacing.gap};
+	border-radius: 10px;
+	box-shadow:  10px 10px 30px #6e004d,
+             -10px -10px 30px #910d14;
+
+	p {
+		font-size: ${props => props.theme.font.medium};
+	}
+`
+
 export const BaseText = styled.p`
 	display: flex;
 	flex-flow: column;

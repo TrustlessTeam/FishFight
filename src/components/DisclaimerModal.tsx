@@ -1,44 +1,24 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import { useWeb3React } from '@web3-react/core';
-import Modal from 'react-modal';
 
 
-import { useHarmony } from '../context/harmonyContext';
-import { useFishFight } from '../context/fishFightContext';
-import fishImg from "../img/icons/fish.svg"
-import deadImg from "../img/icons/dead.svg"
-import foodImg from "../img/icons/food.svg"
-import { useFishPool } from '../context/fishPoolContext';
-import web3 from 'web3';
-import Countdown from 'react-countdown';
-import BN from 'bn.js'
-import { StakedFighting } from '../utils/fish';
-import { Route, Routes } from 'react-router-dom';
-import infoImg from "../img/icons/info.svg";
-import waterImg from "../img/icons/water-dark.svg";
+
+
 import { BaseOverlayContainer, BaseText, ContainerControls, StyledModal, Title } from './BaseStyles';
 import BaseButton from "./BaseButton";
 import { useContractWrapper } from '../context/contractWrapperContext';
-import Account from './Account';
 import LoadingOverlay from 'react-loading-overlay';
 
 
-type Props = {
-  showTrainingFoodApproval: boolean;
-	showFightingFishApproval: boolean;
-	showBreedingFishApproval: boolean;
-};
 
-const MAX_APPROVE = '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff';
-
-
-const ApprovalModal = () => {
+const DisclaimerModal = () => {
 	const [modalIsOpen, setModalIsOpen] = useState(false);
 	const { account } = useWeb3React();
 	// const { breedingFishApproval, trainingFoodApproval, fightingFishApproval } = useFishFight();
-	const { showTrainingFoodApproval, showBreedingFishApproval, showFightingFishApproval } = useContractWrapper();
+	const { showTrainingFoodApproval, showBreedingFishApproval, showFightingFishApproval, showFightingDisclaimer,  } = useContractWrapper();
 	
+	console.log(showFightingDisclaimer)
 
 	const toggleModel = () => {
 		setModalIsOpen(!modalIsOpen);
@@ -84,11 +64,24 @@ const ApprovalModal = () => {
 		)
 	}
 
+	const FightingDisclaimer = () => {
+		return (
+			<ContainerText>
+				<Text><span>Warning! </span>Fighting Fish results in the losing $FISH <span>dying</span> (token burned). The loser will receive a $DEADFISH token in place of their now burned $FISH token. The winner of the fight will become an Alpha $FISH and may be staked in the Breed Pool to earn $FISHFOOD when selected to breed with by a Betta $FISH.  Approving the transaction is your agreement to these terms. Good luck!</Text>
+					<OptionsContainer>
+						{/* {!fightingFishApproval && !checked &&
+							<BaseButton onClick={() => contractApproveAllForFighting()}>{'Approve All $FISH'}</BaseButton>
+						} */}
+					</OptionsContainer>
+			</ContainerText>
+		)
+	}
+
 	if(!account) return null;
 
 	return (
 		<StyledModal
-				isOpen={showBreedingFishApproval || showFightingFishApproval || showTrainingFoodApproval}
+				isOpen={showBreedingFishApproval || showFightingFishApproval || showTrainingFoodApproval || showFightingDisclaimer}
 				className="Modal"
 				overlayClassName="Overlay"
 				// onRequestClose={closeModal}
@@ -106,7 +99,12 @@ const ApprovalModal = () => {
 						{showTrainingFoodApproval &&
 							<TrainingApproval></TrainingApproval>
 						}
-						<BaseText>If you prefer to do individual approvals or allowance, go to Account tab and check box.</BaseText>
+						{showFightingDisclaimer &&
+							<FightingDisclaimer></FightingDisclaimer>
+						}
+						{(showFightingFishApproval || showBreedingFishApproval || showTrainingFoodApproval) &&
+							<BaseText>If you prefer to do individual approvals or allowance, go to Account tab and check box.</BaseText>
+						}
 					</ApprovalDisclaimer>
 					
 				</ApprovalsContainer>
@@ -117,7 +115,7 @@ const ApprovalModal = () => {
 };
 
 
-export default ApprovalModal;
+export default DisclaimerModal;
 
 const Text = styled.p`
 	color: white;
