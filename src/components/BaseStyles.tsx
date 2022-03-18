@@ -58,7 +58,8 @@ export const StyledModal = styled(Modal)`
   top: 50%;
   left: 50%;
   /* min-width: fit-content; */
-  max-width: 800px;
+	max-width: 100%;
+	width: 100%;
   max-height: 100%;
   transform: translate(-50%, -50%);
   border-radius: 20px;
@@ -86,6 +87,9 @@ export const StyledModal = styled(Modal)`
 		left: 0px;
 	}
 
+	@media ${props => props.theme.device.tablet} {
+		max-width: 800px;
+  }
 `;
 
 export const BaseOverlayContainer = styled(LoadingOverlay)`

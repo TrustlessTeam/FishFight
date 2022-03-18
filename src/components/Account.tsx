@@ -48,7 +48,7 @@ const Account = ({ children, textOverride }: Props) => {
 	const { account, active } = useWeb3React();
 	const { balance, balanceFish, balanceDeadFish, balanceFood, balanceFightFish, balanceBreedFish, FishFight  } = useFishFight();
 
-const { contractApproveAllFishForBreeding, perTransactionApproval, setPerTransactionApproval, contractApproveFoodForTraining, contractApproveAllForFighting,  } = useContractWrapper();
+const { contractApproveFishForBreeding, perTransactionApproval, setPerTransactionApproval, contractApproveFoodForTraining, contractApproveFishForFighting,  } = useContractWrapper();
 
 	const parsedAccount = account && !isBech32Address(account) ? toBech32(account) : account;
 
@@ -174,15 +174,15 @@ const { contractApproveAllFishForBreeding, perTransactionApproval, setPerTransac
 							</Row>
 							<Row>
 								<Text>Training Contract <a target="_blank" rel="noopener noreferrer" href={`${Constants._explorer}address/${FishFight.readTrainingWaters.options.address}`}>{FishFight.readTrainingWaters.options.address}</a></Text>
-								<BaseButton onClick={() => contractApproveFoodForTraining('0')}>Revoke $FISHFOOD Allowance</BaseButton>		
+								<BaseButton onClick={() => contractApproveFoodForTraining('0', ()=>{})}>Revoke $FISHFOOD Allowance</BaseButton>		
 							</Row>
 							<Row>
 								<Text>Fighting Contract <a target="_blank" rel="noopener noreferrer" href={`${Constants._explorer}address/${FishFight.readFightingWaters.options.address}`}>{FishFight.readFightingWaters.options.address}</a></Text>
-								<BaseButton onClick={() => contractApproveAllForFighting(true)}>Revoke $FISH Control</BaseButton>
+								<BaseButton onClick={() => contractApproveFishForFighting(-1, ()=>{})}>Revoke $FISH Control</BaseButton>
 							</Row>
 							<Row>
 								<Text>Breeding Contract <a target="_blank" rel="noopener noreferrer" href={`${Constants._explorer}address/${FishFight.readBreedingWaters.options.address}`}>{FishFight.readBreedingWaters.options.address}</a></Text>
-								<BaseButton onClick={() => contractApproveAllFishForBreeding(true)}>Revoke $FISH Control</BaseButton>
+								<BaseButton onClick={() => contractApproveFishForBreeding(-1, ()=>{})}>Revoke $FISH Control</BaseButton>
 							</Row>
 						</ContainerColumnLeft>
 						<IndividualApprovals></IndividualApprovals>

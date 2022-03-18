@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import { Contract } from '@harmony-js/contract';
 import { toast } from 'react-toastify';
 
@@ -30,11 +30,12 @@ interface ProviderInterface {
 	claimFishFood: (fish: Fish | null) => void;
 	claimAllFishFood: () => void;
 	feedAllFish: () => void;
-	contractApproveAllForFighting: (revoke?: boolean) => void;
-	contractApproveAllFishForBreeding: (revoke?: boolean) => void;
+	contractApproveFishForFighting: (approvalType: number, callback: any) => void;
+	contractApproveFishForBreeding: (approvalType: number, callback: any) => void;
 	contractApproveFoodForBreeding: (amount: string) => void;
-	contractApproveFoodForTraining: (amount: string) => void;
+	contractApproveFoodForTraining: (amount: string, callback: any) => void;
 	setPerTransactionApproval: (value: boolean) => void;
+	onAccept: any;
 	perTransactionApproval: boolean;
 	pendingTransaction: boolean;
 	showTrainingFoodApproval: boolean;
@@ -72,7 +73,8 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 	const [showBreedingDisclaimer, setShowBreedingDisclaimer] = useState<boolean>(false);
 	const [showFishingDisclaimer, setShowFishingDisclaimer] = useState<boolean>(false);
 
-
+	const DefaultAccept = () => console.log("Default Accept");
+	const [onAccept, setOnAccept] = useState(() => DefaultAccept);
 
 	const { account } = useWeb3React();
 	const { FishFight, refetchBalance, balanceFoodWei } = useFishFight();
@@ -84,6 +86,19 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 			checkApprovals(account)
 		}
 	}, [account]);
+
+	// const onAccept = () => {
+	// 	if(showFightingDisclaimer) {
+
+	// 	}
+	// }
+
+	// const acceptFunction = useCallback(
+	// 	() => {
+	// 		doSomething(a, b);
+	// 	},
+	// 	[callback],
+	// );
 
 
   const checkApprovals = async (account: any) => {
@@ -180,37 +195,42 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 	const contractBreed = async (fishAlpha: Fish, fishBetta: Fish) => {
 		console.log(fishAlpha)
 		console.log(fishBetta)
-		const isBreeding = await FishFight.readCycles.methods.isBreedingPhase().call(); // check per call to prevent use from over/under paying
-		return FishFight.breedingWaters?.methods.breedFish(fishAlpha.tokenId, fishBetta.tokenId).send({
-			from: account,
-			gasPrice: 30000000000,
-			gasLimit: 15000000,
-			value: isBreeding ? Constants._oneBreedFeeInPhase : Constants._oneBreedFee
+		setShowBreedingDisclaimer(true);
+		setOnAccept(() => async () => {
+			setShowBreedingDisclaimer(false);
+			const isBreeding = await FishFight.readCycles.methods.isBreedingPhase().call(); // check per call to prevent use from over/under paying
+			return FishFight.breedingWaters?.methods.breedFish(fishAlpha.tokenId, fishBetta.tokenId).send({
+				from: account,
+				gasPrice: 30000000000,
+				gasLimit: 15000000,
+				value: isBreeding ? Constants._oneBreedFeeInPhase : Constants._oneBreedFee
+			})
+			.on('error', (error: any) => {
+				console.log(error)
+				toast.error('Breed Failed');
+				setPendingTransaction(false);
+			})
+			.on('transactionHash', () => {
+				setPendingTransaction(true);
+			})
+			.on('receipt', async (data: any) => {
+				console.log(data)
+				setPendingTransaction(false);
+				toast.success('Breeding completed!', {
+					onOpen: async () => {
+						const fish = await createUserFish(web3.utils.toNumber(data.events.BreedingResult.returnValues.tokenId));
+						if(fish != null) {
+							// unityContext.showFish(fish);
+							unityContext.addBreedOffspring(fish)
+						}
+						refetchBalance()
+						refreshFish(fishAlpha.tokenId, false, true);
+						refreshFish(fishBetta.tokenId, false, false);
+					},
+				});
+			})
 		})
-		.on('error', (error: any) => {
-			console.log(error)
-			toast.error('Breed Failed');
-			setPendingTransaction(false);
-		})
-		.on('transactionHash', () => {
-			setPendingTransaction(true);
-		})
-		.on('receipt', async (data: any) => {
-			console.log(data)
-			setPendingTransaction(false);
-			toast.success('Breeding completed!', {
-				onOpen: async () => {
-					const fish = await createUserFish(web3.utils.toNumber(data.events.BreedingResult.returnValues.tokenId));
-					if(fish != null) {
-						// unityContext.showFish(fish);
-						unityContext.addBreedOffspring(fish)
-					}
-					refetchBalance()
-					refreshFish(fishAlpha.tokenId, false, true);
-					refreshFish(fishBetta.tokenId, false, false);
-				},
-			});
-		})
+		
 	}
 
 	const withdrawBreedingFish = async (fish: Fish | null) => {
@@ -266,11 +286,7 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 
 			// Need to Approve All $FISH
 			if(!perTransactionApproval && !breedingFishApproval) {
-				const approvalAllResult = await contractApproveAllFishForBreeding()
-				if(approvalAllResult.events.ApprovalForAll.returnValues.approved) {
-					contractBreedDeposit(fish);
-					return;
-				}
+				contractApproveFishForBreeding(0, () => contractBreedDeposit(fish))
 			}
 
 			// User wants to approve per $FISH / Transaction
@@ -280,11 +296,7 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 					if(address === FishFight.readBreedingWaters.options.address) {
 						contractBreedDeposit(fish);
 					} else {
-						const approveResults = await contractApproveFishForBreeding(fish.tokenId);
-						console.log(approveResults)
-						if(approveResults.events.Approval.returnValues.approved === FishFight.readBreedingWaters.options.address) {
-							contractBreedDeposit(fish);
-						}
+						contractApproveFishForBreeding(fish.tokenId, () => contractBreedDeposit(fish));
 					}
 				})
 			}
@@ -294,57 +306,85 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 		}
 	}
 
-	const contractApproveAllFishForBreeding = async (revoke?: boolean) => {
-		let grant = true;
-		if(revoke) grant = false;
+	const contractApproveFishForBreeding = async (tokenId: number, callback?: any) => {
 		setShowBreedingFishApproval(true);
-		return FishFight.fishFactory?.methods.setApprovalForAll(FishFight.readBreedingWaters.options.address, grant).send({
-			from: account,
-			gasPrice: 30000000000,
-			gasLimit: await FishFight.fishFactory?.methods.setApprovalForAll(FishFight.readBreedingWaters.options.address, grant).estimateGas({from: account}),
-		})
-		.on('error', (error: any) => {
-			console.log(error)
-			toast.error('Approval Failed');
-			setPendingTransaction(false);
+		setOnAccept(() => async () => {
 			setShowBreedingFishApproval(false);
-		})
-		.on('transactionHash', () => {
-			setPendingTransaction(true);
-		})
-		.on('receipt', (data: any) => {
-			console.log('Breeding Approval completed')
-			toast.success('Breeding Approval completed')
-			console.log(data)
-			setBreedingFishApproval(true)
-			setPendingTransaction(false);
-			setShowBreedingFishApproval(false);
-		})
+			if(tokenId === -1) { // revoke approval for all $FISH
+				return FishFight.fishFactory?.methods.setApprovalForAll(FishFight.readBreedingWaters.options.address, false).send({
+					from: account,
+					gasPrice: 30000000000,
+					gasLimit: await FishFight.fishFactory?.methods.setApprovalForAll(FishFight.readBreedingWaters.options.address, false).estimateGas({from: account}),
+				})
+				.on('error', (error: any) => {
+					console.log(error)
+					toast.error('Approval Failed');
+					setPendingTransaction(false);
+				})
+				.on('transactionHash', () => {
+					setPendingTransaction(true);
+				})
+				.on('receipt', (data: any) => {
+					console.log(data)
+					console.log('Breeding Approval revoked')
+					toast.success('Breeding Approval revoked')
+					setPendingTransaction(false);
+					setBreedingFishApproval(false);
+				})
+			}
+			else if(tokenId === 0) { // approve all FISH
+				return FishFight.fishFactory?.methods.setApprovalForAll(FishFight.readBreedingWaters.options.address, true).send({
+					from: account,
+					gasPrice: 30000000000,
+					gasLimit: await FishFight.fishFactory?.methods.setApprovalForAll(FishFight.readBreedingWaters.options.address, true).estimateGas({from: account}),
+				})
+				.on('error', (error: any) => {
+					console.log(error)
+					toast.error('Approval Failed');
+					console.log("Failed here")
+					setPendingTransaction(false);
+				})
+				.on('transactionHash', () => {
+					setPendingTransaction(true);
+				})
+				.on('receipt', (data: any) => {
+					console.log(data)
+					console.log('Breeding Approval completed')
+					toast.success('Breeding Approval completed')
+					setBreedingFishApproval(true);
+					setPendingTransaction(false);
+					// if(approvalAllResult.events.ApprovalForAll.returnValues.approved) {
+					// 	contractBreedDeposit(fish);
+					// 	return;
+					// }
+					callback();
+				})
+			}
+			else { // aprove indivdual FISH
+				return FishFight.fishFactory?.methods.approve(FishFight.readBreedingWaters.options.address, tokenId).send({
+					from: account,
+					gasPrice: 30000000000,
+					gasLimit: await FishFight.fishFactory?.methods.approve(FishFight.readBreedingWaters.options.address, tokenId).estimateGas({from: account}),
+				})
+				.on('transactionHash', () => {
+					setPendingTransaction(true);
+				})
+				.on('receipt', (data: any) => {
+					console.log(data)
+					console.log('Breeding Approval completed')
+					toast.success('Breeding Approval completed')
+					setPendingTransaction(false);
+					setShowBreedingFishApproval(false);
+					// console.log(approveResult)
+					// if(approveResult.events.Approval.returnValues.approved === FishFight.readFightingWaters.options.address) {
+					// 	contractDeathFight(myFish, opponentFish, true);
+					// }
+					callback();
+				})
+			}	
+		})	
 	}
 
-	const contractApproveFishForBreeding = async (tokenId: number) => {
-		setShowBreedingFishApproval(true);
-		return FishFight.fishFactory?.methods.approve(FishFight.readBreedingWaters.options.address, tokenId).send({
-			from: account,
-			gasPrice: 30000000000,
-			gasLimit: await FishFight.fishFactory?.methods.approve(FishFight.readBreedingWaters.options.address, tokenId).estimateGas({from: account}),
-		})
-		.on('error', (error: any) => {
-			console.log(error)
-			toast.error('Approval Failed');
-			setPendingTransaction(false);
-		})
-		.on('transactionHash', () => {
-			setPendingTransaction(true);
-		})
-		.on('receipt', (data: any) => {
-			console.log('Breeding Approval completed')
-			toast.success('Breeding Approval completed')
-			console.log(data)
-			setPendingTransaction(false);
-			setShowBreedingFishApproval(false);
-		})
-	}
 
 	const contractApproveFoodForBreeding = async (amountToApprove: string) => {
 		setShowBreedingFoodApproval(true);
@@ -373,28 +413,32 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 	}
 
 	const contractBreedDeposit = async (fish: Fish) => {
-		const gas = await FishFight.breedingWaters?.methods.deposit(fish.tokenId).estimateGas({from: account})
-		return FishFight.breedingWaters?.methods.deposit(fish.tokenId).send({
-			from: account,
-			gasPrice: 30000000000,
-			gasLimit: gas,
-		})
-		.on('error', (error: any) => {
-			console.log(error)
-			toast.error('Deposit Failed');
-			setPendingTransaction(false);
-		})
-		.on('transactionHash', () => {
-			setPendingTransaction(true);
-		})
-		.on('receipt', async () => {
-			setPendingTransaction(false);
-			toast.success('Fish Deposited', {
-				onOpen: async () => {
-					refetchBalance();
-					refreshFish(fish.tokenId, false, true);
-				},
-			});
+		setShowBreedingDisclaimer(true);
+		setOnAccept(() => async () => {
+			setShowBreedingDisclaimer(false);
+			const gas = await FishFight.breedingWaters?.methods.deposit(fish.tokenId).estimateGas({from: account})
+			return FishFight.breedingWaters?.methods.deposit(fish.tokenId).send({
+				from: account,
+				gasPrice: 30000000000,
+				gasLimit: gas,
+			})
+			.on('error', (error: any) => {
+				console.log(error)
+				toast.error('Deposit Failed');
+				setPendingTransaction(false);
+			})
+			.on('transactionHash', () => {
+				setPendingTransaction(true);
+			})
+			.on('receipt', async () => {
+				setPendingTransaction(false);
+				toast.success('Fish Deposited', {
+					onOpen: async () => {
+						refetchBalance();
+						refreshFish(fish.tokenId, false, true);
+					},
+				});
+			})
 		})
 	}
 
@@ -414,89 +458,118 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 		return owner === FishFight.readFightingWaters.options.address;
 	}
 
-	const contractApproveAllForFighting = async (revoke?: boolean) => {
+	const contractApproveFishForFighting = async (tokenId: number, callback?: any) => {
 		setShowFightingFishApproval(true);
-		let grant = true;
-		if(revoke) grant = false;
-		return FishFight.fishFactory?.methods.setApprovalForAll(FishFight.readFightingWaters.options.address, grant).send({
-			from: account,
-			gasPrice: 30000000000,
-			gasLimit: await FishFight.fishFactory?.methods.setApprovalForAll(FishFight.readFightingWaters.options.address, grant).estimateGas({from: account}),
-		})
-		.on('error', (error: any) => {
-			console.log(error)
-			toast.error('Approval Failed');
-			console.log("Failed here")
-			setPendingTransaction(false);
+		setOnAccept(() => async () => {
 			setShowFightingFishApproval(false);
-		})
-		.on('transactionHash', () => {
-			setPendingTransaction(true);
-		})
-		.on('receipt', (data: any) => {
-			console.log(data)
-			console.log('Fighting Approval completed')
-			toast.success('Fighting Approval completed')
-			setFightingFishApproval(true);
-			setPendingTransaction(false);
-			setShowFightingFishApproval(false);
-		})
-		
-	}
-
-	const contractApproveFishForFighting = async (tokenId: number) => {
-		setShowFightingFishApproval(true);
-		return FishFight.fishFactory?.methods.approve(FishFight.readFightingWaters.options.address, tokenId).send({
-			from: account,
-			gasPrice: 30000000000,
-			gasLimit: await FishFight.fishFactory?.methods.approve(FishFight.readFightingWaters.options.address, tokenId).estimateGas({from: account}),
-		})
-		.on('error', (error: any) => {
-			console.log(error)
-			toast.error('Approval Failed');
-			setPendingTransaction(false);
-			setShowFightingFishApproval(false);
-		})
-		.on('transactionHash', () => {
-			setPendingTransaction(true);
-		})
-		.on('receipt', (data: any) => {
-			console.log(data)
-			console.log('Fighting Approval completed')
-			toast.success('Fighting Approval completed')
-			setPendingTransaction(false);
-			setShowFightingFishApproval(false);
-		})
-		
+			if(tokenId === -1) { // revoke approval for all $FISH
+				return FishFight.fishFactory?.methods.setApprovalForAll(FishFight.readFightingWaters.options.address, false).send({
+					from: account,
+					gasPrice: 30000000000,
+					gasLimit: await FishFight.fishFactory?.methods.setApprovalForAll(FishFight.readFightingWaters.options.address, false).estimateGas({from: account}),
+				})
+				.on('error', (error: any) => {
+					console.log(error)
+					toast.error('Approval Failed');
+					setPendingTransaction(false);
+				})
+				.on('transactionHash', () => {
+					setPendingTransaction(true);
+				})
+				.on('receipt', (data: any) => {
+					console.log(data)
+					console.log('Fighting Approval revoked')
+					toast.success('Fighting Approval revoked')
+					setPendingTransaction(false);
+					setFightingFishApproval(false);
+				})
+			}
+			else if(tokenId === 0) { // approve all FISH
+				return FishFight.fishFactory?.methods.setApprovalForAll(FishFight.readFightingWaters.options.address, true).send({
+					from: account,
+					gasPrice: 30000000000,
+					gasLimit: await FishFight.fishFactory?.methods.setApprovalForAll(FishFight.readFightingWaters.options.address, true).estimateGas({from: account}),
+				})
+				.on('error', (error: any) => {
+					console.log(error)
+					toast.error('Approval Failed');
+					console.log("Failed here")
+					setPendingTransaction(false);
+				})
+				.on('transactionHash', () => {
+					setPendingTransaction(true);
+				})
+				.on('receipt', (data: any) => {
+					console.log(data)
+					console.log('Fighting Approval completed')
+					toast.success('Fighting Approval completed')
+					setFightingFishApproval(true);
+					setPendingTransaction(false);
+					// if(approvalAllResult.events.ApprovalForAll.returnValues.approved) {
+					// 	contractBreedDeposit(fish);
+					// 	return;
+					// }
+					callback();
+				})
+			}
+			else { // aprove indivdual FISH
+				return FishFight.fishFactory?.methods.approve(FishFight.readFightingWaters.options.address, tokenId).send({
+					from: account,
+					gasPrice: 30000000000,
+					gasLimit: await FishFight.fishFactory?.methods.approve(FishFight.readFightingWaters.options.address, tokenId).estimateGas({from: account}),
+				})
+				.on('transactionHash', () => {
+					setPendingTransaction(true);
+				})
+				.on('receipt', (data: any) => {
+					console.log(data)
+					console.log('Fighting Approval completed')
+					toast.success('Fighting Approval completed')
+					setPendingTransaction(false);
+					setShowFightingFishApproval(false);
+					// console.log(approveResult)
+					// if(approveResult.events.Approval.returnValues.approved === FishFight.readFightingWaters.options.address) {
+					// 	contractDeathFight(myFish, opponentFish, true);
+					// }
+					callback();
+				})
+			}	
+		})	
 	}
 
 	const contractDepositFightingFish = (fish: Fish) => {
-		return FishFight.fightingWaters?.methods.deposit(fish.tokenId).estimateGas({from: account}).then((gas: any) => {
-			FishFight.fightingWaters?.methods.deposit(fish.tokenId).send({
-				from: account,
-				gasPrice: 30000000000,
-				gasLimit: gas,
-			})
-			.on('error', (error: any) => {
-				console.log(error)
-				toast.error('Deposit Failed');
-				setPendingTransaction(false);
-			})
-			.on('transactionHash', () => {
-				setPendingTransaction(true);
-			})
-			.on('receipt', async () => {
-				setPendingTransaction(false);
-				// depositUserFightingFish(fish);
-				toast.success('Fish Deposited', {
-					onOpen: async () => {
-						refetchBalance()
-						refreshFish(fish.tokenId, true, false);
-					},
-				});
+		console.log("called")
+		setShowFightingDisclaimer(true);
+		setOnAccept(() => () => {
+			setShowFightingDisclaimer(false);
+			return FishFight.fightingWaters?.methods.deposit(fish.tokenId).estimateGas({from: account}).then((gas: any) => {
+				FishFight.fightingWaters?.methods.deposit(fish.tokenId).send({
+					from: account,
+					gasPrice: 30000000000,
+					gasLimit: gas,
+				})
+				.on('error', (error: any) => {
+					console.log(error)
+					toast.error('Deposit Failed');
+					setPendingTransaction(false);
+				})
+				.on('transactionHash', () => {
+					setPendingTransaction(true);
+				})
+				.on('receipt', async () => {
+					setPendingTransaction(false);
+					
+					// depositUserFightingFish(fish);
+					toast.success('Fish Deposited', {
+						onOpen: async () => {
+							refetchBalance()
+							refreshFish(fish.tokenId, true, false);
+						},
+					});
+				})
 			})
 		})
-		
+
 	}
 
 	const depositFightingFish = async (fish : Fish | null) => {
@@ -517,25 +590,22 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 
 			// Need to Approve All $FISH
 			if(!perTransactionApproval && !fightingFishApproval) {
-				const approvalAllResult = await contractApproveAllFishForBreeding()
-				if(approvalAllResult.events.ApprovalForAll.returnValues.approved) {
-					contractBreedDeposit(fish);
-					return;
-				}
+				contractApproveFishForFighting(0, () => contractDepositFightingFish(fish))
+				
 			}
 
 			// User wants to approve per $FISH / Transaction
-			if(perTransactionApproval && !breedingFishApproval) {
+			if(perTransactionApproval && !fightingFishApproval) {
 				FishFight.fishFactory?.methods.getApproved(fish.tokenId).call()
 				.then(async (address: string) => {
 					if(address === FishFight.readFightingWaters.options.address) {
 						contractDepositFightingFish(fish);
 					} else {
-						const approveResult = await contractApproveFishForFighting(fish.tokenId)
-						console.log(approveResult)
-						if(approveResult.events.Approval.returnValues.approved === FishFight.readFightingWaters.options.address) {
-							contractDepositFightingFish(fish);
-						}
+						contractApproveFishForFighting(fish.tokenId, () => contractDepositFightingFish(fish))
+						// console.log(approveResult)
+						// if(approveResult.events.Approval.returnValues.approved === FishFight.readFightingWaters.options.address) {
+						// 	contractDepositFightingFish(fish);
+						// }
 					}
 				})
 			}
@@ -588,36 +658,39 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 	const contractDeathFight = (myFish: Fish, opponentFish: Fish, contractIsFighterDeposited: boolean) => {
 		console.log('adasdasdasda')
 		setShowFightingDisclaimer(true);
-		return FishFight.fightingWaters?.methods.deathFight(myFish.tokenId, opponentFish.tokenId, contractIsFighterDeposited).send({
-			from: account,
-			gasPrice: 30000000000,
-			gasLimit: 5000000,
-			value: Constants._fightFee
-		})
-		.on('error', (error: any) => {
-			console.log(error)
-			toast.error('Fight Failed');
-			setPendingTransaction(false);
+		setOnAccept(() => () => {
 			setShowFightingDisclaimer(false);
-
+			setOnAccept(() => () => {})
+			return FishFight.fightingWaters?.methods.deathFight(myFish.tokenId, opponentFish.tokenId, contractIsFighterDeposited).send({
+				from: account,
+				gasPrice: 30000000000,
+				gasLimit: 5000000,
+				value: Constants._fightFee
+			})
+			.on('error', (error: any) => {
+				console.log(error)
+				toast.error('Fight Failed');
+				setPendingTransaction(false);
+			})
+			.on('transactionHash', () => {
+				setPendingTransaction(true);
+			}).on('receipt', async (result: any) => {
+				const fightIndex = web3.utils.toNumber(result.events.FightCompleted.returnValues._fightIndex);
+				setPendingTransaction(false);
+				
+				const fightResult = await getFightByIndex(fightIndex, myFish)
+				unityContext.sendFightResult(fightResult);
+				// unityContext.
+				toast.success('Fight Completed!', {
+					onOpen: async () => {
+						refetchBalance()
+						if(myFish.tokenId === fightResult.winner) refreshFish(myFish.tokenId, true, false);
+						if(opponentFish.tokenId === fightResult.winner) refreshFish(opponentFish.tokenId, true, false);	
+					},
+				});
+			})
 		})
-		.on('transactionHash', () => {
-			setPendingTransaction(true);
-			setShowFightingDisclaimer(false);
-		}).on('receipt', async (result: any) => {
-			const fightIndex = web3.utils.toNumber(result.events.FightCompleted.returnValues._fightIndex);
-			setPendingTransaction(false);
-			const fightResult = await getFightByIndex(fightIndex, myFish)
-			unityContext.sendFightResult(fightResult);
-			// unityContext.
-			toast.success('Fight Completed!', {
-				onOpen: async () => {
-					refetchBalance()
-					if(myFish.tokenId === fightResult.winner) refreshFish(myFish.tokenId, true, false);
-					if(opponentFish.tokenId === fightResult.winner) refreshFish(opponentFish.tokenId, true, false);	
-				},
-			});
-		})
+		
 	}
 
 	const fightFish = async (myFish: Fish | null, opponentFish: Fish | null) => {
@@ -663,12 +736,7 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 			
 			// Fish is not deposited, so approveAll Fish and then fight & deposit
 			if(!fightingFishApproval && !perTransactionApproval) {
-				const approvalAllResult = await contractApproveAllForFighting()
-				console.log(approvalAllResult)
-				if(approvalAllResult.events.ApprovalForAll.returnValues.approved) {
-					contractDeathFight(myFish, opponentFish, true);
-					return;
-				}				
+				contractApproveFishForFighting(0, () => contractDeathFight(myFish, opponentFish, true))				
 			}
 
 			// Fish is not deposited and owner wants per transaction approval
@@ -679,11 +747,7 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 					if(address === FishFight.readFightingWaters.options.address) {
 						contractDeathFight(myFish, opponentFish, true);
 					} else {
-						const approveResult = await contractApproveFishForFighting(myFish.tokenId)
-						console.log(approveResult)
-						if(approveResult.events.Approval.returnValues.approved === FishFight.readFightingWaters.options.address) {
-							contractDeathFight(myFish, opponentFish, true);
-						}
+						contractApproveFishForFighting(myFish.tokenId, () => contractDeathFight(myFish, opponentFish, true))
 					}
 				})
 			}
@@ -731,22 +795,13 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 			}
 			// Not enough allowance of Fish food spend, so approve and use MAX int
 			if(trainingFoodApproval.lt(new BN(Constants._feedFee)) && !perTransactionApproval) {
-				const approveResult = await contractApproveFoodForTraining(MAX_APPROVE);
-				console.log(approveResult)
-				if(approveResult.events.Approval.returnValues.spender === FishFight.readTrainingWaters.options.address &&
-					new BN(approveResult.events.Approval.returnValues.value).gte(new BN(Constants._feedFee))) {
-					contractFeedFish(fish);
-				}
+				contractApproveFoodForTraining(MAX_APPROVE, () => contractFeedFish(fish));
+
 			}
 
 			// Not enough allowance, but user wants to not use Max int, so approve just enough
 			if(trainingFoodApproval.lt(new BN(Constants._feedFee)) && perTransactionApproval) {
-				const approveResult = await contractApproveFoodForTraining(Constants._feedFee);
-				console.log(approveResult)
-				if(approveResult.events.Approval.returnValues.spender === FishFight.readTrainingWaters.options.address &&
-					new BN(approveResult.events.Approval.returnValues.value).gte(new BN(Constants._feedFee))) {
-					contractFeedFish(fish);
-				}
+				contractApproveFoodForTraining(Constants._feedFee, () => contractFeedFish(fish));
 			}
 			
 		} catch (error: any) {
@@ -786,22 +841,12 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 
 		// Not enough allowance of Fish food spend, so approve and use MAX int
 		if(trainingFoodApproval.lt(new BN(Constants._feedFee)) && !perTransactionApproval) {
-			const approveResult = await contractApproveFoodForTraining(MAX_APPROVE);
-			console.log(approveResult)
-			if(approveResult.events.Approval.returnValues.spender === FishFight.readTrainingWaters.options.address &&
-				new BN(approveResult.events.Approval.returnValues.value).gte(new BN(Constants._questFee))) {
-				contractFeedFish(fish);
-			}
+			contractApproveFoodForTraining(MAX_APPROVE, () => contractQuestFish(fish, choice));
 		}
 
 		// Not enough allowance, but user wants to not use Max int, so approve just enough
 		if(trainingFoodApproval.lt(new BN(Constants._feedFee)) && perTransactionApproval) {
-			const approveResult = await contractApproveFoodForTraining(Constants._questFee);
-			console.log(approveResult)
-			if(approveResult.events.Approval.returnValues.spender === FishFight.readTrainingWaters.options.address &&
-				new BN(approveResult.events.Approval.returnValues.value).gte(new BN(Constants._questFee))) {
-				contractFeedFish(fish);
-			}
+			await contractApproveFoodForTraining(Constants._questFee, () => contractQuestFish(fish, choice));
 		}
 			
 		} catch (error: any) {
@@ -844,22 +889,12 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 
 			// Not enough allowance of Fish food spend, so approve and use MAX int
 			if(trainingFoodApproval.lt(new BN(Constants._feedFee)) && !perTransactionApproval) {
-				const approveResult = await contractApproveFoodForTraining(MAX_APPROVE);
-				console.log(approveResult)
-				if(approveResult.events.Approval.returnValues.spender === FishFight.readTrainingWaters.options.address &&
-					new BN(approveResult.events.Approval.returnValues.value).gte(requiredAllowance)) {
-					contractFeedMultipleFish(tokenIds)
-				}
+				contractApproveFoodForTraining(MAX_APPROVE, () => contractFeedMultipleFish(tokenIds));
 			}
 
 			// Not enough allowance, but user wants to not use Max int, so approve just enough
 			if(trainingFoodApproval.lt(new BN(Constants._feedFee)) && perTransactionApproval) {
-				const approveResult = await contractApproveFoodForTraining(requiredAllowance.toString());
-				console.log(approveResult)
-				if(approveResult.events.Approval.returnValues.spender === FishFight.readTrainingWaters.options.address &&
-					new BN(approveResult.events.Approval.returnValues.value).gte(requiredAllowance)) {
-					contractFeedMultipleFish(tokenIds)
-				}
+				contractApproveFoodForTraining(requiredAllowance.toString(), () => contractFeedMultipleFish(tokenIds));
 			}
 
 		} catch (error: any) {
@@ -1027,30 +1062,40 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 		})
 	}
 
-	const contractApproveFoodForTraining = async (amountToApprove: string) => {
+	const contractApproveFoodForTraining = async (amountToApprove: string, callBack: any) => {
 		setShowTrainingFoodApproval(true);
-		return FishFight.fishFood?.methods.approve(FishFight.readTrainingWaters.options.address, amountToApprove).send({
-			from: account,
-			gasPrice: 30000000000,
-			gasLimit: await FishFight.fishFood?.methods.approve(FishFight.readTrainingWaters.options.address, amountToApprove).estimateGas({from: account})
-		})
-		.on('error', (error: any) => {
-			console.log(error)
-			toast.error('Approval Failed');
-			setPendingTransaction(false);
+		setOnAccept(() => async () => {
 			setShowTrainingFoodApproval(false);
+			setOnAccept(() => () => {})
+			return FishFight.fishFood?.methods.approve(FishFight.readTrainingWaters.options.address, amountToApprove).send({
+				from: account,
+				gasPrice: 30000000000,
+				gasLimit: await FishFight.fishFood?.methods.approve(FishFight.readTrainingWaters.options.address, amountToApprove).estimateGas({from: account})
+			})
+			.on('error', (error: any) => {
+				console.log(error)
+				toast.error('Approval Failed');
+				setPendingTransaction(false);
+				setShowTrainingFoodApproval(false);
+			})
+			.on('transactionHash', () => {
+				setPendingTransaction(true);
+			})
+			.on('receipt', (data: any) => {
+				console.log(data)
+				console.log('FishFood Approval completed')
+				toast.success('FishFood Approval Completed')
+				setTrainingFoodApproval(new BN(amountToApprove))
+				setPendingTransaction(false);
+				setShowTrainingFoodApproval(false);
+				
+				if(data.events.Approval.returnValues.spender === FishFight.readTrainingWaters.options.address &&
+					new BN(data.events.Approval.returnValues.value).gte(new BN(amountToApprove))) {
+					callBack();
+				}
+			})
 		})
-		.on('transactionHash', () => {
-			setPendingTransaction(true);
-		})
-		.on('receipt', (data: any) => {
-			console.log(data)
-			console.log('FishFood Approval completed')
-			toast.success('FishFood Approval Completed')
-			setTrainingFoodApproval(new BN(amountToApprove))
-			setPendingTransaction(false);
-			setShowTrainingFoodApproval(false);
-		})
+		
 
 	}
 
@@ -1082,11 +1127,12 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 		claimFishFood: claimFishFood,
 		claimAllFishFood: claimAllFishFood,
 		feedAllFish: feedAllFish,
-		contractApproveAllForFighting: contractApproveAllForFighting,
-		contractApproveAllFishForBreeding: contractApproveAllFishForBreeding,
+		contractApproveFishForFighting: contractApproveFishForFighting,
+		contractApproveFishForBreeding: contractApproveFishForBreeding,
 		contractApproveFoodForBreeding: contractApproveFoodForBreeding,
 		contractApproveFoodForTraining: contractApproveFoodForTraining,
 		setPerTransactionApproval: setPerTransactionApproval,
+		onAccept: onAccept,
 		perTransactionApproval: perTransactionApproval,
 		pendingTransaction: pendingTransaction,
 		showTrainingFoodApproval: showTrainingFoodApproval,
