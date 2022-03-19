@@ -100,7 +100,7 @@ export const FishDrawerButton = styled(Link)`
 		height: 100px;
 		width: 100px;
     border-radius: 50%;
-    background-image: linear-gradient(#ffffff, #e2e2e2);
+    background-image: linear-gradient(#ffffff, #000000);
     z-index: -1;
     transition: opacity 0.25s ease-in-out;
     opacity: 0;

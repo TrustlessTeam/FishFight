@@ -100,11 +100,11 @@ const LogoImg = styled.img<ActiveProps>`
 	/* border: 2px solid white;s */
 	border-radius: 50%;
   padding: 3px;
-  background-image: linear-gradient(#038ec5ea, rgba(219, 4, 4, 0.712));
+  background-image: linear-gradient(#D5D5D5, #D5D5D5);
   box-shadow: inset 2px 2px 2px #c7c7c74b, inset -2px -2px 2px #3f3f3f4c;
 
   &.active {
-    background-color: rgba(219, 4, 4, 0.712);
+    background-color: #038ec5ea;
   }
 
   @media ${props => props.theme.device.tablet} {
@@ -182,8 +182,8 @@ const NavImg = styled(NavLink)<ActiveProps>`
   &.active {
     font-weight: bold;
     & > img {
-      /* background-color: rgba(219, 4, 4, 0.712); */
-      background-image: linear-gradient(#038ec59b, #038ec59b);
+      /* background-color: rgba(0, 4, 4, 0.712); */
+      background-image: linear-gradient(#d5d5d5, #038ec59b);
     }
     & + div {
       display: flex;
