@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { useWeb3React } from '@web3-react/core';
+import web3 from 'web3';
+
 
 
 
@@ -9,23 +11,33 @@ import { BaseOverlayContainer, BaseText, ContainerControls, StyledModal, Title }
 import BaseButton from "./BaseButton";
 import { useContractWrapper } from '../context/contractWrapperContext';
 import LoadingOverlay from 'react-loading-overlay';
+import { Constants } from '../utils/constants';
+import { useFishFight } from '../context/fishFightContext';
 
 
 
 const DisclaimerModal = () => {
 	const [modalIsOpen, setModalIsOpen] = useState(false);
 	const { account } = useWeb3React();
-	// const { breedingFishApproval, trainingFoodApproval, fightingFishApproval } = useFishFight();
-	const { showTrainingFoodApproval, showBreedingFishApproval, showFightingFishApproval, showFightingDisclaimer,  } = useContractWrapper();
+	const { currentPhase } = useFishFight();
+	const { showTrainingFoodApproval, showBreedingFishApproval, showFightingFishApproval, showFightingDisclaimer, showBreedingDisclaimer, onAccept  } = useContractWrapper();
 	
-	console.log(showFightingDisclaimer)
+	// console.log(showFightingDisclaimer)
 
 	const toggleModel = () => {
 		setModalIsOpen(!modalIsOpen);
 	};
 
+	const AcceptButton = () => {
+
+	}
+
+	// console.log(onAccept)
+
 	const TrainingApproval = () => {
 		return (
+			<>
+			<Title>Training Contract Approval</Title>
 			<ContainerText>
 				<Text><span>Approval Required! </span>Feeding and Upgrading Fish requires spending $FISHFOOD. Max allowance is set to reduce future approvals.</Text>
 				<OptionsContainer>
@@ -34,11 +46,15 @@ const DisclaimerModal = () => {
 					} */}
 				</OptionsContainer>
 			</ContainerText>
+			</>
+			
 		)
 	}
 
 	const BreedingApproval = () => {
 		return (
+			<>
+			<Title>Breeding Contract Approval</Title>
 			<ContainerText>
 				<Text><span>Approval Required! </span>Depositing Alpha Fish requires approval of your $FISH. Approval for all $FISH is set to prevent many future approvals.</Text>
 				<OptionsContainer>
@@ -47,12 +63,14 @@ const DisclaimerModal = () => {
 				} */}
 				</OptionsContainer>
 			</ContainerText>
-			
+			</>
 		)
 	}
 
 	const FightingApproval = () => {
 		return (
+			<>
+			<Title>Fighting Contract Approval</Title>
 			<ContainerText>
 				<Text><span>Approval Required! </span>Fighting Fish requires approval of your $FISH. Approval for all $FISH is set to prevent many future approvals.</Text>
 					<OptionsContainer>
@@ -61,19 +79,51 @@ const DisclaimerModal = () => {
 						} */}
 					</OptionsContainer>
 			</ContainerText>
+			</>
+			
 		)
 	}
 
 	const FightingDisclaimer = () => {
 		return (
-			<ContainerText>
-				<Text><span>Warning! </span>Fighting Fish results in the losing $FISH <span>dying</span> (token burned). The loser will receive a $DEADFISH token in place of their now burned $FISH token. The winner of the fight will become an Alpha $FISH and may be staked in the Breed Pool to earn $FISHFOOD when selected to breed with by a Betta $FISH.  Approving the transaction is your agreement to these terms. Good luck!</Text>
-					<OptionsContainer>
-						{/* {!fightingFishApproval && !checked &&
-							<BaseButton onClick={() => contractApproveAllForFighting()}>{'Approve All $FISH'}</BaseButton>
-						} */}
-					</OptionsContainer>
-			</ContainerText>
+			<>
+				<Title>Fighting Disclaimer</Title>
+				<ContainerText>
+					<Text><span>Warning! </span>Fighting Fish results in the <span>DEATH (token burned)</span> of the losing $FISH.</Text>
+					<Text>The loser will receive a $DEADFISH token in place of their now burned $FISH token, plus any $FISHFOOD the $FISH had earned while in the Fight Pool.</Text>
+					<Text>The winner of the Fight gains {currentPhase?.phase === 2 ? web3.utils.fromWei(Constants._fishFoodPerWinInPhase) : web3.utils.fromWei(Constants._fishFoodPerWin)} $FISHFOOD, and also becomes an ALPHA $FISH -- making them eligible for the Breed Pool and rewards.</Text>
+					<Text>When you trigger a Fight, your fish will be deposited in the Fight pool and locked for {Constants._lockTime / 60} minutes. During that time your $FISH is still at risk of being attacked and dying!</Text>
+					<Text>Depositing via a Fight or from a Deposit, will make your Fish eligible to a share of the Fight Pool emission rewards {web3.utils.fromWei(Constants._fishFoodPerBlock)} $FISHFOOD per block.</Text>
+					
+					<Text>Approving the transaction is your agreement to these terms. Good luck!</Text>
+						<OptionsContainer>
+							{/* {!fightingFishApproval && !checked &&
+								<BaseButton onClick={() => contractApproveAllForFighting()}>{'Approve All $FISH'}</BaseButton>
+							} */}
+						</OptionsContainer>
+				</ContainerText>
+			</>
+			
+		)
+	}
+
+	const BreedingDisclaimer = () => {
+		console.log("BREED DISCLKA")
+		return (
+			<>
+				<Title>Breeding Disclaimer</Title>
+				<ContainerText>
+					<Text>Breeding as the BETTA $FISH will consume {Constants._bettaBreedPowerFee} of your $FISH's power, and put your $FISH in a breed cooldown for {Constants._bettaBreedCooldown}.</Text>
+					<Text>The BETTA $FISH will receive the NEW $FISH, and the ALPHA $FISH will receive {currentPhase?.phase === 3 ? web3.utils.fromWei(Constants._alphaFoodOwedFeeInPhase) : web3.utils.fromWei(Constants._alphaFoodOwedFee)} $FISHFOOD</Text>
+					<Text>Approving the transaction is your agreement to these terms. Good luck!</Text>
+						<OptionsContainer>
+							{/* {!fightingFishApproval && !checked &&
+								<BaseButton onClick={() => contractApproveAllForFighting()}>{'Approve All $FISH'}</BaseButton>
+							} */}
+						</OptionsContainer>
+				</ContainerText>
+			</>
+			
 		)
 	}
 
@@ -81,15 +131,14 @@ const DisclaimerModal = () => {
 
 	return (
 		<StyledModal
-				isOpen={showBreedingFishApproval || showFightingFishApproval || showTrainingFoodApproval || showFightingDisclaimer}
+				isOpen={showBreedingFishApproval || showFightingFishApproval || showTrainingFoodApproval || showFightingDisclaimer || showBreedingDisclaimer}
 				className="Modal"
 				overlayClassName="Overlay"
-				// onRequestClose={closeModal}
+				// onRequestClose={onAccept}
 				shouldCloseOnOverlayClick
 			>
 				<ApprovalsContainer>
 					<ApprovalDisclaimer>
-						<Title>Contract Approval</Title>
 						{showFightingFishApproval &&
 							<FightingApproval></FightingApproval>
 						}
@@ -102,9 +151,13 @@ const DisclaimerModal = () => {
 						{showFightingDisclaimer &&
 							<FightingDisclaimer></FightingDisclaimer>
 						}
-						{(showFightingFishApproval || showBreedingFishApproval || showTrainingFoodApproval) &&
-							<BaseText>If you prefer to do individual approvals or allowance, go to Account tab and check box.</BaseText>
+						{showBreedingDisclaimer &&
+							<BreedingDisclaimer></BreedingDisclaimer>
 						}
+						{(showFightingFishApproval || showBreedingFishApproval || showTrainingFoodApproval) &&
+							<BaseText>If you prefer to do individual approvals or allowance, go to Account tab and select that option.</BaseText>
+						}
+						<BaseButton onClick={onAccept}>Accept</BaseButton>
 					</ApprovalDisclaimer>
 					
 				</ApprovalsContainer>
@@ -121,9 +174,10 @@ const Text = styled.p`
 	color: white;
 	margin: 0;
 	font-weight: bold;
+	padding-bottom: ${props => props.theme.spacing.gap};
 
 	span {
-		color: black;
+		color: red;
 	}
 `;
 
@@ -138,6 +192,7 @@ export const ApprovalsContainer = styled(LoadingOverlay)`
 	align-items: center;
 	width: 100%;
 	height: 100%;
+	padding: ${props => props.theme.spacing.gap};
 `;
 
 export const ApprovalDisclaimer = styled.div`
