@@ -72,8 +72,9 @@ const Ocean = () => {
 
 	useEffect(() => {
 		console.log("CLEAR OCEAN")
+		// unityContext.showFishUI();
 		unityContext.clearUIFish();
-		unityContext.hideUI();
+		// unityContext.hideUI();
 		unityContext.showOceanLocation();
 	}, [unityContext.isFishPoolReady]);
 

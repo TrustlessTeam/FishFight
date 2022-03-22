@@ -571,9 +571,22 @@ const buildFish = async (fishFightInstance: FishFight, tokenId: number, isParent
       earnedFishFood: web3.utils.fromWei(breedingWatersGetPoolInfo[0].hex),
     }
   }
-  if(fishStatsGetFights != null) {
-    fish.fightingHistory = fishStatsGetFights;
-  }
+  // if(fishStatsGetFights != null) {
+    
+  //   const deathFightData = await Promise.all(fishStatsGetFights.map(async fight => {
+  //     console.log(fight)
+  //     const fightId = web3.utils.toNumber(fight[1].hex);
+  //     console.log(fightId)
+  //     const result = await fishFightInstance.readFightComputation.methods.getFightInfo(fightId).call();
+  //     const fightHistory = {
+  //       address: fight[0],
+  //       fightId: fightId,
+  //       result: result
+  //     }
+  //     return fightHistory
+  //   }))
+  //   fish.fightingHistory = deathFightData;
+  // }
 
   if(fish.parentA > 0 && !isParent) {
     fish.parentAFish = await buildFish(fishFightInstance, fish.parentA, true);

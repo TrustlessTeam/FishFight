@@ -108,7 +108,6 @@ const DisclaimerModal = () => {
 	}
 
 	const BreedingDisclaimer = () => {
-		console.log("BREED DISCLKA")
 		return (
 			<>
 				<Title>Breeding Disclaimer</Title>

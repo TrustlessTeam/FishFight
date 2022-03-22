@@ -26,6 +26,7 @@ export class StakedBreeding {
 export type FightHistory = {
   address: string;
   fightId: number;
+  result: any;
 }
 
 // export type Modifier = {

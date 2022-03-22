@@ -53,6 +53,7 @@ class FishFight {
     readFishFactory: Contract
     readFishingWaters: Contract
     readFightingWaters: Contract
+    readFightComputation: Contract
     readBreedingWaters: Contract
     readTrainingWaters: Contract
     readFishStats: Contract
@@ -89,6 +90,7 @@ class FishFight {
         this.fishCalls = this.setFishCallsContract(this.provider, "web3")
         this.readFishFactory = this.setFishFactoryContract(this.provider, "web3")
         this.readFishingWaters = this.setFishingWatersContract(this.provider, "web3")
+        this.readFightComputation = this.setFightComputationContract(this.provider, "web3")
         this.readFightingWaters = this.setFightingWatersContract(this.provider, "web3")
         this.readBreedingWaters = this.setBreedingWatersContract(this.provider, "web3")
         this.readTrainingWaters = this.setTrainingWatersContract(this.provider, "web3")
@@ -191,6 +193,18 @@ class FishFight {
 
         if (type === "web3") {
             return new provider.eth.Contract(Contracts.contracts.FightingWaters.abi, Contracts.contracts.FightingWaters.address)
+        }
+
+        return null;
+    }
+
+    setFightComputationContract = (provider: any, type: "web3" | "harmony" | "default") => {
+        if (type === "harmony" || type === "default" ) {
+            return provider.contracts.createContract(Contracts.contracts.FightComputation.abi, Contracts.contracts.FightComputation.address)
+        }
+
+        if (type === "web3") {
+            return new provider.eth.Contract(Contracts.contracts.FightComputation.abi, Contracts.contracts.FightComputation.address)
         }
 
         return null;

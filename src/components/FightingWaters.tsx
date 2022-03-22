@@ -23,18 +23,16 @@ const FightingWaters = () => {
 	const [mySelectedFish, setMySelectedFish] = useState<Fish | null>(null);
 	const [opponentFish, setOpponentFish] = useState<Fish | null>(null);
 	const [fishToShow, setFishToShow] = useState<number>(FishView.FightFish);
-	const [fighterError, setFighterError] = useState<string | null>(null);
-
-	const [fightResult, setFightResult] = useState<Fight | null>();
-	const [showFightingLocationResult, setshowFightingLocationResult] = useState(false);
-	const [isFighting, setIsFighting] = useState<boolean>(false);
+	const [fighter1Error, setFighter1Error] = useState<string | null>(null);
+	const [fighter2Error, setFighter2Error] = useState<string | null>(null);
+	// const [isFighting, setIsFighting] = useState<boolean>(false);
 	const [renderedFish, setRenderedFish] = useState<number[]>([]);
 
 	// Context
 	const { userFish, fightingFish } = useFishPool()
 	const { account } = useWeb3React();
 	const unityContext = useUnity();
-	const { fightFish, pendingTransaction} = useContractWrapper();
+	const { fightFish, pendingTransaction, isFighting, updateIsFighting} = useContractWrapper();
 
 	const FishViewOptions: ToggleItem[] = [
 		{
@@ -50,12 +48,19 @@ const FightingWaters = () => {
 	]
 
 	useEffect(() => {
-		unityContext.UnityInstance.on('UISelectionConfirm', function (data: any) {
+		unityContext.UnityInstance.on('UISelectionConfirm', async function (data: any) {
 			console.log('UI changed catch fish');
 			console.log(data)
 			switch (data) {
 				case 'confirm':
-					fightFish(mySelectedFish, opponentFish);
+					const fight = await fightFish(mySelectedFish, opponentFish);
+					console.log(fight)
+					// if(fight) updateIsFighting(true);
+					return;
+				case 'fightresults_confirm':
+					unityContext.clearUIFish();
+					fightAgain()
+					
 					return;
 				default:
 					return;
@@ -104,21 +109,21 @@ const FightingWaters = () => {
 		// unityContext.showFightingUI();
 		if(fish.fishModifiers.alphaModifier.uses > 0) {
 			toast.error("Fighter Selection: Fish is Alpha");
-			setFighterError(`Alpha can't start Fight`);
+			setFighter1Error(`Alpha can't start Fight`);
 		}
 		else if(fish.tokenId === opponentFish?.tokenId) {
 			toast.error("Fighter Selection: Same Fish");
-			setFighterError(`Same Fish`);
+			setFighter1Error(`Same Fish`);
 		}
 		else if(fish.isUser && opponentFish?.isUser) {
-			setFighterError(`Warning! About to Fight Owned Fish`);
+			setFighter1Error(`Warning! About to Fight Owned Fish`);
 		}
 		else if(fish.stakedBreeding) {
 			toast.error("Fighter Selection: Must Withdraw");
-			setFighterError(`Must Withdraw from Breed Pool`);
+			setFighter1Error(`Must Withdraw from Breed Pool`);
 		}
 		else {
-			setFighterError(null);
+			setFighter1Error(null);
 		}
 		setMySelectedFish(fish);
 		unityContext.addFishFight1(fish)
@@ -129,13 +134,13 @@ const FightingWaters = () => {
 		// unityContext.showFightingUI();
 		if(fish.tokenId == mySelectedFish?.tokenId) {
 			toast.error("Fighter Selection: Same Fish");
-			setFighterError(`Same Fish`);
+			setFighter2Error(`Same Fish`);
 		}
 		else if(fish.isUser && mySelectedFish?.isUser) {
-			setFighterError(`Warning! About to Fight Owned Fish`);
+			setFighter2Error(`Warning! About to Fight Owned Fish`);
 		}
 		else {
-			setFighterError(null);
+			setFighter2Error(null);
 		}
 		setOpponentFish(fish);
 		unityContext.addFishFight2(fish)
@@ -146,23 +151,21 @@ const FightingWaters = () => {
 		// unityContext.showFightingLocation(); // switch to FightingWaters view
 	}
 
-	useEffect(() => {
-		unityContext.UnityInstance.on('FishPoolFightWinner', function () {
-			console.log('Confirm FishPoolFightWinner');
-			setshowFightingLocationResult(true);
-		});
-		unityContext.UnityInstance.on('FishPoolFightTie', function () {
-			console.log('Confirm FishPoolFightTie');
-			setshowFightingLocationResult(true);
-		});
-	}, [unityContext.isFishPoolReady]);
+	// useEffect(() => {
+	// 	unityContext.UnityInstance.on('FishPoolFightWinner', function () {
+	// 		console.log('Confirm FishPoolFightWinner');
+	// 		setshowFightingLocationResult(true);
+	// 	});
+	// 	unityContext.UnityInstance.on('FishPoolFightTie', function () {
+	// 		console.log('Confirm FishPoolFightTie');
+	// 		setshowFightingLocationResult(true);
+	// 	});
+	// }, [unityContext.isFishPoolReady]);
 
 	const fightAgain = () => {
-		setFightResult(null)
-		setIsFighting(false)
+		updateIsFighting()
 		setMySelectedFish(null)
 		setOpponentFish(null)
-		setshowFightingLocationResult(false);
 	}
 
 	if(!unityContext.isFishPoolReady) return null;
@@ -173,26 +176,37 @@ const FightingWaters = () => {
 			spinner
 			text='Waiting for confirmation...'
 		>
-			<OptionsContainer>
-				{!account &&
-					<Account textOverride={"Connect Wallet to Fight $FISH"}/>
+			{!isFighting &&
+			<>
+				<OptionsContainer>
+					{!account &&
+						<Account textOverride={"Connect Wallet to Fight $FISH"}/>
+					}
+					{fighter1Error &&
+						<ContainerColumn>
+							<Error><BaseText>{fighter1Error}</BaseText></Error>
+						</ContainerColumn>
+					}
+					{fighter2Error &&
+						<ContainerColumn>
+							<Error><BaseText>{fighter2Error}</BaseText></Error>
+						</ContainerColumn>
+					}
+				</OptionsContainer>
+				{fishToShow === FishView.MyFish &&
+					<FishDrawer userFish type="Fighting" depositFighter selectedFish={mySelectedFish} fishCollection={userFish} onClick={setUserFighter}>
+							<ToggleButton items={FishViewOptions} selected={fishToShow}></ToggleButton>
+					</FishDrawer>
 				}
-				{fighterError &&
-					<ContainerColumn>
-						<Error><BaseText>{fighterError}</BaseText></Error>
-					</ContainerColumn>
-				}
-			</OptionsContainer>
-			{fishToShow === FishView.MyFish &&
-				<FishDrawer userFish type="Fighting" depositFighter selectedFish={mySelectedFish} fishCollection={userFish} onClick={setUserFighter}>
+				{fishToShow === FishView.FightFish &&
+					<FishDrawer type="Fighting" depositFighter selectedOpponent={opponentFish} fishCollection={fightingFish} onClick={setOpponentFighter}>
 						<ToggleButton items={FishViewOptions} selected={fishToShow}></ToggleButton>
-				</FishDrawer>
-			}
-			{fishToShow === FishView.FightFish &&
-				<FishDrawer type="Fighting" depositFighter selectedOpponent={opponentFish} fishCollection={fightingFish} onClick={setOpponentFighter}>
-					<ToggleButton items={FishViewOptions} selected={fishToShow}></ToggleButton>
-				</FishDrawer>
-			}
+					</FishDrawer>
+				}
+			</>
+				
+			} 
+			
 		</BaseOverlayContainer>
 		
 	)
