@@ -3,7 +3,7 @@
   "chainId": "1666700000",
   "contracts": {
     "BreedComputation": {
-      "address": "0x71637C9a41cdFfBC13d648D3476e57cD8972AE48",
+      "address": "0xE9610b7948a5B754f7a8A16eb7daaFD8d7DF0B71",
       "abi": [
         {
           "inputs": [
@@ -11,191 +11,164 @@
               "internalType": "contract FishFactory",
               "name": "fish",
               "type": "address"
+            },
+            {
+              "internalType": "contract FishStats",
+              "name": "fishStats",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "bettaBreedCooldown",
+              "type": "uint256"
+            },
+            {
+              "internalType": "int8",
+              "name": "bettaBreedPowerFee",
+              "type": "int8"
             }
           ],
           "stateMutability": "nonpayable",
           "type": "constructor"
         },
         {
+          "anonymous": false,
           "inputs": [
             {
-              "components": [
-                {
-                  "internalType": "uint256",
-                  "name": "tokenId",
-                  "type": "uint256"
-                },
-                {
-                  "internalType": "uint256",
-                  "name": "birthTime",
-                  "type": "uint256"
-                },
-                {
-                  "internalType": "uint256",
-                  "name": "parentA",
-                  "type": "uint256"
-                },
-                {
-                  "internalType": "uint256",
-                  "name": "parentB",
-                  "type": "uint256"
-                },
-                {
-                  "internalType": "uint256",
-                  "name": "deathTime",
-                  "type": "uint256"
-                },
-                {
-                  "internalType": "bool",
-                  "name": "revived",
-                  "type": "bool"
-                },
-                {
-                  "internalType": "uint32",
-                  "name": "generation",
-                  "type": "uint32"
-                },
-                {
-                  "internalType": "uint32",
-                  "name": "lifetimeWins",
-                  "type": "uint32"
-                },
-                {
-                  "internalType": "uint16",
-                  "name": "strength",
-                  "type": "uint16"
-                },
-                {
-                  "internalType": "uint16",
-                  "name": "intelligence",
-                  "type": "uint16"
-                },
-                {
-                  "internalType": "uint16",
-                  "name": "agility",
-                  "type": "uint16"
-                },
-                {
-                  "internalType": "uint8",
-                  "name": "fishType",
-                  "type": "uint8"
-                },
-                {
-                  "internalType": "uint8",
-                  "name": "rarity",
-                  "type": "uint8"
-                },
-                {
-                  "internalType": "bytes",
-                  "name": "genes",
-                  "type": "bytes"
-                },
-                {
-                  "internalType": "bytes",
-                  "name": "breedKey",
-                  "type": "bytes"
-                },
-                {
-                  "internalType": "uint256[]",
-                  "name": "offspring",
-                  "type": "uint256[]"
-                }
-              ],
-              "internalType": "struct FishFactory.Fish",
-              "name": "fishA",
-              "type": "tuple"
+              "indexed": true,
+              "internalType": "bytes32",
+              "name": "role",
+              "type": "bytes32"
             },
             {
-              "components": [
-                {
-                  "internalType": "uint256",
-                  "name": "tokenId",
-                  "type": "uint256"
-                },
-                {
-                  "internalType": "uint256",
-                  "name": "birthTime",
-                  "type": "uint256"
-                },
-                {
-                  "internalType": "uint256",
-                  "name": "parentA",
-                  "type": "uint256"
-                },
-                {
-                  "internalType": "uint256",
-                  "name": "parentB",
-                  "type": "uint256"
-                },
-                {
-                  "internalType": "uint256",
-                  "name": "deathTime",
-                  "type": "uint256"
-                },
-                {
-                  "internalType": "bool",
-                  "name": "revived",
-                  "type": "bool"
-                },
-                {
-                  "internalType": "uint32",
-                  "name": "generation",
-                  "type": "uint32"
-                },
-                {
-                  "internalType": "uint32",
-                  "name": "lifetimeWins",
-                  "type": "uint32"
-                },
-                {
-                  "internalType": "uint16",
-                  "name": "strength",
-                  "type": "uint16"
-                },
-                {
-                  "internalType": "uint16",
-                  "name": "intelligence",
-                  "type": "uint16"
-                },
-                {
-                  "internalType": "uint16",
-                  "name": "agility",
-                  "type": "uint16"
-                },
-                {
-                  "internalType": "uint8",
-                  "name": "fishType",
-                  "type": "uint8"
-                },
-                {
-                  "internalType": "uint8",
-                  "name": "rarity",
-                  "type": "uint8"
-                },
-                {
-                  "internalType": "bytes",
-                  "name": "genes",
-                  "type": "bytes"
-                },
-                {
-                  "internalType": "bytes",
-                  "name": "breedKey",
-                  "type": "bytes"
-                },
-                {
-                  "internalType": "uint256[]",
-                  "name": "offspring",
-                  "type": "uint256[]"
-                }
-              ],
-              "internalType": "struct FishFactory.Fish",
-              "name": "fishB",
-              "type": "tuple"
+              "indexed": true,
+              "internalType": "bytes32",
+              "name": "previousAdminRole",
+              "type": "bytes32"
             },
             {
-              "internalType": "bytes",
-              "name": "breedGenes",
-              "type": "bytes"
+              "indexed": true,
+              "internalType": "bytes32",
+              "name": "newAdminRole",
+              "type": "bytes32"
+            }
+          ],
+          "name": "RoleAdminChanged",
+          "type": "event"
+        },
+        {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "bytes32",
+              "name": "role",
+              "type": "bytes32"
+            },
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "account",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "sender",
+              "type": "address"
+            }
+          ],
+          "name": "RoleGranted",
+          "type": "event"
+        },
+        {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "bytes32",
+              "name": "role",
+              "type": "bytes32"
+            },
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "account",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "sender",
+              "type": "address"
+            }
+          ],
+          "name": "RoleRevoked",
+          "type": "event"
+        },
+        {
+          "inputs": [],
+          "name": "DEFAULT_ADMIN_ROLE",
+          "outputs": [
+            {
+              "internalType": "bytes32",
+              "name": "",
+              "type": "bytes32"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [],
+          "name": "GAME_ROLE",
+          "outputs": [
+            {
+              "internalType": "bytes32",
+              "name": "",
+              "type": "bytes32"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [],
+          "name": "_bettaBreedCooldown",
+          "outputs": [
+            {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [],
+          "name": "_bettaBreedPowerFee",
+          "outputs": [
+            {
+              "internalType": "int8",
+              "name": "",
+              "type": "int8"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "uint256",
+              "name": "tokenIdA",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "tokenIdB",
+              "type": "uint256"
             }
           ],
           "name": "computeFishOffspring",
@@ -228,9 +201,9 @@
                   "type": "uint256"
                 },
                 {
-                  "internalType": "bool",
+                  "internalType": "uint32",
                   "name": "revived",
-                  "type": "bool"
+                  "type": "uint32"
                 },
                 {
                   "internalType": "uint32",
@@ -283,18 +256,152 @@
                   "type": "uint256[]"
                 }
               ],
-              "internalType": "struct FishFactory.Fish",
+              "internalType": "struct IFishFactory.Fish",
               "name": "",
               "type": "tuple"
             }
           ],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "bytes32",
+              "name": "role",
+              "type": "bytes32"
+            }
+          ],
+          "name": "getRoleAdmin",
+          "outputs": [
+            {
+              "internalType": "bytes32",
+              "name": "",
+              "type": "bytes32"
+            }
+          ],
           "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "bytes32",
+              "name": "role",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "address",
+              "name": "account",
+              "type": "address"
+            }
+          ],
+          "name": "grantRole",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "bytes32",
+              "name": "role",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "address",
+              "name": "account",
+              "type": "address"
+            }
+          ],
+          "name": "hasRole",
+          "outputs": [
+            {
+              "internalType": "bool",
+              "name": "",
+              "type": "bool"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "bytes32",
+              "name": "role",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "address",
+              "name": "account",
+              "type": "address"
+            }
+          ],
+          "name": "renounceRole",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "bytes32",
+              "name": "role",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "address",
+              "name": "account",
+              "type": "address"
+            }
+          ],
+          "name": "revokeRole",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "bytes4",
+              "name": "interfaceId",
+              "type": "bytes4"
+            }
+          ],
+          "name": "supportsInterface",
+          "outputs": [
+            {
+              "internalType": "bool",
+              "name": "",
+              "type": "bool"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "uint256",
+              "name": "bettaBreedCooldown",
+              "type": "uint256"
+            },
+            {
+              "internalType": "int8",
+              "name": "bettaBreedPowerFee",
+              "type": "int8"
+            }
+          ],
+          "name": "updateParameters",
+          "outputs": [],
+          "stateMutability": "nonpayable",
           "type": "function"
         }
       ]
     },
     "BreedingWaters": {
-      "address": "0xA187C75EF48E0a2c4d26E2c8B1FE0B21d7d4cD64",
+      "address": "0x246b4a379F55DC913405579f2dbFDd83B96188A5",
       "abi": [
         {
           "inputs": [
@@ -304,7 +411,7 @@
               "type": "address"
             },
             {
-              "internalType": "contract FishFactory",
+              "internalType": "contract IFishFactory",
               "name": "fish",
               "type": "address"
             },
@@ -319,7 +426,7 @@
               "type": "address"
             },
             {
-              "internalType": "contract FishStats",
+              "internalType": "contract IFishStats",
               "name": "fishStats",
               "type": "address"
             },
@@ -347,11 +454,6 @@
               "internalType": "uint256",
               "name": "alphaFoodOwedFeeInPhase",
               "type": "uint256"
-            },
-            {
-              "internalType": "int8",
-              "name": "bettaBreedPowerFee",
-              "type": "int8"
             }
           ],
           "stateMutability": "nonpayable",
@@ -536,25 +638,12 @@
         },
         {
           "inputs": [],
-          "name": "_bettaBreedCooldown",
+          "name": "_disabledOnSpecialPhase",
           "outputs": [
             {
-              "internalType": "uint256",
+              "internalType": "bool",
               "name": "",
-              "type": "uint256"
-            }
-          ],
-          "stateMutability": "view",
-          "type": "function"
-        },
-        {
-          "inputs": [],
-          "name": "_bettaBreedPowerFee",
-          "outputs": [
-            {
-              "internalType": "int8",
-              "name": "",
-              "type": "int8"
+              "type": "bool"
             }
           ],
           "stateMutability": "view",
@@ -1061,24 +1150,24 @@
         {
           "inputs": [
             {
+              "internalType": "bool",
+              "name": "disabledOnSpecialPhase",
+              "type": "bool"
+            },
+            {
               "internalType": "uint256",
               "name": "oneBreedFee",
               "type": "uint256"
             },
             {
               "internalType": "uint256",
-              "name": "fishFoodBreedFee",
+              "name": "oneBreedFeeInPhase",
               "type": "uint256"
             },
             {
               "internalType": "uint256",
-              "name": "bettaBreedCooldown",
+              "name": "fishFoodBreedFee",
               "type": "uint256"
-            },
-            {
-              "internalType": "int8",
-              "name": "bettaBreedPowerFee",
-              "type": "int8"
             }
           ],
           "name": "updateParameters",
@@ -1109,12 +1198,12 @@
       ]
     },
     "Cycles": {
-      "address": "0x58a9bd8aDa49A8a0A2764dF995479b2Bf1BD33c8",
+      "address": "0xF2B5838083a8a754559c3d9a1e697537aB654699",
       "abi": [
         {
           "inputs": [
             {
-              "internalType": "contract FishFactory",
+              "internalType": "contract IFishFactory",
               "name": "fish",
               "type": "address"
             },
@@ -1663,6 +1752,49 @@
               "type": "bytes32"
             },
             {
+              "internalType": "uint256",
+              "name": "index",
+              "type": "uint256"
+            }
+          ],
+          "name": "getRoleMember",
+          "outputs": [
+            {
+              "internalType": "address",
+              "name": "",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "bytes32",
+              "name": "role",
+              "type": "bytes32"
+            }
+          ],
+          "name": "getRoleMemberCount",
+          "outputs": [
+            {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "bytes32",
+              "name": "role",
+              "type": "bytes32"
+            },
+            {
               "internalType": "address",
               "name": "account",
               "type": "address"
@@ -1896,10 +2028,15 @@
       ]
     },
     "DeadFishFactory": {
-      "address": "0x9b2ca2cC495844c008E2C4eAf8d9726b8FD987d2",
+      "address": "0xE1f84999592C154B8E2a253eEE9EeD2255297c5f",
       "abi": [
         {
           "inputs": [
+            {
+              "internalType": "string",
+              "name": "baseTokenURI",
+              "type": "string"
+            },
             {
               "internalType": "address",
               "name": "fishFactoryAddress",
@@ -1990,18 +2127,74 @@
           "inputs": [
             {
               "indexed": true,
+              "internalType": "bytes32",
+              "name": "role",
+              "type": "bytes32"
+            },
+            {
+              "indexed": true,
+              "internalType": "bytes32",
+              "name": "previousAdminRole",
+              "type": "bytes32"
+            },
+            {
+              "indexed": true,
+              "internalType": "bytes32",
+              "name": "newAdminRole",
+              "type": "bytes32"
+            }
+          ],
+          "name": "RoleAdminChanged",
+          "type": "event"
+        },
+        {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "bytes32",
+              "name": "role",
+              "type": "bytes32"
+            },
+            {
+              "indexed": true,
               "internalType": "address",
-              "name": "previousOwner",
+              "name": "account",
               "type": "address"
             },
             {
               "indexed": true,
               "internalType": "address",
-              "name": "newOwner",
+              "name": "sender",
               "type": "address"
             }
           ],
-          "name": "OwnershipTransferred",
+          "name": "RoleGranted",
+          "type": "event"
+        },
+        {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "bytes32",
+              "name": "role",
+              "type": "bytes32"
+            },
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "account",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "sender",
+              "type": "address"
+            }
+          ],
+          "name": "RoleRevoked",
           "type": "event"
         },
         {
@@ -2031,12 +2224,51 @@
         },
         {
           "inputs": [],
+          "name": "DEFAULT_ADMIN_ROLE",
+          "outputs": [
+            {
+              "internalType": "bytes32",
+              "name": "",
+              "type": "bytes32"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [],
+          "name": "SERVER_ROLE",
+          "outputs": [
+            {
+              "internalType": "bytes32",
+              "name": "",
+              "type": "bytes32"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [],
           "name": "_baseTokenURI",
           "outputs": [
             {
               "internalType": "string",
               "name": "",
               "type": "string"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [],
+          "name": "_burnedDeadFish",
+          "outputs": [
+            {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
             }
           ],
           "stateMutability": "view",
@@ -2149,9 +2381,9 @@
                   "type": "uint256"
                 },
                 {
-                  "internalType": "bool",
+                  "internalType": "uint32",
                   "name": "revived",
-                  "type": "bool"
+                  "type": "uint32"
                 },
                 {
                   "internalType": "uint32",
@@ -2204,9 +2436,113 @@
                   "type": "uint256[]"
                 }
               ],
-              "internalType": "struct DeadFishFactory.DeadFish",
+              "internalType": "struct IDeadFishFactory.DeadFish",
               "name": "info",
               "type": "tuple"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "bytes32",
+              "name": "role",
+              "type": "bytes32"
+            }
+          ],
+          "name": "getRoleAdmin",
+          "outputs": [
+            {
+              "internalType": "bytes32",
+              "name": "",
+              "type": "bytes32"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "bytes32",
+              "name": "role",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "uint256",
+              "name": "index",
+              "type": "uint256"
+            }
+          ],
+          "name": "getRoleMember",
+          "outputs": [
+            {
+              "internalType": "address",
+              "name": "",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "bytes32",
+              "name": "role",
+              "type": "bytes32"
+            }
+          ],
+          "name": "getRoleMemberCount",
+          "outputs": [
+            {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "bytes32",
+              "name": "role",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "address",
+              "name": "account",
+              "type": "address"
+            }
+          ],
+          "name": "grantRole",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "bytes32",
+              "name": "role",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "address",
+              "name": "account",
+              "type": "address"
+            }
+          ],
+          "name": "hasRole",
+          "outputs": [
+            {
+              "internalType": "bool",
+              "name": "",
+              "type": "bool"
             }
           ],
           "stateMutability": "view",
@@ -2274,19 +2610,6 @@
           "type": "function"
         },
         {
-          "inputs": [],
-          "name": "owner",
-          "outputs": [
-            {
-              "internalType": "address",
-              "name": "",
-              "type": "address"
-            }
-          ],
-          "stateMutability": "view",
-          "type": "function"
-        },
-        {
           "inputs": [
             {
               "internalType": "uint256",
@@ -2306,8 +2629,37 @@
           "type": "function"
         },
         {
-          "inputs": [],
-          "name": "renounceOwnership",
+          "inputs": [
+            {
+              "internalType": "bytes32",
+              "name": "role",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "address",
+              "name": "account",
+              "type": "address"
+            }
+          ],
+          "name": "renounceRole",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "bytes32",
+              "name": "role",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "address",
+              "name": "account",
+              "type": "address"
+            }
+          ],
+          "name": "revokeRole",
           "outputs": [],
           "stateMutability": "nonpayable",
           "type": "function"
@@ -2377,6 +2729,37 @@
             }
           ],
           "name": "setApprovalForAll",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "string",
+              "name": "baseURI",
+              "type": "string"
+            }
+          ],
+          "name": "setBaseURI",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "uint256",
+              "name": "tokenId",
+              "type": "uint256"
+            },
+            {
+              "internalType": "string",
+              "name": "newTokenURI",
+              "type": "string"
+            }
+          ],
+          "name": "setTokenURI",
           "outputs": [],
           "stateMutability": "nonpayable",
           "type": "function"
@@ -2510,24 +2893,11 @@
           "outputs": [],
           "stateMutability": "nonpayable",
           "type": "function"
-        },
-        {
-          "inputs": [
-            {
-              "internalType": "address",
-              "name": "newOwner",
-              "type": "address"
-            }
-          ],
-          "name": "transferOwnership",
-          "outputs": [],
-          "stateMutability": "nonpayable",
-          "type": "function"
         }
       ]
     },
     "FightComputation": {
-      "address": "0x75abec7d22240a894C90fE8B7edf81B14D26B52d",
+      "address": "0x89fE7D8DC7112F60398b123Fa7B3602DD67dC2b5",
       "abi": [
         {
           "inputs": [
@@ -2537,13 +2907,8 @@
               "type": "address"
             },
             {
-              "internalType": "contract FishStats",
+              "internalType": "contract IFishStats",
               "name": "fishStats",
-              "type": "address"
-            },
-            {
-              "internalType": "contract Cycles",
-              "name": "cycles",
               "type": "address"
             },
             {
@@ -2709,9 +3074,9 @@
                   "type": "uint256"
                 },
                 {
-                  "internalType": "bool",
+                  "internalType": "uint32",
                   "name": "revived",
-                  "type": "bool"
+                  "type": "uint32"
                 },
                 {
                   "internalType": "uint32",
@@ -2764,7 +3129,7 @@
                   "type": "uint256[]"
                 }
               ],
-              "internalType": "struct FishFactory.Fish",
+              "internalType": "struct IFishFactory.Fish",
               "name": "fish",
               "type": "tuple"
             },
@@ -2786,7 +3151,7 @@
                   "type": "uint32"
                 }
               ],
-              "internalType": "struct FishStats.Modifier[20]",
+              "internalType": "struct IFishStats.Modifier[20]",
               "name": "fishModifiers",
               "type": "tuple[20]"
             }
@@ -2809,7 +3174,7 @@
               "type": "int16"
             }
           ],
-          "stateMutability": "view",
+          "stateMutability": "pure",
           "type": "function"
         },
         {
@@ -2884,6 +3249,50 @@
                   "type": "bytes32"
                 },
                 {
+                  "components": [
+                    {
+                      "internalType": "uint256",
+                      "name": "time",
+                      "type": "uint256"
+                    },
+                    {
+                      "internalType": "int32",
+                      "name": "value",
+                      "type": "int32"
+                    },
+                    {
+                      "internalType": "uint32",
+                      "name": "uses",
+                      "type": "uint32"
+                    }
+                  ],
+                  "internalType": "struct IFishStats.Modifier[]",
+                  "name": "challengerStats",
+                  "type": "tuple[]"
+                },
+                {
+                  "components": [
+                    {
+                      "internalType": "uint256",
+                      "name": "time",
+                      "type": "uint256"
+                    },
+                    {
+                      "internalType": "int32",
+                      "name": "value",
+                      "type": "int32"
+                    },
+                    {
+                      "internalType": "uint32",
+                      "name": "uses",
+                      "type": "uint32"
+                    }
+                  ],
+                  "internalType": "struct IFishStats.Modifier[]",
+                  "name": "opponentStats",
+                  "type": "tuple[]"
+                },
+                {
                   "internalType": "uint8",
                   "name": "round1",
                   "type": "uint8"
@@ -2902,243 +3311,6 @@
               "internalType": "struct FightComputation.Fight",
               "name": "info",
               "type": "tuple"
-            }
-          ],
-          "stateMutability": "view",
-          "type": "function"
-        },
-        {
-          "inputs": [
-            {
-              "components": [
-                {
-                  "internalType": "uint256",
-                  "name": "tokenId",
-                  "type": "uint256"
-                },
-                {
-                  "internalType": "uint256",
-                  "name": "birthTime",
-                  "type": "uint256"
-                },
-                {
-                  "internalType": "uint256",
-                  "name": "parentA",
-                  "type": "uint256"
-                },
-                {
-                  "internalType": "uint256",
-                  "name": "parentB",
-                  "type": "uint256"
-                },
-                {
-                  "internalType": "uint256",
-                  "name": "deathTime",
-                  "type": "uint256"
-                },
-                {
-                  "internalType": "bool",
-                  "name": "revived",
-                  "type": "bool"
-                },
-                {
-                  "internalType": "uint32",
-                  "name": "generation",
-                  "type": "uint32"
-                },
-                {
-                  "internalType": "uint32",
-                  "name": "lifetimeWins",
-                  "type": "uint32"
-                },
-                {
-                  "internalType": "uint16",
-                  "name": "strength",
-                  "type": "uint16"
-                },
-                {
-                  "internalType": "uint16",
-                  "name": "intelligence",
-                  "type": "uint16"
-                },
-                {
-                  "internalType": "uint16",
-                  "name": "agility",
-                  "type": "uint16"
-                },
-                {
-                  "internalType": "uint8",
-                  "name": "fishType",
-                  "type": "uint8"
-                },
-                {
-                  "internalType": "uint8",
-                  "name": "rarity",
-                  "type": "uint8"
-                },
-                {
-                  "internalType": "bytes",
-                  "name": "genes",
-                  "type": "bytes"
-                },
-                {
-                  "internalType": "bytes",
-                  "name": "breedKey",
-                  "type": "bytes"
-                },
-                {
-                  "internalType": "uint256[]",
-                  "name": "offspring",
-                  "type": "uint256[]"
-                }
-              ],
-              "internalType": "struct FishFactory.Fish",
-              "name": "challenger",
-              "type": "tuple"
-            },
-            {
-              "components": [
-                {
-                  "internalType": "uint256",
-                  "name": "tokenId",
-                  "type": "uint256"
-                },
-                {
-                  "internalType": "uint256",
-                  "name": "birthTime",
-                  "type": "uint256"
-                },
-                {
-                  "internalType": "uint256",
-                  "name": "parentA",
-                  "type": "uint256"
-                },
-                {
-                  "internalType": "uint256",
-                  "name": "parentB",
-                  "type": "uint256"
-                },
-                {
-                  "internalType": "uint256",
-                  "name": "deathTime",
-                  "type": "uint256"
-                },
-                {
-                  "internalType": "bool",
-                  "name": "revived",
-                  "type": "bool"
-                },
-                {
-                  "internalType": "uint32",
-                  "name": "generation",
-                  "type": "uint32"
-                },
-                {
-                  "internalType": "uint32",
-                  "name": "lifetimeWins",
-                  "type": "uint32"
-                },
-                {
-                  "internalType": "uint16",
-                  "name": "strength",
-                  "type": "uint16"
-                },
-                {
-                  "internalType": "uint16",
-                  "name": "intelligence",
-                  "type": "uint16"
-                },
-                {
-                  "internalType": "uint16",
-                  "name": "agility",
-                  "type": "uint16"
-                },
-                {
-                  "internalType": "uint8",
-                  "name": "fishType",
-                  "type": "uint8"
-                },
-                {
-                  "internalType": "uint8",
-                  "name": "rarity",
-                  "type": "uint8"
-                },
-                {
-                  "internalType": "bytes",
-                  "name": "genes",
-                  "type": "bytes"
-                },
-                {
-                  "internalType": "bytes",
-                  "name": "breedKey",
-                  "type": "bytes"
-                },
-                {
-                  "internalType": "uint256[]",
-                  "name": "offspring",
-                  "type": "uint256[]"
-                }
-              ],
-              "internalType": "struct FishFactory.Fish",
-              "name": "opponent",
-              "type": "tuple"
-            },
-            {
-              "components": [
-                {
-                  "internalType": "uint256",
-                  "name": "time",
-                  "type": "uint256"
-                },
-                {
-                  "internalType": "int32",
-                  "name": "value",
-                  "type": "int32"
-                },
-                {
-                  "internalType": "uint32",
-                  "name": "uses",
-                  "type": "uint32"
-                }
-              ],
-              "internalType": "struct FishStats.Modifier[20]",
-              "name": "challengerStats",
-              "type": "tuple[20]"
-            },
-            {
-              "components": [
-                {
-                  "internalType": "uint256",
-                  "name": "time",
-                  "type": "uint256"
-                },
-                {
-                  "internalType": "int32",
-                  "name": "value",
-                  "type": "int32"
-                },
-                {
-                  "internalType": "uint32",
-                  "name": "uses",
-                  "type": "uint32"
-                }
-              ],
-              "internalType": "struct FishStats.Modifier[20]",
-              "name": "opponentStats",
-              "type": "tuple[20]"
-            },
-            {
-              "internalType": "bytes32",
-              "name": "randomNumbers",
-              "type": "bytes32"
-            }
-          ],
-          "name": "getOutcome",
-          "outputs": [
-            {
-              "internalType": "uint256",
-              "name": "winnerId",
-              "type": "uint256"
             }
           ],
           "stateMutability": "view",
@@ -3286,7 +3458,7 @@
       ]
     },
     "FightingWaters": {
-      "address": "0xBca7711efac81d3E4832A3D8AA6b8317368f3Ef1",
+      "address": "0x4C594Cf98c3201c0E0D89a7A9BFe14bc36C06BA5",
       "abi": [
         {
           "inputs": [
@@ -3296,7 +3468,7 @@
               "type": "address"
             },
             {
-              "internalType": "contract FishFactory",
+              "internalType": "contract IFishFactory",
               "name": "fish",
               "type": "address"
             },
@@ -3505,6 +3677,19 @@
         },
         {
           "inputs": [],
+          "name": "_disabledOnSpecialPhase",
+          "outputs": [
+            {
+              "internalType": "bool",
+              "name": "",
+              "type": "bool"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [],
           "name": "_fishFoodPerBlock",
           "outputs": [
             {
@@ -3702,6 +3887,50 @@
                   "internalType": "bytes32",
                   "name": "randomNum",
                   "type": "bytes32"
+                },
+                {
+                  "components": [
+                    {
+                      "internalType": "uint256",
+                      "name": "time",
+                      "type": "uint256"
+                    },
+                    {
+                      "internalType": "int32",
+                      "name": "value",
+                      "type": "int32"
+                    },
+                    {
+                      "internalType": "uint32",
+                      "name": "uses",
+                      "type": "uint32"
+                    }
+                  ],
+                  "internalType": "struct IFishStats.Modifier[]",
+                  "name": "challengerStats",
+                  "type": "tuple[]"
+                },
+                {
+                  "components": [
+                    {
+                      "internalType": "uint256",
+                      "name": "time",
+                      "type": "uint256"
+                    },
+                    {
+                      "internalType": "int32",
+                      "name": "value",
+                      "type": "int32"
+                    },
+                    {
+                      "internalType": "uint32",
+                      "name": "uses",
+                      "type": "uint32"
+                    }
+                  ],
+                  "internalType": "struct IFishStats.Modifier[]",
+                  "name": "opponentStats",
+                  "type": "tuple[]"
                 },
                 {
                   "internalType": "uint8",
@@ -4134,6 +4363,21 @@
               "internalType": "uint256",
               "name": "lockTime",
               "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "fishFoodPerWin",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "fishFoodPerWinInPhase",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bool",
+              "name": "disabledOnSpecialPhase",
+              "type": "bool"
             }
           ],
           "name": "updateParameters",
@@ -4164,7 +4408,7 @@
       ]
     },
     "FishCalls": {
-      "address": "0xAD511CF9c5B1e80556CE803e2cBB235b807823C4",
+      "address": "0x060547A7fE86Ba9803624DaD0B2Cbf6770029a8C",
       "abi": [
         {
           "inputs": [
@@ -4241,7 +4485,7 @@
       ]
     },
     "FishFactory": {
-      "address": "0x5bFd3b2d9126C1Ba52349636f46a037F73a01081",
+      "address": "0x105b349595b231ed0317B7480951Bb481fc072b2",
       "abi": [
         {
           "inputs": [
@@ -4627,9 +4871,9 @@
                   "type": "uint256"
                 },
                 {
-                  "internalType": "bool",
+                  "internalType": "uint32",
                   "name": "revived",
-                  "type": "bool"
+                  "type": "uint32"
                 },
                 {
                   "internalType": "uint32",
@@ -4682,7 +4926,7 @@
                   "type": "uint256[]"
                 }
               ],
-              "internalType": "struct FishFactory.Fish",
+              "internalType": "struct IFishFactory.Fish",
               "name": "info",
               "type": "tuple"
             }
@@ -4704,6 +4948,49 @@
               "internalType": "bytes32",
               "name": "",
               "type": "bytes32"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "bytes32",
+              "name": "role",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "uint256",
+              "name": "index",
+              "type": "uint256"
+            }
+          ],
+          "name": "getRoleMember",
+          "outputs": [
+            {
+              "internalType": "address",
+              "name": "",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "bytes32",
+              "name": "role",
+              "type": "bytes32"
+            }
+          ],
+          "name": "getRoleMemberCount",
+          "outputs": [
+            {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
             }
           ],
           "stateMutability": "view",
@@ -4818,9 +5105,9 @@
                   "type": "uint256"
                 },
                 {
-                  "internalType": "bool",
+                  "internalType": "uint32",
                   "name": "revived",
-                  "type": "bool"
+                  "type": "uint32"
                 },
                 {
                   "internalType": "uint32",
@@ -4873,7 +5160,7 @@
                   "type": "uint256[]"
                 }
               ],
-              "internalType": "struct FishFactory.Fish",
+              "internalType": "struct IFishFactory.Fish",
               "name": "newFish",
               "type": "tuple"
             },
@@ -4974,9 +5261,9 @@
                   "type": "uint256"
                 },
                 {
-                  "internalType": "bool",
+                  "internalType": "uint32",
                   "name": "revived",
-                  "type": "bool"
+                  "type": "uint32"
                 },
                 {
                   "internalType": "uint32",
@@ -5029,7 +5316,7 @@
                   "type": "uint256[]"
                 }
               ],
-              "internalType": "struct FishFactory.Fish",
+              "internalType": "struct IFishFactory.Fish",
               "name": "deadFish",
               "type": "tuple"
             },
@@ -5314,7 +5601,7 @@
       ]
     },
     "FishFood": {
-      "address": "0x566F266A3205e6c3DA8F8366B8566536aF927bf2",
+      "address": "0xC8F0d01F4973307497EeAAC620E0C94011EFc83f",
       "abi": [
         {
           "inputs": [],
@@ -5969,18 +6256,18 @@
       ]
     },
     "FishStats": {
-      "address": "0x97E1D693D7f8Bfd8845e7f38eCf049b4FF644eC1",
+      "address": "0x5E2f268d6f33cC4bEe167120a2Ed34A1DE2E6dB7",
       "abi": [
         {
           "inputs": [
             {
-              "internalType": "contract FishFactory",
-              "name": "fish",
-              "type": "address"
+              "internalType": "int32",
+              "name": "powerMax",
+              "type": "int32"
             },
             {
               "internalType": "int32",
-              "name": "powerMax",
+              "name": "powerMin",
               "type": "int32"
             }
           ],
@@ -6102,6 +6389,19 @@
           "type": "function"
         },
         {
+          "inputs": [],
+          "name": "_powerMin",
+          "outputs": [
+            {
+              "internalType": "int32",
+              "name": "",
+              "type": "int32"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
           "inputs": [
             {
               "internalType": "uint256",
@@ -6112,10 +6412,73 @@
               "internalType": "uint256",
               "name": "fightId",
               "type": "uint256"
+            },
+            {
+              "internalType": "address",
+              "name": "fightLocation",
+              "type": "address"
             }
           ],
           "name": "addFight",
           "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "uint256",
+              "name": "tokenId",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint8",
+              "name": "modifierSlot",
+              "type": "uint8"
+            },
+            {
+              "internalType": "uint256",
+              "name": "valueToAdd",
+              "type": "uint256"
+            }
+          ],
+          "name": "addModifierTime",
+          "outputs": [
+            {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "uint256",
+              "name": "tokenId",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint8",
+              "name": "modifierSlot",
+              "type": "uint8"
+            },
+            {
+              "internalType": "uint32",
+              "name": "valueToAdd",
+              "type": "uint32"
+            }
+          ],
+          "name": "addModifierUses",
+          "outputs": [
+            {
+              "internalType": "uint32",
+              "name": "newValue",
+              "type": "uint32"
+            }
+          ],
           "stateMutability": "nonpayable",
           "type": "function"
         },
@@ -6237,7 +6600,7 @@
                   "type": "uint256"
                 }
               ],
-              "internalType": "struct FishStats.Fight[]",
+              "internalType": "struct IFishStats.Fight[]",
               "name": "fights",
               "type": "tuple[]"
             }
@@ -6278,7 +6641,7 @@
                   "type": "uint32"
                 }
               ],
-              "internalType": "struct FishStats.Modifier",
+              "internalType": "struct IFishStats.Modifier",
               "name": "",
               "type": "tuple"
             }
@@ -6314,7 +6677,7 @@
                   "type": "uint32"
                 }
               ],
-              "internalType": "struct FishStats.Modifier[20]",
+              "internalType": "struct IFishStats.Modifier[20]",
               "name": "",
               "type": "tuple[20]"
             }
@@ -6336,6 +6699,49 @@
               "internalType": "bytes32",
               "name": "",
               "type": "bytes32"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "bytes32",
+              "name": "role",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "uint256",
+              "name": "index",
+              "type": "uint256"
+            }
+          ],
+          "name": "getRoleMember",
+          "outputs": [
+            {
+              "internalType": "address",
+              "name": "",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "bytes32",
+              "name": "role",
+              "type": "bytes32"
+            }
+          ],
+          "name": "getRoleMemberCount",
+          "outputs": [
+            {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
             }
           ],
           "stateMutability": "view",
@@ -6546,7 +6952,7 @@
                   "type": "uint32"
                 }
               ],
-              "internalType": "struct FishStats.Modifier",
+              "internalType": "struct IFishStats.Modifier",
               "name": "value",
               "type": "tuple"
             }
@@ -6582,6 +6988,110 @@
         {
           "inputs": [
             {
+              "internalType": "uint256",
+              "name": "tokenId",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint8",
+              "name": "modifierSlot",
+              "type": "uint8"
+            },
+            {
+              "internalType": "uint32",
+              "name": "uses",
+              "type": "uint32"
+            }
+          ],
+          "name": "setModifierUses",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "uint256",
+              "name": "tokenId",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint8",
+              "name": "modifierSlot",
+              "type": "uint8"
+            },
+            {
+              "internalType": "int32",
+              "name": "value",
+              "type": "int32"
+            }
+          ],
+          "name": "setModifierValue",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "uint256",
+              "name": "tokenId",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint8",
+              "name": "modifierSlot",
+              "type": "uint8"
+            },
+            {
+              "internalType": "uint256",
+              "name": "valueToSub",
+              "type": "uint256"
+            }
+          ],
+          "name": "subModifierTime",
+          "outputs": [
+            {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "uint256",
+              "name": "tokenId",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint8",
+              "name": "modifierSlot",
+              "type": "uint8"
+            },
+            {
+              "internalType": "uint32",
+              "name": "valueToSub",
+              "type": "uint32"
+            }
+          ],
+          "name": "subModifierUses",
+          "outputs": [
+            {
+              "internalType": "uint32",
+              "name": "newValue",
+              "type": "uint32"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
               "internalType": "bytes4",
               "name": "interfaceId",
               "type": "bytes4"
@@ -6604,6 +7114,11 @@
               "internalType": "int32",
               "name": "powerMax",
               "type": "int32"
+            },
+            {
+              "internalType": "int32",
+              "name": "powerMin",
+              "type": "int32"
             }
           ],
           "name": "updateParameters",
@@ -6614,7 +7129,7 @@
       ]
     },
     "FishingWaters": {
-      "address": "0x7C260D7a897cFC085555Aa3e969f6113dEfEdFFF",
+      "address": "0x6941f1E75dE56086B7a093EAa82460D9ee25317A",
       "abi": [
         {
           "inputs": [
@@ -6732,6 +7247,19 @@
               "internalType": "contract Cycles",
               "name": "",
               "type": "address"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [],
+          "name": "_disabledOnSpecialPhase",
+          "outputs": [
+            {
+              "internalType": "bool",
+              "name": "",
+              "type": "bool"
             }
           ],
           "stateMutability": "view",
@@ -6929,6 +7457,11 @@
         {
           "inputs": [
             {
+              "internalType": "bool",
+              "name": "disabledOnSpecialPhase",
+              "type": "bool"
+            },
+            {
               "internalType": "uint256",
               "name": "fishingPrice",
               "type": "uint256"
@@ -6966,7 +7499,7 @@
         },
         {
           "inputs": [],
-          "name": "withdraw",
+          "name": "withdrawONE",
           "outputs": [],
           "stateMutability": "nonpayable",
           "type": "function"
@@ -6974,7 +7507,7 @@
       ]
     },
     "Multicall": {
-      "address": "0x7c2c387670e4408A82De46084d5B5393cEb706DE",
+      "address": "0xf442c84b4Ca0f3235fD109378b5B60D289B10f6F",
       "abi": [
         {
           "inputs": [
@@ -7289,1156 +7822,8 @@
         }
       ]
     },
-    "Seasons": {
-      "address": "0x3c5C97B748D27e05F57c6776e07b5daBa18A63d0",
-      "abi": [
-        {
-          "inputs": [
-            {
-              "internalType": "contract FishFactory",
-              "name": "fish",
-              "type": "address"
-            },
-            {
-              "internalType": "uint256",
-              "name": "startingMaxSupply",
-              "type": "uint256"
-            },
-            {
-              "internalType": "uint256",
-              "name": "fishPhaseLength",
-              "type": "uint256"
-            },
-            {
-              "internalType": "uint256",
-              "name": "fightPhaseLength",
-              "type": "uint256"
-            },
-            {
-              "internalType": "uint256",
-              "name": "breedPhaseLength",
-              "type": "uint256"
-            }
-          ],
-          "stateMutability": "nonpayable",
-          "type": "constructor"
-        },
-        {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": false,
-              "internalType": "uint8",
-              "name": "newPhase",
-              "type": "uint8"
-            }
-          ],
-          "name": "NewPhase",
-          "type": "event"
-        },
-        {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": true,
-              "internalType": "bytes32",
-              "name": "role",
-              "type": "bytes32"
-            },
-            {
-              "indexed": true,
-              "internalType": "bytes32",
-              "name": "previousAdminRole",
-              "type": "bytes32"
-            },
-            {
-              "indexed": true,
-              "internalType": "bytes32",
-              "name": "newAdminRole",
-              "type": "bytes32"
-            }
-          ],
-          "name": "RoleAdminChanged",
-          "type": "event"
-        },
-        {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": true,
-              "internalType": "bytes32",
-              "name": "role",
-              "type": "bytes32"
-            },
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "account",
-              "type": "address"
-            },
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "sender",
-              "type": "address"
-            }
-          ],
-          "name": "RoleGranted",
-          "type": "event"
-        },
-        {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": true,
-              "internalType": "bytes32",
-              "name": "role",
-              "type": "bytes32"
-            },
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "account",
-              "type": "address"
-            },
-            {
-              "indexed": true,
-              "internalType": "address",
-              "name": "sender",
-              "type": "address"
-            }
-          ],
-          "name": "RoleRevoked",
-          "type": "event"
-        },
-        {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "seasonIndex",
-              "type": "uint256"
-            }
-          ],
-          "name": "SeasonCompleted",
-          "type": "event"
-        },
-        {
-          "inputs": [],
-          "name": "BREEDING",
-          "outputs": [
-            {
-              "internalType": "uint8",
-              "name": "",
-              "type": "uint8"
-            }
-          ],
-          "stateMutability": "view",
-          "type": "function"
-        },
-        {
-          "inputs": [],
-          "name": "COMPLETED",
-          "outputs": [
-            {
-              "internalType": "uint8",
-              "name": "",
-              "type": "uint8"
-            }
-          ],
-          "stateMutability": "view",
-          "type": "function"
-        },
-        {
-          "inputs": [],
-          "name": "DEFAULT_ADMIN_ROLE",
-          "outputs": [
-            {
-              "internalType": "bytes32",
-              "name": "",
-              "type": "bytes32"
-            }
-          ],
-          "stateMutability": "view",
-          "type": "function"
-        },
-        {
-          "inputs": [],
-          "name": "EDITOR_ROLE",
-          "outputs": [
-            {
-              "internalType": "bytes32",
-              "name": "",
-              "type": "bytes32"
-            }
-          ],
-          "stateMutability": "view",
-          "type": "function"
-        },
-        {
-          "inputs": [],
-          "name": "FIGHTING",
-          "outputs": [
-            {
-              "internalType": "uint8",
-              "name": "",
-              "type": "uint8"
-            }
-          ],
-          "stateMutability": "view",
-          "type": "function"
-        },
-        {
-          "inputs": [],
-          "name": "FISHING",
-          "outputs": [
-            {
-              "internalType": "uint8",
-              "name": "",
-              "type": "uint8"
-            }
-          ],
-          "stateMutability": "view",
-          "type": "function"
-        },
-        {
-          "inputs": [],
-          "name": "_breedPhaseLength",
-          "outputs": [
-            {
-              "internalType": "uint256",
-              "name": "",
-              "type": "uint256"
-            }
-          ],
-          "stateMutability": "view",
-          "type": "function"
-        },
-        {
-          "inputs": [],
-          "name": "_fightPhaseLength",
-          "outputs": [
-            {
-              "internalType": "uint256",
-              "name": "",
-              "type": "uint256"
-            }
-          ],
-          "stateMutability": "view",
-          "type": "function"
-        },
-        {
-          "inputs": [],
-          "name": "_fishPhaseLength",
-          "outputs": [
-            {
-              "internalType": "uint256",
-              "name": "",
-              "type": "uint256"
-            }
-          ],
-          "stateMutability": "view",
-          "type": "function"
-        },
-        {
-          "inputs": [],
-          "name": "_maxAlphaBreedsPerSeason",
-          "outputs": [
-            {
-              "internalType": "uint8",
-              "name": "",
-              "type": "uint8"
-            }
-          ],
-          "stateMutability": "view",
-          "type": "function"
-        },
-        {
-          "inputs": [],
-          "name": "_maxBettaBreedsPerSeason",
-          "outputs": [
-            {
-              "internalType": "uint8",
-              "name": "",
-              "type": "uint8"
-            }
-          ],
-          "stateMutability": "view",
-          "type": "function"
-        },
-        {
-          "inputs": [],
-          "name": "_maxFishBred",
-          "outputs": [
-            {
-              "internalType": "uint256",
-              "name": "",
-              "type": "uint256"
-            }
-          ],
-          "stateMutability": "view",
-          "type": "function"
-        },
-        {
-          "inputs": [],
-          "name": "_maxFishCaught",
-          "outputs": [
-            {
-              "internalType": "uint256",
-              "name": "",
-              "type": "uint256"
-            }
-          ],
-          "stateMutability": "view",
-          "type": "function"
-        },
-        {
-          "inputs": [],
-          "name": "_maxFishKilled",
-          "outputs": [
-            {
-              "internalType": "uint256",
-              "name": "",
-              "type": "uint256"
-            }
-          ],
-          "stateMutability": "view",
-          "type": "function"
-        },
-        {
-          "inputs": [],
-          "name": "_maxSupply",
-          "outputs": [
-            {
-              "internalType": "uint256",
-              "name": "",
-              "type": "uint256"
-            }
-          ],
-          "stateMutability": "view",
-          "type": "function"
-        },
-        {
-          "inputs": [],
-          "name": "_phaseEndTime",
-          "outputs": [
-            {
-              "internalType": "uint256",
-              "name": "",
-              "type": "uint256"
-            }
-          ],
-          "stateMutability": "view",
-          "type": "function"
-        },
-        {
-          "inputs": [],
-          "name": "_supplyIncreaseDenominator",
-          "outputs": [
-            {
-              "internalType": "uint32",
-              "name": "",
-              "type": "uint32"
-            }
-          ],
-          "stateMutability": "view",
-          "type": "function"
-        },
-        {
-          "inputs": [],
-          "name": "_supplyIncreaseNumerator",
-          "outputs": [
-            {
-              "internalType": "uint32",
-              "name": "",
-              "type": "uint32"
-            }
-          ],
-          "stateMutability": "view",
-          "type": "function"
-        },
-        {
-          "inputs": [],
-          "name": "checkLimit",
-          "outputs": [],
-          "stateMutability": "nonpayable",
-          "type": "function"
-        },
-        {
-          "inputs": [
-            {
-              "internalType": "uint256",
-              "name": "tokenIdA",
-              "type": "uint256"
-            },
-            {
-              "internalType": "uint256",
-              "name": "tokenIdB",
-              "type": "uint256"
-            }
-          ],
-          "name": "fishBreed",
-          "outputs": [],
-          "stateMutability": "nonpayable",
-          "type": "function"
-        },
-        {
-          "inputs": [],
-          "name": "fishCatch",
-          "outputs": [],
-          "stateMutability": "nonpayable",
-          "type": "function"
-        },
-        {
-          "inputs": [],
-          "name": "fishDeath",
-          "outputs": [],
-          "stateMutability": "nonpayable",
-          "type": "function"
-        },
-        {
-          "inputs": [],
-          "name": "getCurrentSeason",
-          "outputs": [
-            {
-              "components": [
-                {
-                  "internalType": "uint256",
-                  "name": "index",
-                  "type": "uint256"
-                },
-                {
-                  "internalType": "uint256",
-                  "name": "startBlock",
-                  "type": "uint256"
-                },
-                {
-                  "internalType": "uint256",
-                  "name": "endBlock",
-                  "type": "uint256"
-                },
-                {
-                  "internalType": "uint256",
-                  "name": "startTime",
-                  "type": "uint256"
-                },
-                {
-                  "internalType": "uint256",
-                  "name": "endTime",
-                  "type": "uint256"
-                },
-                {
-                  "internalType": "uint256",
-                  "name": "startSupply",
-                  "type": "uint256"
-                },
-                {
-                  "internalType": "uint256",
-                  "name": "endSupply",
-                  "type": "uint256"
-                },
-                {
-                  "internalType": "uint32",
-                  "name": "fishCatch",
-                  "type": "uint32"
-                },
-                {
-                  "internalType": "uint32",
-                  "name": "fishDeath",
-                  "type": "uint32"
-                },
-                {
-                  "internalType": "uint32",
-                  "name": "fishBreed",
-                  "type": "uint32"
-                },
-                {
-                  "internalType": "uint8",
-                  "name": "phase",
-                  "type": "uint8"
-                }
-              ],
-              "internalType": "struct Seasons.Season",
-              "name": "info",
-              "type": "tuple"
-            }
-          ],
-          "stateMutability": "view",
-          "type": "function"
-        },
-        {
-          "inputs": [],
-          "name": "getCurrentSeasonPhase",
-          "outputs": [
-            {
-              "internalType": "uint8",
-              "name": "phase",
-              "type": "uint8"
-            }
-          ],
-          "stateMutability": "view",
-          "type": "function"
-        },
-        {
-          "inputs": [
-            {
-              "internalType": "uint256",
-              "name": "tokenId",
-              "type": "uint256"
-            }
-          ],
-          "name": "getFishSeasonStats",
-          "outputs": [
-            {
-              "components": [
-                {
-                  "internalType": "uint16",
-                  "name": "fightWins",
-                  "type": "uint16"
-                },
-                {
-                  "internalType": "uint16",
-                  "name": "alphaBreeds",
-                  "type": "uint16"
-                },
-                {
-                  "internalType": "uint16",
-                  "name": "bettaBreeds",
-                  "type": "uint16"
-                },
-                {
-                  "internalType": "int8",
-                  "name": "strModifier",
-                  "type": "int8"
-                },
-                {
-                  "internalType": "int8",
-                  "name": "intModifier",
-                  "type": "int8"
-                },
-                {
-                  "internalType": "int8",
-                  "name": "agiModifier",
-                  "type": "int8"
-                }
-              ],
-              "internalType": "struct Seasons.FishSeasonStats",
-              "name": "",
-              "type": "tuple"
-            }
-          ],
-          "stateMutability": "view",
-          "type": "function"
-        },
-        {
-          "inputs": [
-            {
-              "internalType": "uint256",
-              "name": "tokenId",
-              "type": "uint256"
-            },
-            {
-              "internalType": "uint256",
-              "name": "seasonIndex",
-              "type": "uint256"
-            }
-          ],
-          "name": "getFishSeasonStatsByIndex",
-          "outputs": [
-            {
-              "components": [
-                {
-                  "internalType": "uint16",
-                  "name": "fightWins",
-                  "type": "uint16"
-                },
-                {
-                  "internalType": "uint16",
-                  "name": "alphaBreeds",
-                  "type": "uint16"
-                },
-                {
-                  "internalType": "uint16",
-                  "name": "bettaBreeds",
-                  "type": "uint16"
-                },
-                {
-                  "internalType": "int8",
-                  "name": "strModifier",
-                  "type": "int8"
-                },
-                {
-                  "internalType": "int8",
-                  "name": "intModifier",
-                  "type": "int8"
-                },
-                {
-                  "internalType": "int8",
-                  "name": "agiModifier",
-                  "type": "int8"
-                }
-              ],
-              "internalType": "struct Seasons.FishSeasonStats",
-              "name": "",
-              "type": "tuple"
-            }
-          ],
-          "stateMutability": "view",
-          "type": "function"
-        },
-        {
-          "inputs": [
-            {
-              "internalType": "bytes32",
-              "name": "role",
-              "type": "bytes32"
-            }
-          ],
-          "name": "getRoleAdmin",
-          "outputs": [
-            {
-              "internalType": "bytes32",
-              "name": "",
-              "type": "bytes32"
-            }
-          ],
-          "stateMutability": "view",
-          "type": "function"
-        },
-        {
-          "inputs": [
-            {
-              "internalType": "uint256",
-              "name": "seasonIndex",
-              "type": "uint256"
-            }
-          ],
-          "name": "getSeason",
-          "outputs": [
-            {
-              "components": [
-                {
-                  "internalType": "uint256",
-                  "name": "index",
-                  "type": "uint256"
-                },
-                {
-                  "internalType": "uint256",
-                  "name": "startBlock",
-                  "type": "uint256"
-                },
-                {
-                  "internalType": "uint256",
-                  "name": "endBlock",
-                  "type": "uint256"
-                },
-                {
-                  "internalType": "uint256",
-                  "name": "startTime",
-                  "type": "uint256"
-                },
-                {
-                  "internalType": "uint256",
-                  "name": "endTime",
-                  "type": "uint256"
-                },
-                {
-                  "internalType": "uint256",
-                  "name": "startSupply",
-                  "type": "uint256"
-                },
-                {
-                  "internalType": "uint256",
-                  "name": "endSupply",
-                  "type": "uint256"
-                },
-                {
-                  "internalType": "uint32",
-                  "name": "fishCatch",
-                  "type": "uint32"
-                },
-                {
-                  "internalType": "uint32",
-                  "name": "fishDeath",
-                  "type": "uint32"
-                },
-                {
-                  "internalType": "uint32",
-                  "name": "fishBreed",
-                  "type": "uint32"
-                },
-                {
-                  "internalType": "uint8",
-                  "name": "phase",
-                  "type": "uint8"
-                }
-              ],
-              "internalType": "struct Seasons.Season",
-              "name": "info",
-              "type": "tuple"
-            }
-          ],
-          "stateMutability": "view",
-          "type": "function"
-        },
-        {
-          "inputs": [
-            {
-              "internalType": "bytes32",
-              "name": "role",
-              "type": "bytes32"
-            },
-            {
-              "internalType": "address",
-              "name": "account",
-              "type": "address"
-            }
-          ],
-          "name": "grantRole",
-          "outputs": [],
-          "stateMutability": "nonpayable",
-          "type": "function"
-        },
-        {
-          "inputs": [
-            {
-              "internalType": "bytes32",
-              "name": "role",
-              "type": "bytes32"
-            },
-            {
-              "internalType": "address",
-              "name": "account",
-              "type": "address"
-            }
-          ],
-          "name": "hasRole",
-          "outputs": [
-            {
-              "internalType": "bool",
-              "name": "",
-              "type": "bool"
-            }
-          ],
-          "stateMutability": "view",
-          "type": "function"
-        },
-        {
-          "inputs": [
-            {
-              "internalType": "uint256",
-              "name": "tokenId",
-              "type": "uint256"
-            }
-          ],
-          "name": "increaseFishFightWins",
-          "outputs": [],
-          "stateMutability": "nonpayable",
-          "type": "function"
-        },
-        {
-          "inputs": [
-            {
-              "components": [
-                {
-                  "internalType": "uint256",
-                  "name": "tokenId",
-                  "type": "uint256"
-                },
-                {
-                  "internalType": "uint256",
-                  "name": "birthTime",
-                  "type": "uint256"
-                },
-                {
-                  "internalType": "uint256",
-                  "name": "parentA",
-                  "type": "uint256"
-                },
-                {
-                  "internalType": "uint256",
-                  "name": "parentB",
-                  "type": "uint256"
-                },
-                {
-                  "internalType": "uint256",
-                  "name": "deathTime",
-                  "type": "uint256"
-                },
-                {
-                  "internalType": "bool",
-                  "name": "revived",
-                  "type": "bool"
-                },
-                {
-                  "internalType": "uint32",
-                  "name": "lifetimeWins",
-                  "type": "uint32"
-                },
-                {
-                  "internalType": "uint32",
-                  "name": "lifetimeAlphaBreeds",
-                  "type": "uint32"
-                },
-                {
-                  "internalType": "uint32",
-                  "name": "lifetimeBettaBreeds",
-                  "type": "uint32"
-                },
-                {
-                  "internalType": "uint16",
-                  "name": "strength",
-                  "type": "uint16"
-                },
-                {
-                  "internalType": "uint16",
-                  "name": "intelligence",
-                  "type": "uint16"
-                },
-                {
-                  "internalType": "uint16",
-                  "name": "agility",
-                  "type": "uint16"
-                },
-                {
-                  "internalType": "uint8",
-                  "name": "fishType",
-                  "type": "uint8"
-                },
-                {
-                  "internalType": "uint8",
-                  "name": "rarity",
-                  "type": "uint8"
-                },
-                {
-                  "internalType": "int8",
-                  "name": "power",
-                  "type": "int8"
-                },
-                {
-                  "internalType": "bytes",
-                  "name": "genes",
-                  "type": "bytes"
-                },
-                {
-                  "internalType": "bytes",
-                  "name": "breedKey",
-                  "type": "bytes"
-                },
-                {
-                  "internalType": "uint256[]",
-                  "name": "offspring",
-                  "type": "uint256[]"
-                }
-              ],
-              "internalType": "struct FishFactory.Fish",
-              "name": "fish",
-              "type": "tuple"
-            }
-          ],
-          "name": "isAlpha",
-          "outputs": [],
-          "stateMutability": "view",
-          "type": "function"
-        },
-        {
-          "inputs": [
-            {
-              "components": [
-                {
-                  "internalType": "uint256",
-                  "name": "tokenId",
-                  "type": "uint256"
-                },
-                {
-                  "internalType": "uint256",
-                  "name": "birthTime",
-                  "type": "uint256"
-                },
-                {
-                  "internalType": "uint256",
-                  "name": "parentA",
-                  "type": "uint256"
-                },
-                {
-                  "internalType": "uint256",
-                  "name": "parentB",
-                  "type": "uint256"
-                },
-                {
-                  "internalType": "uint256",
-                  "name": "deathTime",
-                  "type": "uint256"
-                },
-                {
-                  "internalType": "bool",
-                  "name": "revived",
-                  "type": "bool"
-                },
-                {
-                  "internalType": "uint32",
-                  "name": "lifetimeWins",
-                  "type": "uint32"
-                },
-                {
-                  "internalType": "uint32",
-                  "name": "lifetimeAlphaBreeds",
-                  "type": "uint32"
-                },
-                {
-                  "internalType": "uint32",
-                  "name": "lifetimeBettaBreeds",
-                  "type": "uint32"
-                },
-                {
-                  "internalType": "uint16",
-                  "name": "strength",
-                  "type": "uint16"
-                },
-                {
-                  "internalType": "uint16",
-                  "name": "intelligence",
-                  "type": "uint16"
-                },
-                {
-                  "internalType": "uint16",
-                  "name": "agility",
-                  "type": "uint16"
-                },
-                {
-                  "internalType": "uint8",
-                  "name": "fishType",
-                  "type": "uint8"
-                },
-                {
-                  "internalType": "uint8",
-                  "name": "rarity",
-                  "type": "uint8"
-                },
-                {
-                  "internalType": "int8",
-                  "name": "power",
-                  "type": "int8"
-                },
-                {
-                  "internalType": "bytes",
-                  "name": "genes",
-                  "type": "bytes"
-                },
-                {
-                  "internalType": "bytes",
-                  "name": "breedKey",
-                  "type": "bytes"
-                },
-                {
-                  "internalType": "uint256[]",
-                  "name": "offspring",
-                  "type": "uint256[]"
-                }
-              ],
-              "internalType": "struct FishFactory.Fish",
-              "name": "fish",
-              "type": "tuple"
-            }
-          ],
-          "name": "isBetta",
-          "outputs": [],
-          "stateMutability": "view",
-          "type": "function"
-        },
-        {
-          "inputs": [],
-          "name": "isBreedingPhase",
-          "outputs": [
-            {
-              "internalType": "bool",
-              "name": "",
-              "type": "bool"
-            }
-          ],
-          "stateMutability": "view",
-          "type": "function"
-        },
-        {
-          "inputs": [],
-          "name": "isFightingPhase",
-          "outputs": [
-            {
-              "internalType": "bool",
-              "name": "",
-              "type": "bool"
-            }
-          ],
-          "stateMutability": "view",
-          "type": "function"
-        },
-        {
-          "inputs": [],
-          "name": "isFishingPhase",
-          "outputs": [
-            {
-              "internalType": "bool",
-              "name": "",
-              "type": "bool"
-            }
-          ],
-          "stateMutability": "view",
-          "type": "function"
-        },
-        {
-          "inputs": [],
-          "name": "ownerPhaseOverride",
-          "outputs": [],
-          "stateMutability": "nonpayable",
-          "type": "function"
-        },
-        {
-          "inputs": [
-            {
-              "internalType": "bytes32",
-              "name": "role",
-              "type": "bytes32"
-            },
-            {
-              "internalType": "address",
-              "name": "account",
-              "type": "address"
-            }
-          ],
-          "name": "renounceRole",
-          "outputs": [],
-          "stateMutability": "nonpayable",
-          "type": "function"
-        },
-        {
-          "inputs": [
-            {
-              "internalType": "bytes32",
-              "name": "role",
-              "type": "bytes32"
-            },
-            {
-              "internalType": "address",
-              "name": "account",
-              "type": "address"
-            }
-          ],
-          "name": "revokeRole",
-          "outputs": [],
-          "stateMutability": "nonpayable",
-          "type": "function"
-        },
-        {
-          "inputs": [
-            {
-              "internalType": "uint256",
-              "name": "tokenId",
-              "type": "uint256"
-            },
-            {
-              "internalType": "uint256",
-              "name": "modifierType",
-              "type": "uint256"
-            },
-            {
-              "internalType": "int8",
-              "name": "value",
-              "type": "int8"
-            }
-          ],
-          "name": "setFishModifier",
-          "outputs": [],
-          "stateMutability": "nonpayable",
-          "type": "function"
-        },
-        {
-          "inputs": [
-            {
-              "internalType": "bytes4",
-              "name": "interfaceId",
-              "type": "bytes4"
-            }
-          ],
-          "name": "supportsInterface",
-          "outputs": [
-            {
-              "internalType": "bool",
-              "name": "",
-              "type": "bool"
-            }
-          ],
-          "stateMutability": "view",
-          "type": "function"
-        },
-        {
-          "inputs": [
-            {
-              "internalType": "uint256",
-              "name": "newFishingLength",
-              "type": "uint256"
-            },
-            {
-              "internalType": "uint256",
-              "name": "newFightingLength",
-              "type": "uint256"
-            },
-            {
-              "internalType": "uint256",
-              "name": "newBreedingLength",
-              "type": "uint256"
-            }
-          ],
-          "name": "updatePhaseLengths",
-          "outputs": [],
-          "stateMutability": "nonpayable",
-          "type": "function"
-        },
-        {
-          "inputs": [
-            {
-              "internalType": "uint256",
-              "name": "newMaxCaught",
-              "type": "uint256"
-            },
-            {
-              "internalType": "uint256",
-              "name": "newMaxKilled",
-              "type": "uint256"
-            },
-            {
-              "internalType": "uint256",
-              "name": "newMaxBred",
-              "type": "uint256"
-            }
-          ],
-          "name": "updatePhaseLimits",
-          "outputs": [],
-          "stateMutability": "nonpayable",
-          "type": "function"
-        },
-        {
-          "inputs": [
-            {
-              "internalType": "uint32",
-              "name": "numerator",
-              "type": "uint32"
-            },
-            {
-              "internalType": "uint32",
-              "name": "denominator",
-              "type": "uint32"
-            }
-          ],
-          "name": "updateSupplyMultiplier",
-          "outputs": [],
-          "stateMutability": "nonpayable",
-          "type": "function"
-        }
-      ]
-    },
     "TrainingWaters": {
-      "address": "0x35e1a68f2e7521E79b08A5b58c72583ba3477697",
+      "address": "0x10bbbb8C9e69eeB28cD0CB10aA08275cD14559a6",
       "abi": [
         {
           "inputs": [
@@ -8458,7 +7843,7 @@
               "type": "address"
             },
             {
-              "internalType": "contract FishStats",
+              "internalType": "contract IFishStats",
               "name": "fishStats",
               "type": "address"
             },
@@ -8531,6 +7916,19 @@
               "internalType": "uint256",
               "name": "",
               "type": "uint256"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [],
+          "name": "_disabledOnSpecialPhase",
+          "outputs": [
+            {
+              "internalType": "bool",
+              "name": "",
+              "type": "bool"
             }
           ],
           "stateMutability": "view",
@@ -8739,6 +8137,11 @@
         },
         {
           "inputs": [
+            {
+              "internalType": "bool",
+              "name": "disabledOnSpecialPhase",
+              "type": "bool"
+            },
             {
               "internalType": "uint256",
               "name": "feedFee",
