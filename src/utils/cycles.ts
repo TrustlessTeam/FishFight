@@ -18,7 +18,6 @@ export class Phase {
 			phaseResponse: any
 		) 
 		{	
-			console.log(phaseResponse)
 			this.phase = phaseResponse[0];
 			this.phaseString = phaseResponse[1];
 			this.phaseEndtime = web3.utils.hexToNumber(phaseResponse[2].hex);

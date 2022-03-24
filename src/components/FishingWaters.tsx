@@ -1,14 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import styled from 'styled-components';
-import { toast } from 'react-toastify';
 import { useWeb3React } from '@web3-react/core';
-import { Fish } from '../utils/fish'
 import { useFishFight } from '../context/fishFightContext';
 import { useUnity } from '../context/unityContext';
-import { useFishPool } from '../context/fishPoolContext';
-import web3 from 'web3';
 import { BaseContainer } from './BaseStyles';
-import { Constants } from '../utils/constants';
 import { useContractWrapper } from '../context/contractWrapperContext';
 import BaseButton from "../components/BaseButton";
 
@@ -16,23 +11,13 @@ import BaseButton from "../components/BaseButton";
 const FishingWaters = () => {
 	const unityContext = useUnity()
 	const { account } = useWeb3React();
-	const { FishFight, maxSupply, totalSupply, refetchBalance } = useFishFight()
+	const { maxSupply, totalSupply } = useFishFight()
 	const { catchFish, clearCatchFishResult, catchFishResult } = useContractWrapper();
 
 	useEffect(() => {
 		unityContext.showFishingLocation();
-		unityContext.hideUI();
 		clearCatchFishResult();
 	}, [unityContext.isFishPoolReady]);
-
-	// useEffect(() => {
-	// 	if(account) {
-	// 		unityContext.clearUIFish();
-	// 		unityContext.hideUI();
-	// 		unityContext.showFishingUI();
-	// 		clearCatchFishResult()
-	// 	}
-	// }, [account]);
 
 	useEffect(() => {
 		unityContext.UnityInstance.on('UISelectionConfirm', function (data: any) {
@@ -41,6 +26,9 @@ const FishingWaters = () => {
 			switch (data) {
 				case 'mint_fish':
 					catchFish();
+					return;
+				case 'fishingresults_confirm':
+					unityContext.showFishingUI();
 					return;
 				default:
 					return;
@@ -103,21 +91,6 @@ const FishingWaters = () => {
 	return null;
 };
 
-const CatchContainer = styled.div`
-	display: flex;
-	flex-direction: column;
-	justify-content: flex-start;
-	align-items: center;
-	height: 100%;
-	padding: ${props => props.theme.spacing.gap};
-	margin-top: 50px;
-
-	@media ${props => props.theme.device.tablet} {
-		width: 25%;
-		justify-content: center;
-  }
-`;
-
 const DataContainer = styled.div`
 	background-color: rgba(255, 255, 255, 0.8);
 	border-radius: 25px;
@@ -165,32 +138,6 @@ const DataText = styled.p`
 
 	@media ${props => props.theme.device.tablet} {
 		margin: 0;
-  }
-`;
-
-const TransactionLink = styled.a`
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	justify-content: center;
-`;
-
-const FishData = styled.p`
-	display: flex;
-	flex-flow: column;
-	align-items: center;
-	justify-content: center;
-	color: ${"black"};
-	text-align: center;
-	font-size: ${props => props.theme.font.small};
-	background-color: rgba(255, 255, 255, 0.7);
-	margin: 0 ${props => props.theme.spacing.gapSmall};
-	padding: ${props => props.theme.spacing.gapSmall};
-	border-radius: 50%;
-
-	@media ${props => props.theme.device.tablet} {
-		font-size: ${props => props.theme.font.medium};
-
   }
 `;
 

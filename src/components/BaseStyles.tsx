@@ -1,6 +1,5 @@
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import LoadingOverlay from 'react-loading-overlay';
 import Modal from 'react-modal';
 import iceImg from "../img/ice.jpg";
 import bloodImg from "../img/blood.png";

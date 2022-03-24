@@ -703,7 +703,7 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 				setPendingTransaction(false);
 				
 				const fightResult = await getFightByIndex(fightIndex, myFish)
-				unityContext.sendFightResult(fightResult);
+				unityContext.sendFightResult(fightResult, myFish, opponentFish);
 				// unityContext.
 				toast.success('Fight Completed!', {
 					onOpen: async () => {
@@ -714,12 +714,12 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 						}
 						if(myFish.tokenId === fightResult.winner) {
 							refreshFish(myFish.tokenId, true, false)
-							unityContext.refreshFishUnity(opponentFish)
+							// unityContext.refreshFishUnity(opponentFish)
 						}
 
 						if(opponentFish.tokenId === fightResult.winner) {
 							refreshFish(opponentFish.tokenId, true, false);
-							unityContext.refreshFishUnity(myFish)
+							// unityContext.refreshFishUnity(myFish)
 						}
 
 					},

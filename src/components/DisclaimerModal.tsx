@@ -12,7 +12,6 @@ import {
 } from "./BaseStyles";
 import BaseButton from "./BaseButton";
 import { useContractWrapper } from "../context/contractWrapperContext";
-import LoadingOverlay from "react-loading-overlay";
 import { Constants } from "../utils/constants";
 import { useFishFight } from "../context/fishFightContext";
 
@@ -255,7 +254,7 @@ export const ContainerText = styled.div`
   padding-top: ${(props) => props.theme.spacing.gapSmall};
 `;
 
-export const ApprovalsContainer = styled(LoadingOverlay)`
+export const ApprovalsContainer = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -272,6 +271,7 @@ export const ApprovalDisclaimer = styled.div`
   align-items: center;
   padding: ${(props) => props.theme.spacing.gap};
   border-radius: 25px;
+	z-index: 10;
 `;
 
 export const OptionsContainer = styled.div`
