@@ -4,7 +4,6 @@ import { useWeb3React } from "@web3-react/core";
 import { getWalletProvider } from '../helpers/providerHelper'
 import { toBech32 } from '@harmony-js/crypto';
 import { isBech32Address, fromWei, hexToNumber, Units } from '@harmony-js/utils';
-import { Harmony } from "@harmony-js/core";
 import { EtherscanProvider, Web3Provider } from "@ethersproject/providers";
 import Web3 from 'web3';
 import BN from 'bn.js'
@@ -15,36 +14,37 @@ import Contracts from '../contracts/contracts.json';
 
 // Typescript
 interface FishFightProviderContext {
-    FishFight: FishFight
-    userConnected: boolean
+  FishFight: FishFight
+  userConnected: boolean
+  currentBlock: number
 
-    balance: string | undefined
-    balanceFish: string | undefined
-    balanceDeadFish: string | undefined
-    balanceFightFish: string | undefined
-    balanceBreedFish: string | undefined
-    balanceFood: string | undefined
-    balanceFoodWei: BN | undefined
-    balanceFishEgg: BN | undefined
-    balanceFishScale: BN | undefined
-    balanceBloater: BN | undefined
-    balanceRedgill: BN | undefined
+  balance: string | undefined
+  balanceFish: string | undefined
+  balanceDeadFish: string | undefined
+  balanceFightFish: string | undefined
+  balanceBreedFish: string | undefined
+  balanceFood: string | undefined
+  balanceFoodWei: BN | undefined
+  balanceFishEgg: BN | undefined
+  balanceFishScale: BN | undefined
+  balanceBloater: BN | undefined
+  balanceRedgill: BN | undefined
 
-    currentBlock: number
-    currentPhase: Phase | undefined
-    currentCycle: number;
-    maxSupply: number
-    totalCaught: number
-    totalFights: number
-    totalBreeds: number
-    totalSupply: number
-    fightingWatersSupply: number
-    breedingWatersSupply: number
-    refetchBalance: () => void
-	  resetBalance: () => void
-    refetchStats: () => void
-    // seasonNumber: number
-    // seasonPhase: string
+  totalSupply: number
+  fishCurrentIndex: number
+  fightingWatersSupply: number
+  breedingWatersSupply: number
+  totalSupplyDead: number
+  totalDeadBurned: number
+  currentCycle: number
+  currentPhase: Phase | undefined
+  maxSupply: number
+  totalCaught: number
+  totalFights: number
+  totalBreeds: number
+  refetchBalance: () => void
+  resetBalance: () => void
+  refetchStats: () => void
 }
 
 type FishFightProviderProps = { children: React.ReactNode }
@@ -62,7 +62,7 @@ export const FishFightProvider = ({ children }: FishFightProviderProps ) => {
   const { account, connector, library} = useWeb3React();
 
   const contextBalance = useBalance();
-  const contextSeasons = useStats();
+  const contextStats = useStats();
 
   console.log("fishfight")
   
@@ -116,7 +116,7 @@ export const FishFightProvider = ({ children }: FishFightProviderProps ) => {
   }
 
   const refetchStats = () => {
-    contextSeasons.fetchStats(FishFightInstance);
+    contextStats.fetchStats(FishFightInstance);
   }
 
   
@@ -125,9 +125,9 @@ export const FishFightProvider = ({ children }: FishFightProviderProps ) => {
     FishFight: FishFightInstance,
     userConnected: userConnected,
     currentBlock: currentBlock,
-    refetchBalance,
     ...contextBalance,
-    ...contextSeasons,
+    ...contextStats,
+    refetchBalance,
     refetchStats
   }
   return (
@@ -291,52 +291,115 @@ const useBalance = () => {
 
 // Account balance utilities that will be included in FishFightContext
 const useStats = () => {
+  const [totalSupply, setTotalSupply] = useState<number>(0);
+  const [fishCurrentIndex, setFishCurrentIndex] = useState<number>(0);
+  const [fightingWatersSupply, setFightingWatersSupply] = useState<number>(0);
+	const [breedingWatersSupply, setBreedingWatersSupply] = useState<number>(0);
+
+  const [totalSupplyDead, setTotalSupplyDead] = useState<number>(0);
+  const [totalDeadBurned, setTotalDeadBurned] = useState<number>(0);
+
 	const [currentCycle, setCurrentCycle] = useState<number>(0);
-  const [currentPhase, setCurrentPhase] = useState<Phase>(new Phase(0))
+  const [currentPhase, setCurrentPhase] = useState<Phase | undefined>(undefined)
 	const [maxSupply, setMaxSupply] = useState<number>(0);
   const [totalCaught, setTotalCaught] = useState<number>(0);
   const [totalFights, setTotalFights] = useState<number>(0);
-  const [totalBreeds, setMaxBred] = useState<number>(0);
-	const [totalSupply, setTotalSupply] = useState<number>(0);
-	const [fightingWatersSupply, setFightingWatersSupply] = useState<number>(0);
-	const [breedingWatersSupply, setBreedingWatersSupply] = useState<number>(0);
-
-	const [currentPhaseEndTime, setCurrentPhaseEndTime] = useState<number | undefined>(undefined);
-
+  const [totalBreeds, setTotalBreeds] = useState<number>(0);
 
 	const fetchStats = useCallback(
 		async (FishFight: FishFight) => {
-      // when account is connected get balances - uses default and read only providers
-      const cycle = await FishFight.readCycles.methods.getCycle().call();
-      const totalSupply = await FishFight.readFishFactory.methods.totalSupply().call();
-      const maxSupply = await FishFight.readCycles.methods._maxSupply().call();
-      const totalCatches = await FishFight.readCycles.methods._totalCatches().call();
-      const totalFights = await FishFight.readCycles.methods._totalFights().call();
-      const totalBreeds = await FishFight.readCycles.methods._totalBreeds().call();
-      const fightingSupply = await FishFight.readFishFactory.methods.balanceOf(FishFight.readFightingWaters.options.address).call();
-      const breedingSupply = await FishFight.readFishFactory.methods.balanceOf(FishFight.readBreedingWaters.options.address).call();
-      const phase = await FishFight.readCycles.methods.getPhase().call();
-      console.log(phase)
-      setCurrentCycle(Web3.utils.toNumber(cycle));
-      setCurrentPhase(new Phase(phase));
-      setTotalSupply(Web3.utils.toNumber(totalSupply));
-      setMaxSupply(Web3.utils.toNumber(maxSupply));
-      setFightingWatersSupply(Web3.utils.toNumber(fightingSupply));
-      setBreedingWatersSupply(Web3.utils.toNumber(breedingSupply));
-      setTotalCaught(Web3.utils.toNumber(totalCatches))
-      setTotalFights(Web3.utils.toNumber(totalFights))
-      setMaxBred(Web3.utils.toNumber(totalBreeds))
+
+      const contractCallContext: ContractCallContext[] = [
+        {
+          reference: 'fishFactory',
+          contractAddress: FishFight.readFishFactory.options.address,
+          abi: Contracts.contracts.FishFactory.abi,
+          calls: [{ reference: 'totalFish', methodName: 'currentIndex', methodParameters: [] },
+            { reference: 'currentFishIndex', methodName: 'totalSupply', methodParameters: [] },
+            { reference: 'totalFighters', methodName: 'balanceOf', methodParameters: [FishFight.readFightingWaters.options.address] },
+            { reference: 'totalBreeders', methodName: 'balanceOf', methodParameters: [FishFight.readBreedingWaters.options.address] }
+          ]
+        },
+        {
+          reference: 'deadFishFactory',
+          contractAddress: FishFight.readDeadFishFactory.options.address,
+          abi: Contracts.contracts.DeadFishFactory.abi,
+          calls: [{ reference: 'totalDead', methodName: 'totalSupply', methodParameters: [] },
+            { reference: 'burnedDead', methodName: '_burnedDeadFish', methodParameters: [] }
+          ]
+        },
+        {
+          reference: 'cycles',
+          contractAddress: FishFight.readCycles.options.address,
+          abi: Contracts.contracts.Cycles.abi,
+          calls: [{ reference: 'currentCycle', methodName: 'getCycle', methodParameters: [] },
+            { reference: 'currentPhase', methodName: 'getPhase', methodParameters: [] },
+            { reference: 'maxSupply', methodName: '_maxSupply', methodParameters: [] },
+            { reference: 'totalCatches', methodName: '_totalCatches', methodParameters: [] },
+            { reference: 'totalFights', methodName: '_totalFights', methodParameters: [] },
+            { reference: 'totalBreeds', methodName: '_totalBreeds', methodParameters: [] },
+          ]
+        }
+      ];
+
+      const results: ContractCallResults = await FishFight.multicall.call(contractCallContext);
+      console.log(results)
+      let totalFish = results.results.fishFactory.callsReturnContext[0].success ? results.results.fishFactory.callsReturnContext[0].returnValues[0].hex : null;
+      let currentFishIndex = results.results.fishFactory.callsReturnContext[1].success ? results.results.fishFactory.callsReturnContext[1].returnValues[0].hex : null;
+      let totalFighters = results.results.fishFactory.callsReturnContext[2].success ? results.results.fishFactory.callsReturnContext[2].returnValues[0].hex : null;
+      let totalBreeders = results.results.fishFactory.callsReturnContext[3].success ? results.results.fishFactory.callsReturnContext[3].returnValues[0].hex : null;
+      
+      let totalDead = results.results.deadFishFactory.callsReturnContext[0].success ? results.results.deadFishFactory.callsReturnContext[0].returnValues[0].hex : null;
+      let burnedDead = results.results.deadFishFactory.callsReturnContext[1].success ? results.results.deadFishFactory.callsReturnContext[1].returnValues[0].hex : null;
+      
+      let currentCycle = results.results.cycles.callsReturnContext[0].success ? results.results.cycles.callsReturnContext[0].returnValues[0].hex : null;
+      let currentPhase = results.results.cycles.callsReturnContext[1].success ? results.results.cycles.callsReturnContext[1].returnValues : null;
+      let maxSupply = results.results.cycles.callsReturnContext[2].success ? results.results.cycles.callsReturnContext[2].returnValues[0].hex : null;
+      let totalCatches = results.results.cycles.callsReturnContext[3].success ? results.results.cycles.callsReturnContext[3].returnValues[0].hex : null;
+      let totalFights = results.results.cycles.callsReturnContext[4].success ? results.results.cycles.callsReturnContext[4].returnValues[0].hex : null;
+      let totalBreeds = results.results.cycles.callsReturnContext[5].success ? results.results.cycles.callsReturnContext[5].returnValues[0].hex : null;
+
+      setTotalSupply(Web3.utils.hexToNumber(totalFish));
+      setFishCurrentIndex(Web3.utils.hexToNumber(currentFishIndex));
+      setFightingWatersSupply(Web3.utils.hexToNumber(totalFighters));
+      setBreedingWatersSupply(Web3.utils.hexToNumber(totalBreeders));
+
+      setTotalSupplyDead(Web3.utils.hexToNumber(totalDead))
+      setTotalDeadBurned(Web3.utils.hexToNumber(burnedDead))
+
+      setCurrentCycle(Web3.utils.hexToNumber(currentCycle));
+      setCurrentPhase(new Phase(currentPhase));
+      setMaxSupply(Web3.utils.hexToNumber(maxSupply));
+      setTotalCaught(Web3.utils.hexToNumber(totalCatches))
+      setTotalFights(Web3.utils.hexToNumber(totalFights))
+      setTotalBreeds(Web3.utils.hexToNumber(totalBreeds))
 		},
-		[setCurrentCycle, setCurrentPhase],
+		[
+      setTotalSupply,
+      setFishCurrentIndex,
+      setFightingWatersSupply,
+      setBreedingWatersSupply,
+      setTotalSupplyDead,
+      setTotalDeadBurned,
+      setCurrentCycle,
+      setCurrentPhase,
+      setMaxSupply,
+      setTotalCaught,
+      setTotalFights,
+      setTotalBreeds,
+    ],
 	);
 
 	return {
-		currentCycle,
-    currentPhase,
-    maxSupply,
     totalSupply,
+    fishCurrentIndex,
     fightingWatersSupply,
     breedingWatersSupply,
+    totalSupplyDead,
+    totalDeadBurned,
+    currentCycle,
+    currentPhase,
+    maxSupply,
     totalCaught,
     totalFights,
     totalBreeds,

@@ -21,11 +21,18 @@ import MenuOverlay from "./components/MenuOverlay";
 import Default from "./components/Default";
 import FishingWaters from "./components/FishingWaters";
 import DisclaimerModal from "./components/DisclaimerModal";
+import { useContractWrapper } from "./context/contractWrapperContext";
+
 
 const App = () => {
+  const { pendingTransaction } = useContractWrapper()
   return (
     <ThemeProvider theme={BaseTheme}>
       <Wrapper>
+        <PendingOverlay open={pendingTransaction} className={pendingTransaction ? "active" : ""}>
+          <div className="lds-ripple"><div></div><div></div></div>
+          <LoadingText>Waiting for Transaction...</LoadingText>
+        </PendingOverlay>
         <Container>
           <MenuOverlay></MenuOverlay>
           <DisclaimerModal></DisclaimerModal>
@@ -58,6 +65,42 @@ const App = () => {
     </ThemeProvider>
   );
 };
+
+const PendingOverlay = styled.div<{open: boolean}>`
+  position: absolute;
+  display: flex;
+  flex-flow: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  background-color: rgba(25, 22, 209, 0.466);
+  z-index: 100;
+  pointer-events: none;
+  transition: all 0.25s ease-in-out;
+  /* ${({ open }) =>
+    open ?
+    `
+    display: block;
+    `
+    :
+    `
+    display: none;
+    `
+  } */
+  &.active {
+    pointer-events: auto;
+    opacity: 1;
+  }
+`;
+
+const LoadingText = styled.h1`
+  color: white;
+
+  margin: 0 auto;
+`;
+
 
 const Wrapper = styled.div`
   display: flex;

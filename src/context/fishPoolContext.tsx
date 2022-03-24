@@ -29,7 +29,7 @@ interface FishPoolProviderContext {
 	oceanFishIndex: number
 	breedingFishIndex: number
 	fightingFishIndex: number
-  refreshFish: (tokenId: number, isFighting: boolean, isBreeding: boolean) => Promise<Fish | null>
+  refreshFish: (tokenId: number, isFighting: boolean, isBreeding: boolean, updateUnity?: boolean) => Promise<Fish | null>
   createUserFish: (tokenId: number) => Promise<Fish | null>;
   fetchOceanFish: (startIndex?: number, random?: boolean) => void
   fetchUserFish: (account: string, startIndex?: number) => void
@@ -401,7 +401,7 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
     ));
   }
 
-  const refreshFish = async (tokenId: number, isFighting?: boolean, isBreeding?: boolean) =>  {
+  const refreshFish = async (tokenId: number, isFighting?: boolean, isBreeding?: boolean, noUnity?: boolean) =>  {
     // const fishData = await getFish(FishFight, tokenId, isFighting, isBreeding)
     const fishData = await buildFish(FishFight, tokenId);
 
@@ -423,7 +423,9 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
     if(oceanFish.some(fish => fish.tokenId === tokenId)) {
       setOceanFish(prevFish => [...prevFish.filter(f => f.tokenId !== tokenId), fishData]);
     }
-    unityContext.refreshFishUnity(fishData);
+
+    if(!noUnity) unityContext.refreshFishUnity(fishData);
+    
     return fishData;
   }
 

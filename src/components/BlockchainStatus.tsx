@@ -1,8 +1,4 @@
-import React, { useEffect } from 'react';
 import styled from 'styled-components';
-import { useWeb3React } from '@web3-react/core';
-
-import { useHarmony } from '../context/harmonyContext';
 import { useFishFight } from '../context/fishFightContext';
 
 const BlockchainStatus = () => {
