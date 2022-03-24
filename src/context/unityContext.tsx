@@ -405,6 +405,7 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
         JSON.stringify(fish)
       );
     }, 500);
+
     if (fish.parentAFish && fish.parentBFish) {
       UnityInstance.send("FishPool", "AddFish2_FishView", JSON.stringify(fish.parentAFish));
       UnityInstance.send("FishPool", "AddFish3_FishView", JSON.stringify(fish.parentBFish));
@@ -441,14 +442,16 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
         "ShowFishingResultsSuccess_UI",
         "SetFish1",
         JSON.stringify(fish) );
-    }, 500);
-
-    UnityInstance.send("CanvasUserInterface", "FishingResultsUI_SetFish1", JSON.stringify(fish) ); // ShowFish ?
-
-
+    }, 1000);
     UnityInstance.send("FishPool", "AddFish_FishingView", JSON.stringify(fish));
     UnityInstance.send("FishPool", "AddFish1_FishView", JSON.stringify(fish)); 
     UnityInstance.send("CanvasUserInterface", "SetAnimState", "ShowFishingResultsSuccess"); // ShowFish ?
+
+    setTimeout(() => {  
+        UnityInstance.send("CanvasUserInterface", "FishingResultsUI_SetFish1", JSON.stringify(fish) ); // ShowFish ?
+    }, 100);
+
+
     console.log("AddFish Completed");
   };
   const showFish = (fish: Fish) => {
@@ -464,6 +467,7 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
       );
   
     }, 500);
+
     if (fish.parentAFish && fish.parentBFish) {
       UnityInstance.send("FishPool", "AddFish2_FishView", JSON.stringify(fish.parentAFish));
       UnityInstance.send("FishPool", "AddFish3_FishView", JSON.stringify(fish.parentBFish));

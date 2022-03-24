@@ -48,7 +48,7 @@ export enum ModifierMapping {
 
 export enum FishProductTypeMapping {
   "egg" = 1,
-  "scale"
+  "scales"
 }
 
 export enum DFkTypeMapping {
