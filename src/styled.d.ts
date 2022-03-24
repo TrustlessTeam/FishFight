@@ -46,6 +46,7 @@ declare module 'styled-components' {
     };
 
     font: {
+      xsmall: string;
       small: string;
       medium: string;
       large: string;

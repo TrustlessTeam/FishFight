@@ -48,7 +48,7 @@ interface ProviderInterface {
 	showFishingDisclaimer: boolean;
 	showERC20Approval: boolean;
 	isFighting: boolean;
-	updateIsFighting:() => void;
+	updateIsFighting:(value: boolean) => void;
 }
 
 type ProviderProps = { children: React.ReactNode };
@@ -95,8 +95,8 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 		}
 	}, [account]);
 
-	const updateIsFighting = () => {
-		setIsFighting(!isFighting);
+	const updateIsFighting = (value: boolean) => {
+		setIsFighting(value);
 	}
 
 	// const onAccept = () => {
@@ -1126,8 +1126,8 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 	const contractModifierFishProducts = async (fish: Fish, fishProductType: number) => {
 		return FishFight.modifierWaters?.methods.modifierFishProducts(fish.tokenId, fishProductType).send({
 			from: account,
-				gasPrice: 30000000000,
-				gasLimit: await FishFight.modifierWaters?.methods.modifierFishProducts(fish.tokenId, fishProductType).estimateGas({from: account})
+			gasPrice: 30000000000,
+			gasLimit: await FishFight.modifierWaters?.methods.modifierFishProducts(fish.tokenId, fishProductType).estimateGas({from: account})
 		})
 		.on('error', (error: any) => {
 			console.log(error)

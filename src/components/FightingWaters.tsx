@@ -163,7 +163,7 @@ const FightingWaters = () => {
 	// }, [unityContext.isFishPoolReady]);
 
 	const fightAgain = () => {
-		updateIsFighting()
+		updateIsFighting(false)
 		setMySelectedFish(null)
 		setOpponentFish(null)
 	}
