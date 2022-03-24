@@ -1,7 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useState } from 'react';
-import { Contract } from '@harmony-js/contract';
 import { toast } from 'react-toastify';
-
+import { Contract } from "web3-eth-contract";
 import { useWeb3React } from '@web3-react/core';
 import { useFishFight } from '../context/fishFightContext';
 import web3 from 'web3';
@@ -34,7 +33,10 @@ interface ProviderInterface {
 	contractApproveFishForBreeding: (approvalType: number, callback: any) => void;
 	contractApproveFoodForBreeding: (amount: string) => void;
 	contractApproveFoodForTraining: (amount: string, callback: any) => void;
+	contractApproveERC20Modifiers: (erc20Contract: Contract | null, amountToApprove: string, callBack: any) => void;
 	setPerTransactionApproval: (value: boolean) => void;
+	contractModifierDFK: (fish: Fish, type: number) => void;
+	contractModifierFishProducts: (fish: Fish, type: number) => void;
 	onAccept: any;
 	perTransactionApproval: boolean;
 	pendingTransaction: boolean;
@@ -44,6 +46,7 @@ interface ProviderInterface {
 	showFightingDisclaimer: boolean;
 	showBreedingDisclaimer: boolean;
 	showFishingDisclaimer: boolean;
+	showERC20Approval: boolean;
 	isFighting: boolean;
 	updateIsFighting:() => void;
 }
@@ -61,7 +64,7 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
   const [fightingFishApproval, setFightingFishApproval] = useState<boolean>(false);
   const [breedingFishApproval, setBreedingFishApproval] = useState<boolean>(false);
   // const [trainingFishApproval, setTrainingFishApproval] = useState<boolean>(false);
-
+	
   const [trainingFoodApproval, setTrainingFoodApproval] = useState<BN>(new BN(0));
   const [breedingFoodApproval, setBreedingFoodApproval] = useState<BN>(new BN(0));
   const [fightingFoodApproval, setFightingFoodApproval] = useState<BN>(new BN(0));
@@ -71,6 +74,8 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 	const [showBreedingFishApproval, setShowBreedingFishApproval] = useState<boolean>(false);
 	const [showTrainingFoodApproval, setShowTrainingFoodApproval] = useState<boolean>(false);
 	const [showBreedingFoodApproval, setShowBreedingFoodApproval] = useState<boolean>(false);
+	const [showERC20Approval, setShowERC20Approval] = useState<boolean>(false);
+
 
 	const [showFightingDisclaimer, setShowFightingDisclaimer] = useState<boolean>(false);
 	const [showBreedingDisclaimer, setShowBreedingDisclaimer] = useState<boolean>(false);
@@ -1116,7 +1121,91 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 			})
 		})
 		
+	}
 
+	const contractModifierFishProducts = async (fish: Fish, fishProductType: number) => {
+		return FishFight.modifierWaters?.methods.modifierFishProducts(fish.tokenId, fishProductType).send({
+			from: account,
+				gasPrice: 30000000000,
+				gasLimit: await FishFight.modifierWaters?.methods.modifierFishProducts(fish.tokenId, fishProductType).estimateGas({from: account})
+		})
+		.on('error', (error: any) => {
+			console.log(error)
+			toast.error('Set Modifier Failed');
+			setPendingTransaction(false);
+		})
+		.on('transactionHash', () => {
+			setPendingTransaction(true);
+		})
+		.on('receipt', async (result: any) => {
+			setPendingTransaction(false);
+			toast.success('Set Modifier Successful!', {
+				onOpen: async () => {
+					refetchBalance()
+					refreshFish(fish.tokenId, fish.stakedFighting != null, fish.stakedBreeding != null)
+				},
+			});
+		})
+	}
+
+	const contractModifierDFK = async (fish: Fish, dfkType: number) => {
+		return FishFight.modifierWaters?.methods.modifierDFK(fish.tokenId, dfkType).send({
+			from: account,
+				gasPrice: 30000000000,
+				gasLimit: await FishFight.modifierWaters?.methods.modifierDFK(fish.tokenId, dfkType).estimateGas({from: account})
+		})
+		.on('error', (error: any) => {
+			console.log(error)
+			toast.error('Set Modifier Failed');
+			setPendingTransaction(false);
+		})
+		.on('transactionHash', () => {
+			setPendingTransaction(true);
+		})
+		.on('receipt', async (result: any) => {
+			setPendingTransaction(false);
+			toast.success('Set Modifier Successful!', {
+				onOpen: async () => {
+					refetchBalance()
+					refreshFish(fish.tokenId, fish.stakedFighting != null, fish.stakedBreeding != null)
+				},
+			});
+		})
+	}
+
+	const contractApproveERC20Modifiers = async (erc20Contract: Contract | null, amountToApprove: string, callBack: any) => {
+		if(erc20Contract == null) return;
+		setShowERC20Approval(true);
+		setOnAccept(() => async () => {
+			setShowERC20Approval(false);
+			setOnAccept(() => () => {})
+			return erc20Contract.methods.approve(FishFight.readModifierWaters.options.address, amountToApprove).send({
+				from: account,
+				gasPrice: 30000000000,
+				gasLimit: await erc20Contract.methods.approve(FishFight.readModifierWaters.options.address, amountToApprove).estimateGas({from: account})
+			})
+			.on('error', (error: any) => {
+				console.log(error)
+				toast.error('Approval Failed');
+				setPendingTransaction(false);
+				setShowTrainingFoodApproval(false);
+			})
+			.on('transactionHash', () => {
+				setPendingTransaction(true);
+			})
+			.on('receipt', (data: any) => {
+				console.log(data)
+				console.log('ERC20 Approval completed')
+				toast.success('ERC20 Approval Completed')
+				setPendingTransaction(false);
+				
+				if(data.events.Approval.returnValues.spender === FishFight.readModifierWaters.options.address &&
+					new BN(data.events.Approval.returnValues.value).gte(new BN(amountToApprove))) {
+					callBack();
+				}
+			})
+		})
+		
 	}
 
 	const getFightByIndex = async (fightIndex: number, myFish: Fish) => {
@@ -1151,7 +1240,10 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 		contractApproveFishForBreeding: contractApproveFishForBreeding,
 		contractApproveFoodForBreeding: contractApproveFoodForBreeding,
 		contractApproveFoodForTraining: contractApproveFoodForTraining,
+		contractApproveERC20Modifiers: contractApproveERC20Modifiers,
 		setPerTransactionApproval: setPerTransactionApproval,
+		contractModifierDFK: contractModifierDFK,
+		contractModifierFishProducts: contractModifierFishProducts,
 		onAccept: onAccept,
 		perTransactionApproval: perTransactionApproval,
 		pendingTransaction: pendingTransaction,
@@ -1161,6 +1253,7 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 		showFightingDisclaimer: showFightingDisclaimer,
 		showBreedingDisclaimer: showBreedingDisclaimer,
 		showFishingDisclaimer: showFishingDisclaimer,
+		showERC20Approval: showERC20Approval,
 		isFighting: isFighting,
 		updateIsFighting: updateIsFighting
 	};

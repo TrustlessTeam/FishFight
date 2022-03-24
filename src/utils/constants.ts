@@ -31,6 +31,7 @@ export let Constants = {
   _bettaBreedCooldown : '90 days',
   // Training Waters
   _feedFee : ethers.utils.parseEther('1').toString(), // FISHFOOD
+  _scaleFee : ethers.utils.parseEther('10').toString(), // FISHFOOD
   _claimAmount : ethers.utils.parseEther('0.5').toString(), // FISHFOOD
   _questFee : ethers.utils.parseEther('0').toString(), // FISHFOOD
   _claimCooldown : 60 * 24, //60 * 60 * 24, // 24 hours

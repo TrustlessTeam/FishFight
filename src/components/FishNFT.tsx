@@ -12,6 +12,8 @@ import { Constants } from "../utils/constants";
 import BaseButton from "../components/BaseButton";
 import { BaseText, BaseTitle, ContainerColumn, ContainerRow, StyledModal } from "./BaseStyles";
 import { VisibilityContext } from "react-horizontal-scrolling-menu";
+import { useFishFight } from "../context/fishFightContext";
+
 
 type Props = {
   fish: Fish;
@@ -40,6 +42,8 @@ const FishNFT = ({
   const [showStats, setShowStats] = useState<boolean>(false);
 	const [modalIsOpen, setModalIsOpen] = useState(false);
 
+  const { FishFight } = useFishFight();
+
   const {
     depositBreedingFish,
     withdrawBreedingFish,
@@ -48,6 +52,9 @@ const FishNFT = ({
     feedFish,
     questFish,
     claimFishFood,
+    contractApproveERC20Modifiers,
+    contractModifierDFK,
+    contractModifierFishProducts
   } = useContractWrapper();
 
   const toggleStats = () => {
@@ -84,7 +91,7 @@ const FishNFT = ({
           <ContainerRow>
             <ContainerColumn>
               <BaseText>{`Strength ${fish.strength} -> ${fish.strength+Constants._fightModifierValue > 100 ? 100 : fish.strength+Constants._fightModifierValue}`}</BaseText>
-              <BaseButton onClick={() => {questFish(fish, 0); closeModal()}}>Buff Strength</BaseButton>
+              <BaseButton onClick={() => {questFish(fish, Constants.MODIFIER_STR); closeModal()}}>Buff Strength</BaseButton>
             </ContainerColumn>
             <ContainerColumn>
               <BaseText>{`Intelligence ${fish.intelligence} -> ${fish.intelligence+Constants._fightModifierValue > 100 ? 100 : fish.intelligence+Constants._fightModifierValue}`}</BaseText>
@@ -94,6 +101,17 @@ const FishNFT = ({
               <BaseText>{`Strength ${fish.agility} -> ${fish.agility+Constants._fightModifierValue > 100 ? 100 : fish.agility+Constants._fightModifierValue}`}</BaseText>
               <BaseButton onClick={() => {questFish(fish, Constants.MODIFIER_AGI); closeModal()}}>Buff Agility</BaseButton>
             </ContainerColumn>          
+          </ContainerRow>
+          <BaseTitle>{`Spend some of these Tokens to Buff your Fish!`}</BaseTitle>
+          <ContainerRow>
+            <ContainerColumn>
+              <BaseText>{`1 Fish Egg - Buff is a mystery!`}</BaseText>
+              <BaseButton onClick={() => {contractApproveERC20Modifiers(FishFight.fishEgg, Constants._feedFee, () => contractModifierFishProducts(fish, 1)); closeModal()}}>Buff Strength</BaseButton>
+            </ContainerColumn>
+            <ContainerColumn>
+              <BaseText>{`10 Fish Scales - Buff prevents a Fight from reducing your Fish's power for 1 Fight!`}</BaseText>
+              <BaseButton onClick={() => {contractApproveERC20Modifiers(FishFight.fishScale, Constants._scaleFee, () => contractModifierFishProducts(fish, 2)); closeModal()}}>Shield Power</BaseButton>
+            </ContainerColumn>       
           </ContainerRow>
         </ContainerColumn>
         
@@ -141,7 +159,7 @@ const FishNFT = ({
           {fish.fishModifiers.canCollect() && !fish.stakedBreeding && !fish.stakedFighting &&
             <FishButton onClick={() => claimFishFood(fish)}>Collect</FishButton>
           }
-          {fish.canQuest && !fish.stakedBreeding && !fish.stakedFighting &&
+          {!fish.stakedBreeding && !fish.stakedFighting &&
             <FishButton onClick={() => toggleModel()}>Buff</FishButton>
           }
           {fish.stakedFighting && (

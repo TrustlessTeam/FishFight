@@ -32,7 +32,7 @@ import fightingImg from "../img/icons/fighting.svg"
 import { BaseContainerCentered, BaseText, ContainerColumn, ContainerRow, StyledModal, Title } from './BaseStyles';
 import { useContractWrapper } from '../context/contractWrapperContext';
 import { Constants } from '../utils/constants';
-import Balance from './Balance';
+import Balance, { ItemBalance } from './Balance';
 
 
 // ?
@@ -153,10 +153,11 @@ const { contractApproveFishForBreeding, perTransactionApproval, setPerTransactio
 								<SignOut account={parsedAccount} closeModal={closeModal} />
 							</Row>
 
-							<BalanceModal>
+							<Row>
 								<BalanceText>{balance?.split('.')[0]} ONE</BalanceText>
 								<Balance></Balance>
-							</BalanceModal>
+								<ItemBalance></ItemBalance>
+							</Row>
 						</ContainerColumnLeft>
 						
 							

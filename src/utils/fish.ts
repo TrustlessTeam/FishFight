@@ -46,6 +46,16 @@ export enum ModifierMapping {
   "power"
 }
 
+export enum FishProductTypeMapping {
+  "egg" = 1,
+  "scale"
+}
+
+export enum DFkTypeMapping {
+  "bloater" = 1,
+  "redgill"
+}
+
 export class Modifier {
   time: number;
   value: number;
@@ -59,7 +69,19 @@ export class Modifier {
     this.time = web3.utils.toNumber(modifierObject[0].hex);
     this.value = modifierObject[1];
     this.uses = modifierObject[2];
-    this.name = ModifierMapping[index] ? ModifierMapping[index] : "";
+    this.name = setModifierMapping(index, this.value)
+  }
+}
+
+const setModifierMapping = (index: number, value: number) => {
+  if(ModifierMapping[index]) {
+    return ModifierMapping[index]
+  } else if(index === 8 && FishProductTypeMapping[value]) {
+    return FishProductTypeMapping[value];
+  } else if(index === 9 && DFkTypeMapping[value]) {
+    return DFkTypeMapping[value];
+  } else {
+    return ""
   }
 }
 

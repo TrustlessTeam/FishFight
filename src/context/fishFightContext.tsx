@@ -9,18 +9,27 @@ import { EtherscanProvider, Web3Provider } from "@ethersproject/providers";
 import Web3 from 'web3';
 import BN from 'bn.js'
 import { Phase } from '../utils/cycles';
+import { ContractCallContext, ContractCallResults } from "ethereum-multicall";
+import Contracts from '../contracts/contracts.json';
+
 
 // Typescript
 interface FishFightProviderContext {
     FishFight: FishFight
     userConnected: boolean
+
     balance: string | undefined
-    balanceFood: string | undefined
-    balanceFoodWei: BN | undefined
     balanceFish: string | undefined
     balanceDeadFish: string | undefined
     balanceFightFish: string | undefined
     balanceBreedFish: string | undefined
+    balanceFood: string | undefined
+    balanceFoodWei: BN | undefined
+    balanceFishEgg: BN | undefined
+    balanceFishScale: BN | undefined
+    balanceBloater: BN | undefined
+    balanceRedgill: BN | undefined
+
     currentBlock: number
     currentPhase: Phase | undefined
     currentCycle: number;
@@ -135,50 +144,146 @@ const useBalance = () => {
 	const [balanceDeadFish, setBalanceDeadFish] = useState<string>();
 	const [balanceFightFish, setBalanceFightFish] = useState<string>();
 	const [balanceBreedFish, setBalanceBreedFish] = useState<string>();
+  const [balanceFishEgg, setBalanceFishEgg] = useState<BN>();
+  const [balanceFishScale, setBalanceFishScale] = useState<BN>();
+  const [balanceBloater, setBalanceBloater] = useState<BN>();
+  const [balanceRedgill, setBalanceRedgill] = useState<BN>();
 
 	const fetchBalance = useCallback(
 		async (account: string, FishFight: FishFight) => {
+
+      const contractCallContext: ContractCallContext[] = [
+        {
+          reference: 'fishFactory',
+          contractAddress: FishFight.readFishFactory.options.address,
+          abi: Contracts.contracts.FishFactory.abi,
+          calls: [{ reference: 'fishBalance', methodName: 'balanceOf', methodParameters: [account] }]
+        },
+        {
+          reference: 'deadFishFactory',
+          contractAddress: FishFight.readDeadFishFactory.options.address,
+          abi: Contracts.contracts.DeadFishFactory.abi,
+          calls: [{ reference: 'deadFishBalance', methodName: 'balanceOf', methodParameters: [account] }]
+        },
+        {
+          reference: 'fishFood',
+          contractAddress: FishFight.readFishFood.options.address,
+          abi: Contracts.contracts.FishFood.abi,
+          calls: [{ reference: 'foodBalance', methodName: 'balanceOf', methodParameters: [account] }]
+        },
+        {
+          reference: 'fightingWaters',
+          contractAddress: FishFight.readFightingWaters.options.address,
+          abi: Contracts.contracts.FightingWaters.abi,
+          calls: [{ reference: 'fighterBalance', methodName: 'balanceOf', methodParameters: [account] }]
+        },
+        {
+          reference: 'breedingWaters',
+          contractAddress: FishFight.readBreedingWaters.options.address,
+          abi: Contracts.contracts.BreedingWaters.abi,
+          calls: [{ reference: 'breederBalance', methodName: 'balanceOf', methodParameters: [account] }]
+        },
+        {
+          reference: 'fishEgg',
+          contractAddress: FishFight.readFishEgg.options.address,
+          abi: Contracts.contracts.FishEgg.abi,
+          calls: [{ reference: 'eggBalance', methodName: 'balanceOf', methodParameters: [account] }]
+        },
+        {
+          reference: 'fishScale',
+          contractAddress: FishFight.readFishScale.options.address,
+          abi: Contracts.contracts.FishScale.abi,
+          calls: [{ reference: 'scaleBalance', methodName: 'balanceOf', methodParameters: [account] }]
+        },
+        {
+          reference: 'bloater',
+          contractAddress: FishFight.readBloater.options.address,
+          abi: Contracts.contracts.TestERC20.abi,
+          calls: [{ reference: 'bloaterBalance', methodName: 'balanceOf', methodParameters: [account] }]
+        },
+        {
+          reference: 'redgill',
+          contractAddress: FishFight.readRedgill.options.address,
+          abi: Contracts.contracts.TestERC20.abi,
+          calls: [{ reference: 'redgillBalance', methodName: 'balanceOf', methodParameters: [account] }]
+        },
+      ];
+    
+      
+    
+      const results: ContractCallResults = await FishFight.multicall.call(contractCallContext);
+      console.log(results)
+      let fishBalance = results.results.fishFactory.callsReturnContext[0].success ? results.results.fishFactory.callsReturnContext[0].returnValues[0].hex : null;
+      let deadFishBalance = results.results.deadFishFactory.callsReturnContext[0].success ? results.results.deadFishFactory.callsReturnContext[0].returnValues[0].hex : null;
+      let fighterBalance = results.results.fightingWaters.callsReturnContext[0].success ? results.results.fightingWaters.callsReturnContext[0].returnValues[0].hex : null;
+      let breederBalance = results.results.breedingWaters.callsReturnContext[0].success ? results.results.breedingWaters.callsReturnContext[0].returnValues[0].hex : null;
+      let foodBalance = results.results.fishFood.callsReturnContext[0].success ? results.results.fishFood.callsReturnContext[0].returnValues[0].hex : null;
+      let eggBalance = results.results.fishEgg.callsReturnContext[0].success ? results.results.fishEgg.callsReturnContext[0].returnValues[0].hex : null;
+      let scaleBalance = results.results.fishScale.callsReturnContext[0].success ? results.results.fishScale.callsReturnContext[0].returnValues[0].hex : null;
+      let bloaterBalance = results.results.bloater.callsReturnContext[0].success ? results.results.bloater.callsReturnContext[0].returnValues[0].hex : null;
+      let redgillBalance = results.results.redgill.callsReturnContext[0].success ? results.results.redgill.callsReturnContext[0].returnValues[0].hex : null;
+
+      fishBalance = Web3.utils.hexToNumberString(fishBalance)
+      deadFishBalance = Web3.utils.hexToNumberString(deadFishBalance)
+      fighterBalance = Web3.utils.hexToNumberString(fighterBalance)
+      breederBalance = Web3.utils.hexToNumberString(breederBalance)
+
+      foodBalance = new BN(Web3.utils.hexToNumberString(foodBalance))
+      eggBalance = new BN(Web3.utils.hexToNumberString(eggBalance))
+      scaleBalance = new BN(Web3.utils.hexToNumberString(scaleBalance))
+      bloaterBalance = new BN(Web3.utils.hexToNumberString(bloaterBalance))
+      redgillBalance = new BN(Web3.utils.hexToNumberString(redgillBalance))
+
       // when account is connected get balances - uses default and read only providers
       const balance = await FishFight.provider.eth.getBalance(account)
       const parsedBalance = fromWei(balance, Units.one)
       setBalance(parsedBalance)
 
-      const food = await FishFight.readFishFood.methods.balanceOf(account).call();
-      const parsedFood = FishFight.provider.utils.fromWei(food);
+      const parsedFood = FishFight.provider.utils.fromWei(foodBalance);
       setBalanceFood(parsedFood);
-      setBalanceFoodWei(new BN(food));
+      setBalanceFoodWei(foodBalance);
 
-      const fish = await FishFight.readFishFactory.methods.balanceOf(account).call();
-      const parsedFish = fish
-      setBalanceFish(parsedFish);
+      setBalanceFish(fishBalance);
+      setBalanceDeadFish(deadFishBalance);
+      setBalanceFightFish(fighterBalance);
+      setBalanceBreedFish(breederBalance);
+      setBalanceFishEgg(eggBalance);
+      setBalanceFishScale(scaleBalance);
+      setBalanceBloater(bloaterBalance);
+      setBalanceRedgill(redgillBalance);
 
-      const deadfish = await FishFight.readDeadFishFactory.methods.balanceOf(account).call();
-      setBalanceDeadFish(deadfish);
-
-      const fightfish = await FishFight.readFightingWaters.methods.balanceOf(account).call();
-      setBalanceFightFish(fightfish);
-
-      const breedfish = await FishFight.readBreedingWaters.methods.balanceOf(account).call();
-      setBalanceBreedFish(breedfish);
 		},
-		[setBalance, setBalanceFish, setBalanceFood, setBalanceDeadFish, setBalanceFightFish, setBalanceBreedFish],
+		[setBalance, setBalanceFish, setBalanceFood, setBalanceDeadFish, setBalanceFightFish, setBalanceBreedFish, setBalanceFishEgg, setBalanceFishScale, setBalanceRedgill],
 	);
 
 	const resetBalance = () => {
-		setBalance(undefined);
-		setBalanceFood(undefined);
-		setBalanceFish(undefined);
-		setBalanceDeadFish(undefined);
+    setBalance(undefined)
+    setBalanceFish(undefined);
+    setBalanceDeadFish(undefined);
+    setBalanceFightFish(undefined);
+    setBalanceBreedFish(undefined);
+
+    setBalanceFood(undefined);
+    setBalanceFoodWei(undefined);
+    setBalanceFishEgg(undefined);
+    setBalanceFishScale(undefined);
+    setBalanceBloater(undefined);
+    setBalanceRedgill(undefined);
 	};
 
 	return {
-		balance,
-    balanceFood,
-    balanceFoodWei,
-    balanceFish,
-    balanceDeadFish,
-    balanceFightFish,
-    balanceBreedFish,
+		balance: balance,
+    balanceFish: balanceFish,
+    balanceDeadFish: balanceDeadFish,
+    balanceFightFish: balanceFightFish,
+    balanceBreedFish: balanceBreedFish,
+
+    balanceFood: balanceFood,
+    balanceFoodWei: balanceFoodWei,
+    balanceFishEgg: balanceFishEgg,
+    balanceFishScale: balanceFishScale,
+    balanceBloater: balanceBloater,
+    balanceRedgill: balanceRedgill,
 		fetchBalance,
 		resetBalance,
 	};
