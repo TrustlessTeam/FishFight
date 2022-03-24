@@ -3,14 +3,7 @@ import styled from 'styled-components';
 import LoadingOverlay from 'react-loading-overlay';
 import Modal from 'react-modal';
 import iceImg from "../img/ice.jpg";
-import ice2Img from "../img/ice2.jpg";
 import bloodImg from "../img/blood.png";
-
-
-
-interface DefaultOptions {
-	position?: string;
-}
 
 export const ContainerRow = styled.div`
 	position: relative;
@@ -92,22 +85,12 @@ export const StyledModal = styled(Modal)`
   }
 `;
 
-export const BaseOverlayContainer = styled(LoadingOverlay)`
-	display: flex;
-	flex-direction: column;
-	justify-content: flex-end;
-	width: 100%;
-	height: 100%;
-	pointer-events: none;
-`;
-
 export const BaseContainer = styled.div`
 	display: flex;
 	flex-direction: column;
 	justify-content: flex-end;
 	width: 100%;
 	height: 100%;
-	/* pointer-events: auto; */
 `;
 
 export const BaseContainerCentered = styled.div`

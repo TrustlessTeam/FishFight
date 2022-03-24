@@ -3,6 +3,7 @@ import {ethers} from 'ethers'
 const ENV = 'TESTNET';
 
 export let Constants = {
+  _MAXFISH: 40,
   _explorer: ENV === 'TESTNET' ? 'https://explorer.pops.one/' : 'https://explorer.harmony.one/',
   _fishFightMultiSig : '0xdbcc0f24617131C33A3c1d06E6a86A458e0d32b0',
   _baseTokenURI : 'https://gateway.pinata.cloud/ipfs/',

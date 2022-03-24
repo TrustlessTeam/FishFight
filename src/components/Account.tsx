@@ -1,41 +1,21 @@
 // React
 import React, { useState } from 'react';
 import Modal from 'react-modal';
-
-// Styled Components
 import styled from 'styled-components';
-
-// Web3 React
 import { useWeb3React } from '@web3-react/core';
-
-// Harmony SDK
 import { toBech32 } from '@harmony-js/crypto';
 import { isBech32Address } from '@harmony-js/utils';
-
-// Components
 import SignOut from './SignOut';
 import Wallets from './Wallets';
 import BaseButton from "../components/BaseButton";
 
 import { useFishFight } from '../context/fishFightContext';
-import fishImg from "../img/icons/fish.svg"
-import deadImg from "../img/icons/dead.svg"
-import foodImg from "../img/icons/food.svg"
-import fishImgDark from "../img/icons/fish-dark.svg"
-import deadImgDark from "../img/icons/dead-dark.svg"
-import foodImgDark from "../img/icons/food-dark.svg"
-import breedingImgDark from "../img/icons/breeding-dark.svg"
-import fightingImgDark from "../img/icons/fighting-dark.svg"
 import walletImg from "../img/icons/wallet.svg"
-import breedingImg from "../img/icons/breeding.svg"
-import fightingImg from "../img/icons/fighting.svg"
-import { BaseContainerCentered, BaseText, ContainerColumn, ContainerRow, StyledModal, Title } from './BaseStyles';
+import { ContainerColumn, StyledModal, Title } from './BaseStyles';
 import { useContractWrapper } from '../context/contractWrapperContext';
 import { Constants } from '../utils/constants';
 import Balance, { ItemBalance } from './Balance';
 
-
-// ?
 if (process.env.NODE_ENV !== 'test') Modal.setAppElement('#root');
 
 type Props = {
@@ -46,9 +26,9 @@ type Props = {
 const Account = ({ children, textOverride }: Props) => {
 	const [modalIsOpen, setModalIsOpen] = useState(false);
 	const { account, active } = useWeb3React();
-	const { balance, balanceFish, balanceDeadFish, balanceFood, balanceFightFish, balanceBreedFish, FishFight  } = useFishFight();
+	const { balance, FishFight  } = useFishFight();
 
-const { contractApproveFishForBreeding, perTransactionApproval, setPerTransactionApproval, contractApproveFoodForTraining, contractApproveFishForFighting,  } = useContractWrapper();
+	const { contractApproveFishForBreeding, perTransactionApproval, setPerTransactionApproval, contractApproveFoodForTraining, contractApproveFishForFighting,  } = useContractWrapper();
 
 	const parsedAccount = account && !isBech32Address(account) ? toBech32(account) : account;
 
@@ -222,9 +202,6 @@ const { contractApproveFishForBreeding, perTransactionApproval, setPerTransactio
 			</WalletMobileButton>
 
 		</MobileContainer>
-		
-	
-
 
 			<RightModal
 				// style={{overlay: { zIndex: 10}}}
@@ -319,12 +296,6 @@ const Row = styled.div`
 	padding: ${props => props.theme.spacing.gap} ${props => props.theme.spacing.gap} 0;
 	z-index: 5;
 `;
-
-const BalanceModal = styled(Row)`
-	@media ${props => props.theme.device.tablet} {
-		display: none;
-	}
-`
 
 const ContainerColumnLeft = styled(ContainerColumn)`
 	justify-content: flex-start;
@@ -430,18 +401,6 @@ const LogoImg = styled.img`
 const LogoImgWallet = styled.img`
 	height: 25px;
 	margin-left: 2px;
-`;
-
-const WalletImg = styled.img<{open: boolean}>`
-	background-color: ${p => (p.open ? "gray" : "white")};
-	padding: ${props => props.theme.spacing.gapSmall};
-	height: 25px;
-	margin-left: ${props => props.theme.spacing.gapSmall};
-	border-radius: 50%;
-
-	@media ${props => props.theme.device.tablet} {
-	  height: 20px;
-  }
 `;
 
 export default Account;

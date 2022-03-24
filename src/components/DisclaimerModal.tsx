@@ -4,7 +4,7 @@ import { useWeb3React } from "@web3-react/core";
 import web3 from "web3";
 
 import {
-  BaseOverlayContainer,
+  BaseContainer,
   BaseText,
   ContainerControls,
   StyledModal,

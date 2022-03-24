@@ -18,6 +18,7 @@ const BREEDCOSTFISHFOOD = web3.utils.toBN(100);
 const MAX_APPROVE = '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff';
 
 interface ProviderInterface {
+	catchFish: () => void;
 	fightFish: (fishA: Fish | null, fishB: Fish | null) => Promise<boolean | undefined>;
 	depositFightingFish: (fish: Fish | null) => void;
 	withdrawFightingFish: (fish: Fish | null) => void;
@@ -48,16 +49,21 @@ interface ProviderInterface {
 	showFishingDisclaimer: boolean;
 	showERC20Approval: boolean;
 	isFighting: boolean;
+	catchFishResult: CatchFishResponse | null;
+	clearCatchFishResult: () => void;
 	updateIsFighting:(value: boolean) => void;
 }
 
 type ProviderProps = { children: React.ReactNode };
+
+type CatchFishResponse = {success: boolean, roll: number}
 
 const ContractWrapperContext = createContext<ProviderInterface | undefined>(undefined);
 
 export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 	const [pendingTransaction, setPendingTransaction] = useState<boolean>(false);
 	const [isFighting, setIsFighting] = useState<boolean>(false);
+	const [catchFishResult, setCatchFishResult] = useState<CatchFishResponse | null>(null);
 
 	// Account Approvals
   const [perTransactionApproval, setPerTransactionApproval] = useState<boolean>(false);
@@ -97,6 +103,10 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 
 	const updateIsFighting = (value: boolean) => {
 		setIsFighting(value);
+	}
+
+	const clearCatchFishResult = () => {
+		setCatchFishResult(null);
 	}
 
 	// const onAccept = () => {
@@ -698,8 +708,20 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 				toast.success('Fight Completed!', {
 					onOpen: async () => {
 						refetchBalance()
-						if(myFish.tokenId === fightResult.winner) refreshFish(myFish.tokenId, true, false);
-						if(opponentFish.tokenId === fightResult.winner) refreshFish(opponentFish.tokenId, true, false);	
+						if(fightResult.winner === 0) {
+							refreshFish(myFish.tokenId, true, false);
+							refreshFish(opponentFish.tokenId, true, false);
+						}
+						if(myFish.tokenId === fightResult.winner) {
+							refreshFish(myFish.tokenId, true, false)
+							unityContext.refreshFishUnity(opponentFish)
+						}
+
+						if(opponentFish.tokenId === fightResult.winner) {
+							refreshFish(opponentFish.tokenId, true, false);
+							unityContext.refreshFishUnity(myFish)
+						}
+
 					},
 				});
 			})
@@ -1218,13 +1240,71 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 		return fightResult;
 	}
 
-	function getRandomIntInclusive(min: number, max: number) {
-		min = Math.ceil(min);
-		max = Math.floor(max);
-		return Math.floor(Math.random() * (max - min + 1) + min); //The maximum is inclusive and the minimum is inclusive
+	const getUserFish = async (tokenId: number) => {
+		console.log(tokenId)
+		const newFish = await createUserFish(tokenId)
+		if(newFish != null) {
+			unityContext.addFishFishing(newFish);
+		}
 	}
 
+	const catchFish = async () => {
+		if(!account) {
+			toast.error('Connect your wallet');
+			return;
+		}
+
+		if(await FishFight.provider.eth.getChainId() != 1666700000) {
+			toast.error('Wrong Network');
+			return;
+		}
+
+		try {
+			const isFishing = await FishFight.readCycles.methods.isFishingPhase().call();
+			await FishFight.fishingWaters?.methods.goFishing().send({
+				from: account,
+				gasPrice: 30000000000,
+				gasLimit: 500000,
+				// gasLimit: await FishFight.fishingWaters?.methods.goFishing().estimateGas({from: account, value: web3.utils.toWei(COSTPERCASTONE)}),
+				value: isFishing ? Constants._fishingPriceInPhase : Constants._fishingPrice
+			}).on('transactionHash', () => {
+				setPendingTransaction(true);
+			}).on('receipt', (result: any) => {
+				console.log(result)
+				setPendingTransaction(false);
+				
+				// No catch
+				if(result.events.FishingResult.returnValues.index === 0) {
+					console.log("set no catch")
+
+					toast.success('Missed `Em!', {
+						onOpen: async () => {
+							refetchBalance()
+						},
+					});
+					setCatchFishResult({success: true, roll: result.events.FishingResult.returnValues.roll})
+				}
+				
+				// Fish Caught
+				getUserFish(result.events.FishingResult.returnValues.index);
+				toast.success('Fish Caught!', {
+					onOpen: async () => {
+						refetchBalance()
+					},
+				});
+				setCatchFishResult(null)
+				
+			})
+		} catch (error: any) {
+			toast.error(error);
+			console.log(error)
+		}
+	};
+
+
+
 	const value: ProviderInterface = {
+		catchFish: catchFish,
 		fightFish: fightFish,
 		depositFightingFish: depositFightingFish,
 		withdrawFightingFish: withdrawFightingFish,
@@ -1255,6 +1335,8 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 		showFishingDisclaimer: showFishingDisclaimer,
 		showERC20Approval: showERC20Approval,
 		isFighting: isFighting,
+		catchFishResult: catchFishResult,
+		clearCatchFishResult: clearCatchFishResult,
 		updateIsFighting: updateIsFighting
 	};
 	return <ContractWrapperContext.Provider value={value}>{children}</ContractWrapperContext.Provider>;

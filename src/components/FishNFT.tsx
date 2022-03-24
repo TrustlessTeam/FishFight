@@ -9,6 +9,9 @@ import alphaImg from "../img/icons/alpha-dark.svg";
 import bettaImg from "../img/icons/betta-dark.svg";
 import scaleImg from "../img/icons/FishScale.png";
 import eggImg from "../img/icons/FishEgg.png";
+import strImg from "../img/icons/str.png";
+import intImg from "../img/icons/int.png";
+import agiImg from "../img/icons/agi.png";
 import { useContractWrapper } from "../context/contractWrapperContext";
 import { Constants } from "../utils/constants";
 import BaseButton from "../components/BaseButton";
@@ -94,14 +97,17 @@ const FishNFT = ({
           <BaseText>{`Consume ${Constants._fightModifierCost} of your Fish's Power to increase an attribute of your $FISH for 3 Fights!`}</BaseText>
           <ContainerRow>
             <ContainerColumnSmall>
+              <LogoImg src={strImg}></LogoImg>
               <BaseText>{`Strength ${fish.strength} -> ${fish.strength+Constants._fightModifierValue > 100 ? 100 : fish.strength+Constants._fightModifierValue}`}</BaseText>
               <BaseButton onClick={() => {questFish(fish, Constants.MODIFIER_STR); closeModal()}}>Buff Strength</BaseButton>
             </ContainerColumnSmall>
             <ContainerColumnSmall>
+              <LogoImg src={intImg}></LogoImg>
               <BaseText>{`Intelligence ${fish.intelligence} -> ${fish.intelligence+Constants._fightModifierValue > 100 ? 100 : fish.intelligence+Constants._fightModifierValue}`}</BaseText>
               <BaseButton onClick={() => {questFish(fish, Constants.MODIFIER_INT); closeModal()}}>Buff Intelligence</BaseButton>
             </ContainerColumnSmall>
             <ContainerColumnSmall>
+              <LogoImg src={agiImg}></LogoImg>
               <BaseText>{`Strength ${fish.agility} -> ${fish.agility+Constants._fightModifierValue > 100 ? 100 : fish.agility+Constants._fightModifierValue}`}</BaseText>
               <BaseButton onClick={() => {questFish(fish, Constants.MODIFIER_AGI); closeModal()}}>Buff Agility</BaseButton>
             </ContainerColumnSmall>          

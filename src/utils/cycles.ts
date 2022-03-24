@@ -17,11 +17,12 @@ export class Phase {
 	constructor(
 			phaseResponse: any
 		) 
-		{
-			this.phase = web3.utils.toNumber(phaseResponse[0]);
+		{	
+			console.log(phaseResponse)
+			this.phase = phaseResponse[0];
 			this.phaseString = phaseResponse[1];
-			this.phaseEndtime = web3.utils.toNumber(phaseResponse[2]);
-			this.phaseEndtimeDate = new Date(web3.utils.toNumber(this.phaseEndtime) * 1000);
+			this.phaseEndtime = web3.utils.hexToNumber(phaseResponse[2].hex);
+			this.phaseEndtimeDate = new Date(this.phaseEndtime * 1000);
 		};
 }
 

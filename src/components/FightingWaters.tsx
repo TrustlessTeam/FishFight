@@ -6,7 +6,7 @@ import { Fish } from '../utils/fish'
 import { Fight} from '../utils/fight'
 import { useUnity } from '../context/unityContext';
 import { useFishPool } from '../context/fishPoolContext';
-import { Error, BaseOverlayContainer, BaseText, ContainerColumn, ContainerControls } from './BaseStyles';
+import { Error, BaseContainer, BaseText, ContainerColumn, ContainerControls } from './BaseStyles';
 import ToggleButton, { ToggleGroup, ToggleItem, ToggleOption } from './ToggleButton';
 import { useContractWrapper } from '../context/contractWrapperContext';
 import { useFishFight } from '../context/fishFightContext';
@@ -166,16 +166,14 @@ const FightingWaters = () => {
 		updateIsFighting(false)
 		setMySelectedFish(null)
 		setOpponentFish(null)
+		setFighter1Error(null)
+		setFighter2Error(null)
 	}
 
 	if(!unityContext.isFishPoolReady) return null;
 
 	return(
-		<BaseOverlayContainer
-			active={pendingTransaction}
-			spinner
-			text='Waiting for confirmation...'
-		>
+		<BaseContainer>
 			{!isFighting &&
 			<>
 				<OptionsContainer>
@@ -207,7 +205,7 @@ const FightingWaters = () => {
 				
 			} 
 			
-		</BaseOverlayContainer>
+		</BaseContainer>
 		
 	)
 };

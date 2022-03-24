@@ -6,7 +6,7 @@ import { useWeb3React } from '@web3-react/core';
 
 import Account from './Account';
 import BaseButton from "../components/BaseButton";
-import { ContainerControls, BaseLinkButton, BaseOverlayContainer, OptionsContainer, StyledModal, BaseTitle, ContainerColumn, ContainerRow, BaseText } from './BaseStyles';
+import { ContainerControls, BaseLinkButton, BaseContainer, OptionsContainer, StyledModal, BaseTitle, ContainerColumn, ContainerRow, BaseText } from './BaseStyles';
 import ToggleButton, { ToggleItem } from './ToggleButton';
 import Fish from '../utils/fish';
 import { useContractWrapper } from '../context/contractWrapperContext';
@@ -19,6 +19,8 @@ enum FishView {
 	User
 }
 
+let renderedOceanFish: number[] = [];
+
 const Ocean = () => {
 	const { userFish, oceanFish } = useFishPool();
 	const [fishToShow, setFishToShow] = useState<number>(FishView.Ocean);
@@ -26,9 +28,9 @@ const Ocean = () => {
 	const [modalIsOpen, setModalIsOpen] = useState(false);
 
 
-	const [renderedFish, setRenderedFish] = useState<number[]>([]);
+	// const [renderedFish, setRenderedFish] = useState<number[]>([]);
 	const unityContext = useUnity();
-	const { feedFish, claimFishFood, questFish, depositBreedingFish, depositFightingFish, pendingTransaction } = useContractWrapper();
+	const { feedFish, claimFishFood, questFish, depositBreedingFish, depositFightingFish, withdrawFightingFish, withdrawBreedingFish, pendingTransaction } = useContractWrapper();
 	const { account } = useWeb3React();
 
 
@@ -61,8 +63,14 @@ const Ocean = () => {
 				case "deposit_fight_confirm":
 					depositFightingFish(mySelectedFish);
 					return;
+				case "withdraw_fight_confirm":
+					withdrawFightingFish(mySelectedFish);
+					return;
 				case "deposit_breed_confirm":
 					depositBreedingFish(mySelectedFish);
+					return;
+				case "withdraw_breed_confirm":
+					withdrawBreedingFish(mySelectedFish);
 					return;
         default:
           return;
@@ -81,23 +89,26 @@ const Ocean = () => {
 	useEffect(() => {
 		if(!unityContext.isFishPoolReady) return;
 
-		let fishToRender = fishToShow === FishView.Ocean ? oceanFish : userFish;
-		fishToRender.forEach(fish => {
-			if(renderedFish.some(prevTokenId => prevTokenId === fish.tokenId)) return;
-			unityContext.addFishOcean(fish);
-			setRenderedFish(prevTokens => [...prevTokens, fish.tokenId])
+		oceanFish.forEach(poolFish => {
+			if(!renderedOceanFish.some(tokenId => poolFish.tokenId === tokenId)) {
+				unityContext.addFishOcean(poolFish);
+				// if(renderedOceanFish.length > Constants._MAXFISH) renderedOceanFish.shift()
+				renderedOceanFish.push(poolFish.tokenId)
+			}
 		})
-		
-		// if(mySelectedFish != null) {
-		// 	let matchingUserFish = userFish.find(fish => fish.tokenId === mySelectedFish.tokenId);
-		// 	let matchingOceanFish = oceanFish.find(fish => fish.tokenId === mySelectedFish.tokenId);
-		// 	if(matchingUserFish != null) {
-		// 		unityContext.showFish(matchingUserFish)
-		// 	} else if(matchingOceanFish != null) {
-		// 		unityContext.showFish(matchingOceanFish)
-		// 	}
-		// }
-	}, [unityContext.isFishPoolReady, fishToShow, oceanFish, userFish]);
+	}, [unityContext.isFishPoolReady, oceanFish]);
+
+	useEffect(() => {
+		if(!unityContext.isFishPoolReady) return;
+
+		userFish.forEach(poolFish => {
+			if(!renderedOceanFish.some(tokenId => poolFish.tokenId === tokenId)) {
+				unityContext.addFishOcean(poolFish);
+				// if(renderedOceanFish.length > Constants._MAXFISH) renderedOceanFish.shift()
+				renderedOceanFish.push(poolFish.tokenId)
+			}
+		})
+	}, [unityContext.isFishPoolReady, userFish]);
 
 	
 
@@ -150,11 +161,7 @@ const Ocean = () => {
 
 	return (
 
-		<BaseOverlayContainer
-			active={pendingTransaction}
-			spinner
-			text='Waiting for confirmation...'
-			>	
+		<BaseContainer>	
 			{mySelectedFish != null && mySelectedFish.canQuest &&
 				<StyledModal
 				isOpen={modalIsOpen}
@@ -205,7 +212,7 @@ const Ocean = () => {
 					</FishDrawer>
 				}
 				
-		</BaseOverlayContainer>
+		</BaseContainer>
 		
 	);
 };

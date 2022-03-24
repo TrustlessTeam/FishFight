@@ -1,14 +1,16 @@
-import React, { useEffect } from "react";
 import styled from "styled-components";
-import { useWeb3React } from "@web3-react/core";
-
-import { useHarmony } from "../context/harmonyContext";
+import BN from 'bn.js'
 import { useFishFight } from "../context/fishFightContext";
 import fishImg from "../img/icons/fish.svg";
 import deadImg from "../img/icons/dead.svg";
 import foodImg from "../img/icons/food.svg";
 import breedingImg from "../img/icons/breeding.svg";
 import fightingImg from "../img/icons/fighting.svg";
+import eggImg from "../img/icons/FishEgg.png";
+import scaleImg from "../img/icons/FishScale.png";
+import bloaterImg from "../img/icons/dfk-bloater.png";
+import redgillImg from "../img/icons/dfk-redgill.png";
+
 import web3 from "web3";
 
 const Balance = () => {
@@ -18,11 +20,7 @@ const Balance = () => {
     balanceDeadFish,
 		balanceFightFish,
     balanceBreedFish,
-    balanceFood,
-		balanceFishEgg,
-		balanceFishScale,
-    balanceBloater,
-		balanceRedgill
+    balanceFood
   } = useFishFight();
 
   if (!balance) return null;
@@ -76,30 +74,38 @@ export const ItemBalance = () => {
 
   return (
     <>
-      <BalanceComponent title="FISHEGG Balance">
-        <BalanceText>
-          {web3.utils.fromWei(balanceFishEgg)}
-          <LogoImg src={foodImg} alt="FISHEGG"></LogoImg>
-        </BalanceText>
-      </BalanceComponent>
-      <BalanceComponent title="FISHSCALE Balance">
-        <BalanceText>
-          {web3.utils.fromWei(balanceFishScale)}
-          <LogoImg src={foodImg} alt="FISHSCALE"></LogoImg>
-        </BalanceText>
-      </BalanceComponent>
-      <BalanceComponent title="BLOATER Balance">
-        <BalanceText>
-          {web3.utils.fromWei(balanceBloater)}
-          <LogoImg src={foodImg} alt="BLOATER"></LogoImg>
-        </BalanceText>
-      </BalanceComponent>
-			<BalanceComponent title="REDGILL Balance">
-        <BalanceText>
-          {web3.utils.fromWei(balanceRedgill)}
-          <LogoImg src={foodImg} alt="REDGILL"></LogoImg>
-        </BalanceText>
-      </BalanceComponent>
+			{balanceFishEgg.gt(new BN(0)) &&
+				<BalanceComponent title="FISHEGG Balance">
+					<BalanceText>
+						{web3.utils.fromWei(balanceFishEgg)}
+						<LogoImg src={eggImg} alt="FISHEGG"></LogoImg>
+					</BalanceText>
+				</BalanceComponent>
+			}
+      {balanceFishScale.gt(new BN(0)) &&
+				<BalanceComponent title="FISHSCALE Balance">
+					<BalanceText>
+						{web3.utils.fromWei(balanceFishScale)}
+						<LogoImg src={scaleImg} alt="FISHSCALE"></LogoImg>
+					</BalanceText>
+				</BalanceComponent>
+			}
+			{balanceBloater.gt(new BN(0)) &&
+				<BalanceComponent title="BLOATER Balance">
+					<BalanceText>
+						{web3.utils.fromWei(balanceBloater)}
+						<LogoImg src={bloaterImg} alt="BLOATER"></LogoImg>
+					</BalanceText>
+				</BalanceComponent>
+			}
+      {balanceRedgill.gt(new BN(0)) &&
+				<BalanceComponent title="REDGILL Balance">
+					<BalanceText>
+						{web3.utils.fromWei(balanceRedgill)}
+						<LogoImg src={redgillImg} alt="REDGILL"></LogoImg>
+					</BalanceText>
+				</BalanceComponent>
+			}
     </>
   );
 };
