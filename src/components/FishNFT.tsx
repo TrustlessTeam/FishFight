@@ -7,12 +7,15 @@ import fightingImg from "../img/icons/fighting-dark.svg";
 import fishImg from "../img/icons/fish-dark.svg";
 import alphaImg from "../img/icons/alpha-dark.svg";
 import bettaImg from "../img/icons/betta-dark.svg";
+import scaleImg from "../img/icons/FishScale.png";
+import eggImg from "../img/icons/FishEgg.png";
 import { useContractWrapper } from "../context/contractWrapperContext";
 import { Constants } from "../utils/constants";
 import BaseButton from "../components/BaseButton";
-import { BaseText, BaseTitle, ContainerColumn, ContainerRow, StyledModal } from "./BaseStyles";
+import { BaseText, BaseTitle, ContainerColumn, ContainerRow, StyledModal, Title } from "./BaseStyles";
 import { VisibilityContext } from "react-horizontal-scrolling-menu";
 import { useFishFight } from "../context/fishFightContext";
+import web3 from 'web3';
 
 
 type Props = {
@@ -86,34 +89,40 @@ const FishNFT = ({
         shouldCloseOnOverlayClick
       >
         {/* {active ? <SignOut account={parsedAccount} closeModal={closeModal} /> : <Wallets closeModal={closeModal} />} */}
-        <ContainerColumn>
-          <BaseTitle>{`Drain ${Constants._fightModifierCost} Power to Buff an attribute of your $FISH for 3 Fights!`}</BaseTitle>
+        <ContainerWrapper>
+          <Title>{`Core Fight Buffs`}</Title>
+          <BaseText>{`Consume ${Constants._fightModifierCost} of your Fish's Power to increase an attribute of your $FISH for 3 Fights!`}</BaseText>
           <ContainerRow>
-            <ContainerColumn>
+            <ContainerColumnSmall>
               <BaseText>{`Strength ${fish.strength} -> ${fish.strength+Constants._fightModifierValue > 100 ? 100 : fish.strength+Constants._fightModifierValue}`}</BaseText>
               <BaseButton onClick={() => {questFish(fish, Constants.MODIFIER_STR); closeModal()}}>Buff Strength</BaseButton>
-            </ContainerColumn>
-            <ContainerColumn>
+            </ContainerColumnSmall>
+            <ContainerColumnSmall>
               <BaseText>{`Intelligence ${fish.intelligence} -> ${fish.intelligence+Constants._fightModifierValue > 100 ? 100 : fish.intelligence+Constants._fightModifierValue}`}</BaseText>
               <BaseButton onClick={() => {questFish(fish, Constants.MODIFIER_INT); closeModal()}}>Buff Intelligence</BaseButton>
-            </ContainerColumn>
-            <ContainerColumn>
+            </ContainerColumnSmall>
+            <ContainerColumnSmall>
               <BaseText>{`Strength ${fish.agility} -> ${fish.agility+Constants._fightModifierValue > 100 ? 100 : fish.agility+Constants._fightModifierValue}`}</BaseText>
               <BaseButton onClick={() => {questFish(fish, Constants.MODIFIER_AGI); closeModal()}}>Buff Agility</BaseButton>
-            </ContainerColumn>          
+            </ContainerColumnSmall>          
           </ContainerRow>
-          <BaseTitle>{`Spend some of these Tokens to Buff your Fish!`}</BaseTitle>
+          <Title>{`Token Modifiers`}</Title>
+          <BaseText>{`A variety of modifiers to buff your $FISH based on the token used!`}</BaseText>
           <ContainerRow>
-            <ContainerColumn>
-              <BaseText>{`1 Fish Egg - Buff is a mystery!`}</BaseText>
-              <BaseButton onClick={() => {contractApproveERC20Modifiers(FishFight.fishEgg, Constants._feedFee, () => contractModifierFishProducts(fish, 1)); closeModal()}}>Buff Strength</BaseButton>
-            </ContainerColumn>
-            <ContainerColumn>
-              <BaseText>{`10 Fish Scales - Buff prevents a Fight from reducing your Fish's power for 1 Fight!`}</BaseText>
-              <BaseButton onClick={() => {contractApproveERC20Modifiers(FishFight.fishScale, Constants._scaleFee, () => contractModifierFishProducts(fish, 2)); closeModal()}}>Shield Power</BaseButton>
-            </ContainerColumn>       
+            <ContainerColumnSmall>
+              <LogoImg src={eggImg}></LogoImg>
+              <Text>{`Fish Egg (${web3.utils.fromWei(Constants._eggFee)} $FISHEGG)`}</Text>
+              <SubText>{`Buff is a mystery!`}</SubText>
+              <BaseButton onClick={() => {contractApproveERC20Modifiers(FishFight.fishEgg, Constants._feedFee, () => contractModifierFishProducts(fish, 1)); closeModal()}}>Consume Egg</BaseButton>
+            </ContainerColumnSmall>
+            <ContainerColumnSmall>
+              <LogoImg src={scaleImg}></LogoImg>
+              <Text>{`Fish Scales (${web3.utils.fromWei(Constants._scaleFee)} $FISHSCALE)`}</Text>
+              <SubText>{`Prevent Fight power reduction for 3 Fights!`}</SubText>
+              <BaseButton onClick={() => {contractApproveERC20Modifiers(FishFight.fishScale, Constants._scaleFee, () => contractModifierFishProducts(fish, 2)); closeModal()}}>Consume Scales</BaseButton>
+            </ContainerColumnSmall>       
           </ContainerRow>
-        </ContainerColumn>
+        </ContainerWrapper>
         
       </StyledModal>
       {/* <ToggleButton onClick={() => toggleStats()}>info</ToggleButton> */}
@@ -201,13 +210,17 @@ const FishNFT = ({
   );
 };
 
-const ContainerColu = styled.div`
-	position: relative;
-	display: flex;
-	flex-flow: column;
-  justify-content: center;
+const ContainerWrapper = styled(ContainerColumn)`
+  justify-content: <center></center>;
+  align-items: center;
+`;
+
+const ContainerColumnSmall = styled(ContainerColumn)`
+  justify-content: flex-start;
   align-items: center;
 	padding: ${props => props.theme.spacing.gapSmall};
+  min-width: 25%;
+  max-width: 50%;
 `;
 
 const Options = styled.div`
@@ -234,6 +247,38 @@ const FishButton = styled(BaseButton)`
 	}
 `;
 
+export const Text = styled.p`
+	display: flex;
+	flex-flow: column;
+	justify-content: center;
+  align-items: center;
+  text-align: center;
+	margin: 0;
+	color: black;
+
+	font-size: ${props => props.theme.font.small};
+
+	@media ${props => props.theme.device.tablet} {
+		font-size: ${props => props.theme.font.medium};
+  }
+`;
+
+export const SubText = styled.p`
+	display: flex;
+	flex-flow: column;
+	justify-content: center;
+  align-items: center;
+  text-align: center;
+	margin: 0;
+	color: white;
+
+	font-size: ${props => props.theme.font.xsmall};
+
+	@media ${props => props.theme.device.tablet} {
+		font-size: ${props => props.theme.font.small};
+  }
+`;
+
 
 const LogoSmallImg = styled.img`
   height: 20px;
@@ -245,6 +290,17 @@ const LogoSmallImg = styled.img`
 
   @media ${props => props.theme.device.tablet} {
 		height: 25px;
+  }
+`;
+
+const LogoImg = styled.img`
+  height: 30px;
+
+  /* background: linear-gradient(#caf0f8, #48cae4);
+  box-shadow: inset 2px 2px 2px rgba(255, 255, 255, .3), inset -2px -2px 2px rgba(0, 0, 0, .3); */
+
+  @media ${props => props.theme.device.tablet} {
+		height: 40px;
   }
 `;
 

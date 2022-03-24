@@ -26,6 +26,7 @@ const gap = spacingBase + `px`;
 const gapMedium = spacingBase * 2 + `px`;
 const gapLarge = spacingBase * 3 + `px`
 
+const fontXSmall = "10px";
 const fontSmall = "12px";
 const fontMedium = "16px";
 const fontLarge = "24px";
@@ -92,6 +93,7 @@ const BaseTheme: DefaultTheme = {
     desktopL: device.desktopL
   },
   font: {
+    xsmall: fontXSmall,
     small: fontSmall,
     medium: fontMedium,
     large: fontLarge
