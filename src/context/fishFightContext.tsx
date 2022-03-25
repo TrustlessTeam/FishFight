@@ -63,8 +63,6 @@ export const FishFightProvider = ({ children }: FishFightProviderProps ) => {
 
   const contextBalance = useBalance();
   const contextStats = useStats();
-
-  console.log("fishfight")
   
 
   // useEffect(() => {
@@ -94,11 +92,10 @@ export const FishFightProvider = ({ children }: FishFightProviderProps ) => {
         setUserConnected(true);
         refetchBalance();
         refetchStats();
-        console.log(FishFightInstance)
       })
     }
     if(!account) {
-      console.log("account not connected");
+      // console.log("account not connected");
       setUserConnected(false);
       refetchStats();
     }
@@ -118,8 +115,6 @@ export const FishFightProvider = ({ children }: FishFightProviderProps ) => {
   const refetchStats = () => {
     contextStats.fetchStats(FishFightInstance);
   }
-
-  
 
   const value: FishFightProviderContext = {
     FishFight: FishFightInstance,
@@ -198,13 +193,13 @@ const useBalance = () => {
         {
           reference: 'bloater',
           contractAddress: FishFight.readBloater.options.address,
-          abi: Contracts.contracts.TestERC20.abi,
+          abi: Contracts.contracts.BloaterTest.abi,
           calls: [{ reference: 'bloaterBalance', methodName: 'balanceOf', methodParameters: [account] }]
         },
         {
           reference: 'redgill',
           contractAddress: FishFight.readRedgill.options.address,
-          abi: Contracts.contracts.TestERC20.abi,
+          abi: Contracts.contracts.RedgillTest.abi,
           calls: [{ reference: 'redgillBalance', methodName: 'balanceOf', methodParameters: [account] }]
         },
       ];
@@ -212,7 +207,7 @@ const useBalance = () => {
       
     
       const results: ContractCallResults = await FishFight.multicall.call(contractCallContext);
-      console.log(results)
+      // console.log(results)
       let fishBalance = results.results.fishFactory.callsReturnContext[0].success ? results.results.fishFactory.callsReturnContext[0].returnValues[0].hex : null;
       let deadFishBalance = results.results.deadFishFactory.callsReturnContext[0].success ? results.results.deadFishFactory.callsReturnContext[0].returnValues[0].hex : null;
       let fighterBalance = results.results.fightingWaters.callsReturnContext[0].success ? results.results.fightingWaters.callsReturnContext[0].returnValues[0].hex : null;
@@ -314,8 +309,8 @@ const useStats = () => {
           reference: 'fishFactory',
           contractAddress: FishFight.readFishFactory.options.address,
           abi: Contracts.contracts.FishFactory.abi,
-          calls: [{ reference: 'totalFish', methodName: 'currentIndex', methodParameters: [] },
-            { reference: 'currentFishIndex', methodName: 'totalSupply', methodParameters: [] },
+          calls: [{ reference: 'totalFish', methodName: 'totalSupply', methodParameters: [] },
+            { reference: 'currentFishIndex', methodName: 'currentIndex', methodParameters: [] },
             { reference: 'totalFighters', methodName: 'balanceOf', methodParameters: [FishFight.readFightingWaters.options.address] },
             { reference: 'totalBreeders', methodName: 'balanceOf', methodParameters: [FishFight.readBreedingWaters.options.address] }
           ]
@@ -343,7 +338,7 @@ const useStats = () => {
       ];
 
       const results: ContractCallResults = await FishFight.multicall.call(contractCallContext);
-      console.log(results)
+      // console.log(results)
       let totalFish = results.results.fishFactory.callsReturnContext[0].success ? results.results.fishFactory.callsReturnContext[0].returnValues[0].hex : null;
       let currentFishIndex = results.results.fishFactory.callsReturnContext[1].success ? results.results.fishFactory.callsReturnContext[1].returnValues[0].hex : null;
       let totalFighters = results.results.fishFactory.callsReturnContext[2].success ? results.results.fishFactory.callsReturnContext[2].returnValues[0].hex : null;

@@ -88,9 +88,12 @@ const ArrowButton = styled(BaseButton)`
   cursor: pointer;
   right: 1%;
   user-select: none;
-  font-size: 40px;
+  font-size: 30px;
   font-weight: bold;
   padding: 0px 10px;
   margin: 5px;
   /* height: 20px; */
+  @media ${props => props.theme.device.tablet} {
+		font-size: 40px;
+  }
 `;

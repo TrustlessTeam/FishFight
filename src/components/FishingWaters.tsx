@@ -21,8 +21,8 @@ const FishingWaters = () => {
 
 	useEffect(() => {
 		unityContext.UnityInstance.on('UISelectionConfirm', function (data: any) {
-			console.log('UI changed catch fish');
-			console.log(data)
+			// console.log('UI changed catch fish');
+			// console.log(data)
 			switch (data) {
 				case 'mint_fish':
 					catchFish();

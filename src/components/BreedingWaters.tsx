@@ -51,7 +51,7 @@ const BreedingWaters = () => {
 	]
 
 	useEffect(() => {
-		console.log("Breeding Fish")
+		// console.log("Breeding Fish")
 		unityContext.clearUIFish();
 		// unityContext.clearFishPool("ShowBreeding")
 		unityContext.hideUI();
@@ -59,8 +59,8 @@ const BreedingWaters = () => {
 	}, [unityContext.isFishPoolReady]);
 
 	useEffect(() => {
-		console.log("Breeding Fish Changed")
-		console.log(breedingFish)
+		// console.log("Breeding Fish Changed")
+		// console.log(breedingFish)
 		if(!unityContext.isFishPoolReady) return;
 		breedingFish.forEach(poolFish => {
 			if(!renderedBreedFish.some(tokenId => poolFish.tokenId === tokenId)) {
@@ -75,9 +75,9 @@ const BreedingWaters = () => {
 		if(!unityContext.isFishPoolReady) return;
 		unityContext.UnityInstance.on('UISelectionConfirm', function (data: any) {
 			// console.log('UI changed catch fish');
-			console.log(account)
-			console.log(myBettaFish)
-			console.log(data)
+			// console.log(account)
+			// console.log(myBettaFish)
+			// console.log(data)
 			switch (data) {
 				case 'breed_confirm':
 					breedFish(alphaFish, myBettaFish);
@@ -103,7 +103,7 @@ const BreedingWaters = () => {
 			toast.error(`Not Alpha this Season`)
 			return;
 		}
-		console.log("Alpha Fish: " + fish.tokenId)
+		// console.log("Alpha Fish: " + fish.tokenId)
 		unityContext.showBreedingUI();
 		setAlphaFish(fish);
 		unityContext.addFishBreed2(fish)
@@ -130,7 +130,7 @@ const BreedingWaters = () => {
 			setBettaError(null);
 		}
 
-		console.log("Betta Fish: " + fish.tokenId)
+		// console.log("Betta Fish: " + fish.tokenId)
 		unityContext.showBreedingUI();
 		setMyBettaFish(fish);
 		unityContext.addFishBreed1(fish)
