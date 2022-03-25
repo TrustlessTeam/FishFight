@@ -29,7 +29,6 @@ interface ImgProps {
 const Nav = () => {
 
   const location = useLocation().pathname.split('/')[1];
-  console.log(location)
 
 	return (
     <NavMenu>

@@ -123,8 +123,8 @@ class FishFight {
         this.readFishFood = this.setContract(this.provider, Contracts.contracts.FishFood.abi, Contracts.contracts.FishFood.address)
         this.readFishEgg = this.setContract(this.provider, Contracts.contracts.FishEgg.abi, Contracts.contracts.FishEgg.address)
         this.readFishScale = this.setContract(this.provider, Contracts.contracts.FishScale.abi, Contracts.contracts.FishScale.address)
-        this.readBloater = this.setContract(this.provider, Contracts.contracts.TestERC20.abi, '0x0EBB0F006E36532a04ce3d8C03A1C557c1d9DaA1')
-        this.readRedgill = this.setContract(this.provider, Contracts.contracts.TestERC20.abi, '0x6618aBc024Bb3F90d146560d7b9104bA9C7a1C9f')
+        this.readBloater = this.setContract(this.provider, Contracts.contracts.BloaterTest.abi, Contracts.contracts.BloaterTest.address)
+        this.readRedgill = this.setContract(this.provider, Contracts.contracts.RedgillTest.abi, Contracts.contracts.RedgillTest.address)
         
 
         // LISTNER PROVIDERS
@@ -187,8 +187,8 @@ class FishFight {
         this.fishFood = this.setContract(this.providerWallet, Contracts.contracts.FishFood.abi, Contracts.contracts.FishFood.address)
         this.fishEgg = this.setContract(this.providerWallet, Contracts.contracts.FishEgg.abi, Contracts.contracts.FishEgg.address)
         this.fishScale = this.setContract(this.providerWallet, Contracts.contracts.FishScale.abi, Contracts.contracts.FishScale.address)
-        this.readBloater = this.setContract(this.providerWallet, Contracts.contracts.TestERC20.abi, '0x0EBB0F006E36532a04ce3d8C03A1C557c1d9DaA1')
-        this.readRedgill = this.setContract(this.providerWallet, Contracts.contracts.TestERC20.abi, '0x6618aBc024Bb3F90d146560d7b9104bA9C7a1C9f')
+        this.readBloater = this.setContract(this.providerWallet, Contracts.contracts.BloaterTest.abi, Contracts.contracts.BloaterTest.address)
+        this.readRedgill = this.setContract(this.providerWallet, Contracts.contracts.RedgillTest.abi, Contracts.contracts.RedgillTest.address)
     }
 
     setContract = (provider: any, abi: any, address: string) => {

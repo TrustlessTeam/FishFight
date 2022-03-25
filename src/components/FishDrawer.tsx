@@ -11,8 +11,6 @@ import styled from "styled-components";
 import FishNFT from "./FishNFT";
 import Menu from "../components/Menu";
 import { ContainerControls } from './BaseStyles';
-import usePrevious from "../scrolling/usePrevious";
-import DrawerButton, { FishDrawerButton } from "./DrawerButton";
 import useSound from "use-sound";
 
 

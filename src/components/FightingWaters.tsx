@@ -49,8 +49,8 @@ const FightingWaters = () => {
 
 	useEffect(() => {
 		unityContext.UnityInstance.on('UISelectionConfirm', async function (data: any) {
-			console.log('UI changed catch fish');
-			console.log(data)
+			// console.log('UI changed catch fish');
+			// console.log(data)
 			switch (data) {
 				case 'confirm':
 					const fight = await fightFish(mySelectedFish, opponentFish);
@@ -69,7 +69,7 @@ const FightingWaters = () => {
 		});
 
 		unityContext.UnityInstance.on("UI_Fighting_Start_Request", function () {
-      console.log("UI_Fighting_Start_Request!");
+      // console.log("UI_Fighting_Start_Request!");
     });
 	}, [unityContext.isFishPoolReady, account, mySelectedFish, opponentFish]);
 
@@ -82,7 +82,7 @@ const FightingWaters = () => {
 	}, [account]);
 
 	useEffect(() => {
-		console.log("Show Fighting Location")
+		// console.log("Show Fighting Location")
 		// unityContext.clearFishPool("Fighting")
 		// unityContext.clearFishPool("Breeding")
 		// unityContext.clearFishPool('Fish');
@@ -94,8 +94,8 @@ const FightingWaters = () => {
 	}, [unityContext.isFishPoolReady]);
 
 	useEffect(() => {
-		console.log("Fighting Fish Changed")
-		console.log(fightingFish)
+		// console.log("Fighting Fish Changed")
+		// console.log(fightingFish)
 		if(!unityContext.isFishPoolReady) return;
 		// unityContext.clearFishPool("ShowFighting")
 		fightingFish.forEach(fish => {
@@ -105,7 +105,7 @@ const FightingWaters = () => {
 
 
 	const setUserFighter = async (fish : Fish) => {
-		console.log("User Selected Fish: " + fish.tokenId)
+		// console.log("User Selected Fish: " + fish.tokenId)
 		// unityContext.showFightingUI();
 		if(fish.fishModifiers.alphaModifier.uses > 0) {
 			toast.error("Fighter Selection: Fish is Alpha");
@@ -130,7 +130,7 @@ const FightingWaters = () => {
 	}
 
 	const setOpponentFighter = (fish : Fish) => {
-		console.log("Opponent Fish: " + fish.tokenId)
+		// console.log("Opponent Fish: " + fish.tokenId)
 		// unityContext.showFightingUI();
 		if(fish.tokenId == mySelectedFish?.tokenId) {
 			toast.error("Fighter Selection: Same Fish");
