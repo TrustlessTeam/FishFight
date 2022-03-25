@@ -1,25 +1,102 @@
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import LoadingOverlay from 'react-loading-overlay';
+import Modal from 'react-modal';
+import iceImg from "../img/ice.jpg";
+import bloodImg from "../img/blood.png";
 
-
-interface DefaultOptions {
-	position?: string;
-}
-
-export const BaseOverlayContainer = styled(LoadingOverlay)`
+export const ContainerRow = styled.div`
+	position: relative;
 	display: flex;
-	flex-direction: column;
-	justify-content: flex-end;
-	width: 100%;
-	height: 100%;
-	pointer-events: none;
+	flex-flow: row nowrap;
+	padding: ${props => props.theme.spacing.gap};
+`;
+
+export const ContainerColumn = styled.div`
+	position: relative;
+	display: flex;
+	flex-flow: column;
+	justify-content: center;
+  align-items: center;
+	padding: ${props => props.theme.spacing.gap};
+
+	@media ${props => props.theme.device.tablet} {
+		padding: ${props => props.theme.spacing.gapLarge};
+  }
+`;
+
+export const Title = styled.h1`
+	color: black;
+	font-size: ${props => props.theme.font.medium};
+	margin: 0;
+	padding-right: ${props => props.theme.spacing.gapSmall};
+
+	@media ${props => props.theme.device.tablet} {
+		display: block;
+	  font-size: ${props => props.theme.font.large};
+  }
+	/* text-decoration: underline; */
+	text-transform: uppercase;
+
+	span {
+		color: white;
+	}
+`;
+
+export const StyledModal = styled(Modal)`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  /* min-width: fit-content; */
+	max-width: 100%;
+	/* width: 100%; */
+  max-height: 100%;
+  transform: translate(-50%, -50%);
+  border-radius: 20px;
+  /* background-color: rgb(230, 230, 230); */
+	
+	/* padding: ${props => props.theme.spacing.gap}; */
+	box-shadow:  20px 20px 60px #254f67,
+             -20px -20px 60px #336b8b;
+  outline: none;
+  overflow: hidden;
+  z-index: 20;
+
+	&::before {    
+		content: "";
+		background: url(${bloodImg}), url(${iceImg});
+		background-blend-mode: darken;
+		opacity: 0.9;
+		border: solid white 2px;
+		border-radius: 20px;
+		background-size: cover;
+		position: absolute;
+		top: 0px;
+		right: 0px;
+		bottom: 0px;
+		left: 0px;
+	}
+
+	@media ${props => props.theme.device.tablet} {
+		max-width: 800px;
+  }
 `;
 
 export const BaseContainer = styled.div`
 	display: flex;
 	flex-direction: column;
 	justify-content: flex-end;
+	width: 100%;
+	height: 100%;
+`;
+
+export const BaseContainerCentered = styled.div`
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
 	width: 100%;
 	height: 100%;
 	/* pointer-events: auto; */
@@ -33,15 +110,6 @@ export const ContainerControls = styled.div`
 	/* height: 17%; */
 	pointer-events: auto;
 	justify-content: space-between;
-`;
-
-export const ApprovalsContainer = styled(LoadingOverlay)`
-	display: flex;
-	flex-direction: column;
-	justify-content: center;
-	align-items: center;
-	width: 100%;
-	height: 100%;
 `;
 
 export const OptionsContainer = styled.div`
@@ -62,26 +130,49 @@ export const UIContainer = styled.div`
 	pointer-events: auto;
 `;
 
-export const ApprovalDisclaimer = styled.div`
+export const Error = styled.div`
+	background-color: #8f0000;
 	padding: ${props => props.theme.spacing.gap};
-	margin-bottom: ${props => props.theme.spacing.gap};
-	background-color: white;
-	border-radius: 25px;
-`;
+	border-radius: 10px;
+	box-shadow:  10px 10px 30px #6e004d,
+             -10px -10px 30px #910d14;
+
+	p {
+		font-size: ${props => props.theme.font.medium};
+	}
+`
 
 export const BaseText = styled.p`
 	display: flex;
 	flex-flow: column;
 	justify-content: center;
-	padding: ${props => props.theme.spacing.gap};
 	margin: 0;
-	background-color: white;
-	font-size: ${props => props.theme.font.large};
-	border-radius: 25px;
-	margin-left: ${props => props.theme.spacing.gapSmall};
+	color: white;
+
+	font-size: ${props => props.theme.font.small};
+
+	@media ${props => props.theme.device.tablet} {
+		font-size: ${props => props.theme.font.medium};
+  }
 `;
 
-export const BaseButton = styled.button`
+export const BaseTitle = styled.p`
+	display: flex;
+	flex-flow: column;
+	justify-content: center;
+	align-items: center;
+	padding: ${props => props.theme.spacing.gap};
+	margin: 0;
+	color: white;
+	font-size: ${props => props.theme.font.medium};
+	/* -webkit-text-stroke: 1px black; */
+
+	@media ${props => props.theme.device.tablet} {
+		font-size: ${props => props.theme.font.large};
+  }
+`;
+
+export const BaseButtonStyle = styled.button`
 	display: flex;
 	flex-flow: row nowrap;
 	justify-content: center;
@@ -96,7 +187,7 @@ export const BaseButton = styled.button`
 	font-size: ${props => props.theme.font.small};
   text-decoration: none;
   text-transform: uppercase;
-
+	cursor: pointer;
   background-image: linear-gradient(#ffffff, #adadad);
   z-index: 1;
   box-shadow: inset 2px 2px 2px rgba(255, 255, 255, .3), inset -2px -2px 2px rgba(0, 0, 0, .3);
@@ -104,12 +195,10 @@ export const BaseButton = styled.button`
 
   @media ${props => props.theme.device.tablet} {
 		font-size: ${props => props.theme.font.medium};
-    padding: 14px 24px;
+    /* padding: 12px 20px; */
   }
 
-  &:hover {
-		cursor: pointer;
-	}
+
 
   &::before {
     position: absolute;
@@ -164,3 +253,5 @@ export const BaseLinkButton = styled(Link)`
 		font-size: ${props => props.theme.font.medium};
   }
 `
+
+

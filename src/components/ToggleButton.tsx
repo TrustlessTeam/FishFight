@@ -1,5 +1,46 @@
 
 import styled from "styled-components";
+import useSound from 'use-sound';
+
+// type Props = {
+//   onClick: () => void;
+//   children?: React.ReactNode;
+//   disabled?: boolean;
+//   style?: object;
+// }
+
+type Props = {
+  items: ToggleItem[],
+	selected: number
+}
+
+export type ToggleItem = {
+  name: string;
+	id: number;
+  onClick: () => void;
+  // extra?: any;
+};
+
+const ToggleButton = ({ items, selected } : Props) => {
+	const [playClick] = useSound('click.wav', {volume: 0.25});
+	return (
+		<>
+			<ToggleGroup>
+				{items.map((item, key) => {
+					return(
+						<ToggleOption key={key} className={selected === item.id ? 'active' : ''} onClick={() => {item.onClick(); playClick();}}>{item.name}</ToggleOption>
+					)
+				})}
+				{/* <ToggleOption className={selected === FishView.Ocean ? 'active' : ''} onClick={() => setFishToShow(FishView.Ocean)}>Ocean Fish</ToggleOption>
+				<ToggleOption className={selected === FishView.User ? 'active' : ''} onClick={() => setFishToShow(FishView.User)}>My Fish</ToggleOption> */}
+			</ToggleGroup>
+			{/* <Menu name={FishView[fishToShow]} items={FishViewOptions}></Menu> */}
+		</>
+	)
+}
+
+export default ToggleButton;
+
 
 export const ToggleGroup = styled.div`
 	display: flex;

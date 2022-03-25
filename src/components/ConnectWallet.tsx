@@ -11,7 +11,7 @@ const ConnectWallet = ({ text }: Props) => {
 
 	return (
 		<ConnectContainer>
-			<Account mobile={false} textOverride={"Connect"}/>
+			<Account textOverride={"Connect"}/>
 			<Text>{text}</Text>
 		</ConnectContainer>
 	);

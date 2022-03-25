@@ -10,14 +10,14 @@ interface WalletUI {
 }
 
 export const mapWallets: { [waletName: string]: WalletUI } = {
-	[ConnectorNames.OneWallet]: {
-		name: 'One wallet',
-		image: OneWallet,
-	},
-	[ConnectorNames.Mathwallet]: {
-		name: 'Math wallet',
-		image: MathWallet,
-	},
+	// [ConnectorNames.OneWallet]: {
+	// 	name: 'One wallet',
+	// 	image: OneWallet,
+	// },
+	// [ConnectorNames.Mathwallet]: {
+	// 	name: 'Math wallet',
+	// 	image: MathWallet,
+	// },
 	[ConnectorNames.Metamask]: {
 		name: 'Metamask',
 		image: Metamask,

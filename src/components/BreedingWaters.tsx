@@ -5,26 +5,27 @@ import { useWeb3React } from '@web3-react/core';
 import { Fish } from '../utils/fish'
 import { useUnity } from '../context/unityContext';
 import { useFishPool } from '../context/fishPoolContext';
-import FishViewer from './FishViewer';
-import {  BaseLinkButton, BaseOverlayContainer, ContainerControls, ApprovalsContainer, BaseButton, ApprovalDisclaimer } from './BaseStyles';
-import { ToggleGroup, ToggleOption } from './ToggleButton';
+import {  BaseLinkButton, BaseContainer, Error, ContainerColumn, BaseText } from './BaseStyles';
+import ToggleButton, { ToggleItem } from './ToggleButton';
 import { useContractWrapper } from '../context/contractWrapperContext';
-import { useFishFight } from '../context/fishFightContext';
-import ConnectWallet from './ConnectWallet';
 import Account from './Account';
-import web3 from 'web3';
 import { Constants } from '../utils/constants';
+import FishDrawer from './FishDrawer';
 
-enum FishSelectionEnum {
+enum FishView {
   MyFish,
   AlphaFish
 }
 
+let renderedBreedFish: number[] = [];
+
 const BreedingWaters = () => {
 	// State
-	const [fishSelectionToShow, setFishSelectionToShow] = useState<number>(FishSelectionEnum.AlphaFish);
+	const [fishToShow, setFishToShow] = useState<number>(FishView.AlphaFish);
 	const [myBettaFish, setMyBettaFish] = useState<Fish | null>(null);
 	const [alphaFish, setAlphaFish] = useState<Fish | null>(null);
+	const [bettaError, setBettaError] = useState<string | null>(null);
+	// const [unityBreedFish, setUnityBreedFish] = useState<number[]>([]);
 
 	const [breedResult, setBreedResult] = useState<Fish | null>();
 	const [showBreedResult, setShowBreedResult] = useState(false);
@@ -34,11 +35,23 @@ const BreedingWaters = () => {
 	const unityContext = useUnity();
 	const { account } = useWeb3React();
 	const { userFish, breedingFish } = useFishPool()
-	const { breedFish, depositBreedingFish, withdrawBreedingFish, contractApproveFoodForBreeding, contractApproveAllFishForBreeding, pendingTransaction} = useContractWrapper();
-	const { breedingFishApproval, breedingFoodApproval, currentSeason } = useFishFight();
+	const { breedFish, pendingTransaction } = useContractWrapper();
+
+	const FishViewOptions: ToggleItem[] = [
+		{
+			name: 'My $FISH',
+			id: FishView.MyFish,
+			onClick: () => setFishToShow(FishView.MyFish)
+		},
+		{
+			name: 'Alpha $FISH',
+			id: FishView.AlphaFish,
+			onClick: () => setFishToShow(FishView.AlphaFish)
+		}
+	]
 
 	useEffect(() => {
-		console.log("Breeding Fish")
+		// console.log("Breeding Fish")
 		unityContext.clearUIFish();
 		// unityContext.clearFishPool("ShowBreeding")
 		unityContext.hideUI();
@@ -46,11 +59,15 @@ const BreedingWaters = () => {
 	}, [unityContext.isFishPoolReady]);
 
 	useEffect(() => {
-		console.log("Breeding Fish Changed")
-		console.log(breedingFish)
+		// console.log("Breeding Fish Changed")
+		// console.log(breedingFish)
 		if(!unityContext.isFishPoolReady) return;
-		breedingFish.forEach(fish => {
-			unityContext.addFishBreedingPool(fish);
+		breedingFish.forEach(poolFish => {
+			if(!renderedBreedFish.some(tokenId => poolFish.tokenId === tokenId)) {
+				unityContext.addFishBreedingPool(poolFish);
+				renderedBreedFish.push(poolFish.tokenId)
+			}
+			
 		})
 	}, [breedingFish, unityContext.isFishPoolReady]);
 
@@ -58,9 +75,9 @@ const BreedingWaters = () => {
 		if(!unityContext.isFishPoolReady) return;
 		unityContext.UnityInstance.on('UISelectionConfirm', function (data: any) {
 			// console.log('UI changed catch fish');
-			console.log(account)
-			console.log(myBettaFish)
-			console.log(data)
+			// console.log(account)
+			// console.log(myBettaFish)
+			// console.log(data)
 			switch (data) {
 				case 'breed_confirm':
 					breedFish(alphaFish, myBettaFish);
@@ -79,58 +96,41 @@ const BreedingWaters = () => {
 		});
 	}, [unityContext.isFishPoolReady]);
 
+
 	const setAlpha = (fish : Fish) => {
-		const secondsSinceEpoch = Math.round(Date.now() / 1000)
-		if(fish.power < Constants._alphaBreedPowerFee) {
-			setAlphaFish(fish);
-			toast.error(`Alpha Fish has ${fish.power} power, at least ${Constants._alphaBreedPowerFee} power required to breed!`)
-			return;
-		}
-		if(fish.seasonStats.fightWins == 0) {
+		if(fish.fishModifiers.alphaModifier.uses === 0) {
 			setAlphaFish(fish);
 			toast.error(`Not Alpha this Season`)
 			return;
 		}
-		console.log("Alpha Fish: " + fish.tokenId)
+		// console.log("Alpha Fish: " + fish.tokenId)
 		unityContext.showBreedingUI();
 		setAlphaFish(fish);
 		unityContext.addFishBreed2(fish)
 	}
 
 	const setUserBetta = async (fish : Fish) => {
-		if(fish.stakedFighting) {
-			toast.error('Withdraw from Fight Pool');
-			setMyBettaFish(fish);
-			return;
+		if(fish.fishModifiers.alphaModifier.uses > 0 || fish.stakedBreeding) {
+			toast.error('Betta Selection: Fish is Alpha');
+			setBettaError('Not Betta');
+		}
+		else if(fish.stakedFighting) {
+			toast.error('Betta Selection: Withdraw from Fight Pool');
+			setBettaError('Withdraw from Fight Pool');
 		} 
-		if(fish.seasonStats.fightWins > 0 && fish.stakedBreeding) {
-			toast.error('Already in Alpha Pool');
-			setMyBettaFish(fish);
-			return;
+		else if(fish.stakedBreeding && fish.fishModifiers.inBettaCooldown()) {
+			toast.error('Betta Selection: In breed cooldown');
+			setBettaError('In Cooldown');
 		}
-		if(fish.parentA > 0 && currentSeason != null && fish.birthTime > currentSeason?.startTs) {
-			console.log(fish.birthTime)
-			console.log(currentSeason.startTs)
-			toast.error('Too Young');
-			return;
+		else if(fish.power < Constants._bettaBreedPowerFee) {
+			toast.error(`Betta Selection: ${fish.power} of ${Constants._bettaBreedPowerFee} power required to breed`)
+			setBettaError('Not enough Power');
 		}
-		if(fish.stakedBreeding && fish.seasonStats.fightWins != 0) {
-			toast.error('Not betta fish');
-			setMyBettaFish(fish);
-			return;
-		}
-		if(fish.stakedBreeding && fish.seasonStats.bettaBreeds >= Constants._maxBettaBreedsPerSeason) {
-			toast.error('Already bred this season');
-			setMyBettaFish(fish);
-			return;
-		}
-		if(fish.power < Constants._bettaBreedPowerFee) {
-			setMyBettaFish(fish);
-			toast.error(`Betta Fish has ${fish.power} power, at least ${Constants._bettaBreedPowerFee} power required to breed!`)
-			return;
+		else {
+			setBettaError(null);
 		}
 
-		console.log("Betta Fish: " + fish.tokenId)
+		// console.log("Betta Fish: " + fish.tokenId)
 		unityContext.showBreedingUI();
 		setMyBettaFish(fish);
 		unityContext.addFishBreed1(fish)
@@ -145,123 +145,39 @@ const BreedingWaters = () => {
 		unityContext.showFightingLocation();
 	}
 
-	const ApprovalUI = () => {
-		return (
-			<ApprovalsContainer>
-				<ApprovalDisclaimer>
-					<p>Approval Required: Breeding contract approval to control your $FISH and send $FISHFOOD is required to Breed Fish.</p>
-					<OptionsContainer>
-					{!breedingFishApproval &&
-						<BaseButton onClick={() => contractApproveAllFishForBreeding()}>{'Approve $FISH'}</BaseButton>
-					}
-					{!breedingFoodApproval &&
-						<BaseButton onClick={() => contractApproveFoodForBreeding()}>{'Approve $FISHFOOD'}</BaseButton>
-					}
-				</OptionsContainer>
-				</ApprovalDisclaimer>
-				
-			</ApprovalsContainer>	
-		)
-	}
-
-	const ViewOptions = () => {
-		return (
-			<>
-			{account &&
-				<ToggleGroup>
-					<ToggleOption className={fishSelectionToShow === FishSelectionEnum.MyFish ? 'active' : ''} onClick={() => setFishSelectionToShow(FishSelectionEnum.MyFish)}>My $FISH</ToggleOption>
-					<ToggleOption className={fishSelectionToShow === FishSelectionEnum.AlphaFish ? 'active' : ''} onClick={() => setFishSelectionToShow(FishSelectionEnum.AlphaFish)}>Alpha $FISH</ToggleOption>
-				</ToggleGroup>
-			}
-			</>
-		)
-	}
-
-	const BreederSelection = () => {
-		return (
-			<BaseOverlayContainer
-			active={pendingTransaction}
-			spinner
-			text='Waiting for confirmation...'
-			>
-				{myBettaFish != null &&
-				<OptionsContainer>
-					{/* {myBettaFish.stakedBreeding &&
-						<GameButton onClick={() => withdrawBreedingFish(myBettaFish)}>{'Withdraw Breeder'}</GameButton>
-					}
-					{myBettaFish.seasonStats.fightWins > 0 && !myBettaFish.stakedFighting &&
-						<GameButton onClick={() => depositBreedingFish(myBettaFish)}>{'Deposit'}</GameButton>
-					} */}
-					{myBettaFish && alphaFish &&
-						<GameButton onClick={() => breedFish(alphaFish, myBettaFish)}>{'Breed Fish'}</GameButton>
-					}
-				</OptionsContainer>
-				}
-				{account && userFish.length > 0 && fishSelectionToShow === FishSelectionEnum.MyFish && 
-					<FishViewer type="Breeding" selectedFish={myBettaFish} fishCollection={userFish} onClick={setUserBetta}>
-						<ViewOptions></ViewOptions>
-					</FishViewer>
-				}
-				{account && userFish.length === 0 && fishSelectionToShow === FishSelectionEnum.MyFish &&
-					<BaseLinkButton to={'/catch'}>Catch a Fish!</BaseLinkButton>
-				}
-				{(fishSelectionToShow === FishSelectionEnum.AlphaFish || !account ) &&
-					<FishViewer selectedOpponent={alphaFish} fishCollection={breedingFish} onClick={setAlpha}>
-						<ViewOptions></ViewOptions>
-					</FishViewer>
-				}
-		</BaseOverlayContainer>
-		)
-	}
-
 
 	if(!unityContext.isFishPoolReady) return null;
 
-	if(account && breedingFishApproval && breedingFoodApproval) {
-		return (
-			<BreederSelection></BreederSelection>
-		)
-	} else {
-		return (
-			<ApprovalsContainer
-			active={pendingTransaction}
-			spinner
-			text='Waiting for confirmation...'
-			>
-				<ContainerControls>
-					{!account &&
-						<Account mobile={false} textOverride={"Connect Wallet to Breed $FISH"}/>
-					}
-					{account && 
-					<ApprovalUI></ApprovalUI>
-					}
-				</ContainerControls>
-			</ApprovalsContainer>
-		)
-	}
-	
-
-	// return (
-	// 	<BaseOverlayContainer
-	// 		active={pendingTransaction}
-	// 		spinner
-	// 		text='Waiting for confirmation...'
-	// 		>
-	// 		{!account &&
+	return(
+		<BaseContainer>
+			<OptionsContainer>
+			{!account &&
+				<Account textOverride={"Connect Wallet to Breed $FISH"}/>
+			}
+			{bettaError &&
+				<ContainerColumn>
+					<Error><BaseText>{bettaError}</BaseText></Error>
+				</ContainerColumn>
+			}
 				
-	// 		<ContainerControls>
-	// 			<Account mobile={false} textOverride={"Connect"}/>
-	// 		</ContainerControls>
-	// 		}
-	// 		{account && ! breedingFishApproval && breedingFoodApproval && 
-	// 			<ApprovalUI></ApprovalUI>
-	// 		}
-	// 		{account && breedingFishApproval && breedingFoodApproval &&
-	// 			<BreederSelection></BreederSelection>
-	// 		}
-			
-	// 	</BaseOverlayContainer>
-	// );
+			</OptionsContainer>
+		
+
+			{fishToShow === FishView.MyFish && 
+				<FishDrawer type="Breeding" selectedFish={myBettaFish} fishCollection={userFish} onClick={setUserBetta}>
+					<ToggleButton items={FishViewOptions} selected={fishToShow}></ToggleButton>
+				</FishDrawer>
+			}
+			{account && userFish.length === 0 && fishToShow === FishView.MyFish &&
+				<BaseLinkButton to={'/catch'}>Catch a Fish!</BaseLinkButton>
+			}
+			{fishToShow === FishView.AlphaFish &&
+				<FishDrawer selectedOpponent={alphaFish} fishCollection={breedingFish} onClick={setAlpha}>
+					<ToggleButton items={FishViewOptions} selected={fishToShow}></ToggleButton>
+				</FishDrawer>
+			}
+		</BaseContainer>
+	);
 };
 
 
@@ -273,30 +189,5 @@ const OptionsContainer = styled.div`
 	align-items: center;
 `;
 
-const GameButton = styled.button`
-	display: flex;
-	flex-flow: column;
-	justify-content: center;
-	padding: 2.2vmin;
-	border-radius: 25px;
-	background-color: white;
-	border: none;
-	opacity: 0.7;
-	box-shadow: 1px 2px 4px 4px rgba(0, 0, 0, 0.25);
-	color: black;
-	margin-left: ${props => props.theme.spacing.gapSmall};
-	transition: opacity 0.3s ease, box-shadow 0.25s ease-in-out;
-	text-transform: uppercase;
-	font-weight: bolder;
-	text-decoration: none;
-	font-size: ${props => props.theme.font.medium};
-	pointer-events: auto;
-
-	&:hover {
-		opacity: 1;
-		box-shadow: 1px 2px 2px 2px rgba(0, 0, 0, 0.2);
-		cursor: pointer;
-	}
-`;
 
 export default BreedingWaters;

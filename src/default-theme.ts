@@ -1,6 +1,6 @@
 import { DefaultTheme } from 'styled-components';
 
-const navyBlue = 'rgba(3, 4, 94, 1)';
+const navyBlue = '#020069';
 const darkCornflowerBlue =  'rgba(2, 62, 138, 1)';
 const starCommandBlue = 'rgba(0, 119, 182, 1)';
 const blueGreen = 'rgba(0, 150, 199, 1)';
@@ -10,7 +10,7 @@ const skyBlueCrayola2 = 'rgba(144, 224, 239, 1)';
 const blizzardBlue = 'rgba(173, 232, 244, 1)';
 const powderBlue = 'rgba(202, 240, 248, 1)';
 
-const gradientTop = `linear-gradient(0deg, ${navyBlue}, ${darkCornflowerBlue}, ${starCommandBlue}, ${blueGreen}, ${ceruleanCrayola}, ${skyBlueCrayola}, ${skyBlueCrayola2}, ${blizzardBlue}, ${powderBlue});`;
+const gradientTop = `linear-gradient(0deg, ${navyBlue}, ${navyBlue}, ${navyBlue}, ${navyBlue}, ${navyBlue}, ${navyBlue}, ${navyBlue}, ${navyBlue}, ${navyBlue});`;
 const gradientRight = `linear-gradient(90deg, ${navyBlue}, ${darkCornflowerBlue}, ${starCommandBlue}, ${blueGreen}, ${ceruleanCrayola}, ${skyBlueCrayola}, ${skyBlueCrayola2}, ${blizzardBlue}, ${powderBlue});`;
 const gradientBottom = `linear-gradient(180deg, ${navyBlue}, ${darkCornflowerBlue}, ${starCommandBlue}, ${blueGreen}, ${ceruleanCrayola}, ${skyBlueCrayola}, ${skyBlueCrayola2}, ${blizzardBlue}, ${powderBlue});`;
 const gradientLeft = `linear-gradient(270deg, ${navyBlue}, ${darkCornflowerBlue}, ${starCommandBlue}, ${blueGreen}, ${ceruleanCrayola}, ${skyBlueCrayola}, ${skyBlueCrayola2}, ${blizzardBlue}, ${powderBlue});`;
@@ -20,12 +20,13 @@ const gradientTopLeft = `linear-gradient(225deg, ${navyBlue}, ${darkCornflowerBl
 const gradientBottomLeft = `linear-gradient(315deg, ${navyBlue}, ${darkCornflowerBlue}, ${starCommandBlue}, ${blueGreen}, ${ceruleanCrayola}, ${skyBlueCrayola}, ${skyBlueCrayola2}, ${blizzardBlue}, ${powderBlue});`;
 const gradientRadial = `radial-gradient(${navyBlue}, ${darkCornflowerBlue}, ${starCommandBlue}, ${blueGreen}, ${ceruleanCrayola}, ${skyBlueCrayola}, ${skyBlueCrayola2}, ${blizzardBlue}, ${powderBlue});`;
 
-const spacingBase = 2;
-const gapSmall = spacingBase / 2 + `vmin`;
-const gap = spacingBase + `vmin`;
-const gapMedium = spacingBase * 2 + `vmin`;
-const gapLarge = spacingBase * 3 + `vmin`
+const spacingBase = 12;
+const gapSmall = spacingBase / 2 + `px`;
+const gap = spacingBase + `px`;
+const gapMedium = spacingBase * 2 + `px`;
+const gapLarge = spacingBase * 3 + `px`
 
+const fontXSmall = "10px";
 const fontSmall = "12px";
 const fontMedium = "16px";
 const fontLarge = "24px";
@@ -92,6 +93,7 @@ const BaseTheme: DefaultTheme = {
     desktopL: device.desktopL
   },
   font: {
+    xsmall: fontXSmall,
     small: fontSmall,
     medium: fontMedium,
     large: fontLarge
