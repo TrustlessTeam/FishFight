@@ -15,7 +15,7 @@ export class StakedFighting {
 
 export class StakedBreeding {
   earnedFishFood: string;
-  
+
   constructor(
     stakedBreedFishObject: any,
   ) {
@@ -90,7 +90,7 @@ const setModifierMapping = (index: number, value: number) => {
 //   claimCooldown: number;
 //   canFeed: () => boolean;
 //   canClaim: () => boolean;
-  
+
 //   constructor(
 //     trainingObject: any,
 //   ) {
@@ -116,7 +116,7 @@ export class FishModifiers {
 
   constructor(
     fishStatsObject: any
-  ) 
+  )
   {
 		this.alphaModifier = new Modifier(fishStatsObject[0], 0);
 		this.bettaModifier = new Modifier(fishStatsObject[1], 1);
@@ -169,7 +169,7 @@ export class Fish {
     fishStats: any,
     imgSrc: string | null,
     ipfsLink: string | null,
-  ) 
+  )
   {
     this.tokenId = web3.utils.toNumber(fishInfo.tokenId);
     this.birthTime = web3.utils.toNumber(fishInfo.birthTime);
@@ -236,7 +236,7 @@ export class Fish {
       ColorEyePrimary: {r: genesArray[60], g: genesArray[61], b: genesArray[62], a: 255},
       ColorEyeSecondary: {r: genesArray[63], g: genesArray[64], b: genesArray[65], a: 255},
       ColorEyeTertiary: {r: genesArray[66], g: genesArray[67], b: genesArray[68], a: 255},
-      
+
       // Head trait mapping
       HeadEdges: this.mapTraitValueToRange(genesArray[69], fishTypes[this.fishType].ranges.HeadEdges), // range (0 - ?)
       HeadNose: this.mapTraitValueToRange(genesArray[70], fishTypes[this.fishType].ranges.HeadNose),
@@ -249,19 +249,19 @@ export class Fish {
       // Texture trait mapping
       TextureBodyPrimary: this.mapTraitValueToRange(genesArray[76], fishTypes[this.fishType].ranges.TextureBodyPrimary), // range (0 - ?)
       TextureBodySecondary: this.mapTraitValueToRange(genesArray[77], fishTypes[this.fishType].ranges.TextureBodySecondary),
-      
+
       TextureHeadPrimary: this.mapTraitValueToRange(genesArray[78], fishTypes[this.fishType].ranges.TextureHeadPrimary),
       TextureHeadSecondary: this.mapTraitValueToRange(genesArray[79], fishTypes[this.fishType].ranges.TextureHeadSecondary),
-      
+
       TexturePectoralPrimary: this.mapTraitValueToRange(genesArray[80], fishTypes[this.fishType].ranges.TexturePectoralPrimary),
       TexturePectoralSecondary: this.mapTraitValueToRange(genesArray[81], fishTypes[this.fishType].ranges.TexturePectoralSecondary),
 
       TextureDorsalPrimary: this.mapTraitValueToRange(genesArray[82], fishTypes[this.fishType].ranges.TextureDorsalPrimary),
       TextureDorsalSecondary: this.mapTraitValueToRange(genesArray[83], fishTypes[this.fishType].ranges.TextureDorsalSecondary),
-      
+
       TextureTailPrimary: this.mapTraitValueToRange(genesArray[84], fishTypes[this.fishType].ranges.TextureTailPrimary),
       TextureTailSecondary: this.mapTraitValueToRange(genesArray[85], fishTypes[this.fishType].ranges.TextureTailSecondary),
-      
+
       TextureJawPrimary: this.mapTraitValueToRange(genesArray[86], fishTypes[this.fishType].ranges.TextureJawPrimary),
       TextureJawSecondary: this.mapTraitValueToRange(genesArray[87], fishTypes[this.fishType].ranges.TextureJawSecondary),
 
@@ -300,7 +300,7 @@ export class Fish {
 
   mapToHue(value: number, in_min = 0, in_max = 255, out_min = 0, out_max = 360): number {
     return (value - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
-  } 
+  }
 }
 
 type Color = {
@@ -404,7 +404,7 @@ const fishTypes = [
       ColorJawPrimary: [0, 255],
       ColorJawSecondary: [0, 255],
       ColorJawTertiary: [0, 255],
-      
+
       ColorEyePrimary: [0, 255],
       ColorEyeSecondary: [0, 255],
       ColorEyeTertiary: [0, 255],
@@ -424,7 +424,7 @@ const fishTypes = [
 
       TextureHeadPrimary: [0, 8],
       TextureHeadSecondary: [0, 1],
-      
+
       TexturePectoralPrimary: [0, 8],
       TexturePectoralSecondary: [0, 1],
 
@@ -446,7 +446,7 @@ const fishTypes = [
 
 
       // Glimmer strength
-      GlimmerStrength: [1, 5]
+      GlimmerStrength: [1, 10]
     }
   },
   // {

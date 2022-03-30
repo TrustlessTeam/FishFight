@@ -158,11 +158,11 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
         fetchUserFish(account);
         fetchUserFightingFish(account);
         fetchUserBreedingFish(account);
-      } 
+      }
     }
 		if(unityContext.isFishPoolReady) loadTokenData(account);
   }, [account]);
-  
+
 
   const fetchOceanFish = async (startIndex?: number, random?: boolean) => {
     // console.log("Loading Ocean Fish")
@@ -198,7 +198,7 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
 
   const fetchUserFish = async (account: string, startIndex?: number) => {
     // console.log("Loading User Fish")
-    try { 
+    try {
       let userFishIds: string[] = await FishFight.fishCalls.methods.getFishForAddress(startIndex ? startIndex : 0, account).call()
       // console.log(userFishIds)
       userFishIds = [...new Set(userFishIds)].filter((val) => {
@@ -209,7 +209,7 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
         addUserFishById(parsedTokenId)
         setUserFishIndex(parsedTokenId);
       });
-      
+
     } catch (error) {
       console.log("Error loading Fish tokens owned by account: ")
       console.log(error)
@@ -423,7 +423,7 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
     if(oceanFish.some(fish => fish.tokenId === tokenId)) {
       setOceanFish(prevFish => [...prevFish.filter(f => f.tokenId !== tokenId), fishData]);
     }
-    
+
     return fishData;
   }
 
@@ -453,7 +453,7 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
     fetchBreedingFish: fetchBreedingFish,
     refreshLoadedFish: refreshLoadedFish,
 	};
-	
+
 	return <FishPoolContext.Provider value={value}>{children}</FishPoolContext.Provider>;
 };
 
@@ -496,7 +496,7 @@ const buildFish = async (fishFightInstance: FishFight, tokenId: number, isParent
       contractAddress: Contracts.contracts.FishFactory.address,
       abi: Contracts.contracts.FishFactory.abi,
       calls: [{ reference: 'fishData', methodName: 'getFishInfo', methodParameters: [tokenId] },
-      { reference: 'fishTokenUri', methodName: 'tokenURI', methodParameters: [tokenId] }  
+      { reference: 'fishTokenUri', methodName: 'tokenURI', methodParameters: [tokenId] }
       ]
     },
     {
@@ -520,15 +520,16 @@ const buildFish = async (fishFightInstance: FishFight, tokenId: number, isParent
     }
   ];
 
-  
+
 
   const results: ContractCallResults = await fishFightInstance.multicall.call(contractCallContext);
   // console.log(results)
   const fishFactoryGetFishInfo = results.results.fishFactory.callsReturnContext[0].success ? results.results.fishFactory.callsReturnContext[0].returnValues : null;
   const fishFactoryTokenUri = results.results.fishFactory.callsReturnContext[1].success ? results.results.fishFactory.callsReturnContext[1].returnValues[0] : null;
+  console.log(fishFactoryTokenUri)
   let imgSrc = null;
   if(fishFactoryTokenUri) {
-    imgSrc = `${serverURL}/tokens/${tokenId}.png`
+    imgSrc = `${serverURL}/${tokenId}.png`
   }
   const fishStatsGetFishModifiers = results.results.fishStats.callsReturnContext[0].success ? results.results.fishStats.callsReturnContext[0].returnValues : null;
   const fishStatsGetFights = results.results.fishStats.callsReturnContext[1].success ? results.results.fishStats.callsReturnContext[1].returnValues : null;
@@ -554,6 +555,7 @@ const buildFish = async (fishFightInstance: FishFight, tokenId: number, isParent
     genes: fishFactoryGetFishInfo[13],
     breedKey: fishFactoryGetFishInfo[14],
     offspring: fishFactoryGetFishInfo[15],
+    ipfsLink: fishFactoryTokenUri
   }
   // console.log(fishInfo)
   if(fishStatsGetFishModifiers == null) return null;
@@ -572,7 +574,7 @@ const buildFish = async (fishFightInstance: FishFight, tokenId: number, isParent
     }
   }
   // if(fishStatsGetFights != null) {
-    
+
   //   const deathFightData = await Promise.all(fishStatsGetFights.map(async fight => {
   //     console.log(fight)
   //     const fightId = web3.utils.toNumber(fight[1].hex);

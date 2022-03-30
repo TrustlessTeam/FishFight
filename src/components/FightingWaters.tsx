@@ -60,12 +60,12 @@ const FightingWaters = () => {
 				case 'fightresults_confirm':
 					unityContext.clearUIFish();
 					fightAgain()
-					
+
 					return;
 				default:
 					return;
 			}
-			
+
 		});
 
 		unityContext.UnityInstance.on("UI_Fighting_Start_Request", function () {
@@ -90,7 +90,7 @@ const FightingWaters = () => {
 		unityContext.hideUI();
 		unityContext.showFightingLocation();
 		unityContext.showFightingUI();
-
+    updateIsFighting(false);
 	}, [unityContext.isFishPoolReady]);
 
 	useEffect(() => {
@@ -202,11 +202,11 @@ const FightingWaters = () => {
 					</FishDrawer>
 				}
 			</>
-				
-			} 
-			
+
+			}
+
 		</BaseContainer>
-		
+
 	)
 };
 
