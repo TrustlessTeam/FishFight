@@ -104,3 +104,8 @@ body,html {
   padding: 0;
   overflow: hidden;
 }
+
+
+a {
+  color: rgb(160, 25, 4);
+}

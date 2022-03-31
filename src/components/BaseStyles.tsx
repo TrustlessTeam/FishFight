@@ -69,7 +69,7 @@ export const StyledModal = styled(Modal)`
 		content: "";
 		/* background: url(${waterImg}); */
 		/* background-blend-mode: lighten; */
-		opacity: 0.8;
+		opacity: 0.9;
 		border: solid white 2px;
 		border-radius: 20px;
 		background-size: cover;
