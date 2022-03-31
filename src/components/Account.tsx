@@ -278,7 +278,7 @@ const Text = styled.p`
 	font-size: ${props => props.theme.font.small};
 
 	span {
-		color: black;
+		color: #61daff;
 	}
 
 	@media ${props => props.theme.device.tablet} {

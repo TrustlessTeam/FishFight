@@ -192,7 +192,7 @@ const FightingWaters = () => {
 					}
 				</OptionsContainer>
 				{fishToShow === FishView.MyFish &&
-					<FishDrawer userFish type="Fighting" depositFighter selectedFish={mySelectedFish} fishCollection={userFish} onClick={setUserFighter}>
+					<FishDrawer type="Fighting" depositFighter selectedFish={mySelectedFish} fishCollection={userFish} onClick={setUserFighter}>
 							<ToggleButton items={FishViewOptions} selected={fishToShow}></ToggleButton>
 					</FishDrawer>
 				}

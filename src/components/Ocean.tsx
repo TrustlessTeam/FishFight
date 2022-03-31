@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-import { useFishPool } from '../context/fishPoolContext';
+import { PoolTypes, useFishPool } from '../context/fishPoolContext';
 import { useUnity } from '../context/unityContext';
 import { useWeb3React } from '@web3-react/core';
 
@@ -194,7 +194,7 @@ const Ocean = () => {
 				
 				{/* <FishDrawer fishCollection={oceanFish}></FishDrawer> */}
 				{fishToShow === FishView.Ocean &&
-					<FishDrawer selectedOpponent={mySelectedFish} fishCollection={oceanFish} onClick={oceanFishClick}>
+					<FishDrawer fishPool={PoolTypes.Ocean} selectedOpponent={mySelectedFish} fishCollection={oceanFish} onClick={oceanFishClick}>
 						<ToggleButton items={FishViewOptions} selected={fishToShow}></ToggleButton>
 					</FishDrawer>
 				}

@@ -22,6 +22,7 @@ import Default from "./components/Default";
 import FishingWaters from "./components/FishingWaters";
 import DisclaimerModal from "./components/DisclaimerModal";
 import { useContractWrapper } from "./context/contractWrapperContext";
+import HowToPlayModal from "./components/HowToPlayModal";
 
 
 const App = () => {
@@ -36,6 +37,7 @@ const App = () => {
         <Container>
           <MenuOverlay></MenuOverlay>
           <DisclaimerModal></DisclaimerModal>
+          <HowToPlayModal />
           <Routes>
             <Route element={<UnityWindow />}>
               <Route path="/" element={<Default />} />
