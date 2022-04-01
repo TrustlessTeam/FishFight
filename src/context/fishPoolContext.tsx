@@ -16,7 +16,7 @@ import {
   ContractCallContext,
 } from 'ethereum-multicall';
 
-const MAX_FISH = 42;
+const MAX_FISH = 20;
 const serverURL = `https://fishfight.io`;
 // const serverURL = `http://localhost:5000`;
 
@@ -29,6 +29,8 @@ interface FishPoolProviderContext {
 	oceanFishIndex: number
 	breedingFishIndex: number
 	fightingFishIndex: number
+  loadingFish: boolean
+  loadingUserFish: boolean
   refreshFish: (tokenId: number, isFighting: boolean, isBreeding: boolean) => Promise<Fish | null>
   createUserFish: (tokenId: number) => Promise<Fish | null>;
   fetchOceanFish: (startIndex?: number, random?: boolean) => void
@@ -36,6 +38,14 @@ interface FishPoolProviderContext {
   fetchFightingFish: () => void
   fetchBreedingFish: () => void
   refreshLoadedFish: () => void;
+  loadMoreFish: (type: number) => void;
+}
+
+export enum PoolTypes {
+  Ocean,
+  User,
+  Fighting,
+  Breeding
 }
 
 type UnityProviderProps = { children: React.ReactNode };
@@ -47,6 +57,8 @@ const FishPoolContext = createContext<FishPoolProviderContext | undefined>(undef
 export const FishPoolProvider = ({ children }: UnityProviderProps) => {
 
   const [userFishIndex, setUserFishIndex] = useState<number>(0);
+  const [loadingFish, setLoadingFish] = useState(false);
+  const [loadingUserFish, setLoadingUserFish] = useState(false);
   const [oceanFishIndex, setOceanFishIndex] = useState<number>(0);
   const [breedingFishIndex, setBreedingFishIndex] = useState<number>(0);
   const [fightingFishIndex, setFightingFishIndex] = useState<number>(0);
@@ -140,7 +152,7 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
     const loadTokenData = async () => {
       // console.log("ACCOUNT NOT CONNECTED")
       // console.log("Getting public fish")
-      fetchOceanFish();
+      fetchOceanFish(1, false);
       fetchFightingFish();
       fetchBreedingFish();
     }
@@ -163,25 +175,33 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
 		if(unityContext.isFishPoolReady) loadTokenData(account);
   }, [account]);
 
+  const loadMoreFish = (type: number) => {
+    if(type === PoolTypes.Ocean) {
+      fetchOceanFish(oceanFishIndex + MAX_FISH, false);
+    }
+  }
 
   const fetchOceanFish = async (startIndex?: number, random?: boolean) => {
     // console.log("Loading Ocean Fish")
     try {
+      setLoadingFish(true);
       let randomFish: string[];
       if(random) {
-        randomFish = await FishFight.fishCalls.methods.getFish(startIndex ? startIndex : 1, false).call()
+        randomFish = await FishFight.fishCalls.methods.getFish(1, true).call()
 
       } else {
-        randomFish = await FishFight.fishCalls.methods.getFish(1, true).call()
+        
+        randomFish = await FishFight.fishCalls.methods.getFish(startIndex ? startIndex : 1, false).call()
       }
       console.log(randomFish)
       let oceanIds = [...new Set(randomFish)].filter((val) => {
         return val !== '0';
       });
+      oceanIds = oceanIds.slice(0, 20)
       // const totalFishSupply = web3.utils.toBN(fishSupply).toNumber();
-
+      
       // const allTokenIds = [...Array(totalFishSupply+1).keys()].slice(1);
-      oceanIds.forEach(async tokenId => {
+      await Promise.all(oceanIds.map(async tokenId => {
         const parsedTokenId = web3.utils.toNumber(tokenId);
         if(!oceanFish.some(fish => fish.tokenId == parsedTokenId)) {
           const fishData = await buildFish(FishFight, web3.utils.toNumber(parsedTokenId))
@@ -189,7 +209,10 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
             setOceanFish(prevData => [...prevData, fishData])
           }
         }
-      });
+      }));
+
+      setLoadingFish(false);
+      setOceanFishIndex(oceanFish.length)
 
     } catch (error) {
       console.log(error)
@@ -199,16 +222,20 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
   const fetchUserFish = async (account: string, startIndex?: number) => {
     // console.log("Loading User Fish")
     try {
+      setLoadingUserFish(true);
       let userFishIds: string[] = await FishFight.fishCalls.methods.getFishForAddress(startIndex ? startIndex : 0, account).call()
       // console.log(userFishIds)
       userFishIds = [...new Set(userFishIds)].filter((val) => {
         return val !== '0';
       });
-      userFishIds.forEach(async tokenId => {
+      // until Fish calls is limited
+      userFishIds = userFishIds.slice(0, 20);
+      await Promise.all(userFishIds.map(async tokenId => {
         const parsedTokenId = web3.utils.toNumber(tokenId);
-        addUserFishById(parsedTokenId)
+        await addUserFishById(parsedTokenId)
         setUserFishIndex(parsedTokenId);
-      });
+      }));
+      setLoadingUserFish(false);
 
     } catch (error) {
       console.log("Error loading Fish tokens owned by account: ")
@@ -445,6 +472,8 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
     oceanFishIndex: oceanFishIndex,
     breedingFishIndex: breedingFishIndex,
     fightingFishIndex: fightingFishIndex,
+    loadingFish: loadingFish,
+    loadingUserFish: loadingUserFish,
     refreshFish: refreshFish,
     createUserFish: createUserFish,
     fetchOceanFish: fetchOceanFish,
@@ -452,6 +481,7 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
     fetchFightingFish: fetchFightingFish,
     fetchBreedingFish: fetchBreedingFish,
     refreshLoadedFish: refreshLoadedFish,
+    loadMoreFish: loadMoreFish,
 	};
 
 	return <FishPoolContext.Provider value={value}>{children}</FishPoolContext.Provider>;

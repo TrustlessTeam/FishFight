@@ -301,7 +301,7 @@ const Time = styled.div`
 `;
 
 const Text = styled.p`
-	color: black;
+	color: #61daff;
 	margin: 0;
 	font-weight: bold;
 
@@ -401,7 +401,7 @@ const StatusContainer = styled.div`
 `;
 
 const Title = styled.h1`
-	color: black;
+	color: #61daff;
 	font-size: ${props => props.theme.font.medium};
 	margin: 0;
 	padding-right: ${props => props.theme.spacing.gapSmall};
@@ -419,7 +419,7 @@ const Title = styled.h1`
 `;
 
 const SubTitle = styled.h2`
-	color: black;
+	color: #61daff;
 	font-size: ${props => props.theme.font.small};
 	margin: 0;
 	padding-right: ${props => props.theme.spacing.gapSmall};

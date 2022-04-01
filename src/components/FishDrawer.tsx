@@ -12,6 +12,10 @@ import FishNFT from "./FishNFT";
 import Menu from "../components/Menu";
 import { ContainerControls } from './BaseStyles';
 import useSound from "use-sound";
+import { useFishPool, PoolTypes } from "../context/fishPoolContext";
+import { useFishFight } from "../context/fishFightContext";
+import web3 from 'web3'
+
 
 
 const sortId = (a: Fish, b: Fish) => a.tokenId - b.tokenId;
@@ -55,7 +59,7 @@ type Props = {
   depositFighter?: boolean;
   depositAlpha?: boolean;
   type?: string;
-  userFish?: boolean;
+  fishPool?: PoolTypes;
   children?: React.ReactNode;
 };
 
@@ -67,12 +71,14 @@ const FishDrawer = ({
   depositAlpha,
   depositFighter,
 	type,
-  userFish,
-  children
+  children,
+  fishPool,
 }: Props) => {
 
   // NOTE: for drag by mouse
   const { dragStart, dragStop, dragMove, dragging } = useDrag();
+  const { loadingFish, loadingUserFish, loadMoreFish } = useFishPool();
+  const { balanceFish, fishCurrentIndex, fightingWatersSupply, breedingWatersSupply } = useFishFight();
   const handleDrag = ({ scrollContainer }: scrollVisibilityApiType) => (
     ev: React.MouseEvent
   ) =>
@@ -100,7 +106,7 @@ const FishDrawer = ({
   // useEffect(() => {
 	// 	if(type == "Breeding") setSortOption(SortSelection.Betta)
 	// }, []);
-  
+
   const SortOptions = [
     {
       name: "Id",
@@ -179,11 +185,22 @@ const FishDrawer = ({
   //       );
   //     }
   //   }
-    
+
   // }, [selected, selectedPrev]);
+
+  const loadMore = (index: number) => {
+    const [lastItem] = fishCollection.slice(-1)
+    if(index === lastItem.tokenId) {
+      if(fishPool === PoolTypes.Ocean && index < fishCurrentIndex) loadMoreFish(PoolTypes.Ocean);
+    }
+  }
 
   return (
     <>
+      <PendingOverlay open={loadingFish || loadingUserFish} className={loadingFish || loadingUserFish ? "active" : ""}>
+          <div className="lds-ripple"><div></div><div></div></div>
+          <LoadingText>Loading Fish...</LoadingText>
+        </PendingOverlay>
       <ContainerControls>
         {children}
         {fishCollection.length > 0 && (
@@ -207,12 +224,12 @@ const FishDrawer = ({
           <input type="submit" value="GO" />
         </Search> */}
       </ContainerControls>
-      
+
       <Container>
         <div onMouseLeave={dragStop}>
-          <ScrollMenu
+          <StyledScrollMenu
             LeftArrow={LeftArrow}
-            RightArrow={RightArrow}
+            RightArrow={<RightArrow loadMore={loadMore}/>}
             onWheel={onWheel}
             onMouseDown={() => dragStart}
             onMouseUp={() => dragStop}
@@ -230,10 +247,10 @@ const FishDrawer = ({
                 onClick={onClick ? handleItemClick(fish) : undefined}
               />
             ))}
-          </ScrollMenu>
+          </StyledScrollMenu>
         </div>
       </Container>
-    </>   
+    </>
   );
 }
 export default FishDrawer;
@@ -253,11 +270,61 @@ function onWheel(apiObj: scrollVisibilityApiType, ev: React.WheelEvent): void {
   }
 }
 
+const StyledScrollMenu = styled(ScrollMenu)`
+
+
+`
+
 const Container = styled.div`
   pointer-events: auto;
   overflow-x: hidden;
 
-  .react-horizontal-scrolling-menu--scroll-container {
-    overflow-x: hidden;
+	.react-horizontal-scrolling-menu--scroll-container  {
+		overflow-x: hidden;
+
+		.react-horizontal-scrolling-menu--item  {
+
+		  &:first-child {
+		    padding-left: 30px;
+		  }
+
+		  &:last-child {
+		    padding-right: 30px;
+		  }
+		}
+	}
+`;
+
+const PendingOverlay = styled.div<{open: boolean}>`
+  display: flex;
+  flex-flow: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  /* height: 100%; */
+  opacity: 0;
+  /* background-color: rgba(25, 22, 209, 0.466);
+  z-index: 100; */
+  pointer-events: none;
+  transition: all 0.25s ease-in-out;
+  /* ${({ open }) =>
+    open ?
+    `
+    display: block;
+    `
+    :
+    `
+    display: none;
+    `
+  } */
+  &.active {
+    pointer-events: auto;
+    opacity: 1;
   }
+`;
+
+const LoadingText = styled.h1`
+  color: white;
+
+  margin: 0 auto;
 `;

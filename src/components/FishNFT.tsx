@@ -110,7 +110,7 @@ const FishNFT = ({
               <LogoImg src={agiImg}></LogoImg>
               <BaseText>{`Strength ${fish.agility} -> ${fish.agility+Constants._fightModifierValue > 100 ? 100 : fish.agility+Constants._fightModifierValue}`}</BaseText>
               <BaseButton onClick={() => {questFish(fish, Constants.MODIFIER_AGI); closeModal()}}>Buff Agility</BaseButton>
-            </ContainerColumnSmall>          
+            </ContainerColumnSmall>
           </ContainerRow>
           <Title>{`Token Modifiers`}</Title>
           <BaseText>{`A variety of modifiers to buff your $FISH based on the token used!`}</BaseText>
@@ -126,10 +126,10 @@ const FishNFT = ({
               <Text>{`Fish Scales (${web3.utils.fromWei(Constants._scaleFee)} $FISHSCALE)`}</Text>
               <SubText>{`Prevent Fight power reduction for 3 Fights!`}</SubText>
               <BaseButton onClick={() => {contractApproveERC20Modifiers(FishFight.fishScale, Constants._scaleFee, () => contractModifierFishProducts(fish, 2)); closeModal()}}>Consume Scales</BaseButton>
-            </ContainerColumnSmall>       
+            </ContainerColumnSmall>
           </ContainerRow>
         </ContainerWrapper>
-        
+
       </StyledModal>
       {/* <ToggleButton onClick={() => toggleStats()}>info</ToggleButton> */}
       <FishStats>
@@ -260,7 +260,7 @@ export const Text = styled.p`
   align-items: center;
   text-align: center;
 	margin: 0;
-	color: black;
+	color: #61daff;
 
 	font-size: ${props => props.theme.font.small};
 
@@ -353,7 +353,7 @@ const FishImg = styled.img<ImgProps>`
 		height: 150px;
   `}
   }
-  
+
 `;
 
 const FishId = styled.p`

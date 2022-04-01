@@ -22,7 +22,7 @@ const Block = styled.div`
 	padding: ${props => props.theme.spacing.gapSmall} ${props => props.theme.spacing.gapSmall};
 	border-radius: 25px;
 	background-color: white;
-	color: black;
+	color: #61daff;
 
 	& > span {
 		margin-left: 4px;

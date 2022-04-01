@@ -48,6 +48,7 @@ declare module 'styled-components' {
     font: {
       xsmall: string;
       small: string;
+      normal: string;
       medium: string;
       large: string;
     }

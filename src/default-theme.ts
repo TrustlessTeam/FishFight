@@ -28,6 +28,7 @@ const gapLarge = spacingBase * 3 + `px`
 
 const fontXSmall = "10px";
 const fontSmall = "12px";
+const fontNormal = "14px";
 const fontMedium = "16px";
 const fontLarge = "24px";
 
@@ -95,6 +96,7 @@ const BaseTheme: DefaultTheme = {
   font: {
     xsmall: fontXSmall,
     small: fontSmall,
+    normal: fontNormal,
     medium: fontMedium,
     large: fontLarge
   }

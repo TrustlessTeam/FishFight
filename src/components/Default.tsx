@@ -92,7 +92,7 @@ const LogoImg = styled.img`
 `;
 
 const Text = styled.p`
-	color: black;
+	color: #61daff;
 	text-align: center;
 	font-size: ${props => props.theme.font.small};
 

@@ -3,29 +3,41 @@ import React from "react";
 import { VisibilityContext } from "react-horizontal-scrolling-menu";
 import styled from "styled-components";
 import BaseButton from "../components/BaseButton";
+import { useFishPool } from "../context/fishPoolContext";
 
 function Arrow({
   children,
   disabled,
-  onClick
+  onClick,
+  left
 }: {
   children: React.ReactNode;
   disabled: boolean;
+  left: boolean;
   onClick: VoidFunction;
 }) {
   return (
-    <ArrowContainer>
+    <ArrowContainer
+    style={left ?
+      {
+        opacity: disabled ? "0" : "1",
+        left: "0"
+      }
+      :
+      {
+        opacity: disabled ? "0" : "1",
+        right: "0"
+      }
+    }>
       <ArrowButton
         disabled={disabled}
         onClick={onClick}
-        style={{
-          opacity: disabled ? "0" : "1"
-        }}
+
       >
         {children}
       </ArrowButton>
     </ArrowContainer>
-    
+
   );
 }
 
@@ -48,40 +60,63 @@ export function LeftArrow() {
   }, [isFirstItemVisible, visibleItemsWithoutSeparators]);
 
   return (
-    <Arrow disabled={disabled} onClick={() => scrollPrev()}>
+    <Arrow left={true} disabled={disabled} onClick={() => scrollPrev()}>
       {'<'}
     </Arrow>
   );
 }
 
-export function RightArrow() {
+export function RightArrow({
+  loadMore
+}: {
+  loadMore: (index: number) => void;
+}) {
   const {
     isLastItemVisible,
     scrollNext,
     visibleItemsWithoutSeparators
   } = React.useContext(VisibilityContext);
 
+  const { loadingUserFish, loadingFish } = useFishPool();
+
   const [disabled, setDisabled] = React.useState(
     true
   );
   React.useEffect(() => {
     if (visibleItemsWithoutSeparators.length) {
-      setDisabled(isLastItemVisible);
+      console.log(visibleItemsWithoutSeparators)
+      console.log(isLastItemVisible)
+      const [lastItem] = visibleItemsWithoutSeparators.slice(-1)
+      let lastShowingTokenId = parseInt(lastItem)
+      // if(isLastItemVisible && lastItem === oceanFish)
+      
+      if(!loadingFish && !loadingUserFish) {
+        loadMore(lastShowingTokenId)
+        // setDisabled(true);
+
+      }
+      setDisabled(false);
+      // loadMoreFish(0);
     }
   }, [isLastItemVisible, visibleItemsWithoutSeparators]);
 
   return (
-    <Arrow disabled={disabled} onClick={() => scrollNext()}>
+    <Arrow left={false} disabled={disabled} onClick={() => scrollNext()}>
       {'>'}
     </Arrow>
   );
 }
 
 const ArrowContainer = styled.div`
+  position: absolute;
+  bottom: 25px;
   display: flex;
   flex-flow: column;
   justify-content: center;
   align-items: center;
+  @media ${props => props.theme.device.tablet} {
+		bottom: 40px;
+  }
 `;
 
 const ArrowButton = styled(BaseButton)`

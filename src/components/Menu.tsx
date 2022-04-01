@@ -79,7 +79,7 @@ const DropContent = styled.div<DropdownProps>`
 
 
 const DropItem= styled.a`
-  color: black;
+  color: #61daff;
   padding: 12px 16px;
   text-decoration: none;
   text-transform: uppercase;

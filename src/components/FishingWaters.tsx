@@ -33,11 +33,11 @@ const FishingWaters = () => {
 				default:
 					return;
 			}
-			
+
 		});
 	}, [unityContext.isFishPoolReady, account]);
 
-	
+
 
 	const FishingUI = () => {
 		return (
@@ -48,7 +48,7 @@ const FishingWaters = () => {
 						{/* <Text>Missed the big one! Looks like you caught some $FISHFOOD...</Text> */}
 						<Text>{`You rolled a ${catchFishResult?.roll}, but needed less than ${maxSupply - totalSupply}`}</Text>
 					</CaughtFish>
-	
+
 					<BaseButton onClick={() => {
 						clearCatchFishResult();
 					}}>
@@ -60,25 +60,17 @@ const FishingWaters = () => {
 			<InfoContainer>
 				<DataContainer>
 					<DataText>
-						{`Fish Available: ${maxSupply - totalSupply}`}
+						{`Fish Left: ${maxSupply - totalSupply} -> Chance: ${totalSupply > 10000 ? (((maxSupply - totalSupply) / maxSupply) * 100).toFixed(2) : 100}%`}
 					</DataText>
-					{totalSupply > 10000 ? 
-						<DataText>
-							{`Chance to Catch: ${(((maxSupply - totalSupply) / maxSupply) * 100).toFixed(2)}%`}
-						</DataText>
-						:
-						<DataText>
-							{`Chance to Catch: 100% until ${totalSupply} = 10,000`}
-						</DataText>
-					}
+
 				</DataContainer>
 			</InfoContainer>
-			
+
 			</BaseContainer>
 		);
 	}
 
-	
+
 
 
 	if(!unityContext.isFishPoolReady) return null;
@@ -87,26 +79,28 @@ const FishingWaters = () => {
 		return (
 			<FishingUI></FishingUI>
 		)
-	} 
+	}
 	return null;
 };
 
 const DataContainer = styled.div`
+	display: flex;
+	flex-flow: row nowrap;
 	background-color: rgba(255, 255, 255, 0.8);
-	border-radius: 25px;
-	padding: ${props => props.theme.spacing.gap};
+	border-radius: 10px;
 `
 
 const InfoContainer = styled.div`
 	display: flex;
-	flex-direction: row;
+	flex-direction: row nowrap;
 	justify-content: center;
 	align-items: flex-start;
 	height: 100%;
-	margin: 100px;
+	width: 100%;
+	margin-top: 70px;
 
 	@media ${props => props.theme.device.tablet} {
-		margin: 120px;
+		margin-top: 120px;
   }
 `;
 
@@ -126,11 +120,12 @@ const DataText = styled.p`
 	flex-flow: row;
 	justify-content: center;
 	align-items: center;
-	margin-top: ${props => props.theme.spacing.gapSmall};
-	/* background-color: white; */
 	color: black;
-	/* border: 2px solid white; */
-	border-radius: 50%;
+	border-radius: 20px;
+
+	margin: 0;
+
+	padding: ${props => props.theme.spacing.gap};
 
 	& > span {
 		margin-left: 4px;
@@ -160,7 +155,7 @@ const Text = styled.p`
 	padding: ${props => props.theme.spacing.gap};
 	margin: 0;
 	background-color: white;
-	color: black;
+	color: #61daff;
 	font-size: ${props => props.theme.font.medium};
 	border-radius: 25px;
 	margin-left: ${props => props.theme.spacing.gapSmall};

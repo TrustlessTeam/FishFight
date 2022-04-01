@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import Modal from 'react-modal';
 import iceImg from "../img/ice.jpg";
 import bloodImg from "../img/blood.png";
+import waterImg from "../img/water.jpg";
 
 export const ContainerRow = styled.div`
 	position: relative;
@@ -25,7 +26,7 @@ export const ContainerColumn = styled.div`
 `;
 
 export const Title = styled.h1`
-	color: black;
+	color: #61daff;
 	font-size: ${props => props.theme.font.medium};
 	margin: 0;
 	padding-right: ${props => props.theme.spacing.gapSmall};
@@ -55,7 +56,7 @@ export const StyledModal = styled(Modal)`
   max-height: 100%;
   transform: translate(-50%, -50%);
   border-radius: 20px;
-  /* background-color: rgb(230, 230, 230); */
+  background-color: rgba(4, 49, 83, 0.814);
 	
 	/* padding: ${props => props.theme.spacing.gap}; */
 	box-shadow:  20px 20px 60px #254f67,
@@ -66,8 +67,8 @@ export const StyledModal = styled(Modal)`
 
 	&::before {    
 		content: "";
-		background: url(${bloodImg}), url(${iceImg});
-		background-blend-mode: darken;
+		/* background: url(${waterImg}); */
+		/* background-blend-mode: lighten; */
 		opacity: 0.9;
 		border: solid white 2px;
 		border-radius: 20px;
@@ -165,7 +166,7 @@ export const BaseTitle = styled.p`
 	margin: 0;
 	color: white;
 	font-size: ${props => props.theme.font.medium};
-	/* -webkit-text-stroke: 1px black; */
+	/* -webkit-text-stroke: 1px #61daff; */
 
 	@media ${props => props.theme.device.tablet} {
 		font-size: ${props => props.theme.font.large};
