@@ -13,7 +13,9 @@ import {
 // Contracts
 // import Contracts from '@fishfight-one/contracts/FishFightContracts/testnet/contracts.json'
 import Contracts from '../contracts/contracts.json';
+import ERC20 from '../contracts/erc20.json';
 import Web3 from "web3"
+import { Constants } from "../utils/constants";
 // import { WebsocketProvider } from 'web3-providers-ws';
 
 const wsOptions = {
@@ -123,8 +125,8 @@ class FishFight {
         this.readFishFood = this.setContract(this.provider, Contracts.contracts.FishFood.abi, Contracts.contracts.FishFood.address)
         this.readFishEgg = this.setContract(this.provider, Contracts.contracts.FishEgg.abi, Contracts.contracts.FishEgg.address)
         this.readFishScale = this.setContract(this.provider, Contracts.contracts.FishScale.abi, Contracts.contracts.FishScale.address)
-        this.readBloater = this.setContract(this.provider, Contracts.contracts.BloaterTest.abi, Contracts.contracts.BloaterTest.address)
-        this.readRedgill = this.setContract(this.provider, Contracts.contracts.RedgillTest.abi, Contracts.contracts.RedgillTest.address)
+        this.readBloater = this.setContract(this.provider, ERC20, Constants._bloaterAddress)
+        this.readRedgill = this.setContract(this.provider, ERC20, Constants._redgillAddress)
         
 
         // LISTNER PROVIDERS
@@ -187,8 +189,8 @@ class FishFight {
         this.fishFood = this.setContract(this.providerWallet, Contracts.contracts.FishFood.abi, Contracts.contracts.FishFood.address)
         this.fishEgg = this.setContract(this.providerWallet, Contracts.contracts.FishEgg.abi, Contracts.contracts.FishEgg.address)
         this.fishScale = this.setContract(this.providerWallet, Contracts.contracts.FishScale.abi, Contracts.contracts.FishScale.address)
-        this.readBloater = this.setContract(this.providerWallet, Contracts.contracts.BloaterTest.abi, Contracts.contracts.BloaterTest.address)
-        this.readRedgill = this.setContract(this.providerWallet, Contracts.contracts.RedgillTest.abi, Contracts.contracts.RedgillTest.address)
+        this.readBloater = this.setContract(this.providerWallet, ERC20, Constants._bloaterAddress)
+        this.readRedgill = this.setContract(this.providerWallet, ERC20, Constants._redgillAddress)
     }
 
     setContract = (provider: any, abi: any, address: string) => {

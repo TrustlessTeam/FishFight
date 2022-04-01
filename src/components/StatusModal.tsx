@@ -225,7 +225,7 @@ const StatusModal = ({children}: Props) => {
 						<DataItem>
 							<SubTitle>{`Breed Pool Stats:`}</SubTitle>
 							<StatusText>{`Fish in Breed Pool: ${breedingWatersSupply}`}</StatusText>
-							<StatusText>{`Cost to Breed: ${web3.utils.fromWei(currentPhase.phase === 4 ? Constants._oneBreedFeeInPhase : Constants._oneBreedFee)} ONE`}</StatusText>
+							{/* <StatusText>{`Cost to Breed: ${web3.utils.fromWei(currentPhase.phase === 4 ? Constants._oneBreedFeeInPhase : Constants._oneBreedFee)} ONE`}</StatusText> */}
 							<StatusText>{`$FISHFOOD per Win: ${web3.utils.fromWei(currentPhase.phase === 2 ? Constants._fishFoodPerWinInPhase : Constants._fishFoodPerWin)}`}</StatusText>
 							<StatusText>{`Total Breeds: ${totalBreeds}`}</StatusText>
 							

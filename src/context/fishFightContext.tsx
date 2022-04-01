@@ -10,6 +10,8 @@ import BN from 'bn.js'
 import { Phase } from '../utils/cycles';
 import { ContractCallContext, ContractCallResults } from "ethereum-multicall";
 import Contracts from '../contracts/contracts.json';
+import ERC20 from '../contracts/erc20.json';
+
 
 
 // Typescript
@@ -193,13 +195,13 @@ const useBalance = () => {
         {
           reference: 'bloater',
           contractAddress: FishFight.readBloater.options.address,
-          abi: Contracts.contracts.BloaterTest.abi,
+          abi: ERC20,
           calls: [{ reference: 'bloaterBalance', methodName: 'balanceOf', methodParameters: [account] }]
         },
         {
           reference: 'redgill',
           contractAddress: FishFight.readRedgill.options.address,
-          abi: Contracts.contracts.RedgillTest.abi,
+          abi: ERC20,
           calls: [{ reference: 'redgillBalance', methodName: 'balanceOf', methodParameters: [account] }]
         },
       ];

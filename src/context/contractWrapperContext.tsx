@@ -1260,10 +1260,10 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 			return;
 		}
 
-		if(await FishFight.provider.eth.getChainId() != 1666700000) {
-			toast.error('Wrong Network');
-			return;
-		}
+		// if(await FishFight.provider.eth.getChainId() != 1666700000) {
+		// 	toast.error('Wrong Network');
+		// 	return;
+		// }
 
 		try {
 			const isFishing = await FishFight.readCycles.methods.isFishingPhase().call();

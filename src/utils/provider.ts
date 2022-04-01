@@ -16,7 +16,7 @@ export type Provider = {
 }
 
 // Depending on this the provider will be chosen
-const envProvider: string = process.env.REACT_APP_FRONTEND_NETWORK || 'testnet';
+const envProvider: string = process.env.REACT_APP_FRONTEND_NETWORK || 'mainnet';
 
 
 // Provider list
@@ -56,7 +56,7 @@ const configWebSockets: { [name: string]: any } = {
 		url: 'wss://ws.s0.b.hmny.io',
 	},
 	mainnet: {
-		url: 'ws://ws.s0.t.hmny.io',
+		url: 'wss://ws.s0.t.hmny.io',
 	},
 };
 

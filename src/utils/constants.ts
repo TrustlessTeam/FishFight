@@ -9,8 +9,8 @@ export let Constants = {
   _baseTokenURI : 'https://gateway.pinata.cloud/ipfs/',
   _maxPower : 10,
   // Fishing Waters
-  _fishingPrice : ethers.utils.parseEther('300').toString(), // ONE
-  _fishingPriceInPhase : ethers.utils.parseEther('150').toString(),
+  _fishingPrice : ethers.utils.parseEther('0.00003').toString(), // ONE
+  _fishingPriceInPhase : ethers.utils.parseEther('0.000015').toString(),
   _fishingPriceFishFood : ethers.utils.parseEther('0').toString(), // FISHFOOD
   _catchFoodAmount : ethers.utils.parseEther('10').toString(), // FISHFOOD
   _fishTypeMinRange : 0,
@@ -24,8 +24,8 @@ export let Constants = {
   _fightPowerFee : 2,
   // Breeding Waters
   _fishFoodBreedFee : ethers.utils.parseEther('0').toString(), // FISHFOOD
-  _oneBreedFee : ethers.utils.parseEther('960').toString(), // ONE,
-  _oneBreedFeeInPhase : ethers.utils.parseEther('420').toString(), // ONE,
+  _oneBreedFee : ethers.utils.parseEther('0.0000960'), // ONE,
+  _oneBreedFeeInPhase : ethers.utils.parseEther('0.0000420').toString(), // ONE,
   _alphaFoodOwedFee : ethers.utils.parseEther('10').toString(), // FISHFOOD
   _alphaFoodOwedFeeInPhase : ethers.utils.parseEther('20').toString(),
   _bettaBreedPowerFee : 10,
@@ -49,6 +49,9 @@ export let Constants = {
   _maxSupply : 20000,
   _supplyIncreaseNumerator : 10,
   _supplyIncreaseDenominator : 100,
+
+  _bloaterAddress : '0x78aED65A2Cc40C7D8B0dF1554Da60b38AD351432',
+  _redgillAddress: '0xc5891912718ccFFcC9732D1942cCD98d5934C2e1',
 
   MODIFIER_ALPHA : 0,
   MODIFIER_BETTA : 1,
