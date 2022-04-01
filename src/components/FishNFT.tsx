@@ -92,7 +92,7 @@ const FishNFT = ({
         shouldCloseOnOverlayClick
       >
         {/* {active ? <SignOut account={parsedAccount} closeModal={closeModal} /> : <Wallets closeModal={closeModal} />} */}
-        <ContainerWrapper>
+        <ContainerWrapper> 
           <Title>{`Core Fight Buffs`}</Title>
           <BaseText>{`Consume ${Constants._fightModifierCost} of your Fish's Power to increase an attribute of your $FISH for 3 Fights!`}</BaseText>
           <ContainerRow>
@@ -115,12 +115,12 @@ const FishNFT = ({
           <Title>{`Token Modifiers`}</Title>
           <BaseText>{`A variety of modifiers to buff your $FISH based on the token used!`}</BaseText>
           <ContainerRow>
-            <ContainerColumnSmall>
+            {/* <ContainerColumnSmall>
               <LogoImg src={eggImg}></LogoImg>
               <Text>{`Fish Egg (${web3.utils.fromWei(Constants._eggFee)} $FISHEGG)`}</Text>
               <SubText>{`Buff is a mystery!`}</SubText>
               <BaseButton onClick={() => {contractApproveERC20Modifiers(FishFight.fishEgg, Constants._feedFee, () => contractModifierFishProducts(fish, 1)); closeModal()}}>Consume Egg</BaseButton>
-            </ContainerColumnSmall>
+            </ContainerColumnSmall> */}
             <ContainerColumnSmall>
               <LogoImg src={scaleImg}></LogoImg>
               <Text>{`Fish Scales (${web3.utils.fromWei(Constants._scaleFee)} $FISHSCALE)`}</Text>

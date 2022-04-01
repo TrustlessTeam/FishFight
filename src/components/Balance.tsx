@@ -9,7 +9,6 @@ import fightingImg from "../img/icons/fighting.svg";
 import eggImg from "../img/icons/FishEgg.png";
 import scaleImg from "../img/icons/FishScale.png";
 import bloaterImg from "../img/icons/dfk-bloater.png";
-import redgillImg from "../img/icons/dfk-redgill.png";
 
 import web3 from "web3";
 
@@ -98,14 +97,14 @@ export const ItemBalance = () => {
 					</BalanceText>
 				</BalanceComponent>
 			}
-      {balanceRedgill.gt(new BN(0)) &&
+      {/* {balanceRedgill.gt(new BN(0)) &&
 				<BalanceComponent title="REDGILL Balance">
 					<BalanceText>
 						{web3.utils.fromWei(balanceRedgill)}
 						<LogoImg src={redgillImg} alt="REDGILL"></LogoImg>
 					</BalanceText>
 				</BalanceComponent>
-			}
+			} */}
     </>
   );
 };
