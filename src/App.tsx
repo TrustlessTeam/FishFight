@@ -3,9 +3,13 @@ import { Routes, Route } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-
+// Styled Components
 import styled, { ThemeProvider } from "styled-components";
 import { BaseTheme } from "./default-theme";
+
+// Components
+import Countdown from 'react-countdown';
+
 
 import UnityWindow from "./components/UnityWindow";
 import Ocean from "./components/Ocean";
@@ -18,6 +22,17 @@ import DisclaimerModal from "./components/DisclaimerModal";
 import { useContractWrapper } from "./context/contractWrapperContext";
 import HowToPlayModal from "./components/HowToPlayModal";
 
+type RenderProps = {
+  hours: any;
+  minutes: any;
+  seconds: any;
+  completed: boolean;
+}
+const renderer = ({ hours, minutes, seconds, completed }: RenderProps) => {
+  // Render a countdown
+  return <Time><Hour>{hours} hrs</Hour><Minute>{minutes} mins</Minute><Second>{seconds} secs</Second></Time>;
+};
+
 const App = () => {
   const { pendingTransaction } = useContractWrapper()
   return (
@@ -27,7 +42,11 @@ const App = () => {
           <div className="lds-ripple"><div></div><div></div></div>
           <LoadingText>Waiting for Transaction...</LoadingText>
         </PendingOverlay>
-       
+        <PendingOverlay open={true} className={true ? "active" : ""}>
+          <div className="lds-ripple"><div></div><div></div></div>
+          <LoadingText>Mainnet Launch...</LoadingText>
+          <Countdown renderer={renderer} date={new Date(1648941071 * 1000)} />
+        </PendingOverlay>
         <Container>
           <MenuOverlay></MenuOverlay>
           <DisclaimerModal></DisclaimerModal>
@@ -120,5 +139,42 @@ const Container = styled.div`
   margin: 0 auto;
 `;
 
+const Time = styled.div`
+	display: flex;
+	flex-flow: row nowrap;
+	align-items: center;
+	justify-content: space-between;
+`;
+
+const Text = styled.p`
+  color: white;
+`
+
+const Hour = styled(Text)`
+	font-size: ${props => props.theme.font.medium};
+	padding-right: ${props => props.theme.spacing.gapSmall};
+	
+	@media ${props => props.theme.device.tablet} {
+	  font-size: ${props => props.theme.font.large};
+  }
+`;
+
+const Minute = styled(Text)`
+	font-size: ${props => props.theme.font.small};
+	padding-right: ${props => props.theme.spacing.gapSmall};
+
+	@media ${props => props.theme.device.tablet} {
+	  font-size: ${props => props.theme.font.medium};
+  }
+`;
+
+const Second = styled(Text)`
+	font-size: 10px;
+	padding-right: ${props => props.theme.spacing.gapSmall};
+
+	@media ${props => props.theme.device.tablet} {
+	  font-size: ${props => props.theme.font.small};
+  }
+`;
 
 export default App;
