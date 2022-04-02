@@ -128,6 +128,16 @@ const FishNFT = ({
               <BaseButton onClick={() => {contractApproveERC20Modifiers(FishFight.fishScale, Constants._scaleFee, () => contractModifierFishProducts(fish, 2)); closeModal()}}>Consume Scales</BaseButton>
             </ContainerColumnSmall>
           </ContainerRow>
+          <ContainerRow>
+            <ContainerColumnSmall>
+              <LogoImg src={scaleImg}></LogoImg>
+              <Text>{`${web3.utils.fromWei(Constants._feedFee)} DFK Bloater`}</Text>
+              <SubText>{`Add 2 Strength`}</SubText>
+              <SubText>{`Removes 2 Intelligence`}</SubText>
+              <SubText>{`for 5 Fights!`}</SubText>
+              <BaseButton onClick={() => {contractApproveERC20Modifiers(FishFight.bloater, Constants._feedFee, () => contractModifierDFK(fish, 1)); closeModal()}}>Consume Bloater</BaseButton>
+            </ContainerColumnSmall>
+          </ContainerRow>
         </ContainerWrapper>
 
       </StyledModal>
