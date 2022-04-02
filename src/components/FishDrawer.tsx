@@ -78,7 +78,7 @@ const FishDrawer = ({
   // NOTE: for drag by mouse
   const { dragStart, dragStop, dragMove, dragging } = useDrag();
   const { loadingFish, loadingUserFish, loadMoreFish } = useFishPool();
-  const { balanceFish, fishCurrentIndex, fightingWatersSupply, breedingWatersSupply } = useFishFight();
+  const { balanceFish, fishCurrentIndex, globalMute, fightingWatersSupply, breedingWatersSupply } = useFishFight();
   const handleDrag = ({ scrollContainer }: scrollVisibilityApiType) => (
     ev: React.MouseEvent
   ) =>
@@ -97,9 +97,13 @@ const FishDrawer = ({
   const playSound = () => {
     const rand = Math.floor(Math.random() * 2) + 1
     if(rand === 1) {
-      playSplash();
+
+      if (!globalMute)
+      { playSplash();}
     } else {
-      playSplash2();
+      if (!globalMute)
+      { playSplash2();}
+
     }
   }
 
@@ -169,7 +173,9 @@ const FishDrawer = ({
       return false;
     }
     setSelected(selected !== fish.tokenId ? fish.tokenId : 0);
-    playSound();
+    if (!globalMute)
+    { playSound();}
+
     if(onClick) onClick(fish);
   };
 

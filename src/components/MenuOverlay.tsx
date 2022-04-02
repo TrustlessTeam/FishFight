@@ -5,6 +5,7 @@ import 'react-toastify/dist/ReactToastify.css';
 // Styled Components
 import styled from 'styled-components';
 
+import { useFishFight } from "../context/fishFightContext";
 
 // Components
 import Nav from './Nav';
@@ -14,41 +15,75 @@ import StatusModal from "./StatusModal";
 import BaseButton from "../components/BaseButton";
 import useSound from 'use-sound';
 
+import nftkeyImg from "../img/icons/nftkey-logo-circle.svg";
 import muteImg from "../img/icons/mute-dark.svg";
+import musicImg from "../img/icons/music-notes.svg";
 import noMuteImg from "../img/icons/nomute-dark.svg";
 
 const MenuOverlay = () => {
 	const { account } = useWeb3React();
 	const [open, setOpen] = useState(false);
+	const [openStore, setOpenStore] = useState(true);
+	const [mutedMusic, setMutedMusic] = useState(true);
 	const [muted, setMuted] = useState(true);
-	const [play, { pause } ] = useSound('in_deep_90s.mp3', {loop: true, volume: 0.25});
+	const [play, { pause } ] = useSound('in_deep_90s.mp3', {loop: true, volume: 0.05});
+	const { globalMute, toggleGlobalMute } = useFishFight();
 
-	const handleSoundClick = () => {
-		console.log(muted)
-		if(muted) {
+	const HandleOpenStore = () => {
+		setOpenStore(true);		
+	}
+
+	const handleMusicClick = () => {
+		console.log(mutedMusic)
+		if(mutedMusic) {
 			play();
-			setMuted(false);
+			setMutedMusic(false);
 		}
 		else {
 			pause();
-			setMuted(true);
+			setMutedMusic(true);
+		}
+		
+	}
+	
+	const handleSoundClick = () => {
+		console.log(globalMute)
+		toggleGlobalMute();
+		
+		if(muted) {
+			//play();
+			// TODO Creat global value that all the SFX play functions check to make sure they should make noise right now.
+			//setMuted(false);
+		}
+		else {
+			//pause();
+			//setMuted(true);
+
 		}
 		
 	}
 	
 	return (
 		<Wrapper open={open}>
+								
+
 			<MenuContainer>
 				
 				<StatusModal>
-					<SoundButton onClick={() => handleSoundClick()}><LogoImg src={muted ? muteImg : noMuteImg}></LogoImg></SoundButton>
-				</StatusModal>
-				
-				<StyledNav></StyledNav>
 
+				</StatusModal>
+					
+				<StyledNav>
+				</StyledNav>
+						 
 				<User>
-					<Account></Account>
+					<Account>
+					</Account>
 				</User>
+						
+				
+
+					
 				
 				
 				
@@ -57,6 +92,14 @@ const MenuOverlay = () => {
 					
 				</InfoContainer> */}
 			</MenuContainer>
+				
+				
+									<SoundButton onClick={() => handleMusicClick()}><LogoImg src={mutedMusic ? muteImg : musicImg }></LogoImg>
+									</SoundButton>
+									<SoundButton onClick={() => handleSoundClick()}><LogoImg src={globalMute ? muteImg : noMuteImg }></LogoImg>
+									</SoundButton>
+									<SoundButton onClick={() => HandleOpenStore()}><a href="https://nftkey.app" target="_blank" rel=""><LogoImg src={nftkeyImg }></LogoImg></a>
+									</SoundButton>
 		</Wrapper>
 	);
 };
@@ -67,6 +110,7 @@ interface Props {
 
 const SoundButton = styled(BaseButton)`
 	padding: 5px;
+
 	border-radius: 50%;
 
 	&::before {
@@ -76,7 +120,6 @@ const SoundButton = styled(BaseButton)`
     right: 0;
     bottom: 0;
     left: 0;
-    border-radius: 50%;
     background-image: linear-gradient(#ffffff, #e2e2e2);
     z-index: -1;
     transition: opacity 0.25s ease-in-out;
@@ -84,11 +127,18 @@ const SoundButton = styled(BaseButton)`
   }
 
 	@media ${props => props.theme.device.tablet} {
-	  padding: 10px;
+	  padding: 5px;
   }
 `;
 
 
+
+const StoreLogoImg = styled.img`
+	height: 25px;
+	@media ${props => props.theme.device.tablet} {
+		padding: 10px;
+  }
+`;
 const LogoImg = styled.img`
 	height: 15px;
 

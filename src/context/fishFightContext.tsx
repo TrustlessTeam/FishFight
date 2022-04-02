@@ -16,6 +16,7 @@ import Contracts from '../contracts/contracts.json';
 interface FishFightProviderContext {
   FishFight: FishFight
   userConnected: boolean
+  globalMute: boolean
   currentBlock: number
 
   balance: string | undefined
@@ -45,6 +46,7 @@ interface FishFightProviderContext {
   refetchBalance: () => void
   resetBalance: () => void
   refetchStats: () => void
+  toggleGlobalMute: () => void
 }
 
 type FishFightProviderProps = { children: React.ReactNode }
@@ -57,6 +59,7 @@ export const FishFightProvider = ({ children }: FishFightProviderProps ) => {
   // FishFight instance initiates with default url provider upon visiting page
   const [FishFightInstance, setFishFightInstance] = useState<FishFight>(new FishFight())
   const [userConnected, setUserConnected] = useState<boolean>(false);
+  const [globalMute, setGlobalMute] = useState<boolean>(false);
   const [currentBlock, setCurrentBlock] = useState<number>(0);
   // State of web3React
   const { account, connector, library} = useWeb3React();
@@ -115,15 +118,19 @@ export const FishFightProvider = ({ children }: FishFightProviderProps ) => {
   const refetchStats = () => {
     contextStats.fetchStats(FishFightInstance);
   }
-
+  const toggleGlobalMute = () => {
+    setGlobalMute(prev => !prev);
+  }
   const value: FishFightProviderContext = {
     FishFight: FishFightInstance,
     userConnected: userConnected,
+    globalMute: globalMute,
     currentBlock: currentBlock,
     ...contextBalance,
     ...contextStats,
     refetchBalance,
-    refetchStats
+    refetchStats,
+    toggleGlobalMute,
   }
   return (
       <FishFightContext.Provider value={value}>{children}</FishFightContext.Provider>
@@ -399,6 +406,7 @@ const useStats = () => {
     totalFights,
     totalBreeds,
 		fetchStats,
+    
 	};
 };
 

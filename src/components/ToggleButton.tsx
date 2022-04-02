@@ -2,6 +2,8 @@
 import styled from "styled-components";
 import useSound from 'use-sound';
 
+import { useFishFight } from "../context/fishFightContext";
+
 // type Props = {
 //   onClick: () => void;
 //   children?: React.ReactNode;
@@ -23,12 +25,23 @@ export type ToggleItem = {
 
 const ToggleButton = ({ items, selected } : Props) => {
 	const [playClick] = useSound('click.wav', {volume: 0.25});
+
+	const { globalMute } = useFishFight();
+
 	return (
 		<>
 			<ToggleGroup>
 				{items.map((item, key) => {
 					return(
-						<ToggleOption key={key} className={selected === item.id ? 'active' : ''} onClick={() => {item.onClick(); playClick();}}>{item.name}</ToggleOption>
+						<ToggleOption key={key} className={selected === item.id ? 'active' : ''} 
+						onClick={
+							() => {
+								if ( !globalMute )
+								{
+									item.onClick(); 
+								}
+								playClick();
+							}}>{item.name}</ToggleOption>
 					)
 				})}
 				{/* <ToggleOption className={selected === FishView.Ocean ? 'active' : ''} onClick={() => setFishToShow(FishView.Ocean)}>Ocean Fish</ToggleOption>

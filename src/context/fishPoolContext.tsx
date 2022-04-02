@@ -229,7 +229,7 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
         return val !== '0';
       });
       // until Fish calls is limited
-      userFishIds = userFishIds.slice(0, 20);
+      //userFishIds = userFishIds.slice(0, 20);
       await Promise.all(userFishIds.map(async tokenId => {
         const parsedTokenId = web3.utils.toNumber(tokenId);
         await addUserFishById(parsedTokenId)

@@ -4,6 +4,7 @@ import dropdownImg from "../img/icons/dropdown.svg"
 import useSound from 'use-sound';
 import { BaseButtonStyle } from "./BaseStyles";
 
+import { useFishFight } from "../context/fishFightContext";
 
 
 const Drop = styled.div`
@@ -118,11 +119,16 @@ const Menu = ({name, items} : Props) => {
   const [open, setOpen] = useState<boolean>(false);
   const [playClick] = useSound('click.wav', {volume: 0.25});
 
+  const { globalMute } = useFishFight();
+
   const toggleDropdown = () => {
     console.log(items)
     console.log(open)
     setOpen(!open);
-    playClick();
+    
+    if (!globalMute)
+    { playClick();}
+
   };
 	
 	return (
@@ -137,7 +143,10 @@ const Menu = ({name, items} : Props) => {
                 toggleDropdown();
                 console.log(selection)
                 selection.onClick();
-                playClick();
+
+                if (!globalMute)
+                { playClick();}
+      
               }}>{selection.name}</DropItem>
             )
           })}
