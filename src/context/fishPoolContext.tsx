@@ -559,7 +559,7 @@ const buildFish = async (fishFightInstance: FishFight, tokenId: number, isParent
   console.log(fishFactoryTokenUri)
   let imgSrc = null;
   if(fishFactoryTokenUri) {
-    imgSrc = `${serverURL}/${tokenId}.png`
+    imgSrc = `${fishFactoryTokenUri}.png`
   }
   const fishStatsGetFishModifiers = results.results.fishStats.callsReturnContext[0].success ? results.results.fishStats.callsReturnContext[0].returnValues : null;
   const fishStatsGetFights = results.results.fishStats.callsReturnContext[1].success ? results.results.fishStats.callsReturnContext[1].returnValues : null;

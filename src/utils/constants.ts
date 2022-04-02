@@ -9,8 +9,8 @@ export let Constants = {
   _baseTokenURI : 'https://gateway.pinata.cloud/ipfs/',
   _maxPower : 10,
   // Fishing Waters
-  _fishingPrice : ethers.utils.parseEther('0.00003').toString(), // ONE
-  _fishingPriceInPhase : ethers.utils.parseEther('0.000015').toString(),
+  _fishingPrice : ethers.utils.parseEther('300').toString(), // ONE
+  _fishingPriceInPhase : ethers.utils.parseEther('150').toString(),
   _fishingPriceFishFood : ethers.utils.parseEther('0').toString(), // FISHFOOD
   _catchFoodAmount : ethers.utils.parseEther('10').toString(), // FISHFOOD
   _fishTypeMinRange : 0,
