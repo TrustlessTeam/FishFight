@@ -321,6 +321,7 @@ const FishContainer = styled.div`
 
 const FishImg = styled.img<ImgProps>`
   height: 100px;
+  width: 100px;
   border-radius: 50%;
   /* border-radius: 40px; */
   /* border: 0.5vh solid rgba(255, 255, 255, 0.5); */
@@ -340,6 +341,7 @@ const FishImg = styled.img<ImgProps>`
 
   @media ${props => props.theme.device.tablet} {
 		height: 120px;
+    width: 120px;
     ${({ selectedUser }) =>
     selectedUser &&
     `

@@ -179,6 +179,9 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
     if(type === PoolTypes.Ocean) {
       fetchOceanFish(oceanFishIndex, false);
     }
+    if(type === PoolTypes.User) {
+      fetchOceanFish(oceanFishIndex, false);
+    }
   }
 
   const fetchOceanFish = async (startIndex?: number, random?: boolean) => {
@@ -197,11 +200,7 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
       let oceanIds = [...new Set(randomFish)].filter((val) => {
         return val !== '0';
       });
-      oceanIds = oceanIds.slice(0, 20)
-      
-      // const totalFishSupply = web3.utils.toBN(fishSupply).toNumber();
-      
-      // const allTokenIds = [...Array(totalFishSupply+1).keys()].slice(1);
+
       await Promise.all(oceanIds.map(async tokenId => {
         const parsedTokenId = web3.utils.toNumber(tokenId);
         if(!oceanFish.some(fish => fish.tokenId == parsedTokenId)) {
@@ -237,6 +236,9 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
         await addUserFishById(parsedTokenId)
         setUserFishIndex(parsedTokenId);
       }));
+
+      const [lastItem] = userFishIds.slice(-1)
+      setUserFishIndex(web3.utils.toNumber(lastItem))
       setLoadingUserFish(false);
 
     } catch (error) {
