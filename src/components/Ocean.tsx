@@ -199,7 +199,7 @@ const Ocean = () => {
 					</FishDrawer>
 				}
 				{fishToShow === FishView.User &&
-					<FishDrawer selectedFish={mySelectedFish} fishCollection={userFish} onClick={oceanFishClick}>
+					<FishDrawer fishPool={PoolTypes.User} selectedFish={mySelectedFish} fishCollection={userFish} onClick={oceanFishClick}>
 						<>
 							<ToggleButton items={FishViewOptions} selected={fishToShow}></ToggleButton>
 							{!account &&

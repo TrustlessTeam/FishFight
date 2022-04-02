@@ -91,6 +91,7 @@ export function RightArrow({
       // if(isLastItemVisible && lastItem === oceanFish)
       
       if(!loadingFish && !loadingUserFish) {
+        // console.log(lastShowingTokenId)
         loadMore(lastShowingTokenId)
         // setDisabled(true);
 

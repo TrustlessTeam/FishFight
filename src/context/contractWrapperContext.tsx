@@ -688,8 +688,7 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 			return FishFight.fightingWaters?.methods.deathFight(myFish.tokenId, opponentFish.tokenId, contractIsFighterDeposited).send({
 				from: account,
 				gasPrice: 30000000000,
-				gasLimit: 5000000,
-				value: Constants._fightFee
+				gasLimit: 5000000
 			})
 			.on('error', (error: any) => {
 				console.log(error)
@@ -1260,7 +1259,7 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 			return;
 		}
 
-		if(await FishFight.provider.eth.getChainId() != 1666700000) {
+		if(await FishFight.provider.eth.getChainId() != 1666600000) {
 			toast.error('Wrong Network');
 			return;
 		}

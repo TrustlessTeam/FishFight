@@ -179,8 +179,8 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
     if(type === PoolTypes.Ocean) {
       fetchOceanFish(oceanFishIndex, false);
     }
-    if(type === PoolTypes.User) {
-      fetchOceanFish(oceanFishIndex, false);
+    if(type === PoolTypes.User && account) {
+      fetchUserFish(account, userFishIndex);
     }
   }
 
@@ -223,23 +223,50 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
   const fetchUserFish = async (account: string, startIndex?: number) => {
     // console.log("Loading User Fish")
     try {
-      setLoadingUserFish(true);
-      let userFishIds: string[] = await FishFight.fishCalls.methods.getFishForAddress(startIndex ? startIndex : 0, account).call()
+      // console.log(startIndex)
+      // if(!startIndex) {
+      //   startIndex = 0;
+      // }
+      // console.log(account)
+      // const ownerBalance = await FishFight.readFishFactory.methods.balanceOf(account).call();
+      // console.log(ownerBalance)
+      // // console.log(test)
+      // setLoadingUserFish(true);
+      // // let userFishIds: string[] = await FishFight.fishCalls.methods.getFishForAddress(startIndex ? startIndex : 0, account).call()
+      // let userFishIds = [...new Set(ownerBalance)]
       // console.log(userFishIds)
-      userFishIds = [...new Set(userFishIds)].filter((val) => {
-        return val !== '0';
-      });
-      // until Fish calls is limited
-      //userFishIds = userFishIds.slice(0, 20);
-      await Promise.all(userFishIds.map(async tokenId => {
-        const parsedTokenId = web3.utils.toNumber(tokenId);
-        await addUserFishById(parsedTokenId)
-        setUserFishIndex(parsedTokenId);
-      }));
+      // userFishIds = userFishIds.slice(startIndex)
+      // console.log(userFishIds)
+      // // userFishIds = [...new Set(userFishIds)].filter((val) => {
+      // //   return val !== '0';
+      // // });
+      // console.log(userFishIds)
+      // // until Fish calls is limited
+      // // userFishIds = userFishIds.slice(0, 20);
+      // console.log(userFishIds)
+      // await Promise.all(userFishIds.map(async index => {
+      // const tokenId = await FishFight.readFishFactory.methods.tokenOfOwnerByIndex(account, index).call();
+      //   const parsedTokenId = web3.utils.toNumber(tokenId);
+        
+      //   await addUserFishById(parsedTokenId)
+      //   setUserFishIndex(parsedTokenId);
+      // }));
 
-      const [lastItem] = userFishIds.slice(-1)
-      setUserFishIndex(web3.utils.toNumber(lastItem))
-      setLoadingUserFish(false);
+      // const [lastItem] = userFishIds.slice(-1)
+      // setUserFishIndex(userFishIds.length)
+      // setLoadingUserFish(false);
+
+      const fishUserOwns = await FishFight.readFishFactory.methods.balanceOf(account).call();
+      console.log(`User owns: ${fishUserOwns}`)
+      const numUserFish = web3.utils.toBN(fishUserOwns).toNumber();
+      for(let i = 0; i < numUserFish; i++) {
+        FishFight.readFishFactory.methods.tokenOfOwnerByIndex(account, i).call()
+        .then((tokenId: any) => {
+          if(!userFish.some(fish => fish.tokenId == tokenId)) {
+            addUserFishById(web3.utils.toNumber(tokenId));
+          }
+        });
+      }
 
     } catch (error) {
       console.log("Error loading Fish tokens owned by account: ")

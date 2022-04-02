@@ -53,7 +53,7 @@ export const getWalletProvider = async (connector: AbstractConnector | HarmonyAb
 			// check if the chain to connect to is installed
 			await window.ethereum.request({
 				method: 'wallet_switchEthereumChain',
-				params: [{ chainId: '0x6357D2E0' }], // chainId must be in hexadecimal numbers
+				params: [{ chainId: '0x63564C40' }], // chainId must be in hexadecimal numbers
 			});
 		} catch (error: any) {
 			// This error code indicates that the chain has not been added to MetaMask
@@ -64,15 +64,15 @@ export const getWalletProvider = async (connector: AbstractConnector | HarmonyAb
 						method: 'wallet_addEthereumChain',
 						params: [
 							{
-								chainId: '0x6357D2E0',
-								rpcUrls: ['https://api.s0.b.hmny.io'],
-								chainName: 'Harmony Testnet',
+								chainId: '0x63564C40',
+								rpcUrls: ['https://api.harmony.one'],
+								chainName: 'Harmony Mainnet',
 								nativeCurrency: {
 									name: "Harmony ONE",
 									symbol: "ONE",
 									decimals: 18
 								},
-								blockExplorerUrls: ["https://explorer.pops.one/"]
+								blockExplorerUrls: ["https://explorer.harmony.one/"]
 							},
 						],
 					});

@@ -42,11 +42,11 @@ const App = () => {
           <div className="lds-ripple"><div></div><div></div></div>
           <LoadingText>Waiting for Transaction...</LoadingText>
         </PendingOverlay>
-        <PendingOverlay open={true} className={true ? "active" : ""}>
+        {/* <PendingOverlay open={true} className={true ? "active" : ""}>
           <div className="lds-ripple"><div></div><div></div></div>
           <LoadingText>Mainnet Launch...</LoadingText>
           <Countdown renderer={renderer} date={new Date(1648941071 * 1000)} />
-        </PendingOverlay>
+        </PendingOverlay> */}
         <Container>
           <MenuOverlay></MenuOverlay>
           <DisclaimerModal></DisclaimerModal>

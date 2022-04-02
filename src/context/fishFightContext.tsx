@@ -10,6 +10,7 @@ import BN from 'bn.js'
 import { Phase } from '../utils/cycles';
 import { ContractCallContext, ContractCallResults } from "ethereum-multicall";
 import Contracts from '../contracts/contracts.json';
+import ERC20 from '../contracts/erc20.json';
 
 
 // Typescript
@@ -29,7 +30,6 @@ interface FishFightProviderContext {
   balanceFishEgg: BN | undefined
   balanceFishScale: BN | undefined
   balanceBloater: BN | undefined
-  balanceRedgill: BN | undefined
 
   totalSupply: number
   fishCurrentIndex: number
@@ -200,14 +200,8 @@ const useBalance = () => {
         {
           reference: 'bloater',
           contractAddress: FishFight.readBloater.options.address,
-          abi: Contracts.contracts.BloaterTest.abi,
+          abi: ERC20,
           calls: [{ reference: 'bloaterBalance', methodName: 'balanceOf', methodParameters: [account] }]
-        },
-        {
-          reference: 'redgill',
-          contractAddress: FishFight.readRedgill.options.address,
-          abi: Contracts.contracts.RedgillTest.abi,
-          calls: [{ reference: 'redgillBalance', methodName: 'balanceOf', methodParameters: [account] }]
         },
       ];
     
@@ -223,7 +217,7 @@ const useBalance = () => {
       let eggBalance = results.results.fishEgg.callsReturnContext[0].success ? results.results.fishEgg.callsReturnContext[0].returnValues[0].hex : null;
       let scaleBalance = results.results.fishScale.callsReturnContext[0].success ? results.results.fishScale.callsReturnContext[0].returnValues[0].hex : null;
       let bloaterBalance = results.results.bloater.callsReturnContext[0].success ? results.results.bloater.callsReturnContext[0].returnValues[0].hex : null;
-      let redgillBalance = results.results.redgill.callsReturnContext[0].success ? results.results.redgill.callsReturnContext[0].returnValues[0].hex : null;
+      
 
       fishBalance = Web3.utils.hexToNumberString(fishBalance)
       deadFishBalance = Web3.utils.hexToNumberString(deadFishBalance)
@@ -234,7 +228,7 @@ const useBalance = () => {
       eggBalance = new BN(Web3.utils.hexToNumberString(eggBalance))
       scaleBalance = new BN(Web3.utils.hexToNumberString(scaleBalance))
       bloaterBalance = new BN(Web3.utils.hexToNumberString(bloaterBalance))
-      redgillBalance = new BN(Web3.utils.hexToNumberString(redgillBalance))
+
 
       // when account is connected get balances - uses default and read only providers
       const balance = await FishFight.provider.eth.getBalance(account)
@@ -252,10 +246,9 @@ const useBalance = () => {
       setBalanceFishEgg(eggBalance);
       setBalanceFishScale(scaleBalance);
       setBalanceBloater(bloaterBalance);
-      setBalanceRedgill(redgillBalance);
 
 		},
-		[setBalance, setBalanceFish, setBalanceFood, setBalanceDeadFish, setBalanceFightFish, setBalanceBreedFish, setBalanceFishEgg, setBalanceFishScale, setBalanceRedgill],
+		[setBalance, setBalanceFish, setBalanceFood, setBalanceDeadFish, setBalanceFightFish, setBalanceBreedFish, setBalanceFishEgg, setBalanceFishScale],
 	);
 
 	const resetBalance = () => {

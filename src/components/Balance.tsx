@@ -66,10 +66,9 @@ export const ItemBalance = () => {
 		balanceFishEgg,
 		balanceFishScale,
     balanceBloater,
-		balanceRedgill
   } = useFishFight();
 
-  if (!balanceFishEgg || !balanceFishScale || !balanceBloater || !balanceRedgill) return null;
+  if (!balanceFishEgg || !balanceFishScale || !balanceBloater) return null;
 
   return (
     <>
@@ -97,14 +96,6 @@ export const ItemBalance = () => {
 					</BalanceText>
 				</BalanceComponent>
 			}
-      {/* {balanceRedgill.gt(new BN(0)) &&
-				<BalanceComponent title="REDGILL Balance">
-					<BalanceText>
-						{web3.utils.fromWei(balanceRedgill)}
-						<LogoImg src={redgillImg} alt="REDGILL"></LogoImg>
-					</BalanceText>
-				</BalanceComponent>
-			} */}
     </>
   );
 };

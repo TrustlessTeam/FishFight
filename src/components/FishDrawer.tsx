@@ -107,6 +107,11 @@ const FishDrawer = ({
     }
   }
 
+  useEffect(() => {
+    
+  }, []);
+
+
   // useEffect(() => {
 	// 	if(type == "Breeding") setSortOption(SortSelection.Betta)
 	// }, []);
@@ -195,9 +200,14 @@ const FishDrawer = ({
   // }, [selected, selectedPrev]);
 
   const loadMore = (index: number) => {
+    // if(loadingFish && !loadingUserFish) {
+
+    // }
     const [lastItem] = fishCollection.slice(-1)
     if(index === lastItem.tokenId) {
+      console.log(index)
       if(fishPool === PoolTypes.Ocean && index < fishCurrentIndex) loadMoreFish(PoolTypes.Ocean);
+      if(fishPool === PoolTypes.User && balanceFish && fishCollection.length < web3.utils.toNumber(balanceFish) && index < fishCurrentIndex) loadMoreFish(PoolTypes.User);
     }
   }
 
