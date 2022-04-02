@@ -177,7 +177,7 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
 
   const loadMoreFish = (type: number) => {
     if(type === PoolTypes.Ocean) {
-      fetchOceanFish(oceanFishIndex + MAX_FISH, false);
+      fetchOceanFish(oceanFishIndex, false);
     }
   }
 
@@ -198,6 +198,7 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
         return val !== '0';
       });
       oceanIds = oceanIds.slice(0, 20)
+      
       // const totalFishSupply = web3.utils.toBN(fishSupply).toNumber();
       
       // const allTokenIds = [...Array(totalFishSupply+1).keys()].slice(1);
@@ -212,7 +213,8 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
       }));
 
       setLoadingFish(false);
-      setOceanFishIndex(oceanFish.length)
+      const [lastItem] = oceanIds.slice(-1)
+      setOceanFishIndex(web3.utils.toNumber(lastItem))
 
     } catch (error) {
       console.log(error)
