@@ -7,6 +7,8 @@ import styled from 'styled-components';
 
 import { useFishFight } from "../context/fishFightContext";
 
+import HowToPlayModal from "./HowToPlayModal";
+
 // Components
 import Nav from './Nav';
 import Account from './Account';
@@ -66,6 +68,7 @@ const MenuOverlay = () => {
 	return (
 		<Wrapper open={open}>
 								
+			<HowToPlayModal />
 
 			<MenuContainer>
 				

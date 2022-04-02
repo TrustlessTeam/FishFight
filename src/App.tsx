@@ -20,7 +20,6 @@ import Default from "./components/Default";
 import FishingWaters from "./components/FishingWaters";
 import DisclaimerModal from "./components/DisclaimerModal";
 import { useContractWrapper } from "./context/contractWrapperContext";
-import HowToPlayModal from "./components/HowToPlayModal";
 
 type RenderProps = {
   hours: any;
@@ -42,15 +41,10 @@ const App = () => {
           <div className="lds-ripple"><div></div><div></div></div>
           <LoadingText>Waiting for Transaction...</LoadingText>
         </PendingOverlay>
-        <PendingOverlay open={true} className={true ? "active" : ""}>
-          <div className="lds-ripple"><div></div><div></div></div>
-          <LoadingText>Mainnet Launch...</LoadingText>
-          <Countdown renderer={renderer} date={new Date(1648933871 * 1000)} />
-        </PendingOverlay>
+
         <Container>
           <MenuOverlay></MenuOverlay>
           <DisclaimerModal></DisclaimerModal>
-          <HowToPlayModal />
           <Routes>
             <Route element={<UnityWindow />}>
               <Route path="/" element={<Default />} />
