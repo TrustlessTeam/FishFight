@@ -331,12 +331,14 @@ const FishImg = styled.img<ImgProps>`
     `
     // border-color: rgba(0, 128, 0, 0.5);
 		height: 120px;
+    width: 120px;
   `}
   ${({ selectedOpponent }) =>
     selectedOpponent &&
     `
     // border-color: rgba(154, 3, 30, 0.5);
 		height: 120px;
+    width: 120px;
   `}
 
   @media ${props => props.theme.device.tablet} {
@@ -347,12 +349,16 @@ const FishImg = styled.img<ImgProps>`
     `
     // border-color: rgba(0, 128, 0, 0.5);
 		height: 150px;
+    width: 150px;
+
   `}
   ${({ selectedOpponent }) =>
     selectedOpponent &&
     `
     // border-color: rgba(154, 3, 30, 0.5);
 		height: 150px;
+    width: 150px;
+
   `}
   }
 

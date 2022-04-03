@@ -109,7 +109,7 @@ export const ContainerControls = styled.div`
 	flex-flow: row nowrap;
 	padding: ${props => props.theme.spacing.gapSmall};
 	/* height: 17%; */
-	pointer-events: auto;
+	/* pointer-events: auto; */
 	justify-content: space-between;
 `;
 

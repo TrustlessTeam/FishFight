@@ -59,6 +59,7 @@ export const ToggleGroup = styled.div`
 	display: flex;
 	flex-flow: row nowrap;
 	/* box-shadow: 2px 2px 8px 2px gray, -2px -2px 8px 2px white; */
+	pointer-events: auto;
 
 	border-radius: 10px;
 	&:after {
