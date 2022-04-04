@@ -220,7 +220,7 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 			const isBreeding = await FishFight.readCycles.methods.isBreedingPhase().call(); // check per call to prevent use from over/under paying
 			return FishFight.breedingWaters?.methods.breedFish(fishAlpha.tokenId, fishBetta.tokenId).send({
 				from: account,
-				gasPrice: 30000000000,
+				gasPrice: await getGasPrice(),
 				gasLimit: 15000000,
 				value: isBreeding ? Constants._oneBreedFeeInPhase : Constants._oneBreedFee
 			})
@@ -265,7 +265,7 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 			const gas = await FishFight.breedingWaters?.methods.withdraw(fish.tokenId).estimateGas({from: account})
 			await FishFight.breedingWaters?.methods.withdraw(fish.tokenId).send({
 				from: account,
-				gasPrice: 30000000000,
+				gasPrice: await getGasPrice(),
 				gasLimit: gas,
 			})
 			.on('transactionHash', () => {
@@ -333,7 +333,7 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 			if(tokenId === -1) { // revoke approval for all $FISH
 				return FishFight.fishFactory?.methods.setApprovalForAll(FishFight.readBreedingWaters.options.address, false).send({
 					from: account,
-					gasPrice: 30000000000,
+					gasPrice: await getGasPrice(),
 					gasLimit: await FishFight.fishFactory?.methods.setApprovalForAll(FishFight.readBreedingWaters.options.address, false).estimateGas({from: account}),
 				})
 				.on('error', (error: any) => {
@@ -355,7 +355,7 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 			else if(tokenId === 0) { // approve all FISH
 				return FishFight.fishFactory?.methods.setApprovalForAll(FishFight.readBreedingWaters.options.address, true).send({
 					from: account,
-					gasPrice: 30000000000,
+					gasPrice: await getGasPrice(),
 					gasLimit: await FishFight.fishFactory?.methods.setApprovalForAll(FishFight.readBreedingWaters.options.address, true).estimateGas({from: account}),
 				})
 				.on('error', (error: any) => {
@@ -383,7 +383,7 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 			else { // aprove indivdual FISH
 				return FishFight.fishFactory?.methods.approve(FishFight.readBreedingWaters.options.address, tokenId).send({
 					from: account,
-					gasPrice: 30000000000,
+					gasPrice: await getGasPrice(),
 					gasLimit: await FishFight.fishFactory?.methods.approve(FishFight.readBreedingWaters.options.address, tokenId).estimateGas({from: account}),
 				})
 				.on('transactionHash', () => {
@@ -410,7 +410,7 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 		setShowBreedingFoodApproval(true);
 		return FishFight.fishFood?.methods.approve(FishFight.readBreedingWaters.options.address, amountToApprove).send({
 			from: account,
-			gasPrice: 30000000000,
+			gasPrice: await getGasPrice(),
 			gasLimit: await FishFight.fishFood?.methods.approve(FishFight.readBreedingWaters.options.address, amountToApprove).estimateGas({from: account})
 		})
 		.on('error', (error: any) => {
@@ -439,7 +439,7 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 			const gas = await FishFight.breedingWaters?.methods.deposit(fish.tokenId).estimateGas({from: account})
 			return FishFight.breedingWaters?.methods.deposit(fish.tokenId).send({
 				from: account,
-				gasPrice: 30000000000,
+				gasPrice: await getGasPrice(),
 				gasLimit: gas,
 			})
 			.on('error', (error: any) => {
@@ -486,7 +486,7 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 			if(tokenId === -1) { // revoke approval for all $FISH
 				return FishFight.fishFactory?.methods.setApprovalForAll(FishFight.readFightingWaters.options.address, false).send({
 					from: account,
-					gasPrice: 30000000000,
+					gasPrice: await getGasPrice(),
 					gasLimit: await FishFight.fishFactory?.methods.setApprovalForAll(FishFight.readFightingWaters.options.address, false).estimateGas({from: account}),
 				})
 				.on('error', (error: any) => {
@@ -509,7 +509,7 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 			else if(tokenId === 0) { // approve all FISH
 				return FishFight.fishFactory?.methods.setApprovalForAll(FishFight.readFightingWaters.options.address, true).send({
 					from: account,
-					gasPrice: 30000000000,
+					gasPrice: await getGasPrice(),
 					gasLimit: await FishFight.fishFactory?.methods.setApprovalForAll(FishFight.readFightingWaters.options.address, true).estimateGas({from: account}),
 				})
 				.on('error', (error: any) => {
@@ -537,7 +537,7 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 			else { // aprove indivdual FISH
 				return FishFight.fishFactory?.methods.approve(FishFight.readFightingWaters.options.address, tokenId).send({
 					from: account,
-					gasPrice: 30000000000,
+					gasPrice: await getGasPrice(),
 					gasLimit: await FishFight.fishFactory?.methods.approve(FishFight.readFightingWaters.options.address, tokenId).estimateGas({from: account}),
 				})
 				.on('transactionHash', () => {
@@ -564,10 +564,10 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 		setShowFightingDisclaimer(true);
 		setOnAccept(() => () => {
 			setShowFightingDisclaimer(false);
-			return FishFight.fightingWaters?.methods.deposit(fish.tokenId).estimateGas({from: account}).then((gas: any) => {
+			return FishFight.fightingWaters?.methods.deposit(fish.tokenId).estimateGas({from: account}).then(async (gas: any) => {
 				FishFight.fightingWaters?.methods.deposit(fish.tokenId).send({
 					from: account,
-					gasPrice: 30000000000,
+					gasPrice: await getGasPrice(),
 					gasLimit: gas,
 				})
 				.on('error', (error: any) => {
@@ -655,7 +655,7 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 
 		return FishFight.fightingWaters?.methods.withdraw(fish.tokenId).send({
 			from: account,
-			gasPrice: 30000000000,
+			gasPrice: await getGasPrice(),
 			gasLimit: gas,
 		})
 		.on('error', (error: any) => {
@@ -682,12 +682,12 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 	const contractDeathFight = (myFish: Fish, opponentFish: Fish, contractIsFighterDeposited: boolean) => {
 		console.log('adasdasdasda')
 		setShowFightingDisclaimer(true);
-		setOnAccept(() => () => {
+		setOnAccept(() => async () => {
 			setShowFightingDisclaimer(false);
 			setOnAccept(() => () => {})
 			return FishFight.fightingWaters?.methods.deathFight(myFish.tokenId, opponentFish.tokenId, contractIsFighterDeposited).send({
 				from: account,
-				gasPrice: 30000000000,
+				gasPrice: await getGasPrice(),
 				gasLimit: 5000000
 			})
 			.on('error', (error: any) => {
@@ -833,6 +833,7 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 			toast.error(`Can't feed for ${lockedFor} minutes`)
 			return;
 		}
+		console.log(fish)
 
 		try {
 			// User has allowance to Feed Fish
@@ -981,7 +982,7 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 		const gas = await FishFight.trainingWaters?.methods.feedFish(fish.tokenId).estimateGas({from: account});
 		return FishFight.trainingWaters?.methods.feedFish(fish.tokenId).send({
 			from: account,
-			gasPrice: 30000000000,
+			gasPrice: await getGasPrice(),
 			gasLimit: gas,
 		})
 		.on('error', (error: any) => {
@@ -1009,7 +1010,7 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 		const gas = await FishFight.trainingWaters?.methods.questFish(fish.tokenId, choice).estimateGas({from: account})
 		return FishFight.trainingWaters?.methods.questFish(fish.tokenId, choice).send({
 			from: account,
-			gasPrice: 30000000000,
+			gasPrice: await getGasPrice(),
 			gasLimit: gas,
 		})
 		.on('error', (error: any) => {
@@ -1036,7 +1037,7 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 		const gas = await FishFight.trainingWaters?.methods.claimFishFood(fish.tokenId).estimateGas({from: account});
 		return FishFight.trainingWaters?.methods.claimFishFood(fish.tokenId).send({
 			from: account,
-			gasPrice: 30000000000,
+			gasPrice: await getGasPrice(),
 			gasLimit: gas,
 		})
 		.on('error', (error: any) => {
@@ -1063,7 +1064,7 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 		const gas = await FishFight.trainingWaters?.methods.claimAllFishFood().estimateGas({from: account});
 		return FishFight.trainingWaters?.methods.claimAllFishFood().send({
 			from: account,
-			gasPrice: 30000000000,
+			gasPrice: await getGasPrice(),
 			gasLimit: gas,
 		})
 		.on('error', (error: any) => {
@@ -1090,7 +1091,7 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 		const gas = await FishFight.trainingWaters?.methods.feedMultipleFish(tokenIds).estimateGas({from: account});
 		return FishFight.trainingWaters?.methods.feedMultipleFish(tokenIds).send({
 			from: account,
-			gasPrice: 30000000000,
+			gasPrice: await getGasPrice(),
 			gasLimit: gas,
 		})
 		.on('error', (error: any) => {
@@ -1119,7 +1120,7 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 			setOnAccept(() => () => {})
 			return FishFight.fishFood?.methods.approve(FishFight.readTrainingWaters.options.address, amountToApprove).send({
 				from: account,
-				gasPrice: 30000000000,
+				gasPrice: await getGasPrice(),
 				gasLimit: await FishFight.fishFood?.methods.approve(FishFight.readTrainingWaters.options.address, amountToApprove).estimateGas({from: account})
 			})
 			.on('error', (error: any) => {
@@ -1151,7 +1152,7 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 	const contractModifierFishProducts = async (fish: Fish, fishProductType: number) => {
 		return FishFight.modifierWaters?.methods.modifierFishProducts(fish.tokenId, fishProductType).send({
 			from: account,
-			gasPrice: 30000000000,
+			gasPrice: await getGasPrice(),
 			gasLimit: await FishFight.modifierWaters?.methods.modifierFishProducts(fish.tokenId, fishProductType).estimateGas({from: account})
 		})
 		.on('error', (error: any) => {
@@ -1177,7 +1178,7 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 	const contractModifierDFK = async (fish: Fish, dfkType: number) => {
 		return FishFight.modifierWaters?.methods.modifierDFK(fish.tokenId, dfkType).send({
 			from: account,
-				gasPrice: 30000000000,
+				gasPrice: await getGasPrice(),
 				gasLimit: await FishFight.modifierWaters?.methods.modifierDFK(fish.tokenId, dfkType).estimateGas({from: account})
 		})
 		.on('error', (error: any) => {
@@ -1208,7 +1209,7 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 			setOnAccept(() => () => {})
 			return erc20Contract.methods.approve(FishFight.readModifierWaters.options.address, amountToApprove).send({
 				from: account,
-				gasPrice: 30000000000,
+				gasPrice: await getGasPrice(),
 				gasLimit: await erc20Contract.methods.approve(FishFight.readModifierWaters.options.address, amountToApprove).estimateGas({from: account})
 			})
 			.on('error', (error: any) => {
@@ -1268,7 +1269,7 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 			const isFishing = await FishFight.readCycles.methods.isFishingPhase().call();
 			await FishFight.fishingWaters?.methods.goFishing().send({
 				from: account,
-				gasPrice: 30000000000,
+				gasPrice: await getGasPrice(),
 				gasLimit: 500000,
 				// gasLimit: await FishFight.fishingWaters?.methods.goFishing().estimateGas({from: account, value: web3.utils.toWei(COSTPERCASTONE)}),
 				value: isFishing ? Constants._fishingPriceInPhase : Constants._fishingPrice
@@ -1312,6 +1313,21 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 		}
 	};
 
+	const getGasPrice = async () => {
+		try {
+			const estimate = await FishFight.provider.eth.getGasPrice();
+			console.log(estimate)
+
+			let boosted = new BN(estimate);
+			let multiplierToAdd = boosted.div(new BN(10));
+			boosted = boosted.add(multiplierToAdd);
+			return boosted.toString();
+		} catch (error) {
+			console.log("Estimate GasPrice Error:")
+			console.log(error)
+			return '40000000000'
+		}
+	}
 
 
 	const value: ProviderInterface = {
