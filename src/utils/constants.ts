@@ -17,8 +17,8 @@ export let Constants = {
   _fishTypeMaxRange : 1,
   // Fighting Waters
   _fishFoodPerBlock : ethers.utils.parseEther('0.023').toString(), // FISHFOOD
-  _fishFoodPerWin : ethers.utils.parseEther('250').toString(), // FISHFOOD
-  _fishFoodPerWinInPhase : ethers.utils.parseEther('500').toString(), // FISHFOOD
+  _fishFoodPerWin : ethers.utils.parseEther('400').toString(), // FISHFOOD
+  _fishFoodPerWinInPhase : ethers.utils.parseEther('800').toString(), // FISHFOOD
   _lockTime : 60 * 10, // 10 mins
   _fightPowerFee : 5,
   // Breeding Waters
