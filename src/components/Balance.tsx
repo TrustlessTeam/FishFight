@@ -91,7 +91,7 @@ export const ItemBalance = () => {
 			{balanceBloater.gt(new BN(0)) &&
 				<BalanceComponent title="BLOATER Balance">
 					<BalanceText>
-						{web3.utils.fromWei(balanceBloater)}
+						{web3.utils.fromWei(balanceBloater,"wei")}
 						<LogoImg src={bloaterImg} alt="BLOATER"></LogoImg>
 					</BalanceText>
 				</BalanceComponent>

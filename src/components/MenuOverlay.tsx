@@ -97,12 +97,12 @@ const MenuOverlay = () => {
 			</MenuContainer>
 				
 				
-									<SoundButton onClick={() => handleMusicClick()}><LogoImg src={mutedMusic ? muteImg : musicImg }></LogoImg>
-									</SoundButton>
-									<SoundButton onClick={() => handleSoundClick()}><LogoImg src={globalMute ? muteImg : noMuteImg }></LogoImg>
-									</SoundButton>
-									<SoundButton onClick={() => HandleOpenStore()}><a href="https://nftkey.app" target="_blank" rel=""><LogoImg src={nftkeyImg }></LogoImg></a>
-									</SoundButton>
+			<SoundButton onClick={() => handleMusicClick()}><LogoImg src={mutedMusic ? muteImg : musicImg }></LogoImg>
+			</SoundButton>
+			<SoundButton onClick={() => handleSoundClick()}><LogoImg src={globalMute ? muteImg : noMuteImg }></LogoImg>
+			</SoundButton>
+			<SoundButton onClick={() => HandleOpenStore()}><a href="https://nftkey.app/collections/fishfight/" target="_blank" rel=""><LogoImg src={nftkeyImg }></LogoImg></a>
+			</SoundButton>
 		</Wrapper>
 	);
 };
