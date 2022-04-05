@@ -205,7 +205,7 @@ const FishDrawer = ({
     // }
     const [lastItem] = fishCollection.slice(-1)
     if(index === lastItem.tokenId) {
-      console.log(index)
+      // console.log(index)
       if(fishPool === PoolTypes.Ocean && index < fishCurrentIndex) loadMoreFish(PoolTypes.Ocean);
       if(fishPool === PoolTypes.User && balanceFish && fishCollection.length < web3.utils.toNumber(balanceFish) && index === lastItem.tokenId) loadMoreFish(PoolTypes.User);
       if(fishPool === PoolTypes.Breeding && breedingWatersSupply && fishCollection.length < web3.utils.toNumber(breedingWatersSupply) && index === lastItem.tokenId) loadMoreFish(PoolTypes.Breeding);
@@ -319,12 +319,12 @@ const PendingOverlay = styled.div<{open: boolean}>`
   justify-content: center;
   align-items: center;
   width: 100%;
-  /* height: 100%; */
+  height: 0;
   opacity: 0;
   /* background-color: rgba(25, 22, 209, 0.466);
   z-index: 100; */
   pointer-events: none;
-  transition: all 0.25s ease-in-out;
+  transition: opacity 0.25s ease-in-out;
   /* ${({ open }) =>
     open ?
     `
@@ -338,6 +338,7 @@ const PendingOverlay = styled.div<{open: boolean}>`
   &.active {
     pointer-events: auto;
     opacity: 1;
+    height: 120px;
   }
 `;
 

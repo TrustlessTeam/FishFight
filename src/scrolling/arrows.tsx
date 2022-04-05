@@ -84,14 +84,14 @@ export function RightArrow({
   );
   React.useEffect(() => {
     if (visibleItemsWithoutSeparators.length) {
-      console.log(visibleItemsWithoutSeparators)
-      console.log(isLastItemVisible)
+      // console.log(visibleItemsWithoutSeparators)
+      // console.log(isLastItemVisible)
       const [lastItem] = visibleItemsWithoutSeparators.slice(-1)
       let lastShowingTokenId = parseInt(lastItem)
       // if(isLastItemVisible && lastItem === oceanFish)
       
       if(!loadingFish && !loadingUserFish) {
-        console.log(lastShowingTokenId)
+        // console.log(lastShowingTokenId)
         loadMore(lastShowingTokenId)
         // setDisabled(true);
 
