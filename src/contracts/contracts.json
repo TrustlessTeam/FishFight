@@ -9780,7 +9780,7 @@
       ]
     },
     "FishCalls": {
-      "address": "0xcDA6bA47Ac133b5C5613eB152E7Cc90B5bE8718A",
+      "address": "0x1d20C8Eb4FD7fD27F12DdFcbB6BF3539F3cAfc7A",
       "abi": [
         {
           "inputs": [
@@ -9840,6 +9840,11 @@
             {
               "internalType": "address",
               "name": "account",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "token",
               "type": "address"
             }
           ],

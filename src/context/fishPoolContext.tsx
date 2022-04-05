@@ -45,7 +45,9 @@ export enum PoolTypes {
   Ocean,
   User,
   Fighting,
-  Breeding
+  Breeding,
+  UserFighting,
+  UserBreeding
 }
 
 type UnityProviderProps = { children: React.ReactNode };
@@ -182,6 +184,12 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
     if(type === PoolTypes.User && account) {
       fetchUserFish(account, userFishIndex);
     }
+    if(type === PoolTypes.Fighting) {
+      fetchFightingFish(fightingFishIndex);
+    }
+    if(type === PoolTypes.Breeding) {
+      fetchBreedingFish(breedingFishIndex);
+    }
   }
 
   const fetchOceanFish = async (startIndex?: number, random?: boolean) => {
@@ -223,50 +231,39 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
   const fetchUserFish = async (account: string, startIndex?: number) => {
     // console.log("Loading User Fish")
     try {
-      // console.log(startIndex)
-      // if(!startIndex) {
-      //   startIndex = 0;
-      // }
-      // console.log(account)
-      // const ownerBalance = await FishFight.readFishFactory.methods.balanceOf(account).call();
-      // console.log(ownerBalance)
-      // // console.log(test)
-      // setLoadingUserFish(true);
-      // // let userFishIds: string[] = await FishFight.fishCalls.methods.getFishForAddress(startIndex ? startIndex : 0, account).call()
-      // let userFishIds = [...new Set(ownerBalance)]
-      // console.log(userFishIds)
-      // userFishIds = userFishIds.slice(startIndex)
-      // console.log(userFishIds)
-      // // userFishIds = [...new Set(userFishIds)].filter((val) => {
-      // //   return val !== '0';
-      // // });
-      // console.log(userFishIds)
-      // // until Fish calls is limited
-      // // userFishIds = userFishIds.slice(0, 20);
-      // console.log(userFishIds)
-      // await Promise.all(userFishIds.map(async index => {
-      // const tokenId = await FishFight.readFishFactory.methods.tokenOfOwnerByIndex(account, index).call();
-      //   const parsedTokenId = web3.utils.toNumber(tokenId);
-        
-      //   await addUserFishById(parsedTokenId)
-      //   setUserFishIndex(parsedTokenId);
-      // }));
-
-      // const [lastItem] = userFishIds.slice(-1)
-      // setUserFishIndex(userFishIds.length)
-      // setLoadingUserFish(false);
-
-      const fishUserOwns = await FishFight.readFishFactory.methods.balanceOf(account).call();
-      console.log(`User owns: ${fishUserOwns}`)
-      const numUserFish = web3.utils.toBN(fishUserOwns).toNumber();
-      for(let i = 0; i < numUserFish; i++) {
-        FishFight.readFishFactory.methods.tokenOfOwnerByIndex(account, i).call()
-        .then((tokenId: any) => {
-          if(!userFish.some(fish => fish.tokenId == tokenId)) {
-            addUserFishById(web3.utils.toNumber(tokenId));
-          }
-        });
+      console.log(startIndex)
+      if(!startIndex) {
+        startIndex = 0;
       }
+      setLoadingUserFish(true);
+      let userFishIds: string[] = await FishFight.fishCalls.methods.getFishForAddress(startIndex, account, FishFight.readFishFactory.options.address).call()
+      userFishIds = [...new Set(userFishIds)].filter((val) => {
+        return val !== '0';
+      });
+
+      console.log(userFishIds)
+      await Promise.all(userFishIds.map(async tokenId => {
+      // const tokenId = await FishFight.readFishFactory.methods.tokenOfOwnerByIndex(account, index).call();
+        const parsedTokenId = web3.utils.toNumber(tokenId);
+        
+        await addUserFishById(parsedTokenId)
+        // setUserFishIndex(parsedTokenId);
+      }));
+
+      setUserFishIndex(userFishIds.length)
+      setLoadingUserFish(false);
+
+      // const fishUserOwns = await FishFight.readFishFactory.methods.balanceOf(account).call();
+      // console.log(`User owns: ${fishUserOwns}`)
+      // const numUserFish = web3.utils.toBN(fishUserOwns).toNumber();
+      // for(let i = 0; i < numUserFish; i++) {
+      //   FishFight.readFishFactory.methods.tokenOfOwnerByIndex(account, i).call()
+      //   .then((tokenId: any) => {
+      //     if(!userFish.some(fish => fish.tokenId == tokenId)) {
+      //       addUserFishById(web3.utils.toNumber(tokenId));
+      //     }
+      //   });
+      // }
 
     } catch (error) {
       console.log("Error loading Fish tokens owned by account: ")
@@ -292,19 +289,43 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
     }
   }
 
-  const fetchFightingFish = async () => {
+  const fetchFightingFish = async (startIndex?: number) => {
     // console.log("Loading Fighting Fish")
     const fightingWatersAddress = FishFight.readFightingWaters.options.address
     try {
-      const fishFightingWatersOwns = await FishFight.readFishFactory.methods.balanceOf(fightingWatersAddress).call();
-      // console.log(`Fish in Fighting Waters: ${fishFightingWatersOwns}`)
-      const numUserFish = web3.utils.toBN(fishFightingWatersOwns).toNumber();
-      for(let i = 0; i < numUserFish; i++) {
-        FishFight.readFishFactory.methods.tokenOfOwnerByIndex(fightingWatersAddress, i).call()
-        .then((tokenId: any) => {
-          addFightingFishById(web3.utils.toNumber(tokenId))
-        });
+
+      console.log(startIndex)
+      if(!startIndex) {
+        startIndex = 0;
       }
+      setLoadingFish(true);
+      let fightingFishIds: string[] = await FishFight.fishCalls.methods.getFishForAddress(startIndex, fightingWatersAddress, FishFight.readFishFactory.options.address).call()
+      fightingFishIds = [...new Set(fightingFishIds)].filter((val) => {
+        return val !== '0';
+      });
+
+      console.log(fightingFishIds)
+      await Promise.all(fightingFishIds.map(async tokenId => {
+      // const tokenId = await FishFight.readFishFactory.methods.tokenOfOwnerByIndex(account, index).call();
+        const parsedTokenId = web3.utils.toNumber(tokenId);
+        
+        await addFightingFishById(parsedTokenId)
+        // setUserFishIndex(parsedTokenId);
+      }));
+
+      setFightingFishIndex(fightingFishIds.length)
+      setLoadingFish(false);
+
+
+      // const fishFightingWatersOwns = await FishFight.readFishFactory.methods.balanceOf(fightingWatersAddress).call();
+      // // console.log(`Fish in Fighting Waters: ${fishFightingWatersOwns}`)
+      // const numUserFish = web3.utils.toBN(fishFightingWatersOwns).toNumber();
+      // for(let i = 0; i < numUserFish; i++) {
+      //   FishFight.readFishFactory.methods.tokenOfOwnerByIndex(fightingWatersAddress, i).call()
+      //   .then((tokenId: any) => {
+      //     addFightingFishById(web3.utils.toNumber(tokenId))
+      //   });
+      // }
     } catch (error) {
       console.log("Error Fighting Fish: ")
       console.log(error)
@@ -329,21 +350,42 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
     }
   }
 
-  const fetchBreedingFish = async () => {
+  const fetchBreedingFish = async (startIndex?: number) => {
     // console.log("Loading Breeding Fish")
     const breedingWatersAddress = FishFight.readBreedingWaters.options.address
     try {
-      const fishBreedingWatersOwns = await FishFight.readFishFactory.methods.balanceOf(breedingWatersAddress).call();
-      // console.log(`Fish in Breeding Waters: ${fishBreedingWatersOwns}`)
-      const numUserFish = web3.utils.toBN(fishBreedingWatersOwns).toNumber();
-      for(let i = 0; i < numUserFish; i++) {
-        FishFight.readFishFactory.methods.tokenOfOwnerByIndex(breedingWatersAddress, i).call()
-        .then((tokenId: any) => {
-          // if(!userFish.some(fish => fish.tokenId == tokenId)) {
-            addBreedingFishById(web3.utils.toNumber(tokenId))
-          // }
-        });
+      console.log(startIndex)
+      if(!startIndex) {
+        startIndex = 0;
       }
+      setLoadingFish(true);
+      let breedingFishIds: string[] = await FishFight.fishCalls.methods.getFishForAddress(startIndex, breedingWatersAddress, FishFight.readFishFactory.options.address).call()
+      breedingFishIds = [...new Set(breedingFishIds)].filter((val) => {
+        return val !== '0';
+      });
+
+      console.log(breedingFishIds)
+      await Promise.all(breedingFishIds.map(async tokenId => {
+      // const tokenId = await FishFight.readFishFactory.methods.tokenOfOwnerByIndex(account, index).call();
+        const parsedTokenId = web3.utils.toNumber(tokenId);
+        
+        await addBreedingFishById(parsedTokenId)
+        // setUserFishIndex(parsedTokenId);
+      }));
+
+      setBreedingFishIndex(breedingFishIds.length)
+      setLoadingFish(false);
+      // const fishBreedingWatersOwns = await FishFight.readFishFactory.methods.balanceOf(breedingWatersAddress).call();
+      // console.log(`Fish in Breeding Waters: ${fishBreedingWatersOwns}`)
+      // const numUserFish = web3.utils.toBN(fishBreedingWatersOwns).toNumber();
+      // for(let i = 0; i < numUserFish; i++) {
+      //   FishFight.readFishFactory.methods.tokenOfOwnerByIndex(breedingWatersAddress, i).call()
+      //   .then((tokenId: any) => {
+      //     // if(!userFish.some(fish => fish.tokenId == tokenId)) {
+      //       addBreedingFishById(web3.utils.toNumber(tokenId))
+      //     // }
+      //   });
+      // }
     } catch (error) {
       console.log("Error Breeding Fish: ")
       console.log(error)

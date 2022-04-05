@@ -207,7 +207,9 @@ const FishDrawer = ({
     if(index === lastItem.tokenId) {
       console.log(index)
       if(fishPool === PoolTypes.Ocean && index < fishCurrentIndex) loadMoreFish(PoolTypes.Ocean);
-      if(fishPool === PoolTypes.User && balanceFish && fishCollection.length < web3.utils.toNumber(balanceFish) && index < fishCurrentIndex) loadMoreFish(PoolTypes.User);
+      if(fishPool === PoolTypes.User && balanceFish && fishCollection.length < web3.utils.toNumber(balanceFish) && index === lastItem.tokenId) loadMoreFish(PoolTypes.User);
+      if(fishPool === PoolTypes.Breeding && breedingWatersSupply && fishCollection.length < web3.utils.toNumber(breedingWatersSupply) && index === lastItem.tokenId) loadMoreFish(PoolTypes.Breeding);
+      if(fishPool === PoolTypes.Fighting && fightingWatersSupply && fishCollection.length < web3.utils.toNumber(fightingWatersSupply) && index === lastItem.tokenId) loadMoreFish(PoolTypes.Fighting);
     }
   }
 

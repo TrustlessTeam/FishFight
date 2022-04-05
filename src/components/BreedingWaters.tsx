@@ -4,7 +4,7 @@ import { toast } from 'react-toastify';
 import { useWeb3React } from '@web3-react/core';
 import { Fish } from '../utils/fish'
 import { useUnity } from '../context/unityContext';
-import { useFishPool } from '../context/fishPoolContext';
+import { PoolTypes, useFishPool } from '../context/fishPoolContext';
 import {  BaseLinkButton, BaseContainer, Error, ContainerColumn, BaseText } from './BaseStyles';
 import ToggleButton, { ToggleItem } from './ToggleButton';
 import { useContractWrapper } from '../context/contractWrapperContext';
@@ -164,7 +164,7 @@ const BreedingWaters = () => {
 		
 
 			{fishToShow === FishView.MyFish && 
-				<FishDrawer type="Breeding" selectedFish={myBettaFish} fishCollection={userFish} onClick={setUserBetta}>
+				<FishDrawer fishPool={PoolTypes.User} type="Breeding" selectedFish={myBettaFish} fishCollection={userFish} onClick={setUserBetta}>
 					<ToggleButton items={FishViewOptions} selected={fishToShow}></ToggleButton>
 				</FishDrawer>
 			}
@@ -172,7 +172,7 @@ const BreedingWaters = () => {
 				<BaseLinkButton to={'/catch'}>Catch a Fish!</BaseLinkButton>
 			}
 			{fishToShow === FishView.AlphaFish &&
-				<FishDrawer selectedOpponent={alphaFish} fishCollection={breedingFish} onClick={setAlpha}>
+				<FishDrawer fishPool={PoolTypes.Breeding} selectedOpponent={alphaFish} fishCollection={breedingFish} onClick={setAlpha}>
 					<ToggleButton items={FishViewOptions} selected={fishToShow}></ToggleButton>
 				</FishDrawer>
 			}

@@ -5,7 +5,7 @@ import { useWeb3React } from '@web3-react/core';
 import { Fish } from '../utils/fish'
 import { Fight} from '../utils/fight'
 import { useUnity } from '../context/unityContext';
-import { useFishPool } from '../context/fishPoolContext';
+import { PoolTypes, useFishPool } from '../context/fishPoolContext';
 import { Error, BaseContainer, BaseText, ContainerColumn, ContainerControls } from './BaseStyles';
 import ToggleButton, { ToggleGroup, ToggleItem, ToggleOption } from './ToggleButton';
 import { useContractWrapper } from '../context/contractWrapperContext';
@@ -192,12 +192,12 @@ const FightingWaters = () => {
 					}
 				</OptionsContainer>
 				{fishToShow === FishView.MyFish &&
-					<FishDrawer type="Fighting" depositFighter selectedFish={mySelectedFish} fishCollection={userFish} onClick={setUserFighter}>
+					<FishDrawer fishPool={PoolTypes.User} type="Fighting" depositFighter selectedFish={mySelectedFish} fishCollection={userFish} onClick={setUserFighter}>
 							<ToggleButton items={FishViewOptions} selected={fishToShow}></ToggleButton>
 					</FishDrawer>
 				}
 				{fishToShow === FishView.FightFish &&
-					<FishDrawer type="Fighting" depositFighter selectedOpponent={opponentFish} fishCollection={fightingFish} onClick={setOpponentFighter}>
+					<FishDrawer fishPool={PoolTypes.Fighting} type="Fighting" depositFighter selectedOpponent={opponentFish} fishCollection={fightingFish} onClick={setOpponentFighter}>
 						<ToggleButton items={FishViewOptions} selected={fishToShow}></ToggleButton>
 					</FishDrawer>
 				}
