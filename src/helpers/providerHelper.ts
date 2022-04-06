@@ -27,7 +27,8 @@ type getWalletProviderReturn = {
 
 export const getWalletProvider = async (connector: AbstractConnector | HarmonyAbstractConnector | undefined, library: Blockchain | any | undefined ): Promise<getWalletProviderReturn> => {
     let provider: HarmonyExtension | Web3
-    
+		// console.log("CONNECTOR")
+		// console.log(connector)
     const harmonyConnector = connector as HarmonyAbstractConnector;
     // If connector is a HarmonyAbstractConnector, it will contain windowKey (mathWallet or OneWallet).
 	if (harmonyConnector.windowKey) {
@@ -41,8 +42,8 @@ export const getWalletProvider = async (connector: AbstractConnector | HarmonyAb
 
     // If connector is AbstractConnector (not a harmony wallet)
 	// Get wallet provider from web3Provider
-	await library.provider.request({ method: 'eth_requestAccounts' });
-	
+	const accounts = await library.provider.request({ method: 'eth_requestAccounts' });
+	console.log(accounts)
 	// Initiate provider instance
 	provider = new Web3(library.provider);
 

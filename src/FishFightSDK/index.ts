@@ -188,8 +188,6 @@ class FishFight {
         this.fishEgg = this.setContract(this.providerWallet, Contracts.contracts.FishEgg.abi, Contracts.contracts.FishEgg.address)
         this.fishScale = this.setContract(this.providerWallet, Contracts.contracts.FishScale.abi, Contracts.contracts.FishScale.address)
         this.bloater = this.setContract(this.providerWallet, ERC20Abi, Constants._bloaterAddress)
-
-        console.log(this.readBloater)
     }
 
     setContract = (provider: any, abi: any, address: string) => {

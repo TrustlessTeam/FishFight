@@ -59,7 +59,7 @@ const FishPoolContext = createContext<FishPoolProviderContext | undefined>(undef
 export const FishPoolProvider = ({ children }: UnityProviderProps) => {
 
   const [userFishIndex, setUserFishIndex] = useState<number>(0);
-  const [loadingFish, setLoadingFish] = useState(false);
+  const [loadingFish, setLoadingFish] = useState(true);
   const [loadingUserFish, setLoadingUserFish] = useState(false);
   const [oceanFishIndex, setOceanFishIndex] = useState<number>(0);
   const [breedingFishIndex, setBreedingFishIndex] = useState<number>(0);
@@ -165,17 +165,17 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
   useEffect(() => {
     setUserFish([]);
     const loadTokenData = async (account: string | null | undefined) => {
-      if(account) {
+      if(account && !loadingFish) {
         // Clear user fish in case of account switch
         // console.log("ACCOUNT CONNECTED")
-        // console.log("Getting user fish")
+        console.log("Getting user fish")
         fetchUserFish(account);
         fetchUserFightingFish(account);
         fetchUserBreedingFish(account);
       }
     }
 		if(unityContext.isFishPoolReady) loadTokenData(account);
-  }, [account]);
+  }, [account, unityContext.isFishPoolReady, loadingFish]);
 
   const loadMoreFish = (type: number) => {
     if(type === PoolTypes.Ocean) {
@@ -231,7 +231,7 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
   const fetchUserFish = async (account: string, startIndex?: number) => {
     // console.log("Loading User Fish")
     try {
-      console.log(startIndex)
+      // console.log(startIndex)
       if(!startIndex) {
         startIndex = 0;
       }
@@ -629,7 +629,7 @@ const buildFish = async (fishFightInstance: FishFight, tokenId: number, isParent
   // console.log(results)
   const fishFactoryGetFishInfo = results.results.fishFactory.callsReturnContext[0].success ? results.results.fishFactory.callsReturnContext[0].returnValues : null;
   const fishFactoryTokenUri = results.results.fishFactory.callsReturnContext[1].success ? results.results.fishFactory.callsReturnContext[1].returnValues[0] : null;
-  console.log(fishFactoryTokenUri)
+  // console.log(fishFactoryTokenUri)
   let imgSrc = null;
   if(fishFactoryTokenUri) {
     imgSrc = `${fishFactoryTokenUri}.png`

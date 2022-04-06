@@ -11,6 +11,8 @@ import { Phase } from '../utils/cycles';
 import { ContractCallContext, ContractCallResults } from "ethereum-multicall";
 import Contracts from '../contracts/contracts.json';
 import ERC20 from '../contracts/erc20.json';
+import { connectorsByName, ConnectorNames } from '../utils/connectors';
+import { InjectedConnector } from "@web3-react/injected-connector";
 
 
 // Typescript
@@ -47,6 +49,7 @@ interface FishFightProviderContext {
   resetBalance: () => void
   refetchStats: () => void
   toggleGlobalMute: () => void
+  setLogOut: (value: boolean) => void
 }
 
 type FishFightProviderProps = { children: React.ReactNode }
@@ -59,10 +62,11 @@ export const FishFightProvider = ({ children }: FishFightProviderProps ) => {
   // FishFight instance initiates with default url provider upon visiting page
   const [FishFightInstance, setFishFightInstance] = useState<FishFight>(new FishFight())
   const [userConnected, setUserConnected] = useState<boolean>(false);
+  const [loggedOut, setLoggedOut] = useState<boolean>(false);
   const [globalMute, setGlobalMute] = useState<boolean>(false);
   const [currentBlock, setCurrentBlock] = useState<number>(0);
   // State of web3React
-  const { account, connector, library} = useWeb3React();
+  const { account, connector, library, active, activate, error} = useWeb3React();
 
   const contextBalance = useBalance();
   const contextStats = useStats();
@@ -83,6 +87,26 @@ export const FishFightProvider = ({ children }: FishFightProviderProps ) => {
   //     });
   //   }
   // }, [])
+
+  useEffect(() => {
+    let mmConnector = connectorsByName[ConnectorNames.Metamask] as InjectedConnector;
+      
+    mmConnector.isAuthorized()
+      .then(async (isAuthorized) => {
+        setUserConnected(true)
+        if (isAuthorized && !active && !error && !loggedOut) {
+          await activate(mmConnector)
+        }
+      })
+      .catch(() => {
+        setUserConnected(true)
+      })
+  }, [activate, active, error])
+
+  // console.log(account)
+  // console.log(active)
+  // console.log(connector)
+  // console.log(library)
 
   
   useEffect(() => {
@@ -118,9 +142,15 @@ export const FishFightProvider = ({ children }: FishFightProviderProps ) => {
   const refetchStats = () => {
     contextStats.fetchStats(FishFightInstance);
   }
+
   const toggleGlobalMute = () => {
     setGlobalMute(prev => !prev);
   }
+
+  const setLogOut = () => {
+    setLoggedOut(true);
+  } 
+
   const value: FishFightProviderContext = {
     FishFight: FishFightInstance,
     userConnected: userConnected,
@@ -131,6 +161,7 @@ export const FishFightProvider = ({ children }: FishFightProviderProps ) => {
     refetchBalance,
     refetchStats,
     toggleGlobalMute,
+    setLogOut
   }
   return (
       <FishFightContext.Provider value={value}>{children}</FishFightContext.Provider>
