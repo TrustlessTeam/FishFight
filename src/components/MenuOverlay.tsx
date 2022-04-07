@@ -21,6 +21,9 @@ import nftkeyImg from "../img/icons/nftkey-logo-circle.svg";
 import muteImg from "../img/icons/mute-dark.svg";
 import musicImg from "../img/icons/music-notes.svg";
 import noMuteImg from "../img/icons/nomute-dark.svg";
+import refreshImg from "../img/icons/refresh.svg";
+
+import { useFishPool } from '../context/fishPoolContext';
 
 const MenuOverlay = () => {
 	const { account } = useWeb3React();
@@ -29,7 +32,8 @@ const MenuOverlay = () => {
 	const [mutedMusic, setMutedMusic] = useState(true);
 	const [muted, setMuted] = useState(true);
 	const [play, { pause } ] = useSound('in_deep_90s.mp3', {loop: true, volume: 0.05});
-	const { globalMute, toggleGlobalMute } = useFishFight();
+	const { globalMute, toggleGlobalMute, refetchBalance, refetchStats } = useFishFight();
+	const { refreshLoadedFish } = useFishPool();
 
 	const HandleOpenStore = () => {
 		setOpenStore(true);		
@@ -69,6 +73,10 @@ const MenuOverlay = () => {
 		<Wrapper open={open}>
 								
 			<HowToPlayModal />
+
+			<RefreshButton onClick={() => {refreshLoadedFish(); refetchBalance(); refetchStats();}}>
+				<LogoImg src={refreshImg}></LogoImg>
+			</RefreshButton>
 
 			<MenuContainer>
 				
@@ -198,6 +206,35 @@ const StyledNav = styled(Nav)`
 	@media ${props => props.theme.device.tablet} {
 		order: 1;
   } */
+`;
+
+const RefreshButton = styled(BaseButton)`
+  position: absolute;
+  top: 100px;
+  right: 0;
+  padding: 10px 10px !important;
+  border-radius: 50%;
+  margin: ${(props) => props.theme.spacing.gap};
+  font-weight: bolder;
+  font-size: 25px;
+
+  &::before {
+    position: absolute;
+    content: "";
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    border-radius: 50%;
+    background-image: linear-gradient(#ffffff, #e2e2e2);
+    z-index: -1;
+    transition: opacity 0.25s ease-in-out;
+    opacity: 0;
+  }
+
+  @media ${(props) => props.theme.device.tablet} {
+    top: 150px;
+  }
 `;
 
 

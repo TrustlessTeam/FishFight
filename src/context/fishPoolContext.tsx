@@ -68,7 +68,7 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
 	const [userFish, setUserFish] = useState<Fish[]>([]);
 	const [fightingFish, setFightingFish] = useState<Fish[]>([]);
   const [breedingFish, setBreedingFish] = useState<Fish[]>([]);
-
+  const [connectedAccount, setConnectedAccount] = useState<string | null>(null);
 
   const { account, deactivate } = useWeb3React();
   const { FishFight, refetchStats, refetchBalance } = useFishFight();
@@ -151,6 +151,13 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
   }, [])
 
   useEffect(() => {
+    if(connectedAccount != null && account == null) {
+      setConnectedAccount(null);
+      setUserFish([])
+    }
+  }, [account])
+
+  useEffect(() => {
     const loadTokenData = async () => {
       // console.log("ACCOUNT NOT CONNECTED")
       // console.log("Getting public fish")
@@ -163,7 +170,6 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
 
   // Load connected user fish data from the blockchain
   useEffect(() => {
-    setUserFish([]);
     const loadTokenData = async (account: string | null | undefined) => {
       if(account && !loadingFish) {
         // Clear user fish in case of account switch
@@ -245,8 +251,9 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
       await Promise.all(userFishIds.map(async tokenId => {
       // const tokenId = await FishFight.readFishFactory.methods.tokenOfOwnerByIndex(account, index).call();
         const parsedTokenId = web3.utils.toNumber(tokenId);
-        
-        await addUserFishById(parsedTokenId)
+        if(!userFish.some(fish => fish.tokenId === parsedTokenId)) {
+          await addUserFishById(parsedTokenId)
+        }
         // setUserFishIndex(parsedTokenId);
       }));
 
@@ -502,10 +509,12 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
   }
 
   const refreshFish = async (tokenId: number, isFighting?: boolean, isBreeding?: boolean) =>  {
-    // const fishData = await getFish(FishFight, tokenId, isFighting, isBreeding)
     const fishData = await buildFish(FishFight, tokenId);
 
-    if(fishData == null) return null;
+    if(fishData == null) { // fish dies or no longer exists
+      fishBurned(tokenId);
+      return null;
+    };
 
     if(userFish.some(fish => fish.tokenId === tokenId)) {
       fishData.isUser = true;
@@ -528,12 +537,14 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
   }
 
 
-	const refreshLoadedFish = () => {
+	const refreshLoadedFish = async () => {
     let allFish = userFish.concat(fightingFish).concat(breedingFish).concat(oceanFish);
     allFish = [...new Set(allFish)];
-		allFish.forEach((fish) => {
-      refreshFish(fish.tokenId, fish.isUser)
-    });
+    setLoadingFish(true);
+		await Promise.all(allFish.map(async (fish) => {
+      await refreshFish(fish.tokenId)
+    }));
+    setLoadingFish(false);
 	};
 
 	const value: FishPoolProviderContext = {
