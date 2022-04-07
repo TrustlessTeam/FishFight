@@ -67,9 +67,11 @@ export function LeftArrow() {
 }
 
 export function RightArrow({
-  loadMore
+  loadMore,
+  allLoaded
 }: {
   loadMore: (index: number) => void;
+  allLoaded: boolean;
 }) {
   const {
     isLastItemVisible,
@@ -83,15 +85,19 @@ export function RightArrow({
     true
   );
   React.useEffect(() => {
+    tryLoadMore();
+  }, [isLastItemVisible, visibleItemsWithoutSeparators]);
+
+  const tryLoadMore = () => {
     if (visibleItemsWithoutSeparators.length) {
-      console.log(visibleItemsWithoutSeparators)
-      console.log(isLastItemVisible)
+      // console.log(visibleItemsWithoutSeparators)
+      // console.log(isLastItemVisible)
       const [lastItem] = visibleItemsWithoutSeparators.slice(-1)
       let lastShowingTokenId = parseInt(lastItem)
       // if(isLastItemVisible && lastItem === oceanFish)
       
       if(!loadingFish && !loadingUserFish) {
-        console.log(lastShowingTokenId)
+        // console.log(lastShowingTokenId)
         loadMore(lastShowingTokenId)
         // setDisabled(true);
 
@@ -99,10 +105,10 @@ export function RightArrow({
       setDisabled(false);
       // loadMoreFish(0);
     }
-  }, [isLastItemVisible, visibleItemsWithoutSeparators]);
+  }
 
   return (
-    <Arrow left={false} disabled={disabled} onClick={() => scrollNext()}>
+    <Arrow left={false} disabled={isLastItemVisible && allLoaded} onClick={() => {scrollNext(); tryLoadMore();}}>
       {'>'}
     </Arrow>
   );

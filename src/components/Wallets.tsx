@@ -15,6 +15,8 @@ import { connectorsByName } from '../utils/connectors';
 import { mapWallets } from '../helpers/walletHelpers';
 import BaseButton from './BaseButton';
 import { ContainerColumn, Title } from './BaseStyles';
+import { useFishFight } from '../context/fishFightContext';
+
 
 export interface Props {
 	closeModal: () => void;
@@ -22,11 +24,13 @@ export interface Props {
 
 const Wallets = ({ closeModal }: Props) => {
 	const { activate } = useWeb3React();
+	const {setLogOut} = useFishFight();
 
 	const handleClick = (connector: AbstractConnector) => () => {
 		// Activate will take connector as an argument
 		// And then initialize web3React context with a provider.
 		// Provider depends on the connector (i.e wallet) that has been chosen
+		setLogOut(false);
 		activate(connector);
 		closeModal();
 	}; 

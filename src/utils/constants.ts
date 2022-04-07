@@ -30,7 +30,7 @@ export let Constants = {
   _bettaBreedPowerFee : 10,
   _bettaBreedCooldown : '10 days',
   // Training Waters
-  _feedFee : ethers.utils.parseEther('5').toString(), // FISHFOOD
+  _feedFee : ethers.utils.parseEther('1').toString(), // FISHFOOD
   _eggFee : ethers.utils.parseEther('1').toString(), // FISHFOOD
   _scaleFee : ethers.utils.parseEther('2').toString(), // FISHFOOD
   _claimAmount : ethers.utils.parseEther('1').toString(), // FISHFOOD
@@ -58,6 +58,8 @@ export let Constants = {
   MODIFIER_AGI : 6,
   MODIFIER_POWER : 7,
 
-  _bloaterAddress : '0x78aED65A2Cc40C7D8B0dF1554Da60b38AD351432'
+  _bloaterAddress : '0x78aED65A2Cc40C7D8B0dF1554Da60b38AD351432',
+  _bloaterCost : 10,
+  _bloaterUses : 5
 }
 

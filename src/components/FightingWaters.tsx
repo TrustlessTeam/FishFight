@@ -177,9 +177,6 @@ const FightingWaters = () => {
 			{!isFighting &&
 			<>
 				<OptionsContainer>
-					{!account &&
-						<Account textOverride={"Connect Wallet to Fight $FISH"}/>
-					}
 					{fighter1Error &&
 						<ContainerColumn>
 							<Error><BaseText>{fighter1Error}</BaseText></Error>

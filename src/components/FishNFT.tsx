@@ -8,7 +8,7 @@ import fishImg from "../img/icons/fish-dark.svg";
 import alphaImg from "../img/icons/alpha-dark.svg";
 import bettaImg from "../img/icons/betta-dark.svg";
 import scaleImg from "../img/icons/FishScale.png";
-import eggImg from "../img/icons/FishEgg.png";
+import bloaterImg from "../img/icons/dfk-bloater.png";
 import strImg from "../img/icons/str.png";
 import intImg from "../img/icons/int.png";
 import agiImg from "../img/icons/agi.png";
@@ -108,24 +108,25 @@ const FishNFT = ({
             </ContainerColumnSmall>
             <ContainerColumnSmall>
               <LogoImg src={agiImg}></LogoImg>
-              <BaseText>{`Strength ${fish.agility} -> ${fish.agility+Constants._fightModifierValue > 100 ? 100 : fish.agility+Constants._fightModifierValue}`}</BaseText>
+              <BaseText>{`Agility ${fish.agility} -> ${fish.agility+Constants._fightModifierValue > 100 ? 100 : fish.agility+Constants._fightModifierValue}`}</BaseText>
               <BaseButton onClick={() => {questFish(fish, Constants.MODIFIER_AGI); closeModal()}}>Buff Agility</BaseButton>
             </ContainerColumnSmall>
           </ContainerRow>
           <Title>{`Token Modifiers`}</Title>
           <BaseText>{`A variety of modifiers to buff your $FISH based on the token used!`}</BaseText>
           <ContainerRow>
-            {/* <ContainerColumnSmall>
-              <LogoImg src={eggImg}></LogoImg>
-              <Text>{`Fish Egg (${web3.utils.fromWei(Constants._eggFee)} $FISHEGG)`}</Text>
-              <SubText>{`Buff is a mystery!`}</SubText>
-              <BaseButton onClick={() => {contractApproveERC20Modifiers(FishFight.fishEgg, Constants._feedFee, () => contractModifierFishProducts(fish, 1)); closeModal()}}>Consume Egg</BaseButton>
-            </ContainerColumnSmall> */}
             <ContainerColumnSmall>
               <LogoImg src={scaleImg}></LogoImg>
-              <Text>{`Fish Scales (${web3.utils.fromWei(Constants._scaleFee)} $FISHSCALE)`}</Text>
-              <SubText>{`Prevent Fight power reduction for 3 Fights!`}</SubText>
-              <BaseButton onClick={() => {contractApproveERC20Modifiers(FishFight.fishScale, Constants._scaleFee, () => contractModifierFishProducts(fish, 2)); closeModal()}}>Consume Scales</BaseButton>
+              <Text>{`${web3.utils.fromWei(Constants._scaleFee)} $FISHSCALE`}</Text>
+              <SubText>Prevent Power Loss<br></br>Lasts: 1 Fight</SubText>
+              <BaseButton onClick={() => {contractApproveERC20Modifiers(FishFight.fishScale, Constants._scaleFee, () => contractModifierFishProducts(fish, 1)); closeModal()}}>Consume</BaseButton>
+            </ContainerColumnSmall>
+
+            <ContainerColumnSmall>
+              <LogoImg src={bloaterImg}></LogoImg>
+              <Text>{`${Constants._bloaterCost} $BLOATER`}</Text>
+              <SubText>+2 Str : -2 Int<br></br>Lasts: 5 Fights</SubText>
+              <BaseButton onClick={() => {contractApproveERC20Modifiers(FishFight.bloater, Constants._bloaterCost.toString(), () => contractModifierDFK(fish, 1)); closeModal()}}>Consume</BaseButton>
             </ContainerColumnSmall>
           </ContainerRow>
         </ContainerWrapper>
@@ -277,6 +278,7 @@ export const SubText = styled.p`
   text-align: center;
 	margin: 0;
 	color: white;
+  padding: 3px;
 
 	font-size: ${props => props.theme.font.xsmall};
 

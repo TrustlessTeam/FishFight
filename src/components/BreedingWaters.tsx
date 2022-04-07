@@ -151,9 +151,9 @@ const BreedingWaters = () => {
 	return(
 		<BaseContainer>
 			<OptionsContainer>
-			{!account &&
+			{/* {!account &&
 				<Account textOverride={"Connect Wallet to Breed $FISH"}/>
-			}
+			} */}
 			{bettaError &&
 				<ContainerColumn>
 					<Error><BaseText>{bettaError}</BaseText></Error>

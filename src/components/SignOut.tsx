@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { useWeb3React } from '@web3-react/core';
 import BaseButton from "../components/BaseButton";
 import { Title } from './BaseStyles';
+import { useFishFight } from "../context/fishFightContext";
 
 export interface Props {
 	account: string | null | undefined;
@@ -11,8 +12,10 @@ export interface Props {
 
 const SignOut = ({ account, closeModal }: Props) => {
 	const { deactivate } = useWeb3React();
+	const {setLogOut} = useFishFight();
 
 	const handleClick = () => {
+		setLogOut(true);
 		deactivate();
 		closeModal();
 	};
