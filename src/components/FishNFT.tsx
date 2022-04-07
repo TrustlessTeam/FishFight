@@ -108,7 +108,7 @@ const FishNFT = ({
             </ContainerColumnSmall>
             <ContainerColumnSmall>
               <LogoImg src={agiImg}></LogoImg>
-              <BaseText>{`Strength ${fish.agility} -> ${fish.agility+Constants._fightModifierValue > 100 ? 100 : fish.agility+Constants._fightModifierValue}`}</BaseText>
+              <BaseText>{`Agility ${fish.agility} -> ${fish.agility+Constants._fightModifierValue > 100 ? 100 : fish.agility+Constants._fightModifierValue}`}</BaseText>
               <BaseButton onClick={() => {questFish(fish, Constants.MODIFIER_AGI); closeModal()}}>Buff Agility</BaseButton>
             </ContainerColumnSmall>
           </ContainerRow>
@@ -119,7 +119,7 @@ const FishNFT = ({
               <LogoImg src={scaleImg}></LogoImg>
               <Text>{`${web3.utils.fromWei(Constants._scaleFee)} $FISHSCALE`}</Text>
               <SubText>Prevent Power Loss<br></br>Lasts: 1 Fight</SubText>
-              <BaseButton onClick={() => {contractApproveERC20Modifiers(FishFight.fishScale, Constants._scaleFee, () => contractModifierFishProducts(fish, 2)); closeModal()}}>Consume</BaseButton>
+              <BaseButton onClick={() => {contractApproveERC20Modifiers(FishFight.fishScale, Constants._scaleFee, () => contractModifierFishProducts(fish, 1)); closeModal()}}>Consume</BaseButton>
             </ContainerColumnSmall>
 
             <ContainerColumnSmall>

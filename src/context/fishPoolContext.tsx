@@ -241,7 +241,7 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
         return val !== '0';
       });
 
-      console.log(userFishIds)
+      // console.log(userFishIds)
       await Promise.all(userFishIds.map(async tokenId => {
       // const tokenId = await FishFight.readFishFactory.methods.tokenOfOwnerByIndex(account, index).call();
         const parsedTokenId = web3.utils.toNumber(tokenId);

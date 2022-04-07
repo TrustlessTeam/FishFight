@@ -78,7 +78,7 @@ const FishDrawer = ({
   // NOTE: for drag by mouse
   const { dragStart, dragStop, dragMove, dragging } = useDrag();
   const { loadingFish, loadingUserFish, loadMoreFish } = useFishPool();
-  const { balanceFish, fishCurrentIndex, globalMute, fightingWatersSupply, breedingWatersSupply } = useFishFight();
+  const { balanceFish, totalSupply, globalMute, fightingWatersSupply, breedingWatersSupply } = useFishFight();
   const handleDrag = ({ scrollContainer }: scrollVisibilityApiType) => (
     ev: React.MouseEvent
   ) =>
@@ -203,14 +203,27 @@ const FishDrawer = ({
     // if(loadingFish && !loadingUserFish) {
 
     // }
+    // console.log(index)
     const [lastItem] = fishCollection.slice(-1)
-    if(index === lastItem.tokenId) {
-      // console.log(index)
-      if(fishPool === PoolTypes.Ocean && index < fishCurrentIndex) loadMoreFish(PoolTypes.Ocean);
-      if(fishPool === PoolTypes.User && balanceFish && fishCollection.length < web3.utils.toNumber(balanceFish) && index === lastItem.tokenId) loadMoreFish(PoolTypes.User);
-      if(fishPool === PoolTypes.Breeding && breedingWatersSupply && fishCollection.length < web3.utils.toNumber(breedingWatersSupply) && index === lastItem.tokenId) loadMoreFish(PoolTypes.Breeding);
-      if(fishPool === PoolTypes.Fighting && fightingWatersSupply && fishCollection.length < web3.utils.toNumber(fightingWatersSupply) && index === lastItem.tokenId) loadMoreFish(PoolTypes.Fighting);
+    // console.log(fishCollection.length)
+    let numLoaded = fishCollection.length;
+    if(index === numLoaded - 1) { // check if we are showing the last item
+      
+      if(fishPool === PoolTypes.Ocean && numLoaded < totalSupply) loadMoreFish(PoolTypes.Ocean);
+      if(fishPool === PoolTypes.User && balanceFish && fishCollection.length < web3.utils.toNumber(balanceFish)) loadMoreFish(PoolTypes.User);
+      if(fishPool === PoolTypes.Breeding && breedingWatersSupply && fishCollection.length < web3.utils.toNumber(breedingWatersSupply)) loadMoreFish(PoolTypes.Breeding);
+      if(fishPool === PoolTypes.Fighting && fightingWatersSupply && fishCollection.length < web3.utils.toNumber(fightingWatersSupply)) loadMoreFish(PoolTypes.Fighting);
     }
+  }
+
+  const checkAllLoaded = () => {
+    let numLoaded = fishCollection.length;
+    if(fishPool === PoolTypes.Ocean && numLoaded === totalSupply) return true;
+    if(fishPool === PoolTypes.User && balanceFish && fishCollection.length === web3.utils.toNumber(balanceFish)) return true;
+    if(fishPool === PoolTypes.Breeding && breedingWatersSupply && fishCollection.length === web3.utils.toNumber(breedingWatersSupply)) return true;
+    if(fishPool === PoolTypes.Fighting && fightingWatersSupply && fishCollection.length === web3.utils.toNumber(fightingWatersSupply)) return true;
+
+    return false;
   }
 
   return (
@@ -247,7 +260,7 @@ const FishDrawer = ({
         <div onMouseLeave={dragStop}>
           <StyledScrollMenu
             LeftArrow={LeftArrow}
-            RightArrow={<RightArrow loadMore={loadMore}/>}
+            RightArrow={<RightArrow loadMore={loadMore} allLoaded={checkAllLoaded()} />}
             onWheel={onWheel}
             onMouseDown={() => dragStart}
             onMouseUp={() => dragStop}
@@ -258,7 +271,7 @@ const FishDrawer = ({
               <FishNFT
                 type={type}
                 fish={fish}
-                itemId={fish.tokenId.toString()} // NOTE: itemId is required for track items
+                itemId={index.toString()} // NOTE: itemId is required for track items
                 key={fish.tokenId}
                 selectedOpponent={selectedOpponent?.tokenId === fish.tokenId}
                 selectedUser={selectedFish?.tokenId === fish.tokenId}
