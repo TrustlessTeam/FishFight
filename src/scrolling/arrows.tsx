@@ -89,10 +89,13 @@ export function RightArrow({
   }, [isLastItemVisible, visibleItemsWithoutSeparators]);
 
   const tryLoadMore = () => {
+    // console.log("in try load more")
+    // console.log(visibleItemsWithoutSeparators.length)
     if (visibleItemsWithoutSeparators.length) {
       // console.log(visibleItemsWithoutSeparators)
       // console.log(isLastItemVisible)
       const [lastItem] = visibleItemsWithoutSeparators.slice(-1)
+      // console.log(lastItem)
       let lastShowingTokenId = parseInt(lastItem)
       // if(isLastItemVisible && lastItem === oceanFish)
       

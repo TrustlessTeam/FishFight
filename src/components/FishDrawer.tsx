@@ -78,7 +78,7 @@ const FishDrawer = ({
   // NOTE: for drag by mouse
   const { dragStart, dragStop, dragMove, dragging } = useDrag();
   const { loadingFish, loadingUserFish, loadMoreFish } = useFishPool();
-  const { balanceFish, totalSupply, globalMute, fightingWatersSupply, breedingWatersSupply } = useFishFight();
+  const { balanceFish, balanceFightFish, balanceBreedFish, totalSupply, globalMute, fightingWatersSupply, breedingWatersSupply } = useFishFight();
   const handleDrag = ({ scrollContainer }: scrollVisibilityApiType) => (
     ev: React.MouseEvent
   ) =>
@@ -207,10 +207,13 @@ const FishDrawer = ({
     const [lastItem] = fishCollection.slice(-1)
     // console.log(fishCollection.length)
     let numLoaded = fishCollection.length;
-    if(index === numLoaded - 1) { // check if we are showing the last item
+    if(index === numLoaded) { // check if we are showing the last item
       
       if(fishPool === PoolTypes.Ocean && numLoaded < totalSupply) loadMoreFish(PoolTypes.Ocean);
-      if(fishPool === PoolTypes.User && balanceFish && fishCollection.length < web3.utils.toNumber(balanceFish)) loadMoreFish(PoolTypes.User);
+      if(fishPool === PoolTypes.User && balanceFish && balanceFightFish && balanceBreedFish) {
+        const userTotal = web3.utils.toNumber(balanceFish) + web3.utils.toNumber(balanceFightFish) + web3.utils.toNumber(balanceBreedFish)
+        if(fishCollection.length < userTotal) loadMoreFish(PoolTypes.User);
+      }
       if(fishPool === PoolTypes.Breeding && breedingWatersSupply && fishCollection.length < web3.utils.toNumber(breedingWatersSupply)) loadMoreFish(PoolTypes.Breeding);
       if(fishPool === PoolTypes.Fighting && fightingWatersSupply && fishCollection.length < web3.utils.toNumber(fightingWatersSupply)) loadMoreFish(PoolTypes.Fighting);
     }
@@ -219,7 +222,13 @@ const FishDrawer = ({
   const checkAllLoaded = () => {
     let numLoaded = fishCollection.length;
     if(fishPool === PoolTypes.Ocean && numLoaded === totalSupply) return true;
-    if(fishPool === PoolTypes.User && balanceFish && fishCollection.length === web3.utils.toNumber(balanceFish)) return true;
+    if(fishPool === PoolTypes.User && balanceFish && balanceFightFish && balanceBreedFish) {
+      const userTotal = web3.utils.toNumber(balanceFish) + web3.utils.toNumber(balanceFightFish) + web3.utils.toNumber(balanceBreedFish)
+      // console.log("UserFish Check")
+      // console.log(fishCollection.length)
+      // console.log(userTotal)
+      return fishCollection.length === userTotal
+    }
     if(fishPool === PoolTypes.Breeding && breedingWatersSupply && fishCollection.length === web3.utils.toNumber(breedingWatersSupply)) return true;
     if(fishPool === PoolTypes.Fighting && fightingWatersSupply && fishCollection.length === web3.utils.toNumber(fightingWatersSupply)) return true;
 
@@ -271,7 +280,7 @@ const FishDrawer = ({
               <FishNFT
                 type={type}
                 fish={fish}
-                itemId={index.toString()} // NOTE: itemId is required for track items
+                itemId={(index + 1).toString()} // NOTE: itemId is required for track items
                 key={fish.tokenId}
                 selectedOpponent={selectedOpponent?.tokenId === fish.tokenId}
                 selectedUser={selectedFish?.tokenId === fish.tokenId}
