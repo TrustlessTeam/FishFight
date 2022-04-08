@@ -18,6 +18,8 @@ import BaseButton from "../components/BaseButton";
 import useSound from 'use-sound';
 
 import nftkeyImg from "../img/icons/nftkey-logo-circle.svg";
+import discordImg from "../img/icons/discord.svg"
+import tofunftImg from "../img/icons/tofunft.svg"
 import muteImg from "../img/icons/mute-dark.svg";
 import musicImg from "../img/icons/music-notes.svg";
 import noMuteImg from "../img/icons/nomute-dark.svg";
@@ -105,11 +107,15 @@ const MenuOverlay = () => {
 			</MenuContainer>
 				
 				
+			<SoundButton onClick={() => HandleOpenStore()}><a href="https://discord.com/invite/23ArJsQKnT" target="_blank" rel=""><LogoImg src={discordImg }></LogoImg></a>
+			</SoundButton>
+			<SoundButton onClick={() => HandleOpenStore()}><a href="https://nftkey.app/collections/fishfight/" target="_blank" rel=""><LogoImg src={nftkeyImg }></LogoImg></a>
+			</SoundButton>
+			<SoundButton onClick={() => HandleOpenStore()}><a href="https://tofunft.com/collection/fishfight/items" target="_blank" rel=""><LogoImg src={tofunftImg }></LogoImg></a>
+			</SoundButton>
 			<SoundButton onClick={() => handleMusicClick()}><LogoImg src={mutedMusic ? muteImg : musicImg }></LogoImg>
 			</SoundButton>
 			<SoundButton onClick={() => handleSoundClick()}><LogoImg src={globalMute ? muteImg : noMuteImg }></LogoImg>
-			</SoundButton>
-			<SoundButton onClick={() => HandleOpenStore()}><a href="https://nftkey.app/collections/fishfight/" target="_blank" rel=""><LogoImg src={nftkeyImg }></LogoImg></a>
 			</SoundButton>
 		</Wrapper>
 	);
