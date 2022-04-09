@@ -330,7 +330,7 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
     const fightingWatersAddress = FishFight.readFightingWaters.options.address
     try {
 
-      console.log(startIndex)
+      // console.log(startIndex)
       if(!startIndex) {
         startIndex = 0;
       }
@@ -340,12 +340,13 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
         return val !== '0';
       });
 
-      console.log(fightingFishIds)
+      // console.log(fightingFishIds)
       await Promise.all(fightingFishIds.map(async tokenId => {
       // const tokenId = await FishFight.readFishFactory.methods.tokenOfOwnerByIndex(account, index).call();
         const parsedTokenId = web3.utils.toNumber(tokenId);
-        
-        await addFightingFishById(parsedTokenId)
+        if(!fightingFish.some(fish => fish.tokenId === parsedTokenId)) {
+          await addFightingFishById(parsedTokenId)
+        }
         // setUserFishIndex(parsedTokenId);
       }));
 
@@ -390,7 +391,7 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
     // console.log("Loading Breeding Fish")
     const breedingWatersAddress = FishFight.readBreedingWaters.options.address
     try {
-      console.log(startIndex)
+      // console.log(startIndex)
       if(!startIndex) {
         startIndex = 0;
       }
@@ -400,12 +401,13 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
         return val !== '0';
       });
 
-      console.log(breedingFishIds)
+      // console.log(breedingFishIds)
       await Promise.all(breedingFishIds.map(async tokenId => {
       // const tokenId = await FishFight.readFishFactory.methods.tokenOfOwnerByIndex(account, index).call();
         const parsedTokenId = web3.utils.toNumber(tokenId);
-        
-        await addBreedingFishById(parsedTokenId)
+        if(!breedingFish.some(fish => fish.tokenId === parsedTokenId)) {
+          await addBreedingFishById(parsedTokenId)
+        }
         // setUserFishIndex(parsedTokenId);
       }));
 
