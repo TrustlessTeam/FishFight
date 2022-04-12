@@ -872,7 +872,7 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 			return;
 		}
 		if(!fish.canQuest) {
-			toast.error(`${fish.power}/${Constants._fightModifierCost} POWER Required`);
+			toast.error(`Power Up requires ${Constants._fightModifierCost} POWER (You have ${fish.power})`);
 			return;
 		}
 		// if(fish.seasonStats != null && (fish.seasonStats.agiModifier > 0 || fish.seasonStats.strModifier > 0 || fish.seasonStats.intModifier > 0)) {

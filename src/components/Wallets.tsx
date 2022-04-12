@@ -62,7 +62,7 @@ const WalletsComponent = styled(ContainerColumn)`
 	grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
 	overflow: hidden; */
 	display: flex;
-	flex-flow: column;
+	flex-flow: row;
 	justify-content: space-between;
 	align-items: center;
 	width: 100%;

@@ -1,6 +1,6 @@
 import { ConnectorNames } from '../utils/connectors';
 
-import MathWallet from '../img/wallets/math.png';
+import CoinbaseImg from '../img/wallets/coinbase.png';
 import OneWallet from '../img/wallets/one.svg';
 import Metamask from '../img/wallets/metamask.svg';
 
@@ -14,12 +14,12 @@ export const mapWallets: { [waletName: string]: WalletUI } = {
 	// 	name: 'One wallet',
 	// 	image: OneWallet,
 	// },
-	// [ConnectorNames.Mathwallet]: {
-	// 	name: 'Math wallet',
-	// 	image: MathWallet,
-	// },
-	[ConnectorNames.Metamask]: {
-		name: 'Metamask',
+	[ConnectorNames.MetaMaskWallet]: {
+		name: 'MetaMask',
 		image: Metamask,
 	},
+		[ConnectorNames.CoinbaseWallet]: {
+			name: 'Coinbase Wallet',
+			image: CoinbaseImg,
+		},
 };

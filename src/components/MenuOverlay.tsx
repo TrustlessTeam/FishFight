@@ -17,6 +17,7 @@ import StatusModal from "./StatusModal";
 import BaseButton from "../components/BaseButton";
 import useSound from 'use-sound';
 
+import sushiImg from "../img/icons/sushi-logo.svg";
 import nftkeyImg from "../img/icons/nftkey-logo-circle.svg";
 import discordImg from "../img/icons/discord.svg"
 import tofunftImg from "../img/icons/tofunft.svg"
@@ -26,6 +27,7 @@ import noMuteImg from "../img/icons/nomute-dark.svg";
 import refreshImg from "../img/icons/refresh.svg";
 
 import { useFishPool } from '../context/fishPoolContext';
+import { toast } from 'react-toastify';
 
 const MenuOverlay = () => {
 	const { account } = useWeb3React();
@@ -45,10 +47,16 @@ const MenuOverlay = () => {
 		console.log(mutedMusic)
 		if(mutedMusic) {
 			play();
+
+			toast.dark(`Genesis Landing by LIXION`, );
 			setMutedMusic(false);
 		}
 		else {
 			pause();
+			toast.success("Even a function, given you return something that can be rendered", {
+				icon: ({theme, type}) =>  <img src={sushiImg}/>
+			  });
+			toast.dark(`Genesis Landing by @LIXION5`);
 			setMutedMusic(true);
 		}
 		
@@ -108,6 +116,8 @@ const MenuOverlay = () => {
 				
 				
 			<SoundButton onClick={() => HandleOpenStore()}><a href="https://discord.com/invite/23ArJsQKnT" target="_blank" rel=""><LogoImg src={discordImg }></LogoImg></a>
+			</SoundButton>
+			<SoundButton onClick={() => HandleOpenStore()}><a href="https://app.sushi.com/swap?inputCurrency=ONE&outputCurrency=0x81E9E682d2d7F016Ff7c3D17567Ee7511f29f653&chainId=1666600000" target="_blank" rel=""><LogoImg src={sushiImg }></LogoImg></a>
 			</SoundButton>
 			<SoundButton onClick={() => HandleOpenStore()}><a href="https://nftkey.app/collections/fishfight/" target="_blank" rel=""><LogoImg src={nftkeyImg }></LogoImg></a>
 			</SoundButton>

@@ -9,8 +9,8 @@ import { AbstractConnector } from '@web3-react/abstract-connector';
 
 export enum ConnectorNames {
 	OneWallet = 'OneWallet',
-	Mathwallet = 'MathWallet',
-	Metamask = 'Metamask',
+	CoinbaseWallet = 'CoinbaseWallet',
+	MetaMaskWallet = 'MetaMaskWallet',
 }
 
 const onewallet = new OneWalletConnector({ chainId: 2 }); // Mainnet -> chainId: 1 // Testnet & Localnet -> chainId 2
@@ -19,6 +19,6 @@ export const injected = new InjectedConnector({ supportedChainIds: [1666600000, 
 
 export const connectorsByName: { [connectorName: string]: AbstractConnector } = {
 	// [ConnectorNames.OneWallet]: onewallet,
-	// [ConnectorNames.Mathwallet]: mathwallet,
-	[ConnectorNames.Metamask]: injected,
+	[ConnectorNames.CoinbaseWallet]: injected,
+	[ConnectorNames.MetaMaskWallet]: injected,
 };

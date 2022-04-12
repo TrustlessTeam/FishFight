@@ -89,7 +89,7 @@ export const FishFightProvider = ({ children }: FishFightProviderProps ) => {
   // }, [])
 
   useEffect(() => {
-    let mmConnector = connectorsByName[ConnectorNames.Metamask] as InjectedConnector;
+    let mmConnector = connectorsByName[ConnectorNames.MetaMaskWallet] as InjectedConnector;
       
     mmConnector.isAuthorized()
       .then(async (isAuthorized) => {
