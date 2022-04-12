@@ -55,11 +55,7 @@ const Nav = () => {
         <NavImg className={({isActive}) => isActive ? 'active' : ''} to="/fighting">
           <LogoImg src={fightingImg} alt="Fighting"></LogoImg>
         </NavImg>
-        <SubContainer>
-          <Option className={({isActive}) => isActive ? 'active' : ''} to='/fighting' end>All Fish</Option>
-          <Option className={({isActive}) => isActive ? 'active' : ''} to='/fighting/weak'>50 Below Fish</Option>
-          {/* <Option className={({isActive}) => isActive ? 'active' : ''} to='/fighting/start'>FIGHT!</Option> */}
-        </SubContainer>
+        
       </NavItem>
       <NavItem>
         <NavImg className={({isActive}) => isActive ? 'active' : ''} to="/breeding">

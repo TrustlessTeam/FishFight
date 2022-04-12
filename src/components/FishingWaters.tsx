@@ -52,7 +52,7 @@ const FishingWaters = () => {
 
 	const renderer = ({ hours, minutes, seconds, completed }: RenderProps) => {
 		// Render a countdown
-		return <DataText>{hours}:{zeroPad(minutes)}:{zeroPad(seconds)}</DataText>;
+		return <span>{hours}:{zeroPad(minutes)}:{zeroPad(seconds)}</span>;
 
 	};
 

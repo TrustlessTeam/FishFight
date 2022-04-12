@@ -295,7 +295,7 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
       setUserFishIndex(userFishIds.length)
 
 
-      // load all user fighting and concat them
+      // User Fighting Pool Fish
       const stakedFightFishUserOwns = await FishFight.readFightingWaters.methods.balanceOf(account).call();
       const numUserFightingFish = web3.utils.toBN(stakedFightFishUserOwns).toNumber();
       const fightingFishIds = [...Array(numUserFightingFish).keys()].map(x => x++);
@@ -308,7 +308,8 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
           
       }));
 
-      const stakedFightFishWeakUserOwns = await FishFight.readFightingWaters.methods.balanceOf(account).call();
+      // User Weak Fighting Pool Fish
+      const stakedFightFishWeakUserOwns = await FishFight.readFightingWatersWeak.methods.balanceOf(account).call();
       const numUserFightingFishWeak = web3.utils.toBN(stakedFightFishWeakUserOwns).toNumber();
       const fightingFishIdsWeak = [...Array(numUserFightingFishWeak).keys()].map(x => x++);
       await Promise.all(fightingFishIdsWeak.map(async index => {
@@ -807,12 +808,14 @@ const buildFish = async (fishFightInstance: FishFight, tokenId: number, isParent
     fish.stakedFighting = {
       earnedFishFood: web3.utils.fromWei(fightingWatersGetPoolInfo[0].hex),
       lockedExpire: web3.utils.toNumber(fightingWatersGetPoolInfo[2].hex),
+      poolType: 0
     }
   }
   if(fightingWatersWeakGetPoolInfo != null) {
     fish.stakedFighting = {
       earnedFishFood: web3.utils.fromWei(fightingWatersWeakGetPoolInfo[0].hex),
       lockedExpire: web3.utils.toNumber(fightingWatersWeakGetPoolInfo[2].hex),
+      poolType: 1
     }
   }
   if(breedingWatersGetPoolInfo != null) {

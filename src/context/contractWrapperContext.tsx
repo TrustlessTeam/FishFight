@@ -808,6 +808,11 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 			return false;
 		}
 
+		if(myFish.stakedFighting && myFish.stakedFighting.poolType !== 0) {
+			toast.error("In other Fight Pool");
+			return false;
+		}
+
 		setIsFighting(true)
 
 		try {
@@ -1548,6 +1553,10 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 			toast.error('Select a Fish');
 			return;
 		}
+		if(fish.strength > 50 || fish.intelligence > 50 || fish.agility > 50) {
+			toast.error("Fighter Selection: Stats must be <= 50");
+			return;
+		}
 		try {
 			// All $FISH are approved
 			if(fightingFishWeakApproval) {
@@ -1700,6 +1709,11 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 			return false;
 		}
 
+		if(myFish.strength > 50 || myFish.intelligence > 50 || myFish.agility > 50) {
+			toast.error("Fighter Selection: Stats must 50 or less");
+			return false;
+		}
+
 		if(myFish.stakedBreeding) {
 			toast.error("Can't use Fish that's in the Breed Pool");
 			return false;
@@ -1707,6 +1721,11 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 
 		if(myFish.fishModifiers.alphaModifier.uses > 0) {
 			toast.error("Alpha can't start Fight");
+			return false;
+		}
+
+		if(myFish.stakedFighting && myFish.stakedFighting.poolType !== 1) {
+			toast.error("In other Fight Pool");
 			return false;
 		}
 

@@ -35,6 +35,7 @@ interface FishFightProviderContext {
 
   totalSupply: number
   fishCurrentIndex: number
+  fightingWatersWeakSupply: number
   fightingWatersSupply: number
   breedingWatersSupply: number
   totalSupplyDead: number
@@ -242,11 +243,8 @@ const useBalance = () => {
         // },
       ];
     
-      
-      console.log("BALANCES")
-      
       const results: ContractCallResults = await FishFight.multicall.call(contractCallContext);
-      console.log(results)
+
       let fishBalance = results.results.fishFactory.callsReturnContext[0].success ? results.results.fishFactory.callsReturnContext[0].returnValues[0].hex : null;
       let deadFishBalance = results.results.deadFishFactory.callsReturnContext[0].success ? results.results.deadFishFactory.callsReturnContext[0].returnValues[0].hex : null;
       let fighterBalance = results.results.fightingWaters.callsReturnContext[0].success ? results.results.fightingWaters.callsReturnContext[0].returnValues[0].hex : null;
@@ -329,6 +327,7 @@ const useStats = () => {
   const [totalSupply, setTotalSupply] = useState<number>(0);
   const [fishCurrentIndex, setFishCurrentIndex] = useState<number>(0);
   const [fightingWatersSupply, setFightingWatersSupply] = useState<number>(0);
+  const [fightingWatersWeakSupply, setFightingWatersWeakSupply] = useState<number>(0);
 	const [breedingWatersSupply, setBreedingWatersSupply] = useState<number>(0);
 
   const [totalSupplyDead, setTotalSupplyDead] = useState<number>(0);
@@ -352,6 +351,7 @@ const useStats = () => {
           calls: [{ reference: 'totalFish', methodName: 'totalSupply', methodParameters: [] },
             { reference: 'currentFishIndex', methodName: 'currentIndex', methodParameters: [] },
             { reference: 'totalFighters', methodName: 'balanceOf', methodParameters: [FishFight.readFightingWaters.options.address] },
+            { reference: 'totalFightersWeak', methodName: 'balanceOf', methodParameters: [FishFight.readFightingWatersWeak.options.address] },
             { reference: 'totalBreeders', methodName: 'balanceOf', methodParameters: [FishFight.readBreedingWaters.options.address] }
           ]
         },
@@ -376,13 +376,13 @@ const useStats = () => {
           ]
         }
       ];
-      console.log("FISH STATS")
       const results: ContractCallResults = await FishFight.multicall.call(contractCallContext);
-      console.log(results)
+
       let totalFish = results.results.fishFactory.callsReturnContext[0].success ? results.results.fishFactory.callsReturnContext[0].returnValues[0].hex : null;
       let currentFishIndex = results.results.fishFactory.callsReturnContext[1].success ? results.results.fishFactory.callsReturnContext[1].returnValues[0].hex : null;
       let totalFighters = results.results.fishFactory.callsReturnContext[2].success ? results.results.fishFactory.callsReturnContext[2].returnValues[0].hex : null;
-      let totalBreeders = results.results.fishFactory.callsReturnContext[3].success ? results.results.fishFactory.callsReturnContext[3].returnValues[0].hex : null;
+      let totalFightersWeak = results.results.fishFactory.callsReturnContext[3].success ? results.results.fishFactory.callsReturnContext[3].returnValues[0].hex : null;
+      let totalBreeders = results.results.fishFactory.callsReturnContext[4].success ? results.results.fishFactory.callsReturnContext[4].returnValues[0].hex : null;
       
       let totalDead = results.results.deadFishFactory.callsReturnContext[0].success ? results.results.deadFishFactory.callsReturnContext[0].returnValues[0].hex : null;
       let burnedDead = results.results.deadFishFactory.callsReturnContext[1].success ? results.results.deadFishFactory.callsReturnContext[1].returnValues[0].hex : null;
@@ -397,6 +397,7 @@ const useStats = () => {
       setTotalSupply(Web3.utils.hexToNumber(totalFish));
       setFishCurrentIndex(Web3.utils.hexToNumber(currentFishIndex));
       setFightingWatersSupply(Web3.utils.hexToNumber(totalFighters));
+      setFightingWatersWeakSupply(Web3.utils.hexToNumber(totalFightersWeak));
       setBreedingWatersSupply(Web3.utils.hexToNumber(totalBreeders));
 
       setTotalSupplyDead(Web3.utils.hexToNumber(totalDead))
@@ -429,6 +430,7 @@ const useStats = () => {
     totalSupply,
     fishCurrentIndex,
     fightingWatersSupply,
+    fightingWatersWeakSupply,
     breedingWatersSupply,
     totalSupplyDead,
     totalDeadBurned,

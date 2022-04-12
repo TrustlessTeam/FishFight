@@ -3,19 +3,32 @@ import styled from 'styled-components';
 import { toast } from 'react-toastify';
 import { useWeb3React } from '@web3-react/core';
 import { Fish } from '../utils/fish'
-import { Fight} from '../utils/fight'
 import { useUnity } from '../context/unityContext';
 import { PoolFish, PoolTypes, useFishPool } from '../context/fishPoolContext';
-import { Error, BaseContainer, BaseText, ContainerColumn, ContainerControls } from './BaseStyles';
-import ToggleButton, { ToggleGroup, ToggleItem, ToggleOption } from './ToggleButton';
+import { Error, BaseContainer, BaseText, ContainerColumn } from './BaseStyles';
+import ToggleButton, {ToggleItem } from './ToggleButton';
 import { useContractWrapper } from '../context/contractWrapperContext';
 import { useFishFight } from '../context/fishFightContext';
-import Account from './Account';
+import web3 from 'web3';
 import FishDrawer from './FishDrawer';
+import Countdown, {zeroPad} from 'react-countdown';
+import { Constants } from '../utils/constants';
+
+import {
+  NavLink,
+} from "react-router-dom";
+
 
 enum FishView {
   MyFish,
   FightFish
+}
+
+type RenderProps = {
+	hours: any;
+	minutes: any;
+	seconds: any;
+	completed: boolean;
 }
 
 const FightingWaters = () => {
@@ -30,6 +43,7 @@ const FightingWaters = () => {
 
 	// Context
 	const { userFish, fightingFish } = useFishPool()
+	const { maxSupply, totalSupply, currentPhase, fightingWatersSupply } = useFishFight()
 	const { account } = useWeb3React();
 	const unityContext = useUnity();
 	const { fightFish, pendingTransaction, isFighting, updateIsFighting} = useContractWrapper();
@@ -122,6 +136,10 @@ const FightingWaters = () => {
 			toast.error("Fighter Selection: Must Withdraw");
 			setFighter1Error(`Must Withdraw from Breed Pool`);
 		}
+		else if(fish.stakedFighting && fish.stakedFighting.poolType !== 0) {
+			toast.error("Fighter Selection: In other Fight Pool");
+			setFighter1Error(`Must Withdraw from other Fight Pool`);
+		}
 		else {
 			setFighter1Error(null);
 		}
@@ -170,10 +188,44 @@ const FightingWaters = () => {
 		setFighter2Error(null)
 	}
 
-	if(!unityContext.isFishPoolReady) return null;
+	const renderer = ({ hours, minutes, seconds, completed }: RenderProps) => {
+		// Render a countdown
+		return <span>{hours}:{zeroPad(minutes)}:{zeroPad(seconds)}</span>;
+
+	};
+
+	let timeTilPhase = currentPhase?.phase === 3 ? currentPhase.phaseEndtime + (Constants._fishPhaseLength) : currentPhase?.phaseEndtime;
+
+	// if(!unityContext.isFishPoolReady) return null;
 
 	return(
 		<BaseContainer>
+			
+			<InfoContainer>
+				<NavContainer>
+					<NavItem className={({isActive}) => isActive ? 'active' : ''} to='/fighting' end>Free-for-All</NavItem>
+					<NavItem className={({isActive}) => isActive ? 'active' : ''} to='/fighting/weak'>{`Stats 50 & Under`}</NavItem>
+					{/* <Option className={({isActive}) => isActive ? 'active' : ''} to='/fighting/start'>FIGHT!</Option> */}
+				</NavContainer>
+				<DataContainer>
+					{currentPhase?.phase === 2 ?
+						<DataText>
+							{`$FISHFOOD per Win: ${web3.utils.fromWei(Constants._fishFoodPerWinInPhase)} ->`} 
+							<StyledCountdown><Countdown renderer={renderer} date={new Date(currentPhase.phaseEndtime * 1000)} /></StyledCountdown>
+							{`then ${web3.utils.fromWei(Constants._fishFoodPerWin)}`} 
+						</DataText>
+						:
+						<DataText>
+							{`$FISHFOOD per Win: ${web3.utils.fromWei(Constants._fishFoodPerWin)} ->`} 
+							<StyledCountdown><Countdown renderer={renderer} date={new Date(timeTilPhase ? timeTilPhase * 1000 : 0)} /></StyledCountdown>
+							{`then ${web3.utils.fromWei(Constants._fishFoodPerWinInPhase)}`} 
+						</DataText>
+					}
+					<DataText>
+					{`$FISHFOOD per Hour: ~${web3.utils.fromWei(Constants._fishFoodPerBlockBN.mul(1800).div(fightingWatersSupply+1).toString())}`}
+					</DataText>
+				</DataContainer>
+			</InfoContainer>
 			{!isFighting &&
 			<>
 				<OptionsContainer>
@@ -207,11 +259,100 @@ const FightingWaters = () => {
 	)
 };
 
+interface ActiveProps {
+	active?: boolean;
+}
+
+const NavContainer = styled.div`
+	display: flex;
+	padding-bottom: ${props => props.theme.spacing.gap};
+`;
+
+const NavItem = styled(NavLink)<ActiveProps>`
+	/* height: 35px; */
+	/* border: 2px solid white;s */
+	border-radius: 10px;
+  padding: ${props => props.theme.spacing.gap};
+	margin: 0 ${props => props.theme.spacing.gapSmall};
+  background-image: linear-gradient(#D5D5D5, #D5D5D5);
+  box-shadow: inset 2px 2px 2px #c7c7c74b, inset -2px -2px 2px #3f3f3f4c;
+	text-decoration: none;
+	color: black;
+	font-size: ${props => props.theme.font.small};
+	cursor: pointer;
+	pointer-events: auto;
+
+	@media ${props => props.theme.device.tablet} {
+		font-size: ${props => props.theme.font.medium};
+  }
+
+  &.active {
+    font-weight: bold;
+		background-image: linear-gradient(#d5d5d5, #038ec59b);
+  }
+`;
+
+
 const OptionsContainer = styled.div`
 	display: flex;
 	flex-flow: row nowrap;
 	justify-content: center;
 	align-items: center;
+`;
+
+const StyledCountdown = styled.span`
+	padding: 0 3px;
+`;
+
+const DataContainer = styled.div`
+	display: flex;
+	flex-flow: column;
+	background-color: rgba(255, 255, 255, 0.8);
+	border-radius: 10px;
+	padding: ${props => props.theme.spacing.gap};
+`
+
+const InfoContainer = styled.div`
+	position: absolute;
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-start;
+	align-items: center;
+	/* height: 100%; */
+	width: 100%;
+	margin-top: 60px;
+	top: 0;
+	pointer-events: none;
+
+	@media ${props => props.theme.device.tablet} {
+		margin-top: 100px;
+  }
+`;
+
+const DataText = styled.p`
+	display: flex;
+	flex-flow: row;
+	justify-content: center;
+	align-items: center;
+	color: black;
+	border-radius: 20px;
+	margin: 0;
+	font-size: ${props => props.theme.font.small};
+
+	padding-bottom: ${props => props.theme.spacing.gapSmall};
+
+	&:last-child{
+		padding-bottom: 0;
+	}
+
+	& > span {
+		margin-left: 4px;
+	}
+
+	@media ${props => props.theme.device.tablet} {
+		margin: 0;
+		font-size: ${props => props.theme.font.medium};
+  }
 `;
 
 
