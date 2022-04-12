@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-import { PoolTypes, useFishPool } from '../context/fishPoolContext';
+import { PoolFish, useFishPool } from '../context/fishPoolContext';
 import { useUnity } from '../context/unityContext';
 import { useWeb3React } from '@web3-react/core';
 
@@ -30,7 +30,7 @@ const Ocean = () => {
 
 	// const [renderedFish, setRenderedFish] = useState<number[]>([]);
 	const unityContext = useUnity();
-	const { feedFish, claimFishFood, questFish, depositBreedingFish, depositFightingFish, withdrawFightingFish, withdrawBreedingFish, pendingTransaction } = useContractWrapper();
+	const { feedFish, claimFishFood, questFish, depositBreedingFish, depositFightingFish, smartWithdraw, withdrawBreedingFish, pendingTransaction } = useContractWrapper();
 	const { account } = useWeb3React();
 
 
@@ -64,7 +64,7 @@ const Ocean = () => {
 					depositFightingFish(mySelectedFish);
 					return;
 				case "withdraw_fight_confirm":
-					withdrawFightingFish(mySelectedFish);
+					smartWithdraw(mySelectedFish);
 					return;
 				case "deposit_breed_confirm":
 					depositBreedingFish(mySelectedFish);
@@ -194,12 +194,12 @@ const Ocean = () => {
 				
 				{/* <FishDrawer fishCollection={oceanFish}></FishDrawer> */}
 				{fishToShow === FishView.Ocean &&
-					<FishDrawer fishPool={PoolTypes.Ocean} selectedOpponent={mySelectedFish} fishCollection={oceanFish} onClick={oceanFishClick}>
+					<FishDrawer fishPool={PoolFish.Ocean} selectedOpponent={mySelectedFish} fishCollection={oceanFish} onClick={oceanFishClick}>
 						<ToggleButton items={FishViewOptions} selected={fishToShow}></ToggleButton>
 					</FishDrawer>
 				}
 				{fishToShow === FishView.User &&
-					<FishDrawer fishPool={PoolTypes.User} selectedFish={mySelectedFish} fishCollection={userFish} onClick={oceanFishClick}>
+					<FishDrawer fishPool={PoolFish.User} selectedFish={mySelectedFish} fishCollection={userFish} onClick={oceanFishClick}>
 						<>
 							<ToggleButton items={FishViewOptions} selected={fishToShow}></ToggleButton>
 							{!account &&

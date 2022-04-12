@@ -18,7 +18,7 @@ enum FishView {
   FightFish
 }
 
-const FightingWaters = () => {
+const FightingWatersWeak = () => {
 	// State
 	const [mySelectedFish, setMySelectedFish] = useState<Fish | null>(null);
 	const [opponentFish, setOpponentFish] = useState<Fish | null>(null);
@@ -29,10 +29,10 @@ const FightingWaters = () => {
 	const [renderedFish, setRenderedFish] = useState<number[]>([]);
 
 	// Context
-	const { userFish, fightingFish } = useFishPool()
+	const { userFish, fightingFishWeak } = useFishPool()
 	const { account } = useWeb3React();
 	const unityContext = useUnity();
-	const { fightFish, pendingTransaction, isFighting, updateIsFighting} = useContractWrapper();
+	const { fightFishWeak, pendingTransaction, isFighting, updateIsFighting} = useContractWrapper();
 
 	const FishViewOptions: ToggleItem[] = [
 		{
@@ -53,7 +53,7 @@ const FightingWaters = () => {
 			// console.log(data)
 			switch (data) {
 				case 'confirm':
-					const fight = await fightFish(mySelectedFish, opponentFish);
+					const fight = await fightFishWeak(mySelectedFish, opponentFish);
 					console.log(fight)
 					// if(fight) updateIsFighting(true);
 					return;
@@ -98,10 +98,10 @@ const FightingWaters = () => {
 		// console.log(fightingFish)
 		if(!unityContext.isFishPoolReady) return;
 		// unityContext.clearFishPool("ShowFighting")
-		fightingFish.forEach(fish => {
+		fightingFishWeak.forEach(fish => {
 			// unityContext.addFishFightingPool(fish);
 		})
-	}, [fightingFish, unityContext.isFishPoolReady]);
+	}, [fightingFishWeak, unityContext.isFishPoolReady]);
 
 
 	const setUserFighter = async (fish : Fish) => {
@@ -110,6 +110,10 @@ const FightingWaters = () => {
 		if(fish.fishModifiers.alphaModifier.uses > 0) {
 			toast.error("Fighter Selection: Fish is Alpha");
 			setFighter1Error(`Alpha can't start Fight`);
+		}
+		else if(fish.strength > 50 || fish.intelligence > 50 || fish.agility > 50) {
+			toast.error("Fighter Selection: Stats must be <= 50");
+			setFighter1Error(`Fish too strong!`);
 		}
 		else if(fish.tokenId === opponentFish?.tokenId) {
 			toast.error("Fighter Selection: Same Fish");
@@ -189,12 +193,12 @@ const FightingWaters = () => {
 					}
 				</OptionsContainer>
 				{fishToShow === FishView.MyFish &&
-					<FishDrawer fishPool={PoolFish.User} poolType={PoolTypes.Fighting} type="Fighting" depositFighter selectedFish={mySelectedFish} fishCollection={userFish} onClick={setUserFighter}>
+					<FishDrawer fishPool={PoolFish.User} poolType={PoolTypes.FightingWeak} type="Fighting" depositFighter selectedFish={mySelectedFish} fishCollection={userFish} onClick={setUserFighter}>
 							<ToggleButton items={FishViewOptions} selected={fishToShow}></ToggleButton>
 					</FishDrawer>
 				}
 				{fishToShow === FishView.FightFish &&
-					<FishDrawer fishPool={PoolFish.Fighting} poolType={PoolTypes.Fighting} type="Fighting" depositFighter selectedOpponent={opponentFish} fishCollection={fightingFish} onClick={setOpponentFighter}>
+					<FishDrawer fishPool={PoolFish.FightingWeak} poolType={PoolTypes.FightingWeak} type="Fighting" depositFighter selectedOpponent={opponentFish} fishCollection={fightingFishWeak} onClick={setOpponentFighter}>
 						<ToggleButton items={FishViewOptions} selected={fishToShow}></ToggleButton>
 					</FishDrawer>
 				}
@@ -216,4 +220,4 @@ const OptionsContainer = styled.div`
 
 
 
-export default FightingWaters;
+export default FightingWatersWeak;
