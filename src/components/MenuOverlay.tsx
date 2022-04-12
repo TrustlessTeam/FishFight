@@ -48,15 +48,13 @@ const MenuOverlay = () => {
 		if(mutedMusic) {
 			play();
 
-			toast.dark(`Genesis Landing by LIXION`, );
+			toast.dark(`Genesis Landing by LIXION`);
 			setMutedMusic(false);
 		}
 		else {
 			pause();
-			toast.success("Even a function, given you return something that can be rendered", {
-				icon: ({theme, type}) =>  <img src={sushiImg}/>
-			  });
-			toast.dark(`Genesis Landing by @LIXION5`);
+
+			toast.dark(`Genesis Landing by LIXION`);
 			setMutedMusic(true);
 		}
 		
