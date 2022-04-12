@@ -61,6 +61,7 @@ type Props = {
   type?: string;
   fishPool?: PoolFish;
   poolType?: PoolTypes;
+  buffModal?: () => void;
   children?: React.ReactNode;
 };
 
@@ -72,6 +73,7 @@ const FishDrawer = ({
   depositAlpha,
   depositFighter,
 	type,
+  buffModal,
   children,
   fishPool,
   poolType
@@ -289,6 +291,7 @@ const FishDrawer = ({
                 selectedOpponent={selectedOpponent?.tokenId === fish.tokenId}
                 selectedUser={selectedFish?.tokenId === fish.tokenId}
                 onClick={onClick ? handleItemClick(fish) : undefined}
+                buffModal={buffModal}
               />
             ))}
           </StyledScrollMenu>

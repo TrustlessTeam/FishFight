@@ -52,7 +52,7 @@ const App = () => {
               <Route path="/fishing" element={<FishingWaters />} />
               <Route path="/fighting" element={<FightingWaters />}>
                 {/* <Route path="/fighting/user" element={<FightingWaters />} /> */}
-              
+                {/* <Route path="/fighting/weak" element={<FightingWaters />} /> */}
               </Route>
               <Route path="/fighting/weak" element={<FightingWatersWeak />} />
               <Route path="/breeding" element={<BreedingWaters />}>
@@ -65,7 +65,7 @@ const App = () => {
           {/* <Blockchain></Blockchain> */}
         </Container>
         <ToastContainer
-          position="bottom-right"
+          position="top-right"
           newestOnTop={false}
           pauseOnFocusLoss={false}
           pauseOnHover={false}

@@ -55,7 +55,8 @@ export enum PoolFish {
 export enum PoolTypes {
   Fighting,
   FightingWeak,
-  Breeding
+  Breeding,
+  Ocean
 }
 
 type UnityProviderProps = { children: React.ReactNode };

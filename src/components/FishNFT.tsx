@@ -33,6 +33,7 @@ type Props = {
   type?: string;
   fishPool?: PoolFish;
   poolType?: PoolTypes;
+  buffModal?: () => void;
 };
 
 interface ImgProps {
@@ -48,7 +49,8 @@ const FishNFT = ({
   selectedUser,
   type,
   fishPool,
-  poolType
+  poolType,
+  buffModal
 }: Props) => {
   const [showStats, setShowStats] = useState<boolean>(false);
 	const [modalIsOpen, setModalIsOpen] = useState(false);
@@ -183,10 +185,10 @@ const FishNFT = ({
           {fish.fishModifiers.canCollect() && !fish.stakedBreeding && !fish.stakedFighting &&
             <FishButton onClick={() => claimFishFood(fish)}>Collect</FishButton>
           }
-          {!fish.stakedBreeding && !fish.stakedFighting &&
-            <FishButton onClick={() => toggleModel()}>Buff</FishButton>
+          {!fish.stakedBreeding && !fish.stakedFighting && buffModal != undefined &&
+            <FishButton onClick={() => buffModal()}>Buff</FishButton>
           }
-          {fish.stakedFighting && (
+          {fish.stakedFighting && poolType === PoolTypes.Ocean && (
             <FishButton onClick={() => smartWithdraw(fish)}>Withdraw</FishButton>
           )}
           {fish.stakedFighting && poolType === PoolTypes.Fighting && (
