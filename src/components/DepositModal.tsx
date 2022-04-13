@@ -71,7 +71,7 @@ const DepositModal = ({
               <SubText>Any Fish is allowed.</SubText>
               <SubText>Loser Burned. Winner becomes Alpha.</SubText>
               <SubText>{`$FISHFOOD per Win: ${web3.utils.fromWei(currentPhase?.phase === 2 ? Constants._fishFoodPerWinInPhase : Constants._fishFoodPerWin)}`}</SubText>
-              <SubText>{`$FISHFOOD per Hour: ~${web3.utils.fromWei(Constants._fishFoodPerBlockBN.mul(1800).div(fightingWatersSupply).toString())}`}</SubText>
+              <SubText>{`$FISHFOOD per Hour: ~${web3.utils.fromWei(Constants._fishFoodPerBlockBN.mul(1800).div(fightingWatersSupply+1).toString())}`}</SubText>
               <BaseButton onClick={() => {depositFightingFish(fish); toggleModal()}}>Deposit</BaseButton>
             </ContainerColumnSmall>
 
@@ -81,7 +81,7 @@ const DepositModal = ({
               <SubText>Fish with Fight Stats 50 or less.</SubText>
               <SubText>Loser Burned. Winner becomes Alpha.</SubText>
               <SubText>{`$FISHFOOD per Win: ${web3.utils.fromWei(currentPhase?.phase === 2 ? Constants._fishFoodPerWinInPhaseWeak : Constants._fishFoodPerWinWeak)}`}</SubText>
-              <SubText>{`$FISHFOOD per Hour: ~${web3.utils.fromWei(Constants._fishFoodPerBlockWeakBN.mul(1800).div(fightingWatersWeakSupply).toString())}`}</SubText>
+              <SubText>{`$FISHFOOD per Hour: ~${web3.utils.fromWei(Constants._fishFoodPerBlockWeakBN.mul(1800).div(fightingWatersWeakSupply+1).toString())}`}</SubText>
               <BaseButton onClick={() => {depositFightingFishWeak(fish); toggleModal()}}>Deposit</BaseButton>
             </ContainerColumnSmall>
           </ContainerRow>
