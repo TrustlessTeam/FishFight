@@ -67,7 +67,7 @@ const FightingWatersWeak = () => {
 			switch (data) {
 				case 'confirm':
 					const fight = await fightFishWeak(mySelectedFish, opponentFish);
-					console.log(fight)
+					// console.log(fight)
 					// if(fight) updateIsFighting(true);
 					return;
 				case 'fightresults_confirm':

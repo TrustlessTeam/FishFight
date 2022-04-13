@@ -559,6 +559,10 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
       prevFish.filter(f => f.tokenId !== tokenId)
     ));
 
+    setFightingFishWeak(prevFish => (
+      prevFish.filter(f => f.tokenId !== tokenId)
+    ));
+
     setOceanFish(prevFish => (
       prevFish.filter(f => f.tokenId !== tokenId)
     ));

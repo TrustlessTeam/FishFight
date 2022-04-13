@@ -1391,7 +1391,7 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 	const getGasPrice = async () => {
 		try {
 			const estimate = await FishFight.provider.eth.getGasPrice();
-			console.log(estimate)
+			// console.log(estimate)
 
 			let boosted = new BN(estimate);
 			let multiplierToAdd = boosted.div(new BN(10));
@@ -1419,8 +1419,8 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 	// Fighting Functions
 	const contractIsFighterWeakDeposited = async (tokenId: number) => {
 		const owner = await FishFight.readFishFactory.methods.ownerOf(tokenId).call();
-		console.log(owner)
-		console.log(FishFight.readFishingWaters.options.address)
+		// console.log(owner)
+		// console.log(FishFight.readFishingWaters.options.address)
 		return owner === FishFight.readFightingWatersWeak.options.address;
 	}
 
@@ -1732,8 +1732,6 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 		setIsFighting(true)
 
 		try {
-			console.log("fight fish")
-			console.log(fightingFishWeakApproval)
 			const deposited = await contractIsFighterWeakDeposited(myFish.tokenId);
 
 			// User Fish is already in fight pool, so no deposit or approvals required

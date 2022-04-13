@@ -56,7 +56,7 @@ export const StyledModal = styled(Modal)`
   max-height: 100%;
   transform: translate(-50%, -50%);
   border-radius: 20px;
-  background-color: rgba(4, 49, 83, 0.814);
+  background-color: rgba(4, 49, 83, 0.906);
 	
 	/* padding: ${props => props.theme.spacing.gap}; */
 	box-shadow:  20px 20px 60px #254f67,
