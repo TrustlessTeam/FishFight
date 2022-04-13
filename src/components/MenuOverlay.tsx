@@ -18,6 +18,7 @@ import BaseButton from "../components/BaseButton";
 import useSound from 'use-sound';
 
 import sushiImg from "../img/icons/sushi-logo.svg";
+import dfkImg from "../img/icons/jewel-icon.png";
 import nftkeyImg from "../img/icons/nftkey-logo-circle.svg";
 import discordImg from "../img/icons/discord.svg"
 import tofunftImg from "../img/icons/tofunft.svg"
@@ -116,6 +117,8 @@ const MenuOverlay = () => {
 			<SoundButton onClick={() => HandleOpenStore()}><a href="https://discord.com/invite/23ArJsQKnT" target="_blank" rel=""><LogoImg src={discordImg }></LogoImg></a>
 			</SoundButton>
 			<SoundButton onClick={() => HandleOpenStore()}><a href="https://app.sushi.com/swap?inputCurrency=ONE&outputCurrency=0x81E9E682d2d7F016Ff7c3D17567Ee7511f29f653&chainId=1666600000" target="_blank" rel=""><LogoImg src={sushiImg }></LogoImg></a>
+			</SoundButton>
+			<SoundButton onClick={() => HandleOpenStore()}><a href="https://game.defikingdoms.com/#/marketplace?outputCurrency=0x81E9E682d2d7F016Ff7c3D17567Ee7511f29f653" target="_blank" rel=""><LogoImg src={dfkImg }></LogoImg></a>
 			</SoundButton>
 			<SoundButton onClick={() => HandleOpenStore()}><a href="https://nftkey.app/collections/fishfight/" target="_blank" rel=""><LogoImg src={nftkeyImg }></LogoImg></a>
 			</SoundButton>
