@@ -219,7 +219,7 @@ const FightingWatersWeak = () => {
 					}
 
 					<DataText>
-					{`$FISHFOOD per Hour: ~${web3.utils.fromWei(Constants._fishFoodPerBlockWeakBN.mul(1800).div(fightingWatersWeakSupply+1).toString())}`}
+					{`DEPOSIT REWARD $FISHFOOD per Hour: ~${web3.utils.fromWei(Constants._fishFoodPerBlockWeakBN.mul(1800).div(fightingWatersWeakSupply+1).toString())}`}
 					</DataText>
 
 				</DataContainer>
