@@ -19,6 +19,6 @@ export const injected = new InjectedConnector({ supportedChainIds: [1666600000, 
 
 export const connectorsByName: { [connectorName: string]: AbstractConnector } = {
 	// [ConnectorNames.OneWallet]: onewallet,
-	[ConnectorNames.CoinbaseWallet]: injected,
 	[ConnectorNames.MetaMaskWallet]: injected,
+	[ConnectorNames.CoinbaseWallet]: injected,
 };
