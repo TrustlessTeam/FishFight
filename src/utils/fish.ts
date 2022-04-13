@@ -5,11 +5,13 @@ import { Constants } from './constants';
 export class StakedFighting {
   lockedExpire: number;
   earnedFishFood: string;
+  poolType: number;
   constructor(
     stakedFightFishObject: any,
   ) {
     this.lockedExpire = web3.utils.toNumber(stakedFightFishObject.lockedExpire);
     this.earnedFishFood = web3.utils.fromWei(stakedFightFishObject.earnedFishFood);
+    this.poolType = stakedFightFishObject.poolType;
   }
 }
 

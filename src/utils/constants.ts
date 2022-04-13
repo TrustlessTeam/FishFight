@@ -17,6 +17,7 @@ export let Constants = {
   _fishTypeMaxRange : 1,
   // Fighting Waters
   _fishFoodPerBlock : ethers.utils.parseEther('0.023').toString(), // FISHFOOD
+  _fishFoodPerBlockBN : ethers.utils.parseEther('0.023'), // FISHFOOD
   _fishFoodPerWin : ethers.utils.parseEther('200').toString(), // FISHFOOD
   _fishFoodPerWinInPhase : ethers.utils.parseEther('400').toString(), // FISHFOOD
   _lockTime : 60 * 10, // 10 mins
@@ -60,6 +61,12 @@ export let Constants = {
 
   _bloaterAddress : '0x78aED65A2Cc40C7D8B0dF1554Da60b38AD351432',
   _bloaterCost : 10,
-  _bloaterUses : 5
+  _bloaterUses : 5,
+
+  _fishFoodPerBlockWeak : ethers.utils.parseEther('0.0115').toString(), // FISHFOOD
+  _fishFoodPerBlockWeakBN : ethers.utils.parseEther('0.0115'), // FISHFOOD
+  _fishFoodPerWinWeak : ethers.utils.parseEther('50').toString(), // FISHFOOD
+  _fishFoodPerWinInPhaseWeak : ethers.utils.parseEther('100').toString(), // FISHFOOD
+  _lockTimeWeak : 60 * 10 // 10 mins
 }
 

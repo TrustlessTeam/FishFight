@@ -35,6 +35,7 @@ const StatusModal = ({children}: Props) => {
 					maxSupply,
 					totalSupply,
 					fightingWatersSupply,
+					fightingWatersWeakSupply,
 					breedingWatersSupply,
 					FishFight
 				} = useFishFight();
@@ -69,7 +70,8 @@ const StatusModal = ({children}: Props) => {
 	const getPendingFood = async () => {
 		if(!account) return;
 		const result = await FishFight.readFightingWaters.methods.pendingAward(account).call();
-		setPendingAward(web3.utils.fromWei(result));
+		const result2 = await FishFight.readFightingWatersWeak.methods.pendingAward(account).call();
+		setPendingAward(web3.utils.fromWei(result+result2));
 	}
 
 	const nextPhase = async () => {
@@ -206,14 +208,14 @@ const StatusModal = ({children}: Props) => {
 					<>
 						<DataItem>
 							<SubTitle>{`Fight Pool Stats:`}</SubTitle>
-							<StatusText>{`Fish in Fight Pool: ${fightingWatersSupply}`}</StatusText>
-							<StatusText>{`$FISHFOOD per Win: ${web3.utils.fromWei(currentPhase.phase === 2 ? Constants._fishFoodPerWinInPhase : Constants._fishFoodPerWin)}`}</StatusText>
+							<StatusText>{`Fish in Fight Pools: ${fightingWatersSupply+fightingWatersWeakSupply}`}</StatusText>
+							{/* <StatusText>{`$FISHFOOD per Win: ${web3.utils.fromWei(currentPhase.phase === 2 ? Constants._fishFoodPerWinInPhase : Constants._fishFoodPerWin)}`}</StatusText> */}
 							<StatusText>{`Total Fights: ${totalFights}`}</StatusText>
 						</DataItem>
 						{account &&
 							<DataItem>
 								<SubTitle>{`User Fighting Fish:`}</SubTitle>
-								<StatusText>{`User Fish in Fight Pool: ${balanceFightFish}`}</StatusText>
+								<StatusText>{`User Fish in Fight Pools: ${balanceFightFish}`}</StatusText>
 								<StatusText>{`Pending from Wins: ${parseFloat(pendingFightFood ? pendingFightFood : '0').toFixed(2)} $FISHFOOD`}</StatusText>
 								<StatusText>{`Pending from Staking: ${parseFloat(pendingAward ? pendingAward : '0').toFixed(2)} $FISHFOOD`}</StatusText>
 							</DataItem>
@@ -226,7 +228,7 @@ const StatusModal = ({children}: Props) => {
 							<SubTitle>{`Breed Pool Stats:`}</SubTitle>
 							<StatusText>{`Fish in Breed Pool: ${breedingWatersSupply}`}</StatusText>
 							<StatusText>{`Cost to Breed: ${web3.utils.fromWei(currentPhase.phase === 4 ? Constants._oneBreedFeeInPhase : Constants._oneBreedFee)} ONE`}</StatusText>
-							<StatusText>{`$FISHFOOD per Win: ${web3.utils.fromWei(currentPhase.phase === 2 ? Constants._fishFoodPerWinInPhase : Constants._fishFoodPerWin)}`}</StatusText>
+							<StatusText>{`$FISHFOOD per Breed: ${web3.utils.fromWei(currentPhase.phase === 2 ? Constants._alphaFoodOwedFeeInPhase : Constants._alphaFoodOwedFee)}`}</StatusText>
 							<StatusText>{`Total Breeds: ${totalBreeds}`}</StatusText>
 							
 						</DataItem>

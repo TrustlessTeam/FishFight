@@ -19,6 +19,7 @@ import { BaseText, BaseTitle, ContainerColumn, ContainerRow, StyledModal, Title 
 import { VisibilityContext } from "react-horizontal-scrolling-menu";
 import { useFishFight } from "../context/fishFightContext";
 import web3 from 'web3';
+import { PoolFish, PoolTypes } from "../context/fishPoolContext";
 
 
 type Props = {
@@ -30,6 +31,9 @@ type Props = {
   depositFighter?: boolean;
   depositAlpha?: boolean;
   type?: string;
+  fishPool?: PoolFish;
+  poolType?: PoolTypes;
+  buffModal?: () => void;
 };
 
 interface ImgProps {
@@ -44,6 +48,9 @@ const FishNFT = ({
   selectedOpponent,
   selectedUser,
   type,
+  fishPool,
+  poolType,
+  buffModal
 }: Props) => {
   const [showStats, setShowStats] = useState<boolean>(false);
 	const [modalIsOpen, setModalIsOpen] = useState(false);
@@ -54,13 +61,16 @@ const FishNFT = ({
     depositBreedingFish,
     withdrawBreedingFish,
     depositFightingFish,
+    depositFightingFishWeak,
     withdrawFightingFish,
+    withdrawFightingFishWeak,
     feedFish,
     questFish,
     claimFishFood,
     contractApproveERC20Modifiers,
     contractModifierDFK,
-    contractModifierFishProducts
+    contractModifierFishProducts,
+    smartWithdraw
   } = useContractWrapper();
 
   const toggleStats = () => {
@@ -175,17 +185,26 @@ const FishNFT = ({
           {fish.fishModifiers.canCollect() && !fish.stakedBreeding && !fish.stakedFighting &&
             <FishButton onClick={() => claimFishFood(fish)}>Collect</FishButton>
           }
-          {!fish.stakedBreeding && !fish.stakedFighting &&
-            <FishButton onClick={() => toggleModel()}>Buff</FishButton>
+          {!fish.stakedBreeding && !fish.stakedFighting && buffModal != undefined &&
+            <FishButton onClick={() => buffModal()}>Buff</FishButton>
           }
-          {fish.stakedFighting && (
+          {fish.stakedFighting && poolType === PoolTypes.Ocean && (
+            <FishButton onClick={() => smartWithdraw(fish)}>Withdraw</FishButton>
+          )}
+          {fish.stakedFighting && poolType === PoolTypes.Fighting && (
             <FishButton onClick={() => withdrawFightingFish(fish)}>Withdraw</FishButton>
+          )}
+          {fish.stakedFighting && poolType === PoolTypes.FightingWeak && (
+            <FishButton onClick={() => withdrawFightingFishWeak(fish)}>Withdraw</FishButton>
           )}
 					{fish.stakedBreeding && (
             <FishButton onClick={() => withdrawBreedingFish(fish)}>Withdraw</FishButton>
           )}
-          {!fish.stakedFighting && !fish.stakedBreeding && type === 'Fighting' && (
+          {!fish.stakedFighting && !fish.stakedBreeding && poolType === PoolTypes.Fighting && (
             <FishButton onClick={() => depositFightingFish(fish)}>Deposit</FishButton>
+          )}
+          {!fish.stakedFighting && !fish.stakedBreeding && poolType === PoolTypes.FightingWeak && (
+            <FishButton onClick={() => depositFightingFishWeak(fish)}>Deposit</FishButton>
           )}
           {!fish.stakedFighting &&
             !fish.stakedBreeding &&

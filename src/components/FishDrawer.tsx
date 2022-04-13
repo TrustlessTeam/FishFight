@@ -12,7 +12,7 @@ import FishNFT from "./FishNFT";
 import Menu from "../components/Menu";
 import { ContainerControls } from './BaseStyles';
 import useSound from "use-sound";
-import { useFishPool, PoolTypes } from "../context/fishPoolContext";
+import { useFishPool, PoolFish, PoolTypes } from "../context/fishPoolContext";
 import { useFishFight } from "../context/fishFightContext";
 import web3 from 'web3'
 
@@ -59,7 +59,9 @@ type Props = {
   depositFighter?: boolean;
   depositAlpha?: boolean;
   type?: string;
-  fishPool?: PoolTypes;
+  fishPool?: PoolFish;
+  poolType?: PoolTypes;
+  buffModal?: () => void;
   children?: React.ReactNode;
 };
 
@@ -71,8 +73,10 @@ const FishDrawer = ({
   depositAlpha,
   depositFighter,
 	type,
+  buffModal,
   children,
   fishPool,
+  poolType
 }: Props) => {
 
   // NOTE: for drag by mouse
@@ -209,28 +213,28 @@ const FishDrawer = ({
     let numLoaded = fishCollection.length;
     if(index === numLoaded) { // check if we are showing the last item
       
-      if(fishPool === PoolTypes.Ocean && numLoaded < totalSupply) loadMoreFish(PoolTypes.Ocean);
-      if(fishPool === PoolTypes.User && balanceFish && balanceFightFish && balanceBreedFish) {
+      if(fishPool === PoolFish.Ocean && numLoaded < totalSupply) loadMoreFish(PoolFish.Ocean);
+      if(fishPool === PoolFish.User && balanceFish && balanceFightFish && balanceBreedFish) {
         const userTotal = web3.utils.toNumber(balanceFish) + web3.utils.toNumber(balanceFightFish) + web3.utils.toNumber(balanceBreedFish)
-        if(fishCollection.length < userTotal) loadMoreFish(PoolTypes.User);
+        if(fishCollection.length < userTotal) loadMoreFish(PoolFish.User);
       }
-      if(fishPool === PoolTypes.Breeding && breedingWatersSupply && fishCollection.length < web3.utils.toNumber(breedingWatersSupply)) loadMoreFish(PoolTypes.Breeding);
-      if(fishPool === PoolTypes.Fighting && fightingWatersSupply && fishCollection.length < web3.utils.toNumber(fightingWatersSupply)) loadMoreFish(PoolTypes.Fighting);
+      if(fishPool === PoolFish.Breeding && breedingWatersSupply && fishCollection.length < web3.utils.toNumber(breedingWatersSupply)) loadMoreFish(PoolFish.Breeding);
+      if(fishPool === PoolFish.Fighting && fightingWatersSupply && fishCollection.length < web3.utils.toNumber(fightingWatersSupply)) loadMoreFish(PoolFish.Fighting);
     }
   }
 
   const checkAllLoaded = () => {
     let numLoaded = fishCollection.length;
-    if(fishPool === PoolTypes.Ocean && numLoaded === totalSupply) return true;
-    if(fishPool === PoolTypes.User && balanceFish && balanceFightFish && balanceBreedFish) {
+    if(fishPool === PoolFish.Ocean && numLoaded === totalSupply) return true;
+    if(fishPool === PoolFish.User && balanceFish && balanceFightFish && balanceBreedFish) {
       const userTotal = web3.utils.toNumber(balanceFish) + web3.utils.toNumber(balanceFightFish) + web3.utils.toNumber(balanceBreedFish)
       // console.log("UserFish Check")
       // console.log(fishCollection.length)
       // console.log(userTotal)
       return fishCollection.length === userTotal
     }
-    if(fishPool === PoolTypes.Breeding && breedingWatersSupply && fishCollection.length === web3.utils.toNumber(breedingWatersSupply)) return true;
-    if(fishPool === PoolTypes.Fighting && fightingWatersSupply && fishCollection.length === web3.utils.toNumber(fightingWatersSupply)) return true;
+    if(fishPool === PoolFish.Breeding && breedingWatersSupply && fishCollection.length === web3.utils.toNumber(breedingWatersSupply)) return true;
+    if(fishPool === PoolFish.Fighting && fightingWatersSupply && fishCollection.length === web3.utils.toNumber(fightingWatersSupply)) return true;
 
     return false;
   }
@@ -280,11 +284,14 @@ const FishDrawer = ({
               <FishNFT
                 type={type}
                 fish={fish}
+                fishPool={fishPool}
+                poolType={poolType}
                 itemId={(index + 1).toString()} // NOTE: itemId is required for track items
                 key={fish.tokenId}
                 selectedOpponent={selectedOpponent?.tokenId === fish.tokenId}
                 selectedUser={selectedFish?.tokenId === fish.tokenId}
                 onClick={onClick ? handleItemClick(fish) : undefined}
+                buffModal={buffModal}
               />
             ))}
           </StyledScrollMenu>

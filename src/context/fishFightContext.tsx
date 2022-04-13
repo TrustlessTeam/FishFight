@@ -35,6 +35,7 @@ interface FishFightProviderContext {
 
   totalSupply: number
   fishCurrentIndex: number
+  fightingWatersWeakSupply: number
   fightingWatersSupply: number
   breedingWatersSupply: number
   totalSupplyDead: number
@@ -211,6 +212,12 @@ const useBalance = () => {
           calls: [{ reference: 'fighterBalance', methodName: 'balanceOf', methodParameters: [account] }]
         },
         {
+          reference: 'fightingWatersWeak',
+          contractAddress: FishFight.readFightingWatersWeak.options.address,
+          abi: Contracts.contracts.FightingWatersWeak.abi,
+          calls: [{ reference: 'fighterBalanceWeak', methodName: 'balanceOf', methodParameters: [account] }]
+        },
+        {
           reference: 'breedingWaters',
           contractAddress: FishFight.readBreedingWaters.options.address,
           abi: Contracts.contracts.BreedingWaters.abi,
@@ -228,37 +235,37 @@ const useBalance = () => {
           abi: Contracts.contracts.FishScale.abi,
           calls: [{ reference: 'scaleBalance', methodName: 'balanceOf', methodParameters: [account] }]
         },
-        {
-          reference: 'bloater',
-          contractAddress: FishFight.readBloater.options.address,
-          abi: ERC20,
-          calls: [{ reference: 'bloaterBalance', methodName: 'balanceOf', methodParameters: [account] }]
-        },
+        // {
+        //   reference: 'bloater',
+        //   contractAddress: FishFight.readBloater.options.address,
+        //   abi: ERC20,
+        //   calls: [{ reference: 'bloaterBalance', methodName: 'balanceOf', methodParameters: [account] }]
+        // },
       ];
     
-      
-    
       const results: ContractCallResults = await FishFight.multicall.call(contractCallContext);
-      // console.log(results)
+
       let fishBalance = results.results.fishFactory.callsReturnContext[0].success ? results.results.fishFactory.callsReturnContext[0].returnValues[0].hex : null;
       let deadFishBalance = results.results.deadFishFactory.callsReturnContext[0].success ? results.results.deadFishFactory.callsReturnContext[0].returnValues[0].hex : null;
       let fighterBalance = results.results.fightingWaters.callsReturnContext[0].success ? results.results.fightingWaters.callsReturnContext[0].returnValues[0].hex : null;
+      let fighterBalanceWeak = results.results.fightingWatersWeak.callsReturnContext[0].success ? results.results.fightingWatersWeak.callsReturnContext[0].returnValues[0].hex : null;
       let breederBalance = results.results.breedingWaters.callsReturnContext[0].success ? results.results.breedingWaters.callsReturnContext[0].returnValues[0].hex : null;
       let foodBalance = results.results.fishFood.callsReturnContext[0].success ? results.results.fishFood.callsReturnContext[0].returnValues[0].hex : null;
       let eggBalance = results.results.fishEgg.callsReturnContext[0].success ? results.results.fishEgg.callsReturnContext[0].returnValues[0].hex : null;
       let scaleBalance = results.results.fishScale.callsReturnContext[0].success ? results.results.fishScale.callsReturnContext[0].returnValues[0].hex : null;
-      let bloaterBalance = results.results.bloater.callsReturnContext[0].success ? results.results.bloater.callsReturnContext[0].returnValues[0].hex : null;
+      // let bloaterBalance = results.results.bloater.callsReturnContext[0].success ? results.results.bloater.callsReturnContext[0].returnValues[0].hex : null;
       
 
       fishBalance = Web3.utils.hexToNumberString(fishBalance)
       deadFishBalance = Web3.utils.hexToNumberString(deadFishBalance)
       fighterBalance = Web3.utils.hexToNumberString(fighterBalance)
+      fighterBalanceWeak = Web3.utils.hexToNumberString(fighterBalanceWeak)
       breederBalance = Web3.utils.hexToNumberString(breederBalance)
 
       foodBalance = new BN(Web3.utils.hexToNumberString(foodBalance))
       eggBalance = new BN(Web3.utils.hexToNumberString(eggBalance))
       scaleBalance = new BN(Web3.utils.hexToNumberString(scaleBalance))
-      bloaterBalance = new BN(Web3.utils.hexToNumberString(bloaterBalance))
+      // bloaterBalance = new BN(Web3.utils.hexToNumberString(bloaterBalance))
 
 
       // when account is connected get balances - uses default and read only providers
@@ -272,11 +279,11 @@ const useBalance = () => {
 
       setBalanceFish(fishBalance);
       setBalanceDeadFish(deadFishBalance);
-      setBalanceFightFish(fighterBalance);
+      setBalanceFightFish((Web3.utils.toNumber(fighterBalance) + Web3.utils.toNumber(fighterBalanceWeak)).toString());
       setBalanceBreedFish(breederBalance);
       setBalanceFishEgg(eggBalance);
       setBalanceFishScale(scaleBalance);
-      setBalanceBloater(bloaterBalance);
+      // setBalanceBloater(bloaterBalance);
 
 		},
 		[setBalance, setBalanceFish, setBalanceFood, setBalanceDeadFish, setBalanceFightFish, setBalanceBreedFish, setBalanceFishEgg, setBalanceFishScale],
@@ -320,6 +327,7 @@ const useStats = () => {
   const [totalSupply, setTotalSupply] = useState<number>(0);
   const [fishCurrentIndex, setFishCurrentIndex] = useState<number>(0);
   const [fightingWatersSupply, setFightingWatersSupply] = useState<number>(0);
+  const [fightingWatersWeakSupply, setFightingWatersWeakSupply] = useState<number>(0);
 	const [breedingWatersSupply, setBreedingWatersSupply] = useState<number>(0);
 
   const [totalSupplyDead, setTotalSupplyDead] = useState<number>(0);
@@ -343,6 +351,7 @@ const useStats = () => {
           calls: [{ reference: 'totalFish', methodName: 'totalSupply', methodParameters: [] },
             { reference: 'currentFishIndex', methodName: 'currentIndex', methodParameters: [] },
             { reference: 'totalFighters', methodName: 'balanceOf', methodParameters: [FishFight.readFightingWaters.options.address] },
+            { reference: 'totalFightersWeak', methodName: 'balanceOf', methodParameters: [FishFight.readFightingWatersWeak.options.address] },
             { reference: 'totalBreeders', methodName: 'balanceOf', methodParameters: [FishFight.readBreedingWaters.options.address] }
           ]
         },
@@ -367,13 +376,13 @@ const useStats = () => {
           ]
         }
       ];
-
       const results: ContractCallResults = await FishFight.multicall.call(contractCallContext);
-      // console.log(results)
+
       let totalFish = results.results.fishFactory.callsReturnContext[0].success ? results.results.fishFactory.callsReturnContext[0].returnValues[0].hex : null;
       let currentFishIndex = results.results.fishFactory.callsReturnContext[1].success ? results.results.fishFactory.callsReturnContext[1].returnValues[0].hex : null;
       let totalFighters = results.results.fishFactory.callsReturnContext[2].success ? results.results.fishFactory.callsReturnContext[2].returnValues[0].hex : null;
-      let totalBreeders = results.results.fishFactory.callsReturnContext[3].success ? results.results.fishFactory.callsReturnContext[3].returnValues[0].hex : null;
+      let totalFightersWeak = results.results.fishFactory.callsReturnContext[3].success ? results.results.fishFactory.callsReturnContext[3].returnValues[0].hex : null;
+      let totalBreeders = results.results.fishFactory.callsReturnContext[4].success ? results.results.fishFactory.callsReturnContext[4].returnValues[0].hex : null;
       
       let totalDead = results.results.deadFishFactory.callsReturnContext[0].success ? results.results.deadFishFactory.callsReturnContext[0].returnValues[0].hex : null;
       let burnedDead = results.results.deadFishFactory.callsReturnContext[1].success ? results.results.deadFishFactory.callsReturnContext[1].returnValues[0].hex : null;
@@ -388,6 +397,7 @@ const useStats = () => {
       setTotalSupply(Web3.utils.hexToNumber(totalFish));
       setFishCurrentIndex(Web3.utils.hexToNumber(currentFishIndex));
       setFightingWatersSupply(Web3.utils.hexToNumber(totalFighters));
+      setFightingWatersWeakSupply(Web3.utils.hexToNumber(totalFightersWeak));
       setBreedingWatersSupply(Web3.utils.hexToNumber(totalBreeders));
 
       setTotalSupplyDead(Web3.utils.hexToNumber(totalDead))
@@ -420,6 +430,7 @@ const useStats = () => {
     totalSupply,
     fishCurrentIndex,
     fightingWatersSupply,
+    fightingWatersWeakSupply,
     breedingWatersSupply,
     totalSupplyDead,
     totalDeadBurned,

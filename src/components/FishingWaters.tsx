@@ -52,7 +52,7 @@ const FishingWaters = () => {
 
 	const renderer = ({ hours, minutes, seconds, completed }: RenderProps) => {
 		// Render a countdown
-		return <DataText>{hours}:{zeroPad(minutes)}:{zeroPad(seconds)}</DataText>;
+		return <span>{hours}:{zeroPad(minutes)}:{zeroPad(seconds)}</span>;
 
 	};
 
@@ -93,10 +93,15 @@ const FishingWaters = () => {
 							{`then ${web3.utils.fromWei(Constants._fishingPriceInPhase)} ONE`} 
 						</DataText>
 					}
-					
-					<DataText>
-						{`Fish Left: ${maxSupply - totalSupply} -> Chance: ${totalSupply > 10000 ? (((maxSupply - totalSupply) / maxSupply) * 100).toFixed(2) : 100}%`}
-					</DataText>
+					{totalSupply > 10000 ?
+						<DataText>
+							{`Fish Left: ${maxSupply - totalSupply} -> Chance: ${totalSupply > 10000 ? (((maxSupply - totalSupply) / maxSupply) * 100).toFixed(2) : 100}%`}
+						</DataText>
+						:
+						<DataText>
+							{`Fish Left at 100% chance: ${10000 - totalSupply}`}
+						</DataText>
+					}
 
 				</DataContainer>
 			</InfoContainer>

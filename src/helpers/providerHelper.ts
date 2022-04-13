@@ -12,6 +12,8 @@ import { getExtension } from "./harmonyHelpers"
 import Web3 from 'web3';
 import { getProvider } from "../utils/provider";
 
+const envProvider: string = process.env.REACT_APP_FRONTEND_NETWORK || 'mainnet';
+
 type getWalletProviderReturn = {
 	provider: HarmonyExtension | Web3, // type of provider (harmony wallet, or web3 wallet)
 	type: "harmony" | "web3" // will let sdk know what type of provider we are dealing with to initiate contracts correctly. If type === default, user is not signed in
@@ -29,16 +31,16 @@ export const getWalletProvider = async (connector: AbstractConnector | HarmonyAb
     let provider: HarmonyExtension | Web3
 		// console.log("CONNECTOR")
 		// console.log(connector)
-    const harmonyConnector = connector as HarmonyAbstractConnector;
-    // If connector is a HarmonyAbstractConnector, it will contain windowKey (mathWallet or OneWallet).
-	if (harmonyConnector.windowKey) {
-		// Get wallet provider from window
-		const extensionWallet: any = window[harmonyConnector.windowKey];
-		// Start a HarmonyExtension instance
-		provider = getExtension(extensionWallet);
-		// With that harmony extension initiate the contract
-        return new Promise(resolve => resolve({provider, type: "harmony"}));
-	}
+  //   const harmonyConnector = connector as HarmonyAbstractConnector;
+  //   // If connector is a HarmonyAbstractConnector, it will contain windowKey (mathWallet or OneWallet).
+	// if (harmonyConnector.windowKey) {
+	// 	// Get wallet provider from window
+	// 	const extensionWallet: any = window[harmonyConnector.windowKey];
+	// 	// Start a HarmonyExtension instance
+	// 	provider = getExtension(extensionWallet);
+	// 	// With that harmony extension initiate the contract
+  //       return new Promise(resolve => resolve({provider, type: "harmony"}));
+	// }
 
     // If connector is AbstractConnector (not a harmony wallet)
 	// Get wallet provider from web3Provider
@@ -52,10 +54,18 @@ export const getWalletProvider = async (connector: AbstractConnector | HarmonyAb
 	if (window.ethereum) {
 		try {
 			// check if the chain to connect to is installed
-			await window.ethereum.request({
-				method: 'wallet_switchEthereumChain',
-				params: [{ chainId: '0x63564C40' }], // chainId must be in hexadecimal numbers
-			});
+			if(envProvider === 'testnet') {
+				await window.ethereum.request({
+					method: 'wallet_switchEthereumChain',
+					params: [{ chainId: '0x6357D2E0' }], // chainId must be in hexadecimal numbers
+				});
+			} else {
+				await window.ethereum.request({
+					method: 'wallet_switchEthereumChain',
+					params: [{ chainId: '0x63564C40' }], // chainId must be in hexadecimal numbers
+				});
+			}
+			
 		} catch (error: any) {
 			// This error code indicates that the chain has not been added to MetaMask
 			// if it is not, then install it into the user MetaMask

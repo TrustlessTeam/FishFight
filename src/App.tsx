@@ -20,6 +20,7 @@ import Default from "./components/Default";
 import FishingWaters from "./components/FishingWaters";
 import DisclaimerModal from "./components/DisclaimerModal";
 import { useContractWrapper } from "./context/contractWrapperContext";
+import FightingWatersWeak from "./components/FightingWatersWeak";
 
 type RenderProps = {
   hours: any;
@@ -51,8 +52,9 @@ const App = () => {
               <Route path="/fishing" element={<FishingWaters />} />
               <Route path="/fighting" element={<FightingWaters />}>
                 {/* <Route path="/fighting/user" element={<FightingWaters />} /> */}
-                <Route path="/fighting/start" element={<FightingWaters />} />
+                {/* <Route path="/fighting/weak" element={<FightingWaters />} /> */}
               </Route>
+              <Route path="/fighting/weak" element={<FightingWatersWeak />} />
               <Route path="/breeding" element={<BreedingWaters />}>
                 {/* <Route path="/breeding/user" element={<UserBreedingWaters />} /> */}
                 {/* <Route path="/breeding/start" element={<StartBreed />} /> */}
@@ -63,7 +65,7 @@ const App = () => {
           {/* <Blockchain></Blockchain> */}
         </Container>
         <ToastContainer
-          position="bottom-right"
+          position="top-right"
           newestOnTop={false}
           pauseOnFocusLoss={false}
           pauseOnHover={false}
