@@ -16,7 +16,7 @@ const UnityWindow = () => {
 	
 	return (
 		<UnityWindowComponent>
-			{!unityContext.isLoaded && <p className="loading-text">Loading {unityContext.progression * 100} percent...</p>}
+			{!unityContext.isLoaded && <p className="loading-text">Approaching Genesis Landing {unityContext.progression * 100} ...</p>}
 			<Fragment>
 				{unityContext.isUnityMounted === true && <Unity unityContent={unityContext.UnityInstance} />}
 				<Viewer>
