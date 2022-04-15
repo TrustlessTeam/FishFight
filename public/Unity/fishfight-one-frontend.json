@@ -1,7 +1,7 @@
 {
 "companyName": "Trustless Team",
 "productName": "unity_project",
-"productVersion": "1.0",
+"productVersion": "4.04",
 "dataUrl": "fishfight-one-frontend.data.unityweb",
 "wasmCodeUrl": "fishfight-one-frontend.wasm.code.unityweb",
 "wasmFrameworkUrl": "fishfight-one-frontend.wasm.framework.unityweb",
