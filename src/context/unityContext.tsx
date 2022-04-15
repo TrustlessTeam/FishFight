@@ -339,6 +339,8 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
     UnityInstance.send("FishPool", "SetFightResults", JSON.stringify(fight));
     UnityInstance.send("CanvasUserInterface", "SetAnimState", "ShowFightResultsSuccess");
     
+    //console.log( JSON.stringify(fish1));
+    //console.log( JSON.stringify(fish2));
 
     setTimeout(() => {
       UnityInstance.send("CanvasUserInterface", "FightingResultsUI_SetFish1", JSON.stringify(fish1) ); 

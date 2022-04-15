@@ -217,12 +217,12 @@ const FightingWaters = () => {
             to="/fighting"
             end
           >
-            Free-for-All
+            FREE FOR ALL
           </NavItem>
           <NavItem
             className={({ isActive }) => (isActive ? "active" : "")}
             to="/fighting/weak"
-          >{`Stats 50 & Under`}</NavItem>
+          >{`STATS UNDER 50`}</NavItem>
           {/* <Option className={({isActive}) => isActive ? 'active' : ''} to='/fighting/start'>FIGHT!</Option> */}
         </NavContainer>
         {!loadingFish && !loadingUserFish && (

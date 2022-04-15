@@ -132,16 +132,17 @@ const DisclaimerModal = () => {
             the Fight Pool.
           </Text>
           <Text>
-            The Free-for-All Fight winner gains{" "}
+            The FREE FOR ALL FIGHTING POOL Fight winner gains{" "}
             {currentPhase?.phase === 2
               ? web3.utils.fromWei(Constants._fishFoodPerWinInPhase)
               : web3.utils.fromWei(Constants._fishFoodPerWin)}{" "}
-            $FISHFOOD.
-            The Stats 50 & Under winner gains{" "}
+            $FISHFOOD.<br></br>
+            The STATS UNDER 50 FIGHTING POOL winner gains{" "}
             {currentPhase?.phase === 2
               ? web3.utils.fromWei(Constants._fishFoodPerWinInPhaseWeak)
               : web3.utils.fromWei(Constants._fishFoodPerWinWeak)}{" "}
-            $FISHFOOD. The winner becomes an ALPHA $FISH -- making them eligible
+            $FISHFOOD. <br></br>
+            The winner becomes an ALPHA $FISH -- making them eligible
             for the Breed Pool and rewards.
           </Text>
           <Text>
@@ -152,9 +153,9 @@ const DisclaimerModal = () => {
           <Text>
             Depositing via a Fight or from a Deposit, will make your Fish
             eligible to a share of the Fight Pool emission rewards.<br></br>
-            Free-for-All: {" "}{web3.utils.fromWei(Constants._fishFoodPerBlock)} $FISHFOOD per
+            FREE FOR ALL : {" "}{web3.utils.fromWei(Constants._fishFoodPerBlock)} $FISHFOOD per
             block.<br></br>
-            Stats 50 & Under: {" "}{web3.utils.fromWei(Constants._fishFoodPerBlockWeak)} $FISHFOOD per
+            STATS UNDER 50 : {" "}{web3.utils.fromWei(Constants._fishFoodPerBlockWeak)} $FISHFOOD per
             block.
           </Text>
 

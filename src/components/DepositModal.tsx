@@ -62,12 +62,12 @@ const DepositModal = ({
       >
         {/* {active ? <SignOut account={parsedAccount} closeModal={closeModal} /> : <Wallets closeModal={closeModal} />} */}
         <ContainerWrapper> 
-          <Title>{`Death-Fight Pools`}</Title>
+          <Title>{`Death-Fighting Pools`}</Title>
           <BaseText>{`A Fight to the Death! Pick the Fight Pool best suited for your Fish!`}</BaseText>
           <ContainerRow>
             <ContainerColumnSmall>
               {/* <LogoImg src={scaleImg}></LogoImg> */}
-              <Text>{`Free-for-All`}</Text>
+              <Text>{`FREE FOR ALL`}</Text>
               <SubText>Any Fish is allowed.</SubText>
               <SubText>Loser Burned. Winner becomes Alpha.</SubText>
               <SubText>{`$FISHFOOD per Win: ${web3.utils.fromWei(currentPhase?.phase === 2 ? Constants._fishFoodPerWinInPhase : Constants._fishFoodPerWin)}`}</SubText>
@@ -77,15 +77,15 @@ const DepositModal = ({
 
             <ContainerColumnSmall>
               {/* <LogoImg src={bloaterImg}></LogoImg> */}
-              <Text>{`Stats 50 & Under`}</Text>
-              <SubText>Fish with Fight Stats 50 or less.</SubText>
+              <Text>{`STATS UNDER 50`}</Text>
+              <SubText>Fish with ALL Stats 50 or less.</SubText>
               <SubText>Loser Burned. Winner becomes Alpha.</SubText>
               <SubText>{`$FISHFOOD per Win: ${web3.utils.fromWei(currentPhase?.phase === 2 ? Constants._fishFoodPerWinInPhaseWeak : Constants._fishFoodPerWinWeak)}`}</SubText>
               <SubText>{`$FISHFOOD per Hour: ~${web3.utils.fromWei(Constants._fishFoodPerBlockWeakBN.mul(1800).div(fightingWatersWeakSupply+1).toString())}`}</SubText>
               <BaseButton onClick={() => {depositFightingFishWeak(fish); toggleModal()}}>Deposit</BaseButton>
             </ContainerColumnSmall>
           </ContainerRow>
-          <Title>{`FishFood-Fight Pools`}</Title>
+          <Title>{`FishFood-Fighting Pools`}</Title>
           <BaseText>{`Risk your FishFood, not your Fish! Coming Soon...`}</BaseText>
         </ContainerWrapper>
 
