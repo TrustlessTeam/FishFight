@@ -243,6 +243,7 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
       UnityInstance.send("CanvasUserInterface", "SetAnimState", "ShowBreeding");
     };
 
+
 	const clearUIFish = () => {
     // // console.log("ClearFishPool Called " + pool)
     if (!isLoaded || !fishPoolReady) return;
@@ -364,11 +365,11 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
     if (!isLoaded || !fishPoolReady) return;
     console.log(fish);
     showBreedingUI();
-    UnityInstance.send(
-      "FishPool",
-      "AddFish1_BreedingView",
-      JSON.stringify(fish)
-    );
+    // UnityInstance.send(
+    //   "FishPool",
+    //   "AddFish1_BreedingView",
+    //   JSON.stringify(fish)
+    // );
     UnityInstance.send(
       "FishPool",
       "AddFish1_FishView",
@@ -386,11 +387,11 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
     if (!isLoaded || !fishPoolReady) return;
     console.log(fish);
     showBreedingUI();
-    UnityInstance.send(
-      "FishPool",
-      "AddFish2_BreedingView",
-      JSON.stringify(fish)
-    );
+    // UnityInstance.send(
+    //   "FishPool",
+    //   "AddFish2_BreedingView",
+    //   JSON.stringify(fish)
+    // );
     UnityInstance.send(
       "FishPool",
       "AddFish2_FishView",

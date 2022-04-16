@@ -165,9 +165,9 @@ const StatusModal = ({children}: Props) => {
 				</MobileButtons>
 				<StatusContainer>
 					<Time>
-						<Title>Phase <span>{currentPhase.phaseString}</span></Title>
+						<Title>Season : <span>{currentPhase.phaseString}</span></Title>
 						<Countdown renderer={renderer} date={currentPhase.phaseEndtimeDate} />
-						<Title>Next 
+						<Title>Next :
 							<span>
 								{currentPhase.phase === 1 && 
 									" Fighting"
@@ -191,6 +191,7 @@ const StatusModal = ({children}: Props) => {
 					<StatusContainer>
 						<DataItem>
 							<StatusText>{`Cost to Fish: ${web3.utils.fromWei(currentPhase.phase === 1 ? Constants._fishingPriceInPhase : Constants._fishingPrice)} ONE`}</StatusText>
+							<br></br>
 							<StatusText>{`Fish Available: ${maxSupply - totalSupply}`}</StatusText>
 							
 							{totalSupply > 10000 ? 
@@ -479,10 +480,12 @@ const DataRow = styled.div`
 
 const LogoButton = styled.button`
 	position: relative;
+    
 	background: none;
 	border: none;
 	/* padding: ${props => props.theme.spacing.gapSmall}; */
 	cursor: pointer;
+	animation: glow 1s infinite alternate;
 	img:hover {
 		/* Start the shake animation and make the animation last for 0.5 seconds */
 		animation: shake 0.5s;
@@ -494,6 +497,23 @@ const LogoButton = styled.button`
   transition: all 0.2s ease-in-out;
 	z-index: 5;
 	
+	@keyframes glow {
+		0% {
+			background-image: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 1) 0%, rgba(0, 188, 212, 0) 60%, rgba(238, 130, 238, 0) 100%); 
+		}
+		25% {
+			background-image: radial-gradient(circle at 50% 50%, rgba(255, 255, 250, 1) 0%, rgba(0, 188, 212, 0) 60%, rgba(238, 130, 238, 0) 100%); 
+		}
+		50% {
+			background-image: radial-gradient(circle at 50% 50%, rgba(220, 220, 220, 1) 0%, rgba(0, 188, 212, 0) 60%, rgba(238, 130, 238, 0) 100%); 
+		}
+		75% {
+			background-image: radial-gradient(circle at 50% 50%, rgba(245, 245, 245, 1) 0%, rgba(0, 188, 212, 0) 60%, rgba(238, 130, 238, 0) 100%); 
+		}
+		100% {
+			background-image: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 1) 0%, rgba(0, 0, 0, 0) 60%, rgba(0, 0, 0, 0) 100%); 
+		}
+	  }
 	@keyframes shake {
 		0% { transform: translate(1px, 1px) rotate(0deg); }
 		10% { transform: translate(-1px, -2px) rotate(-1deg); }
@@ -524,9 +544,9 @@ const LogoButton = styled.button`
     right: 0;
     bottom: 0;
     left: 0;
-    background-image: radial-gradient(circle at 50% 50%, rgba(220, 13, 51, 1) 0%, rgba(0, 188, 212, 0) 60%, rgba(238, 130, 238, 0) 100%);
+    background-image: radial-gradient(circle at 50% 50%, rgba(220, 13, 51, 1) 0%, rgba(0, 188, 212, 0) 40%, rgba(238, 130, 238, 0) 100%);
     z-index: 4;
-    transition: opacity 0.25s ease-in-out;
+    transition: opacity 0.5s ease-in-out;
     opacity: 0;
   }
 

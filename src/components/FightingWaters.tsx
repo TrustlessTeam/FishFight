@@ -369,7 +369,7 @@ const StyledCountdown = styled.span`
 const DataContainer = styled.div`
   display: flex;
   flex-flow: column;
-  background-color: rgba(255, 255, 255, 0.8);
+  background-image: linear-gradient(#d5d5d5, #038ec59b);
   border-radius: 10px;
   padding: ${(props) => props.theme.spacing.gap};
 `;
