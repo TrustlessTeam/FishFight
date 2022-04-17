@@ -61,7 +61,9 @@ const BreedingWaters = () => {
 	useEffect(() => {
 		// console.log("Breeding Fish Changed")
 		// console.log(breedingFish)
+
 		if(!unityContext.isFishPoolReady) return;
+		
 		breedingFish.forEach(poolFish => {
 			if(!renderedBreedFish.some(tokenId => poolFish.tokenId === tokenId)) {
 				unityContext.addFishBreedingPool(poolFish);

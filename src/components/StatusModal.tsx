@@ -127,7 +127,7 @@ const StatusModal = ({ children }: Props) => {
   const renderer = ({ hours, minutes, seconds, completed }: RenderProps) => {
     if (completed) {
       // Render a completed state
-      return <NextButton onClick={nextPhase}>Update Season</NextButton>;
+      return <BaseButton onClick={nextPhase}>Update SEASON!</BaseButton>;
     } else {
       // Render a countdown
       return (

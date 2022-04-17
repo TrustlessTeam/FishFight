@@ -169,8 +169,7 @@ const StoreLogoImg = styled.img`
 `;
 const LogoImg = styled.img`
 	height: 15px;
-    background-image: linear-gradient(#ffffff, #e2e2e2);
-	
+
 	@media ${props => props.theme.device.tablet} {
 	  height: 20px;
   }
