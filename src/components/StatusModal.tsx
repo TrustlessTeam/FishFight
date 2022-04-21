@@ -38,7 +38,7 @@ const StatusModal = ({ children }: Props) => {
     breedingWatersSupply,
     FishFight,
   } = useFishFight();
-  const { userFish } = useFishPool();
+  const { userFish, loadingUserFish } = useFishPool();
   const [pendingAward, setPendingAward] = useState<string>();
   const [pendingFightFood, setPendingFightFood] = useState<string>();
   const [pendingBreedFood, setPendingBreedFood] = useState<string>();
@@ -56,12 +56,12 @@ const StatusModal = ({ children }: Props) => {
   const { feedAllFish, claimAllFishFood } = useContractWrapper();
   useEffect(() => {
     const loadData = async (account: any) => {
-      if (!account) return;
+      if (!account || loadingUserFish) return;
       getPendingFood();
       getUserFishStats();
     };
     loadData(account);
-  }, [account, userFish]);
+  }, [account, userFish, loadingUserFish]);
 
   const toggleModel = () => {
     setModalIsOpen(!modalIsOpen);
@@ -79,7 +79,10 @@ const StatusModal = ({ children }: Props) => {
     const result2 = await FishFight.readFightingWatersWeak.methods
       .pendingAward(account)
       .call();
-    setPendingAward(web3.utils.fromWei(result + result2));
+    let pendingFreeforAll = new BN(result);
+    let pendingUnder50 = new BN(result2);
+    let totalPending = pendingFreeforAll.add(pendingUnder50)
+    setPendingAward(web3.utils.fromWei(totalPending));
   };
 
   const nextPhase = async () => {
