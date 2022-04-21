@@ -36,7 +36,8 @@ const MenuOverlay = () => {
 	const [openStore, setOpenStore] = useState(true);
 	const [mutedMusic, setMutedMusic] = useState(true);
 	const [muted, setMuted] = useState(true);
-	const [play, { pause } ] = useSound('in_deep_90s.mp3', {loop: true, volume: 0.05});
+	const [play, { pause } ] = useSound('genesis_landing.mp3', {loop: true, volume: 0.05});
+	//const [playFight, { pauseFight } ] = useSound('genesis_landing_the_sea_of_no_mercy.mp3', {loop: true, volume: 0.05});
 	const { globalMute, toggleGlobalMute, refetchBalance, refetchStats } = useFishFight();
 	const { refreshLoadedFish } = useFishPool();
 
@@ -47,6 +48,7 @@ const MenuOverlay = () => {
 	const handleMusicClick = () => {
 		console.log(mutedMusic)
 		if(mutedMusic) {
+			//playFight();
 			play();
 
 			toast.dark(`Genesis Landing by LIXION`);
@@ -54,7 +56,7 @@ const MenuOverlay = () => {
 		}
 		else {
 			pause();
-
+			//pauseFight();
 			toast.dark(`Genesis Landing by LIXION`);
 			setMutedMusic(true);
 		}
