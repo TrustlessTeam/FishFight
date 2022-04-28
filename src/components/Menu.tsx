@@ -117,7 +117,7 @@ export type MenuItem = {
 
 const Menu = ({name, items} : Props) => {
   const [open, setOpen] = useState<boolean>(false);
-  const [playClick] = useSound('click.wav', {volume: 0.25});
+  const [playClick] = useSound('click.wav', {volume: 0.075});
 
   const { globalMute } = useFishFight();
 

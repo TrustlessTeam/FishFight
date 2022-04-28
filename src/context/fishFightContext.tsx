@@ -20,6 +20,7 @@ interface FishFightProviderContext {
   FishFight: FishFight
   userConnected: boolean
   globalMute: boolean
+  musicMute: boolean
   currentBlock: number
 
   balance: string | undefined
@@ -50,6 +51,7 @@ interface FishFightProviderContext {
   resetBalance: () => void
   refetchStats: () => void
   toggleGlobalMute: () => void
+  toggleMusicMute: () => void
   setLogOut: (value: boolean) => void
 }
 
@@ -65,6 +67,7 @@ export const FishFightProvider = ({ children }: FishFightProviderProps ) => {
   const [userConnected, setUserConnected] = useState<boolean>(false);
   const [loggedOut, setLoggedOut] = useState<boolean>(false);
   const [globalMute, setGlobalMute] = useState<boolean>(false);
+  const [musicMute, setMusicMute] = useState<boolean>(true);
   const [currentBlock, setCurrentBlock] = useState<number>(0);
   // State of web3React
   const { account, connector, library, active, activate, error} = useWeb3React();
@@ -147,6 +150,9 @@ export const FishFightProvider = ({ children }: FishFightProviderProps ) => {
   const toggleGlobalMute = () => {
     setGlobalMute(prev => !prev);
   }
+  const toggleMusicMute = () => {
+    setMusicMute(prev => !prev);
+  }
 
   const setLogOut = () => {
     setLoggedOut(true);
@@ -156,12 +162,14 @@ export const FishFightProvider = ({ children }: FishFightProviderProps ) => {
     FishFight: FishFightInstance,
     userConnected: userConnected,
     globalMute: globalMute,
+    musicMute: musicMute,
     currentBlock: currentBlock,
     ...contextBalance,
     ...contextStats,
     refetchBalance,
     refetchStats,
     toggleGlobalMute,
+    toggleMusicMute,
     setLogOut
   }
   return (

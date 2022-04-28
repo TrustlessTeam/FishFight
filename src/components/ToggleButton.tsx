@@ -24,7 +24,7 @@ export type ToggleItem = {
 };
 
 const ToggleButton = ({ items, selected } : Props) => {
-	const [playClick] = useSound('click.wav', {volume: 0.25});
+	const [playClick] = useSound('click.wav', {volume: 0.075});
 
 	const { globalMute } = useFishFight();
 

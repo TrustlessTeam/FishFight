@@ -95,8 +95,8 @@ const FishDrawer = ({
   const [selected, setSelected] = React.useState<number>(0);
   const [sortOption, setSortOption] = useState<number>(SortSelection.Id);
 
-  const [playSplash] = useSound('splash.ogg', {volume: 0.25});
-  const [playSplash2] = useSound('splash2.ogg', {volume: 0.25});
+  const [playSplash] = useSound('splash.ogg', {volume: 0.075});
+  const [playSplash2] = useSound('splash2.ogg', {volume: 0.075});
 
   const playSound = () => {
     const rand = Math.floor(Math.random() * 2) + 1

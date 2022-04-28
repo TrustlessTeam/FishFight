@@ -8,7 +8,9 @@ import styled from 'styled-components';
 import { useFishFight } from "../context/fishFightContext";
 
 import HowToPlayModal from "./HowToPlayModal";
-
+import {
+	useLocation
+  } from "react-router-dom";
 // Components
 import Nav from './Nav';
 import Account from './Account';
@@ -34,31 +36,51 @@ const MenuOverlay = () => {
 	const { account } = useWeb3React();
 	const [open, setOpen] = useState(false);
 	const [openStore, setOpenStore] = useState(true);
-	const [mutedMusic, setMutedMusic] = useState(true);
+	//const [mutedMusic, setMutedMusic] = useState(true);
 	const [muted, setMuted] = useState(true);
-	const [play, { pause } ] = useSound('genesis_landing.mp3', {loop: true, volume: 0.05});
-	//const [playFight, { pauseFight } ] = useSound('genesis_landing_the_sea_of_no_mercy.mp3', {loop: true, volume: 0.05});
-	const { globalMute, toggleGlobalMute, refetchBalance, refetchStats } = useFishFight();
+	const [playFight, { stop } ] = useSound('genesis_landing_the_sea_of_no_mercy.mp3', {loop: true, volume: 0.075 });
+	const [play, { pause } ] = useSound('genesis_landing.mp3', {loop: true, volume: 0.075});
+	const { musicMute, toggleMusicMute, globalMute, toggleGlobalMute, refetchBalance, refetchStats } = useFishFight();
 	const { refreshLoadedFish } = useFishPool();
+	const location = useLocation().pathname.split('/')[1];
 
 	const HandleOpenStore = () => {
 		setOpenStore(true);		
 	}
 
 	const handleMusicClick = () => {
-		console.log(mutedMusic)
-		if(mutedMusic) {
-			//playFight();
-			play();
+		console.log(musicMute)
+		toggleMusicMute();
 
-			toast.dark(`Genesis Landing by LIXION`);
-			setMutedMusic(false);
+		if(musicMute) {
+			//playFight();
+			if ( location === 'fighting')
+			{
+				stop();
+				pause();
+				playFight();
+				toast.dark(`The Sea of No Mercy by LIXION`);
+			}
+			else
+			{
+				stop();
+				pause();
+				play();
+				toast.dark(`Genesis Landing by LIXION`);
+			}
+
 		}
 		else {
-			pause();
+			if ( location === 'fighting')
+			{
+				stop();
+			}
+			else
+			{
+				pause();
+			}			
 			//pauseFight();
-			toast.dark(`Genesis Landing by LIXION`);
-			setMutedMusic(true);
+//			toast.dark(`Genesis Landing by LIXION`);
 		}
 		
 	}
@@ -126,7 +148,7 @@ const MenuOverlay = () => {
 			</SoundButton>
 			<SoundButton onClick={() => HandleOpenStore()}><a href="https://tofunft.com/collection/fishfight/items" target="_blank" rel=""><LogoImg src={tofunftImg }></LogoImg></a>
 			</SoundButton>
-			<SoundButton onClick={() => handleMusicClick()}><LogoImg src={mutedMusic ? muteImg : musicImg }></LogoImg>
+			<SoundButton onClick={() => handleMusicClick()}><LogoImg src={musicMute ? muteImg : musicImg }></LogoImg>
 			</SoundButton>
 			<SoundButton onClick={() => handleSoundClick()}><LogoImg src={globalMute ? muteImg : noMuteImg }></LogoImg>
 			</SoundButton>
@@ -139,9 +161,10 @@ interface Props {
 }
 
 const SoundButton = styled(BaseButton)`
-	padding: 5px;
 
 	border-radius: 50%;
+
+	padding: 10px 10px !important;
 
 	&::before {
     position: absolute;

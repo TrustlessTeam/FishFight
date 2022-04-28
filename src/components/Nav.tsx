@@ -14,6 +14,11 @@ import breedingImg from "../img/icons/breeding-dark.svg"
 import fightingImg from "../img/icons/fighting-dark.svg"
 import oceanImg from "../img/icons/ocean-dark.svg"
 
+import useSound from 'use-sound';
+
+import { useFishFight } from "../context/fishFightContext";
+import { toast } from 'react-toastify';
+
 type Props = {
   fish: Fish;
 	onClick?: () => void;
@@ -29,12 +34,44 @@ interface ImgProps {
 const Nav = () => {
 
   const location = useLocation().pathname.split('/')[1];
+	const { musicMute, toggleMusicMute, globalMute, toggleGlobalMute, refetchBalance, refetchStats } = useFishFight();
+
+  const [playFight, { stop } ] = useSound('genesis_landing_the_sea_of_no_mercy.mp3', {loop: true, volume: 0.075 });
+	const [play, { pause } ] = useSound('genesis_landing.mp3', {loop: true, volume: 0.075});
+
+  const handleNothing =() => {
+
+  }
+
+	const handleMusicClick = () => {
+
+			//playFight();
+      if ( musicMute == false )
+      {
+
+      
+			if ( location === 'fighting')
+			{
+				stop();
+				pause();
+				playFight();
+				toast.dark(`The Sea of No Mercy by LIXION`);
+			}
+			else
+			{
+				stop();
+				pause();
+				play();
+				toast.dark(`Genesis Landing by LIXION`);
+			}
+      }
+	}
 
 	return (
     <NavMenu>
       {/* <BubbleButton to="/ocean"><span>Ocean</span></BubbleButton> */}
       <NavItem>
-        <NavImg className={({isActive}) => isActive ? 'active' : ''} to="/ocean">
+        <NavImg className={({isActive}) => isActive ? 'active' : ''} onClick={handleMusicClick} to="/ocean" >          
           <LogoImg src={oceanImg} alt="Ocean"></LogoImg>
         </NavImg>
         {/* <SubContainer>
@@ -44,7 +81,7 @@ const Nav = () => {
         </SubContainer> */}
       </NavItem>
       <NavItem>
-        <NavImg className={({isActive}) => isActive ? 'active' : ''} to="/fishing">
+        <NavImg className={({isActive}) => isActive ? 'active' : ''} onClick={handleMusicClick} to="/fishing">
           <LogoImg active={location === 'fishing'} src={fishingImg} alt="Fishing"></LogoImg>
         </NavImg>
         {/* <SubContainer>
@@ -52,13 +89,13 @@ const Nav = () => {
         </SubContainer> */}
       </NavItem>
       <NavItem>
-        <NavImg className={({isActive}) => isActive ? 'active' : ''} to="/fighting">
+        <NavImg className={({isActive}) => isActive ? 'active' : ''} onClick={handleMusicClick} to="/fighting">
           <LogoImg src={fightingImg} alt="Fighting"></LogoImg>
         </NavImg>
         
       </NavItem>
       <NavItem>
-        <NavImg className={({isActive}) => isActive ? 'active' : ''} to="/breeding">
+        <NavImg className={({isActive}) => isActive ? 'active' : ''} onClick={handleMusicClick} to="/breeding">
           <LogoImg active={location === 'breeding'} src={breedingImg} alt="Breeding"></LogoImg>
         </NavImg>
         {/* <SubContainer>
