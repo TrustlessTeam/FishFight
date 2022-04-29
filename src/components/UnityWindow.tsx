@@ -5,20 +5,20 @@ import {
 } from "react-router-dom";
 
 
-import Unity, { UnityContent } from 'react-unity-webgl';
+import Unity from 'react-unity-webgl';
 
-import { useUnity } from '../context/unityContext';
+import { useUnity } from '../context/fishFightUnityContext';
 
 
 const UnityWindow = () => {
 
-	const unityContext = useUnity();
+	const unityContent = useUnity();
 	
 	return (
 		<UnityWindowComponent>
-			{!unityContext.isLoaded && <p className="loading-text">Approaching Genesis Landing {unityContext.progression * 100} ...</p>}
+			{!unityContent.isLoaded && <p className="loading-text">Approaching Genesis Landing {unityContent.progression * 100} ...</p>}
 			<Fragment>
-				{unityContext.isUnityMounted === true && <Unity unityContent={unityContext.UnityInstance} />}
+				{unityContent.isUnityMounted === true && <Unity unityContext={unityContent.UnityInstance} />}
 				<Viewer>
 					<Outlet />
 				</Viewer>

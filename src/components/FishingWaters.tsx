@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import styled from 'styled-components';
 import { useWeb3React } from '@web3-react/core';
 import { useFishFight } from '../context/fishFightContext';
-import { useUnity } from '../context/unityContext';
+import { useUnity } from '../context/fishFightUnityContext';
 import { BaseContainer } from './BaseStyles';
 import { useContractWrapper } from '../context/contractWrapperContext';
 import BaseButton from "../components/BaseButton";

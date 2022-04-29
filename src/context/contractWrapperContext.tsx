@@ -7,7 +7,7 @@ import web3 from 'web3';
 
 
 import Fish from '../utils/fish';
-import { useUnity } from './unityContext';
+import { useUnity } from './fishFightUnityContext';
 import { useFishPool } from './fishPoolContext';
 import { Fight } from '../utils/fight';
 import BN from 'bn.js';

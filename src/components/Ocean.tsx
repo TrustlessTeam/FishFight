@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 
 import { PoolFish, PoolTypes, useFishPool } from "../context/fishPoolContext";
-import { useUnity } from "../context/unityContext";
+import { useUnity } from "../context/fishFightUnityContext";
 import { useWeb3React } from "@web3-react/core";
 
 import Account from "./Account";

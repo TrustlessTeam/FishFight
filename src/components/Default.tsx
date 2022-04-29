@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 // Styled Components
 import styled from 'styled-components';
 import { useFishPool } from '../context/fishPoolContext';
-import { useUnity } from '../context/unityContext';
+import { useUnity } from '../context/fishFightUnityContext';
 import { BaseText, UIContainer } from './BaseStyles';
 
 import fishingImg from "../img/icons/fishing-dark.svg"

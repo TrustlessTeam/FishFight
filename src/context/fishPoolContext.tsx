@@ -5,7 +5,7 @@ import { useFishFight } from './fishFightContext';
 import web3 from 'web3'
 import axios from 'axios';
 import FishFight from '../FishFightSDK';
-import { useUnity } from './unityContext';
+import { useUnity } from './fishFightUnityContext';
 import Contracts from '../contracts/contracts.json';
 import BN from 'bn.js';
 

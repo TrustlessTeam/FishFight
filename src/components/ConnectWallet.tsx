@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import styled from 'styled-components';
-import { useUnity } from '../context/unityContext';
+import { useUnity } from '../context/fishFightUnityContext';
 import Account from './Account';
 
 type Props = {

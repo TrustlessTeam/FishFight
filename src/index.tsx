@@ -9,7 +9,7 @@ import { HarmonyProvider } from './context/harmonyContext';
 import { Web3ReactProvider } from '@web3-react/core';
 import { getLibraryProvider } from './utils/provider';
 import { FishFightProvider } from './context/fishFightContext';
-import { UnityProvider } from './context/unityContext';
+import { UnityProvider } from './context/fishFightUnityContext';
 import { FishPoolProvider } from './context/fishPoolContext';
 import { ContractWrapperProvider } from './context/contractWrapperContext';
 import { BrowserRouter as Router } from 'react-router-dom';
