@@ -57,6 +57,8 @@ interface ProviderInterface {
 	showFightingFishApproval: boolean;
 	showBreedingFishApproval: boolean;
 	showFightingDisclaimer: boolean;
+	showFightingNonLethalDisclaimer: boolean;
+	showFightingNonLethalDepositDisclaimer: boolean;
 	showBreedingDisclaimer: boolean;
 	showFishingDisclaimer: boolean;
 	showERC20Approval: boolean;
@@ -99,6 +101,8 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 
 
 	const [showFightingDisclaimer, setShowFightingDisclaimer] = useState<boolean>(false);
+	const [showFightingNonLethalDisclaimer, setShowFightingNonLethalDisclaimer] = useState<boolean>(false);
+	const [showFightingNonLethalDepositDisclaimer, setShowFightingNonLethalDepositDisclaimer] = useState<boolean>(false);
 	const [showBreedingDisclaimer, setShowBreedingDisclaimer] = useState<boolean>(false);
 	const [showFishingDisclaimer, setShowFishingDisclaimer] = useState<boolean>(false);
 
@@ -1811,6 +1815,7 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 	}
 
 	const contractApproveFishForFightingNonLethal = async (tokenId: number, callback?: any) => {
+		console.log("approve fish called")
 		setShowFightingFishApproval(true);
 		setOnAccept(() => async () => {
 			setShowFightingFishApproval(false);
@@ -1883,9 +1888,10 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 	}
 
 	const contractDepositFightingFishNonLethal = (fish: Fish) => {
-		setShowFightingDisclaimer(true);
+		console.log("contract deposit called")
+		setShowFightingNonLethalDepositDisclaimer(true);
 		setOnAccept(() => () => {
-			setShowFightingDisclaimer(false);
+			setShowFightingNonLethalDepositDisclaimer(false);
 			return FishFight.fightingWatersNonLethal?.methods.deposit(fish.tokenId).estimateGas({from: account}).then(async (gas: any) => {
 				FishFight.fightingWatersNonLethal?.methods.deposit(fish.tokenId).send({
 					from: account,
@@ -1916,6 +1922,7 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 	}
 
 	const contractApproveFoodForFighting = async (amountToApprove: string, callback?: any) => {
+		console.log("contract food called")
 		setShowFightingFoodApproval(true);
 		setOnAccept(() => async () => {
 			setShowFightingFoodApproval(false);
@@ -1960,49 +1967,44 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 			return;
 		}
 		try {
-			// All $FISH are approved
-			if(fightingFishNonLethalApproval && fightingFoodApproval.gte(new BN(Constants._fishFoodDepositFee))) {
-				console.log(1)
-				contractDepositFightingFishNonLethal(fish);
+			// User wants to approve per transactions approvals, approve FISHFOOD, then FISH, then deposit
+			if(perTransactionApproval) {
+				contractApproveFoodForFighting(
+					Constants._fishFoodDepositFee,
+					() => contractApproveFishForFightingNonLethal(fish.tokenId, () => contractDepositFightingFishNonLethal(fish))
+				);
 				return;
 			}
 
-			// Need to Approve All $FISH
-			if(!perTransactionApproval && !fightingFishNonLethalApproval) {
-				console.log(2)
-
-				contractApproveFishForFightingNonLethal(0, () => depositFightingFishNonLethal(fish))
-				return
-			}
-
-			// Need to Approve $FISHFOOD
-			// Not enough allowance of Fish food spend, so approve and use MAX int
-			if(fightingFoodApproval.lt(new BN(Constants._fishFoodDepositFee)) && !perTransactionApproval) {
-				console.log(3)
-
-				contractApproveFoodForFighting(MAX_APPROVE, () => depositFightingFishNonLethal(fish));
+			// Check existing approvals
+			// Case: FishFood MAX Allowance not set, and FISH approve all not set
+			if(fightingFoodApproval.lt(new BN(Constants._fishFoodDepositFee)) && !fightingFishNonLethalApproval) {
+				console.log("Case 1")
+				contractApproveFoodForFighting(
+					MAX_APPROVE,
+					() => contractApproveFishForFightingNonLethal(0, () => contractDepositFightingFishNonLethal(fish))
+				);
 				return;
 			}
 
+			// Case: FISH approveAll required, FISHFOOD MAX already set
+			if(!fightingFishNonLethalApproval && fightingFoodApproval.gte(new BN(Constants._fishFoodDepositFee))) {
+				console.log("Case 2")
+				contractApproveFishForFightingNonLethal(0, () => contractDepositFightingFishNonLethal(fish))
+				return;
+			}
+
+			// Case: FISHFOOD allowance not set, FISH already approved
 			// Not enough allowance, but user wants to not use Max int, so approve just enough
-			if(fightingFoodApproval.lt(new BN(Constants._fishFoodDepositFee)) && perTransactionApproval) {
-				console.log(4)
-
-				contractApproveFoodForFighting(Constants._fishFoodDepositFee, () => depositFightingFishNonLethal(fish));
+			if(fightingFoodApproval.lt(new BN(Constants._fishFoodDepositFee)) && fightingFishNonLethalApproval) {
+				console.log("Case 3")
+				contractApproveFoodForFighting(MAX_APPROVE, () => contractDepositFightingFishNonLethal(fish));
 				return;
 			}
 
-			// User wants to approve per $FISH / Transaction
-			if(perTransactionApproval && !fightingFishNonLethalApproval) {
-				FishFight.fishFactory?.methods.getApproved(fish.tokenId).call()
-				.then(async (address: string) => {
-					if(address === FishFight.readFightingWatersNonLethal.options.address) {
-						contractDepositFightingFishNonLethal(fish);
-					} else {
-						contractApproveFishForFightingNonLethal(fish.tokenId, () => contractDepositFightingFishNonLethal(fish))
-					}
-				})
-			}
+			// Case: Both Food and Fish are approved
+			console.log("Case 4")
+			contractDepositFightingFishNonLethal(fish);
 			
 		} catch (error: any) {
 			console.log(error)
@@ -2046,10 +2048,11 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 	}
 
 	const contractDeathFightNonLethal = (myFish: Fish, opponentFish: Fish) => {
-		setShowFightingDisclaimer(true);
+		setShowFightingNonLethalDisclaimer(true);
 		setOnAccept(() => async () => {
-			setShowFightingDisclaimer(false);
+			setShowFightingNonLethalDisclaimer(false);
 			setOnAccept(() => () => {})
+			// const gas = await FishFight.fightingWatersNonLethal?.methods.deathFight(myFish.tokenId, opponentFish.tokenId).estimateGas({from: account});
 			return FishFight.fightingWatersNonLethal?.methods.deathFight(myFish.tokenId, opponentFish.tokenId).send({
 				from: account,
 				gasPrice: await getGasPrice(),
@@ -2117,14 +2120,17 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 			return false;
 		}
 
-		// Need to actually add modifiers in to get true comparison
-		if(myFish.strength > opponentFish.strength || myFish.intelligence > opponentFish.intelligence || myFish.agility > opponentFish.agility) {
-			toast.error("Fighter Selection: Not Honorable");
+		if(myFish.stakedFighting == null) {
+			toast.error("Must deposit Fish before you can Fight!")
 			return false;
 		}
-		if(opponentFish.strength > myFish.strength || opponentFish.intelligence > myFish.intelligence || opponentFish.agility > myFish.agility) {
-			toast.error("Fighter Selection: Not Honorable");
-			return false;
+
+		const secondsSinceEpoch = Math.round(Date.now() / 1000)
+		if(myFish.stakedFighting != null && myFish.stakedFighting.lockedExpire > secondsSinceEpoch) {
+			const expireTime = (myFish.stakedFighting.lockedExpire - secondsSinceEpoch) / 60;
+			const lockedFor = (Math.round(expireTime * 10) / 10).toFixed(1);
+			toast.error(`Fish Locked for ${lockedFor} minutes`)
+			return;
 		}
 
 		if(myFish.stakedBreeding) {
@@ -2132,7 +2138,7 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 			return false;
 		}
 
-		if(myFish.stakedFighting && myFish.stakedFighting.poolType !== 1) {
+		if(myFish.stakedFighting && myFish.stakedFighting.poolType !== 2) {
 			toast.error("In other Fight Pool");
 			return false;
 		}
@@ -2148,33 +2154,6 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 				return true;
 			}
 
-			// // User fish not deposited, but is approved
-			// if(fightingFishWeakApproval) {
-			// 	contractDeathFightWeak(myFish, opponentFish, true);
-			// 	return true;
-			// }
-			
-			// // Fish is not deposited, so approveAll Fish and then fight & deposit
-			// if(!fightingFishWeakApproval && !perTransactionApproval) {
-			// 	contractApproveFishForFightingWeak(0, () => contractDeathFightWeak(myFish, opponentFish, true))
-			// 	return true;		
-			// }
-
-			// // Fish is not deposited and owner wants per transaction approval
-			// if(!fightingFishWeakApproval && perTransactionApproval) {
-			// 	console.log("here")
-			// 	FishFight.fishFactory?.methods.getApproved(myFish.tokenId).call()
-			// 	.then(async (address: string) => {
-			// 		if(address === FishFight.readFightingWatersWeak.options.address) {
-			// 			contractDeathFightWeak(myFish, opponentFish, true);
-			// 			return true;
-			// 		} else {
-			// 			contractApproveFishForFightingWeak(myFish.tokenId, () => contractDeathFightWeak(myFish, opponentFish, true))
-			// 			return true;
-			// 		}
-			// 	})
-			// }
-
 		} catch (error: any) {
 			console.log(error);
 			// toast.error(error);
@@ -2188,7 +2167,7 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 
 
 	const getFightNonLethalByIndex = async (fightIndex: number, myFish: Fish) => {
-		const fightInfo = await FishFight.fightingWatersWeak?.methods.getFightInfo(fightIndex).call();
+		const fightInfo = await FishFight.fightingWatersNonLethal?.methods.getFightInfo(fightIndex).call();
 		let fightResult = new Fight(fightInfo);
 		if(myFish.tokenId === fightResult.winner) fightResult.playerResult = 1;
 		else if(fightResult.winner === 0) fightResult.playerResult = 0;
@@ -2237,6 +2216,8 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 		showFightingFishApproval: showFightingFishApproval,
 		showBreedingFishApproval: showBreedingFishApproval,
 		showFightingDisclaimer: showFightingDisclaimer,
+		showFightingNonLethalDisclaimer: showFightingNonLethalDisclaimer,
+		showFightingNonLethalDepositDisclaimer: showFightingNonLethalDepositDisclaimer,
 		showBreedingDisclaimer: showBreedingDisclaimer,
 		showFishingDisclaimer: showFishingDisclaimer,
 		showERC20Approval: showERC20Approval,

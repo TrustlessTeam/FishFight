@@ -131,6 +131,17 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
       }
     })
 
+    FishFight.listenFightingWatersNonLethal.events.Deposit()
+    .on("data", function(data: any){
+      // console.log(data)
+      // console.log(data.returnValues.user)
+      // console.log("FIGHITNG DEPOSIT LISTENER")
+      if(data.returnValues.tokenId) {
+        refetchStats();
+        addFightingFishNonLethalById(data.returnValues.tokenId)
+      }
+    })
+
     FishFight.listenFightingWaters.events.Withdraw()
     .on("data", function(data: any){
       // console.log(data)
@@ -146,6 +157,15 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
       if(data.returnValues.tokenId) {
         refetchStats();
         removeFightingFishWeakById(data.returnValues.tokenId)
+      }
+    })
+
+    FishFight.listenFightingWatersNonLethal.events.Withdraw()
+    .on("data", function(data: any){
+      // console.log(data)
+      if(data.returnValues.tokenId) {
+        refetchStats();
+        removeFightingFishNonLethalById(data.returnValues.tokenId)
       }
     })
 

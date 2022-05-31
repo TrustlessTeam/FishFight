@@ -94,6 +94,23 @@ const FightingWatersNonLethal = () => {
 	}, [unityContext.isFishPoolReady, account, mySelectedFish, opponentFish]);
 
 	useEffect(() => {
+		if(mySelectedFish) {
+			let current = userFish.find(x => x.tokenId === mySelectedFish?.tokenId)
+			if(current) {
+				setMySelectedFish(current)
+			}
+		}
+		
+		if(opponentFish) {
+			let current = fightingFishNonLethal.find(x => x.tokenId === opponentFish?.tokenId)
+			if(current) {
+				setOpponentFish(current)
+			}
+		}
+
+	}, [unityContext.isFishPoolReady, account, mySelectedFish, opponentFish, userFish, fightingFishNonLethal]);
+
+	useEffect(() => {
 		if (account) {
 			setFishToShow(FishView.MyFish);
 		} else {
@@ -126,17 +143,14 @@ const FightingWatersNonLethal = () => {
 	const setUserFighter = async (fish: Fish) => {
 		// console.log("User Selected Fish: " + fish.tokenId)
 		// unityContext.showFightingUI();
-		if (fish.fishModifiers.alphaModifier.uses > 0) {
-			toast.error("Fighter Selection: Fish is Alpha");
-			setFighter1Error(`Alpha can't start Fight`);
-		// } else if (
-		// 	fish.strength > 50 ||
-		// 	fish.intelligence > 50 ||
-		// 	fish.agility > 50
-		// ) {
-		// 	toast.error("Fighter Selection: Stats must be <= 50");
-		// 	setFighter1Error(`Fish too strong!`);
-		// } else if (fish.tokenId === opponentFish?.tokenId) {
+		const secondsSinceEpoch = Math.round(Date.now() / 1000)
+		if(fish.stakedFighting != null && fish.stakedFighting.lockedExpire > secondsSinceEpoch) {
+			const expireTime = (fish.stakedFighting.lockedExpire - secondsSinceEpoch) / 60;
+			const lockedFor = (Math.round(expireTime * 10) / 10).toFixed(1);
+			toast.error(`Attack cooldown for ${lockedFor} minutes`)
+			setFighter1Error(`Attack cooldown`);
+		}
+		else if (fish.tokenId === opponentFish?.tokenId) {
 			toast.error("Fighter Selection: Same Fish");
 			setFighter1Error(`Same Fish`);
 		} else if (fish.isUser && opponentFish?.isUser) {
@@ -144,6 +158,9 @@ const FightingWatersNonLethal = () => {
 		} else if (fish.stakedBreeding) {
 			toast.error("Fighter Selection: Must Withdraw");
 			setFighter1Error(`Must Withdraw from Breed Pool`);
+		} else if(opponentFish != null && (fish.strength > opponentFish.strength && fish.intelligence > opponentFish.intelligence && fish.agility > opponentFish.agility)) {
+			toast.error("May not be Honorable");
+			setFighter1Error(`May not be Honorable`);
 		} else {
 			setFighter1Error(null);
 		}
@@ -159,6 +176,9 @@ const FightingWatersNonLethal = () => {
 			setFighter2Error(`Same Fish`);
 		} else if (fish.isUser && mySelectedFish?.isUser) {
 			setFighter2Error(`Warning! About to Fight Owned Fish`);
+		} else if(mySelectedFish != null && (fish.strength > mySelectedFish.strength && fish.intelligence > mySelectedFish.intelligence && fish.agility > mySelectedFish.agility)) {
+			toast.error("May not be Honorable");
+			setFighter2Error(`May not be Honorable`);
 		} else {
 			setFighter2Error(null);
 		}

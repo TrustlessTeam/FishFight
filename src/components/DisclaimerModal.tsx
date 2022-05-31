@@ -26,6 +26,8 @@ const DisclaimerModal = () => {
     showFightingFishApproval,
 		showERC20Approval,
     showFightingDisclaimer,
+    showFightingNonLethalDisclaimer,
+    showFightingNonLethalDepositDisclaimer,
     showBreedingDisclaimer,
     onAccept,
   } = useContractWrapper();
@@ -193,6 +195,79 @@ const DisclaimerModal = () => {
     );
   };
 
+  const FightingNonLethalDisclaimer = () => {
+    return (
+      <>
+        <Title>Non-Lethal Fight Disclaimer</Title>
+        <ContainerText>
+          <Text>
+            <span>Warning! </span>This will start a Fight between your deposited Fish and your selected opponent in the pool.
+          </Text>
+          <Text>
+            Winning a Fight will prevent your Fish from starting another fight for {Constants._lockTime / 60} minutes.
+          </Text>
+          <Text>Win reward: {" "}
+          {currentPhase?.phase === 2
+              ? web3.utils.fromWei(Constants._fishFoodPerWinInPhaseNonLethal)
+              : web3.utils.fromWei(Constants._fishFoodPerWin)}{" "}
+            $FISHFOOD.<br></br> Rewards are paid out on removal from the Fight pool.
+          </Text>
+          <Text>
+            Losing Fights: in the event of a loss, your Fish will be removed from the pool and returned to you! It is NOT burned.
+          </Text>
+          <Text>
+            Approving the transaction is your agreement to these terms. Good
+            luck!
+          </Text>
+          <OptionsContainer>
+            {/* {!fightingFishApproval && !checked &&
+								<BaseButton onClick={() => contractApproveAllForFighting()}>{'Approve All $FISH'}</BaseButton>
+							} */}
+          </OptionsContainer>
+        </ContainerText>
+      </>
+    );
+  };
+
+  const FightingNonLethalDepositDisclaimer = () => {
+    return (
+      <>
+        <Title>Non-Lethal Deposit Disclaimer</Title>
+        <ContainerText>
+          <Text>
+            <span>DEPOSIT Warning! </span>Non-Lethal Fighting Pools cost <span>{web3.utils.fromWei(Constants._fishFoodDepositFee)} $FISHFOOD</span> to enter!
+          </Text>
+          <Text>
+            Fish in the pool are eligible to a share of the Non-Lethal Fight Pool emission rewards.<br></br>
+            {" "}{web3.utils.fromWei(Constants._fishFoodPerBlockNonLethal)} $FISHFOOD per block.<br></br>
+          </Text>
+          <Text>
+            Winning Fights: in the event of a win, your Fish earns {" "}
+            {web3.utils.fromWei(Constants._fishFoodPerWinInPhaseNonLethal)}{" "}
+            $FISHFOOD in Fighting Phase OR {web3.utils.fromWei(Constants._fishFoodPerWinNonLethal)} $FISHFOOD out of phase.<br></br>
+            You also get to stay in the pool! So keep fighting until you are out! Note: There is a {Constants._lockTime / 60} minutes cooldown
+            before you can attack another Fish.
+          </Text>
+          <Text>
+            Losing Fights: in the event of a loss, your Fish will be removed from the pool and returned to you! It is NOT burned.
+          </Text>
+          <Text>
+            <span>Rewards </span>are paid out on withdrawl or once your winning Fish eventually loses. You can view pending awards in the FishFight menu.
+          </Text>
+          <Text>
+            Approving the transaction is your agreement to these terms. Good
+            luck!
+          </Text>
+          <OptionsContainer>
+            {/* {!fightingFishApproval && !checked &&
+								<BaseButton onClick={() => contractApproveAllForFighting()}>{'Approve All $FISH'}</BaseButton>
+							} */}
+          </OptionsContainer>
+        </ContainerText>
+      </>
+    );
+  };
+
   const BreedingDisclaimer = () => {
     return (
       <>
@@ -235,6 +310,8 @@ const DisclaimerModal = () => {
         showTrainingFoodApproval ||
         showFightingFoodApproval ||
         showFightingDisclaimer ||
+        showFightingNonLethalDisclaimer ||
+        showFightingNonLethalDepositDisclaimer ||
         showBreedingDisclaimer ||
         showERC20Approval
       }
@@ -250,6 +327,8 @@ const DisclaimerModal = () => {
           {showBreedingFishApproval && <BreedingApproval></BreedingApproval>}
           {showTrainingFoodApproval && <TrainingApproval></TrainingApproval>}
           {showFightingDisclaimer && <FightingDisclaimer></FightingDisclaimer>}
+          {showFightingNonLethalDisclaimer && <FightingNonLethalDisclaimer></FightingNonLethalDisclaimer>}
+          {showFightingNonLethalDepositDisclaimer && <FightingNonLethalDepositDisclaimer></FightingNonLethalDepositDisclaimer>}
           {showBreedingDisclaimer && <BreedingDisclaimer></BreedingDisclaimer>}
           {showERC20Approval && <ModifierApproval></ModifierApproval>}
           {(showFightingFishApproval ||
