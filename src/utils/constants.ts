@@ -67,6 +67,12 @@ export let Constants = {
   _fishFoodPerBlockWeakBN : ethers.utils.parseEther('0.0115'), // FISHFOOD
   _fishFoodPerWinWeak : ethers.utils.parseEther('50').toString(), // FISHFOOD
   _fishFoodPerWinInPhaseWeak : ethers.utils.parseEther('100').toString(), // FISHFOOD
-  _lockTimeWeak : 60 * 10 // 10 mins
+  _lockTimeWeak : 60 * 10, // 10 mins
+
+  _fishFoodDepositFee : ethers.utils.parseEther('100').toString(), // FISHFOOD
+  _fishFoodPerWinNonLethal : ethers.utils.parseEther('70').toString(), // FISHFOOD
+  _fishFoodPerWinInPhaseNonLethal : ethers.utils.parseEther('90').toString(), // FISHFOOD
+  _fishFoodPerBlockNonLethal : ethers.utils.parseEther('0.0023').toString(),
+  _fishFoodPerBlockNonLethalBN : ethers.utils.parseEther('0.0023')
 }
 

@@ -36,6 +36,7 @@ interface FishFightProviderContext {
   totalSupply: number
   fishCurrentIndex: number
   fightingWatersWeakSupply: number
+  fightingWatersNonLethalSupply: number
   fightingWatersSupply: number
   breedingWatersSupply: number
   totalSupplyDead: number
@@ -218,6 +219,12 @@ const useBalance = () => {
           calls: [{ reference: 'fighterBalanceWeak', methodName: 'balanceOf', methodParameters: [account] }]
         },
         {
+          reference: 'fightingWatersNonLethal',
+          contractAddress: FishFight.readFightingWatersNonLethal.options.address,
+          abi: Contracts.contracts.FightingWatersNonLethal.abi,
+          calls: [{ reference: 'fighterBalanceNonLethal', methodName: 'balanceOf', methodParameters: [account] }]
+        },
+        {
           reference: 'breedingWaters',
           contractAddress: FishFight.readBreedingWaters.options.address,
           abi: Contracts.contracts.BreedingWaters.abi,
@@ -249,6 +256,7 @@ const useBalance = () => {
       let deadFishBalance = results.results.deadFishFactory.callsReturnContext[0].success ? results.results.deadFishFactory.callsReturnContext[0].returnValues[0].hex : null;
       let fighterBalance = results.results.fightingWaters.callsReturnContext[0].success ? results.results.fightingWaters.callsReturnContext[0].returnValues[0].hex : null;
       let fighterBalanceWeak = results.results.fightingWatersWeak.callsReturnContext[0].success ? results.results.fightingWatersWeak.callsReturnContext[0].returnValues[0].hex : null;
+      let fighterBalanceNonLethal = results.results.fightingWatersNonLethal.callsReturnContext[0].success ? results.results.fightingWatersNonLethal.callsReturnContext[0].returnValues[0].hex : null;
       let breederBalance = results.results.breedingWaters.callsReturnContext[0].success ? results.results.breedingWaters.callsReturnContext[0].returnValues[0].hex : null;
       let foodBalance = results.results.fishFood.callsReturnContext[0].success ? results.results.fishFood.callsReturnContext[0].returnValues[0].hex : null;
       let eggBalance = results.results.fishEgg.callsReturnContext[0].success ? results.results.fishEgg.callsReturnContext[0].returnValues[0].hex : null;
@@ -260,6 +268,7 @@ const useBalance = () => {
       deadFishBalance = Web3.utils.hexToNumberString(deadFishBalance)
       fighterBalance = Web3.utils.hexToNumberString(fighterBalance)
       fighterBalanceWeak = Web3.utils.hexToNumberString(fighterBalanceWeak)
+      fighterBalanceNonLethal = Web3.utils.hexToNumberString(fighterBalanceNonLethal)
       breederBalance = Web3.utils.hexToNumberString(breederBalance)
 
       foodBalance = new BN(Web3.utils.hexToNumberString(foodBalance))
@@ -279,7 +288,7 @@ const useBalance = () => {
 
       setBalanceFish(fishBalance);
       setBalanceDeadFish(deadFishBalance);
-      setBalanceFightFish((Web3.utils.toNumber(fighterBalance) + Web3.utils.toNumber(fighterBalanceWeak)).toString());
+      setBalanceFightFish((Web3.utils.toNumber(fighterBalance) + Web3.utils.toNumber(fighterBalanceWeak) + Web3.utils.toNumber(fighterBalanceNonLethal)).toString());
       setBalanceBreedFish(breederBalance);
       setBalanceFishEgg(eggBalance);
       setBalanceFishScale(scaleBalance);
@@ -328,6 +337,7 @@ const useStats = () => {
   const [fishCurrentIndex, setFishCurrentIndex] = useState<number>(0);
   const [fightingWatersSupply, setFightingWatersSupply] = useState<number>(0);
   const [fightingWatersWeakSupply, setFightingWatersWeakSupply] = useState<number>(0);
+  const [fightingWatersNonLethalSupply, setFightingWatersNonLethalSupply] = useState<number>(0);
 	const [breedingWatersSupply, setBreedingWatersSupply] = useState<number>(0);
 
   const [totalSupplyDead, setTotalSupplyDead] = useState<number>(0);
@@ -352,7 +362,8 @@ const useStats = () => {
             { reference: 'currentFishIndex', methodName: 'currentIndex', methodParameters: [] },
             { reference: 'totalFighters', methodName: 'balanceOf', methodParameters: [FishFight.readFightingWaters.options.address] },
             { reference: 'totalFightersWeak', methodName: 'balanceOf', methodParameters: [FishFight.readFightingWatersWeak.options.address] },
-            { reference: 'totalBreeders', methodName: 'balanceOf', methodParameters: [FishFight.readBreedingWaters.options.address] }
+            { reference: 'totalBreeders', methodName: 'balanceOf', methodParameters: [FishFight.readBreedingWaters.options.address] },
+            { reference: 'totalFightersNonLethal', methodName: 'balanceOf', methodParameters: [FishFight.readFightingWatersNonLethal.options.address] },
           ]
         },
         {
@@ -383,7 +394,8 @@ const useStats = () => {
       let totalFighters = results.results.fishFactory.callsReturnContext[2].success ? results.results.fishFactory.callsReturnContext[2].returnValues[0].hex : null;
       let totalFightersWeak = results.results.fishFactory.callsReturnContext[3].success ? results.results.fishFactory.callsReturnContext[3].returnValues[0].hex : null;
       let totalBreeders = results.results.fishFactory.callsReturnContext[4].success ? results.results.fishFactory.callsReturnContext[4].returnValues[0].hex : null;
-      
+      let totalFightersNonLethal = results.results.fishFactory.callsReturnContext[5].success ? results.results.fishFactory.callsReturnContext[5].returnValues[0].hex : null;
+
       let totalDead = results.results.deadFishFactory.callsReturnContext[0].success ? results.results.deadFishFactory.callsReturnContext[0].returnValues[0].hex : null;
       let burnedDead = results.results.deadFishFactory.callsReturnContext[1].success ? results.results.deadFishFactory.callsReturnContext[1].returnValues[0].hex : null;
       
@@ -398,6 +410,7 @@ const useStats = () => {
       setFishCurrentIndex(Web3.utils.hexToNumber(currentFishIndex));
       setFightingWatersSupply(Web3.utils.hexToNumber(totalFighters));
       setFightingWatersWeakSupply(Web3.utils.hexToNumber(totalFightersWeak));
+      setFightingWatersNonLethalSupply(Web3.utils.hexToNumber(totalFightersNonLethal));
       setBreedingWatersSupply(Web3.utils.hexToNumber(totalBreeders));
 
       setTotalSupplyDead(Web3.utils.hexToNumber(totalDead))
@@ -414,6 +427,8 @@ const useStats = () => {
       setTotalSupply,
       setFishCurrentIndex,
       setFightingWatersSupply,
+      setFightingWatersWeakSupply,
+      setFightingWatersNonLethalSupply,
       setBreedingWatersSupply,
       setTotalSupplyDead,
       setTotalDeadBurned,
@@ -431,6 +446,7 @@ const useStats = () => {
     fishCurrentIndex,
     fightingWatersSupply,
     fightingWatersWeakSupply,
+    fightingWatersNonLethalSupply,
     breedingWatersSupply,
     totalSupplyDead,
     totalDeadBurned,

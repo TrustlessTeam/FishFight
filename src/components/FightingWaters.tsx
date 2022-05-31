@@ -223,6 +223,10 @@ const FightingWaters = () => {
             className={({ isActive }) => (isActive ? "active" : "")}
             to="/fighting/weak"
           >{`STATS UNDER 50`}</NavItem>
+          <NavItem
+            className={({ isActive }) => (isActive ? "active" : "")}
+            to="/fighting/non-lethal"
+          >{`Non-Lethal`}</NavItem>
           {/* <Option className={({isActive}) => isActive ? 'active' : ''} to='/fighting/start'>FIGHT!</Option> */}
         </NavContainer>
         {!loadingFish && !loadingUserFish && (

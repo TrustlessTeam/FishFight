@@ -28,7 +28,8 @@ const Account = ({ children, textOverride }: Props) => {
 	const { account, active } = useWeb3React();
 	const { balance, FishFight  } = useFishFight();
 
-	const { contractApproveFishForBreeding, perTransactionApproval, setPerTransactionApproval, contractApproveFoodForTraining, contractApproveFishForFighting,  } = useContractWrapper();
+	const { contractApproveFishForBreeding, perTransactionApproval, setPerTransactionApproval, contractApproveFoodForTraining, contractApproveFishForFighting,
+	contractApproveFoodForFighting, contractApproveFishForFightingNonLethal  } = useContractWrapper();
 
 	const parsedAccount = account && !isBech32Address(account) ? toBech32(account) : account;
 
@@ -156,6 +157,11 @@ const Account = ({ children, textOverride }: Props) => {
 							<Row>
 								<Text>Training Contract <a target="_blank" rel="noopener noreferrer" href={`${Constants._explorer}address/${FishFight.readTrainingWaters.options.address}`}>{FishFight.readTrainingWaters.options.address}</a></Text>
 								<BaseButton onClick={() => contractApproveFoodForTraining('0', ()=>{})}>Revoke $FISHFOOD Allowance</BaseButton>		
+							</Row>
+							<Row>
+								<Text>Fighting Non-Lethal Contract <a target="_blank" rel="noopener noreferrer" href={`${Constants._explorer}address/${FishFight.readFightingWatersNonLethal.options.address}`}>{FishFight.readFightingWatersNonLethal.options.address}</a></Text>
+								<BaseButton onClick={() => contractApproveFoodForFighting('0', ()=>{})}>Revoke $FISHFOOD Allowance</BaseButton>
+								<BaseButton onClick={() => contractApproveFishForFightingNonLethal(-1, ()=>{})}>Revoke $FISH Control</BaseButton>
 							</Row>
 							<Row>
 								<Text>Fighting Contract <a target="_blank" rel="noopener noreferrer" href={`${Constants._explorer}address/${FishFight.readFightingWaters.options.address}`}>{FishFight.readFightingWaters.options.address}</a></Text>
@@ -343,7 +349,7 @@ const AccountText = styled.b`
 `;
 
 const BalanceText = styled(AccountText)`
-	display; flex;
+	display: flex;
 	flex-flow: row nowrap;
 	background: none;
 	color: white;

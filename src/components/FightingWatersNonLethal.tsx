@@ -29,7 +29,7 @@ type RenderProps = {
 	completed: boolean;
 };
 
-const FightingWatersWeak = () => {
+const FightingWatersNonLethal = () => {
 	// State
 	const [mySelectedFish, setMySelectedFish] = useState<Fish | null>(null);
 	const [opponentFish, setOpponentFish] = useState<Fish | null>(null);
@@ -41,13 +41,13 @@ const FightingWatersWeak = () => {
 	const [renderedFish, setRenderedFish] = useState<number[]>([]);
 
 	// Context
-	const { userFish, fightingFishWeak, loadingFish, loadingUserFish } =
+	const { userFish, fightingFishNonLethal, loadingFish, loadingUserFish } =
 		useFishPool();
-	const { maxSupply, totalSupply, currentPhase, fightingWatersWeakSupply } =
+	const { maxSupply, totalSupply, currentPhase, fightingWatersNonLethalSupply } =
 		useFishFight();
 	const { account } = useWeb3React();
 	const unityContext = useUnity();
-	const { fightFishWeak, pendingTransaction, isFighting, updateIsFighting } =
+	const { fightFishNonLethal, pendingTransaction, isFighting, updateIsFighting } =
 		useContractWrapper();
 	const toggleModal = () => {
 		setModalIsOpen(!modalIsOpen);
@@ -73,7 +73,7 @@ const FightingWatersWeak = () => {
 				// console.log(data)
 				switch (data) {
 					case "confirm":
-						const fight = await fightFishWeak(mySelectedFish, opponentFish);
+						const fight = await fightFishNonLethal(mySelectedFish, opponentFish);
 						// console.log(fight)
 						// if(fight) updateIsFighting(true);
 						return;
@@ -118,10 +118,10 @@ const FightingWatersWeak = () => {
 		// console.log(fightingFish)
 		if (!unityContext.isFishPoolReady) return;
 		// unityContext.clearFishPool("ShowFighting")
-		fightingFishWeak.forEach((fish) => {
+		fightingFishNonLethal.forEach((fish) => {
 			// unityContext.addFishFightingPool(fish);
 		});
-	}, [fightingFishWeak, unityContext.isFishPoolReady]);
+	}, [fightingFishNonLethal, unityContext.isFishPoolReady]);
 
 	const setUserFighter = async (fish: Fish) => {
 		// console.log("User Selected Fish: " + fish.tokenId)
@@ -129,14 +129,14 @@ const FightingWatersWeak = () => {
 		if (fish.fishModifiers.alphaModifier.uses > 0) {
 			toast.error("Fighter Selection: Fish is Alpha");
 			setFighter1Error(`Alpha can't start Fight`);
-		} else if (
-			fish.strength > 50 ||
-			fish.intelligence > 50 ||
-			fish.agility > 50
-		) {
-			toast.error("Fighter Selection: Stats must be <= 50");
-			setFighter1Error(`Fish too strong!`);
-		} else if (fish.tokenId === opponentFish?.tokenId) {
+		// } else if (
+		// 	fish.strength > 50 ||
+		// 	fish.intelligence > 50 ||
+		// 	fish.agility > 50
+		// ) {
+		// 	toast.error("Fighter Selection: Stats must be <= 50");
+		// 	setFighter1Error(`Fish too strong!`);
+		// } else if (fish.tokenId === opponentFish?.tokenId) {
 			toast.error("Fighter Selection: Same Fish");
 			setFighter1Error(`Same Fish`);
 		} else if (fish.isUser && opponentFish?.isUser) {
@@ -239,7 +239,7 @@ const FightingWatersWeak = () => {
 							{currentPhase?.phase === 2 ? (
 								<DataText>
 									{`$FISHFOOD per Win: ${web3.utils.fromWei(
-										Constants._fishFoodPerWinInPhaseWeak
+										Constants._fishFoodPerWinInPhaseNonLethal
 									)} ->`}
 									<StyledCountdown>
 										<Countdown
@@ -247,12 +247,12 @@ const FightingWatersWeak = () => {
 											date={new Date(currentPhase.phaseEndtime * 1000)}
 										/>
 									</StyledCountdown>
-									{`then ${web3.utils.fromWei(Constants._fishFoodPerWinWeak)}`}
+									{`then ${web3.utils.fromWei(Constants._fishFoodPerWinNonLethal)}`}
 								</DataText>
 							) : (
 								<DataText>
 									{`$FISHFOOD per Win: ${web3.utils.fromWei(
-										Constants._fishFoodPerWinWeak
+										Constants._fishFoodPerWinNonLethal
 									)} ->`}
 									<StyledCountdown>
 										<Countdown
@@ -261,7 +261,7 @@ const FightingWatersWeak = () => {
 										/>
 									</StyledCountdown>
 									{`then ${web3.utils.fromWei(
-										Constants._fishFoodPerWinInPhaseWeak
+										Constants._fishFoodPerWinInPhaseNonLethal
 									)}`}
 								</DataText>
 							)}
@@ -270,9 +270,9 @@ const FightingWatersWeak = () => {
 
 					<DataText>
 						{`DEPOSIT REWARD $FISHFOOD per Hour: ~${web3.utils.fromWei(
-							Constants._fishFoodPerBlockWeakBN
+							Constants._fishFoodPerBlockNonLethalBN
 								.mul(1800)
-								.div(fightingWatersWeakSupply + 1)
+								.div(fightingWatersNonLethalSupply + 1)
 								.toString()
 						)}`}
 					</DataText>
@@ -300,7 +300,7 @@ const FightingWatersWeak = () => {
 						<FishDrawer
 							buffModal={toggleModal}
 							fishPool={PoolFish.User}
-							poolType={PoolTypes.FightingWeak}
+							poolType={PoolTypes.FightingNonLethal}
 							type="Fighting"
 							depositFighter
 							selectedFish={mySelectedFish}
@@ -315,12 +315,12 @@ const FightingWatersWeak = () => {
 					)}
 					{fishToShow === FishView.FightFish && (
 						<FishDrawer
-							fishPool={PoolFish.FightingWeak}
-							poolType={PoolTypes.FightingWeak}
+							fishPool={PoolFish.FightingNonLethal}
+							poolType={PoolTypes.FightingNonLethal}
 							type="Fighting"
 							depositFighter
 							selectedOpponent={opponentFish}
-							fishCollection={fightingFishWeak}
+							fishCollection={fightingFishNonLethal}
 							onClick={setOpponentFighter}
 						>
 							<ToggleButton
@@ -431,4 +431,4 @@ const DataText = styled.p`
   }
 `;
 
-export default FightingWatersWeak;
+export default FightingWatersNonLethal;

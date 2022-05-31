@@ -6,8 +6,6 @@ import { getProvider, getWebSocketProvider } from "../utils/provider";
 
 import {
     Multicall,
-    ContractCallResults,
-    ContractCallContext,
   } from 'ethereum-multicall';
 
 // Contracts
@@ -60,6 +58,7 @@ class FishFight {
     readFishingWaters: Contract
     readFightingWaters: Contract
     readFightingWatersWeak: Contract
+    readFightingWatersNonLethal: Contract
     readBreedingWaters: Contract
     readTrainingWaters: Contract
     readModifierWaters: Contract
@@ -76,6 +75,7 @@ class FishFight {
     listenFishingWaters: Contract
     listenFightingWaters: Contract
     listenFightingWatersWeak: Contract
+    listenFightingWatersNonLethal: Contract
     listenBreedingWaters: Contract
     listenTrainingWaters: Contract
     listenFishFood: Contract
@@ -87,6 +87,7 @@ class FishFight {
     fishingWaters: Contract | null
     fightingWaters: Contract | null
     fightingWatersWeak: Contract | null
+    fightingWatersNonLethal: Contract | null
     breedingWaters: Contract | null
     trainingWaters: Contract | null
     modifierWaters: Contract | null
@@ -121,6 +122,7 @@ class FishFight {
         this.readFishingWaters = this.setContract(this.provider, Contracts.contracts.FishingWaters.abi, Contracts.contracts.FishingWaters.address)
         this.readFightingWaters = this.setContract(this.provider, Contracts.contracts.FightingWaters.abi, Contracts.contracts.FightingWaters.address)
         this.readFightingWatersWeak = this.setContract(this.provider, Contracts.contracts.FightingWatersWeak.abi, Contracts.contracts.FightingWatersWeak.address)
+        this.readFightingWatersNonLethal = this.setContract(this.provider, Contracts.contracts.FightingWatersNonLethal.abi, Contracts.contracts.FightingWatersNonLethal.address)
         this.readBreedingWaters = this.setContract(this.provider, Contracts.contracts.BreedingWaters.abi, Contracts.contracts.BreedingWaters.address)
         this.readTrainingWaters = this.setContract(this.provider, Contracts.contracts.TrainingWaters.abi, Contracts.contracts.TrainingWaters.address)
         this.readFightComputation = this.setContract(this.provider,  Contracts.contracts.FightComputation.abi, Contracts.contracts.FightComputation.address)
@@ -144,6 +146,7 @@ class FishFight {
         this.listenFishingWaters = this.setContract(this.listener, Contracts.contracts.FishingWaters.abi, Contracts.contracts.FishingWaters.address)
         this.listenFightingWaters = this.setContract(this.listener, Contracts.contracts.FightingWaters.abi, Contracts.contracts.FightingWaters.address)
         this.listenFightingWatersWeak = this.setContract(this.listener, Contracts.contracts.FightingWatersWeak.abi, Contracts.contracts.FightingWatersWeak.address)
+        this.listenFightingWatersNonLethal = this.setContract(this.listener, Contracts.contracts.FightingWatersNonLethal.abi, Contracts.contracts.FightingWatersNonLethal.address)
         this.listenBreedingWaters = this.setContract(this.listener, Contracts.contracts.BreedingWaters.abi, Contracts.contracts.BreedingWaters.address)
         this.listenTrainingWaters = this.setContract(this.listener, Contracts.contracts.TrainingWaters.abi, Contracts.contracts.TrainingWaters.address)
         
@@ -162,6 +165,7 @@ class FishFight {
         this.fishingWaters = null;
         this.fightingWaters = null;
         this.fightingWatersWeak = null;
+        this.fightingWatersNonLethal = null;
         this.breedingWaters = null;
         this.trainingWaters = null;
         this.modifierWaters = null;
@@ -189,6 +193,7 @@ class FishFight {
         this.fishingWaters = this.setContract(this.providerWallet, Contracts.contracts.FishingWaters.abi, Contracts.contracts.FishingWaters.address)
         this.fightingWaters = this.setContract(this.providerWallet, Contracts.contracts.FightingWaters.abi, Contracts.contracts.FightingWaters.address)
         this.fightingWatersWeak = this.setContract(this.providerWallet, Contracts.contracts.FightingWatersWeak.abi, Contracts.contracts.FightingWatersWeak.address)
+        this.fightingWatersNonLethal = this.setContract(this.providerWallet, Contracts.contracts.FightingWatersNonLethal.abi, Contracts.contracts.FightingWatersNonLethal.address)
         this.breedingWaters = this.setContract(this.providerWallet, Contracts.contracts.BreedingWaters.abi, Contracts.contracts.BreedingWaters.address)
         this.trainingWaters = this.setContract(this.providerWallet, Contracts.contracts.TrainingWaters.abi, Contracts.contracts.TrainingWaters.address)
         this.modifierWaters = this.setContract(this.providerWallet, Contracts.contracts.ModifierWaters.abi, Contracts.contracts.ModifierWaters.address)

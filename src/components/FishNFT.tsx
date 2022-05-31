@@ -62,8 +62,10 @@ const FishNFT = ({
     withdrawBreedingFish,
     depositFightingFish,
     depositFightingFishWeak,
+    depositFightingFishNonLethal,
     withdrawFightingFish,
     withdrawFightingFishWeak,
+    withdrawFightingFishNonLethal,
     feedFish,
     questFish,
     claimFishFood,
@@ -197,6 +199,9 @@ const FishNFT = ({
           {fish.stakedFighting && poolType === PoolTypes.FightingWeak && (
             <FishButton onClick={() => withdrawFightingFishWeak(fish)}>Withdraw</FishButton>
           )}
+          {fish.stakedFighting && poolType === PoolTypes.FightingNonLethal && (
+            <FishButton onClick={() => withdrawFightingFishNonLethal(fish)}>Withdraw</FishButton>
+          )}
 					{fish.stakedBreeding && (
             <FishButton onClick={() => withdrawBreedingFish(fish)}>Withdraw</FishButton>
           )}
@@ -205,6 +210,9 @@ const FishNFT = ({
           )}
           {!fish.stakedFighting && !fish.stakedBreeding && poolType === PoolTypes.FightingWeak && (
             <FishButton onClick={() => depositFightingFishWeak(fish)}>Deposit</FishButton>
+          )}
+          {!fish.stakedFighting && !fish.stakedBreeding && poolType === PoolTypes.FightingNonLethal && (
+            <FishButton onClick={() => depositFightingFishNonLethal(fish)}>Deposit</FishButton>
           )}
           {!fish.stakedFighting &&
             !fish.stakedBreeding &&
@@ -237,7 +245,7 @@ const FishNFT = ({
 };
 
 const ContainerWrapper = styled(ContainerColumn)`
-  justify-content: <center></center>;
+  justify-content: center;
   align-items: center;
 `;
 

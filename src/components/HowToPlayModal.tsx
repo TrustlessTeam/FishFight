@@ -495,6 +495,7 @@ const HowToPlayModal = () => {
       <Route path="/fishing" element={<HowToFish />} />
       <Route path="/fighting" element={<HowToFight />} />
       <Route path="/fighting/weak" element={<HowToFight />} />
+      <Route path="/fighting/non-lethal" element={<HowToFight />} />
       <Route path="/breeding" element={<HowToBreed />} />
     </Routes>
   );

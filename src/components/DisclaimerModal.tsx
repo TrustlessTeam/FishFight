@@ -21,6 +21,7 @@ const DisclaimerModal = () => {
   const { currentPhase } = useFishFight();
   const {
     showTrainingFoodApproval,
+    showFightingFoodApproval,
     showBreedingFishApproval,
     showFightingFishApproval,
 		showERC20Approval,
@@ -46,6 +47,25 @@ const DisclaimerModal = () => {
         <ContainerText>
           <Text>
             <span>Approval Required! </span>Feeding and Upgrading Fish requires
+            spending $FISHFOOD. Max allowance is set to reduce future approvals.
+          </Text>
+          <OptionsContainer>
+            {/* {!trainingFoodApproval && !checked &&
+						<BaseButton onClick={() => contractApproveFoodForTraining(MAX_APPROVE)}>{'Approve All $FISHFOOD'}</BaseButton>
+					} */}
+          </OptionsContainer>
+        </ContainerText>
+      </>
+    );
+  };
+
+  const FightingFoodApproval = () => {
+    return (
+      <>
+        <Title>Non Lethal Fighting Contract Approval</Title>
+        <ContainerText>
+          <Text>
+            <span>Approval Required! </span>Fighting in Non-Lethal Pools requires
             spending $FISHFOOD. Max allowance is set to reduce future approvals.
           </Text>
           <OptionsContainer>
@@ -213,6 +233,7 @@ const DisclaimerModal = () => {
         showBreedingFishApproval ||
         showFightingFishApproval ||
         showTrainingFoodApproval ||
+        showFightingFoodApproval ||
         showFightingDisclaimer ||
         showBreedingDisclaimer ||
         showERC20Approval
@@ -225,6 +246,7 @@ const DisclaimerModal = () => {
       <ApprovalsContainer>
         <ApprovalDisclaimer>
           {showFightingFishApproval && <FightingApproval></FightingApproval>}
+          {showFightingFoodApproval && <FightingFoodApproval></FightingFoodApproval>}
           {showBreedingFishApproval && <BreedingApproval></BreedingApproval>}
           {showTrainingFoodApproval && <TrainingApproval></TrainingApproval>}
           {showFightingDisclaimer && <FightingDisclaimer></FightingDisclaimer>}

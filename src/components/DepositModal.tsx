@@ -37,11 +37,12 @@ const DepositModal = ({
 }: Props) => {
 
   const { account } = useWeb3React();
-  const { currentPhase, fightingWatersSupply, fightingWatersWeakSupply } = useFishFight();
+  const { currentPhase, fightingWatersSupply, fightingWatersWeakSupply, fightingWatersNonLethalSupply } = useFishFight();
 
   const {
     depositFightingFish,
     depositFightingFishWeak,
+    depositFightingFishNonLethal,
   } = useContractWrapper();
 
   // console.log(showFightingDisclaimer)
@@ -87,6 +88,17 @@ const DepositModal = ({
           </ContainerRow>
           <Title>{`FishFood-Fighting Pools`}</Title>
           <BaseText>{`Risk your FishFood, not your Fish! Coming Soon...`}</BaseText>
+          <ContainerRow>
+            <ContainerColumnSmall>
+              {/* <LogoImg src={scaleImg}></LogoImg> */}
+              <Text>{`FREE FOR ALL`}</Text>
+              <SubText>Any Fish is allowed.</SubText>
+              <SubText>Loser Removed from Pool. Winner earns FishFood.</SubText>
+              <SubText>{`$FISHFOOD per Win: ${web3.utils.fromWei(currentPhase?.phase === 2 ? Constants._fishFoodPerWinInPhaseNonLethal : Constants._fishFoodPerWinNonLethal)}`}</SubText>
+              <SubText>{`$FISHFOOD per Hour: ~${web3.utils.fromWei(Constants._fishFoodPerBlockNonLethalBN.mul(1800).div(fightingWatersNonLethalSupply+1).toString())}`}</SubText>
+              <BaseButton onClick={() => {depositFightingFishNonLethal(fish); toggleModal()}}>Deposit</BaseButton>
+            </ContainerColumnSmall>
+          </ContainerRow>
         </ContainerWrapper>
 
       </StyledModal>
@@ -140,7 +152,7 @@ export const OptionsContainer = styled.div`
 
 
 const ContainerWrapper = styled(ContainerColumn)`
-  justify-content: <center></center>;
+  justify-content: center;
   align-items: center;
 `;
 

@@ -22,10 +22,13 @@ interface ProviderInterface {
 	catchFish: () => void;
 	fightFish: (fishA: Fish | null, fishB: Fish | null) => Promise<boolean | undefined>;
 	fightFishWeak: (fishA: Fish | null, fishB: Fish | null) => Promise<boolean | undefined>;
+	fightFishNonLethal: (fishA: Fish | null, fishB: Fish | null) => Promise<boolean | undefined>;
 	depositFightingFish: (fish: Fish | null) => void;
 	depositFightingFishWeak: (fish: Fish | null) => void;
+	depositFightingFishNonLethal: (fish: Fish | null) => void;
 	withdrawFightingFish: (fish: Fish | null) => void;
 	withdrawFightingFishWeak: (fish: Fish | null) => void;
+	withdrawFightingFishNonLethal: (fish: Fish | null) => void;
 	breedFish: (fishA: Fish | null, fishB: Fish | null) => void;
 	withdrawBreedingFish: (fish: Fish | null) => void;
 	depositBreedingFish: (fish: Fish | null) => void;
@@ -36,9 +39,11 @@ interface ProviderInterface {
 	feedAllFish: () => void;
 	contractApproveFishForFighting: (approvalType: number, callback: any) => void;
 	contractApproveFishForFightingWeak: (approvalType: number, callback: any) => void;
+	contractApproveFishForFightingNonLethal: (approvalType: number, callback: any) => void;
 	contractApproveFishForBreeding: (approvalType: number, callback: any) => void;
 	contractApproveFoodForBreeding: (amount: string) => void;
 	contractApproveFoodForTraining: (amount: string, callback: any) => void;
+	contractApproveFoodForFighting: (amount: string, callback: any) => void;
 	contractApproveERC20Modifiers: (erc20Contract: Contract | null, amountToApprove: string, callBack: any) => void;
 	setPerTransactionApproval: (value: boolean) => void;
 	contractModifierDFK: (fish: Fish, type: number) => void;
@@ -48,6 +53,7 @@ interface ProviderInterface {
 	perTransactionApproval: boolean;
 	pendingTransaction: boolean;
 	showTrainingFoodApproval: boolean;
+	showFightingFoodApproval: boolean;
 	showFightingFishApproval: boolean;
 	showBreedingFishApproval: boolean;
 	showFightingDisclaimer: boolean;
@@ -75,6 +81,7 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
   const [perTransactionApproval, setPerTransactionApproval] = useState<boolean>(false);
   const [fightingFishApproval, setFightingFishApproval] = useState<boolean>(false);
   const [fightingFishWeakApproval, setFightingFishWeakApproval] = useState<boolean>(false);
+  const [fightingFishNonLethalApproval, setFightingFishNonLethalApproval] = useState<boolean>(false);
   const [breedingFishApproval, setBreedingFishApproval] = useState<boolean>(false);
   // const [trainingFishApproval, setTrainingFishApproval] = useState<boolean>(false);
 	
@@ -87,6 +94,7 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 	const [showBreedingFishApproval, setShowBreedingFishApproval] = useState<boolean>(false);
 	const [showTrainingFoodApproval, setShowTrainingFoodApproval] = useState<boolean>(false);
 	const [showBreedingFoodApproval, setShowBreedingFoodApproval] = useState<boolean>(false);
+	const [showFightingFoodApproval, setShowFightingFoodApproval] = useState<boolean>(false);
 	const [showERC20Approval, setShowERC20Approval] = useState<boolean>(false);
 
 
@@ -138,17 +146,20 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 		const approvedFishFightingWeak = await FishFight.readFishFactory.methods.isApprovedForAll(account, FishFight.readFightingWatersWeak.options.address).call();
     setFightingFishWeakApproval(approvedFishFightingWeak);
 
+		const approvedFishFightingNonLethal = await FishFight.readFishFactory.methods.isApprovedForAll(account, FishFight.readFightingWatersNonLethal.options.address).call();
+    setFightingFishNonLethalApproval(approvedFishFightingNonLethal);
+
     // Fighting Waters Food allowance
-    // let approvedFoodFighting = new BN(await FishFightInstance.readFishFood.methods.allowance(account, FishFightInstance.readFightingWaters.options.address).call());
-    // setFightingFoodApproval(approvedFoodFighting);
+    const approvedFoodFighting = new BN(await FishFight.readFishFood.methods.allowance(account, FishFight.readFightingWatersNonLethal.options.address).call());
+    setFightingFoodApproval(approvedFoodFighting);
 
     // Breeding Waters approvals
     const approvedFishBreeding = await FishFight.readFishFactory.methods.isApprovedForAll(account, FishFight.readBreedingWaters.options.address).call();
     setBreedingFishApproval(approvedFishBreeding);
 
     // Breeding Waters Food allowance
-    // let approvedFoodBreeding = new BN(await FishFightInstance.readFishFood.methods.allowance(account, FishFightInstance.readBreedingWaters.options.address).call());
-    // setBreedingFoodApproval(approvedFoodBreeding);
+    const approvedFoodBreeding = new BN(await FishFight.readFishFood.methods.allowance(account, FishFight.readBreedingWaters.options.address).call());
+    setBreedingFoodApproval(approvedFoodBreeding);
 
     // Training Waters Food allowance
     const approvedFoodTraining = new BN(await FishFight.readFishFood.methods.allowance(account, FishFight.readTrainingWaters.options.address).call());
@@ -170,6 +181,9 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 		}
 		else if(ownerAddress === FishFight.readFightingWatersWeak.options.address) {
 			withdrawFightingFishWeak(fish)
+		}
+		else if(ownerAddress === FishFight.readFightingWatersNonLethal.options.address) {
+			withdrawFightingFishNonLethal(fish)
 		}
 		else if(ownerAddress === FishFight.readBreedingWaters.options.address) {
 			withdrawBreedingFish(fish)
@@ -1413,10 +1427,7 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 	}
 
 
-
-
-
-	// Fighting Functions
+	// Fighting Weak Functions
 	const contractIsFighterWeakDeposited = async (tokenId: number) => {
 		const owner = await FishFight.readFishFactory.methods.ownerOf(tokenId).call();
 		// console.log(owner)
@@ -1790,14 +1801,414 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 	}
 
 
+	//Fighting Functions Non Lethal
+	// Fighting Functions
+	const contractIsFighterNonLethalDeposited = async (tokenId: number) => {
+		const owner = await FishFight.readFishFactory.methods.ownerOf(tokenId).call();
+		// console.log(owner)
+		// console.log(FishFight.readFishingWaters.options.address)
+		return owner === FishFight.readFightingWatersNonLethal.options.address;
+	}
+
+	const contractApproveFishForFightingNonLethal = async (tokenId: number, callback?: any) => {
+		setShowFightingFishApproval(true);
+		setOnAccept(() => async () => {
+			setShowFightingFishApproval(false);
+			if(tokenId === -1) { // revoke approval for all $FISH
+				return FishFight.fishFactory?.methods.setApprovalForAll(FishFight.readFightingWatersNonLethal.options.address, false).send({
+					from: account,
+					gasPrice: await getGasPrice(),
+					gasLimit: await FishFight.fishFactory?.methods.setApprovalForAll(FishFight.readFightingWatersNonLethal.options.address, false).estimateGas({from: account}),
+				})
+				.on('error', (error: any) => {
+					console.log(error)
+					toast.error('Approval Failed');
+					setPendingTransaction(false);
+					setIsFighting(false)
+				})
+				.on('transactionHash', () => {
+					setPendingTransaction(true);
+				})
+				.on('receipt', (data: any) => {
+					console.log(data)
+					console.log('Fighting Approval revoked')
+					toast.success('Fighting Approval revoked')
+					setPendingTransaction(false);
+					setFightingFishNonLethalApproval(false);
+				})
+			}
+			else if(tokenId === 0) { // approve all FISH
+				return FishFight.fishFactory?.methods.setApprovalForAll(FishFight.readFightingWatersNonLethal.options.address, true).send({
+					from: account,
+					gasPrice: await getGasPrice(),
+					gasLimit: await FishFight.fishFactory?.methods.setApprovalForAll(FishFight.readFightingWatersNonLethal.options.address, true).estimateGas({from: account}),
+				})
+				.on('error', (error: any) => {
+					console.log(error)
+					toast.error('Approval Failed');
+					setIsFighting(false)
+					setPendingTransaction(false);
+				})
+				.on('transactionHash', () => {
+					setPendingTransaction(true);
+				})
+				.on('receipt', (data: any) => {
+					console.log(data)
+					console.log('Fighting Approval completed')
+					toast.success('Fighting Approval completed')
+					setFightingFishNonLethalApproval(true);
+					setPendingTransaction(false);
+					callback();
+				})
+			}
+			else { // aprove indivdual FISH
+				return FishFight.fishFactory?.methods.approve(FishFight.readFightingWatersNonLethal.options.address, tokenId).send({
+					from: account,
+					gasPrice: await getGasPrice(),
+					gasLimit: await FishFight.fishFactory?.methods.approve(FishFight.readFightingWatersNonLethal.options.address, tokenId).estimateGas({from: account}),
+				})
+				.on('transactionHash', () => {
+					setPendingTransaction(true);
+				})
+				.on('receipt', (data: any) => {
+					console.log(data)
+					console.log('Fighting Approval completed')
+					toast.success('Fighting Approval completed')
+					setPendingTransaction(false);
+					setShowFightingFishApproval(false);
+					callback();
+				})
+			}	
+		})	
+	}
+
+	const contractDepositFightingFishNonLethal = (fish: Fish) => {
+		setShowFightingDisclaimer(true);
+		setOnAccept(() => () => {
+			setShowFightingDisclaimer(false);
+			return FishFight.fightingWatersNonLethal?.methods.deposit(fish.tokenId).estimateGas({from: account}).then(async (gas: any) => {
+				FishFight.fightingWatersNonLethal?.methods.deposit(fish.tokenId).send({
+					from: account,
+					gasPrice: await getGasPrice(),
+					gasLimit: gas,
+				})
+				.on('error', (error: any) => {
+					console.log(error)
+					toast.error('Deposit Failed');
+					setPendingTransaction(false);
+				})
+				.on('transactionHash', () => {
+					setPendingTransaction(true);
+				})
+				.on('receipt', async () => {
+					setPendingTransaction(false);
+					toast.success('Fish Deposited', {
+						onOpen: async () => {
+							refetchBalance()
+							const updatedFish = await refreshFish(fish.tokenId, true, false);
+							if(updatedFish != null) unityContext.refreshFishUnity(updatedFish);
+						},
+					});
+				})
+			})
+		})
+
+	}
+
+	const contractApproveFoodForFighting = async (amountToApprove: string, callback?: any) => {
+		setShowFightingFoodApproval(true);
+		setOnAccept(() => async () => {
+			setShowFightingFoodApproval(false);
+			return FishFight.fishFood?.methods.approve(FishFight.readFightingWatersNonLethal.options.address, amountToApprove).send({
+				from: account,
+				gasPrice: await getGasPrice(),
+				gasLimit: await FishFight.fishFood?.methods.approve(FishFight.readFightingWatersNonLethal.options.address, amountToApprove).estimateGas({from: account})
+			})
+			.on('error', (error: any) => {
+				console.log(error)
+				toast.error('Approval Failed');
+				setPendingTransaction(false);
+				setShowFightingFoodApproval(false);
+			})
+			.on('transactionHash', () => {
+				setPendingTransaction(true);
+			})
+			.on('receipt', (data: any) => {
+				console.log(data)
+				console.log('FishFood Approval completed')
+				toast.success('FishFood Approval Completed')
+				setFightingFoodApproval(new BN(amountToApprove))
+				setPendingTransaction(false);
+				setShowFightingFoodApproval(false);
+				callback();
+			})
+		})
+	}
+
+	const depositFightingFishNonLethal = async (fish : Fish | null) => {
+		console.log("here")
+		if(!account) {
+			toast.error('Connect your wallet');
+			return;
+		}
+		if(await wrongNetwork()) {
+			toast.error('Wrong Network');
+			return;
+		}
+		if(fish == null) {
+			toast.error('Select a Fish');
+			return;
+		}
+		try {
+			// All $FISH are approved
+			if(fightingFishNonLethalApproval && fightingFoodApproval.gte(new BN(Constants._fishFoodDepositFee))) {
+				console.log(1)
+				contractDepositFightingFishNonLethal(fish);
+				return;
+			}
+
+			// Need to Approve All $FISH
+			if(!perTransactionApproval && !fightingFishNonLethalApproval) {
+				console.log(2)
+
+				contractApproveFishForFightingNonLethal(0, () => depositFightingFishNonLethal(fish))
+				return
+			}
+
+			// Need to Approve $FISHFOOD
+			// Not enough allowance of Fish food spend, so approve and use MAX int
+			if(fightingFoodApproval.lt(new BN(Constants._fishFoodDepositFee)) && !perTransactionApproval) {
+				console.log(3)
+
+				contractApproveFoodForFighting(MAX_APPROVE, () => depositFightingFishNonLethal(fish));
+				return;
+			}
+
+			// Not enough allowance, but user wants to not use Max int, so approve just enough
+			if(fightingFoodApproval.lt(new BN(Constants._fishFoodDepositFee)) && perTransactionApproval) {
+				console.log(4)
+
+				contractApproveFoodForFighting(Constants._fishFoodDepositFee, () => depositFightingFishNonLethal(fish));
+				return;
+			}
+
+			// User wants to approve per $FISH / Transaction
+			if(perTransactionApproval && !fightingFishNonLethalApproval) {
+				FishFight.fishFactory?.methods.getApproved(fish.tokenId).call()
+				.then(async (address: string) => {
+					if(address === FishFight.readFightingWatersNonLethal.options.address) {
+						contractDepositFightingFishNonLethal(fish);
+					} else {
+						contractApproveFishForFightingNonLethal(fish.tokenId, () => contractDepositFightingFishNonLethal(fish))
+					}
+				})
+			}
+			
+		} catch (error: any) {
+			console.log(error)
+		}
+	}
+
+	const withdrawFightingFishNonLethal = async (fish : Fish | null) => {
+		if(fish == null) {
+			toast.error('Select a Fish');
+			return;
+		}
+		if(await wrongNetwork()) {
+			toast.error('Wrong Network');
+			return;
+		}
+
+		const gas = await FishFight.fightingWatersNonLethal?.methods.withdraw(fish.tokenId).estimateGas({from: account});
+
+		return FishFight.fightingWatersNonLethal?.methods.withdraw(fish.tokenId).send({
+			from: account,
+			gasPrice: await getGasPrice(),
+			gasLimit: gas,
+		})
+		.on('error', (error: any) => {
+			console.log(error)
+			toast.error('Withdraw Failed');
+			setPendingTransaction(false);
+		})
+		.on('transactionHash', () => {
+			setPendingTransaction(true);
+		}).on('receipt', async (data: any) => {
+			setPendingTransaction(false);
+			toast.success('Transaction done', {
+				onOpen: async () => {
+					refetchBalance()
+					const updatedFish = await refreshFish(fish.tokenId, false, false)
+					if(updatedFish != null) unityContext.refreshFishUnity(updatedFish);
+				},
+			});
+		})
+	}
+
+	const contractDeathFightNonLethal = (myFish: Fish, opponentFish: Fish) => {
+		setShowFightingDisclaimer(true);
+		setOnAccept(() => async () => {
+			setShowFightingDisclaimer(false);
+			setOnAccept(() => () => {})
+			return FishFight.fightingWatersNonLethal?.methods.deathFight(myFish.tokenId, opponentFish.tokenId).send({
+				from: account,
+				gasPrice: await getGasPrice(),
+				gasLimit: 5000000
+			})
+			.on('error', (error: any) => {
+				console.log(error)
+				toast.error('Fight Failed');
+				setPendingTransaction(false);
+				setIsFighting(false)
+			})
+			.on('transactionHash', () => {
+				setPendingTransaction(true);
+			}).on('receipt', async (result: any) => {
+				const fightIndex = web3.utils.toNumber(result.events.FightCompleted.returnValues._fightIndex);
+				setPendingTransaction(false);
+				
+				const fightResult = await getFightNonLethalByIndex(fightIndex, myFish)
+				unityContext.sendFightResult(fightResult, myFish, opponentFish);
+				// unityContext.
+				toast.success('Fight Completed!', {
+					onOpen: async () => {
+						refetchBalance()
+						if(fightResult.winner === 0) {
+							refreshFish(myFish.tokenId, true, false);
+							refreshFish(opponentFish.tokenId, true, false);
+						}
+						if(myFish.tokenId === fightResult.winner) {
+							refreshFish(myFish.tokenId, true, false)
+							// unityContext.refreshFishUnity(opponentFish)
+						}
+
+						if(opponentFish.tokenId === fightResult.winner) {
+							refreshFish(opponentFish.tokenId, true, false);
+							// unityContext.refreshFishUnity(myFish)
+						}
+
+					},
+				});
+			})
+		})
+		
+	}
+
+	const fightFishNonLethal = async (myFish: Fish | null, opponentFish: Fish | null) => {
+		if(!account) {
+			toast.error('Connect your wallet');
+			return false;
+		}
+		if(await wrongNetwork()) {
+			toast.error('Wrong Network');
+			return;
+		}
+		if(myFish == null) {
+			toast.error('Select your Fighter');
+			return false;
+		}
+		if(opponentFish == null) {
+			toast.error('Select your opponent');
+			return false;
+		}
+
+		if(myFish.tokenId === opponentFish.tokenId) {
+			toast.error("Can't Fight the same Fish")
+			return false;
+		}
+
+		// Need to actually add modifiers in to get true comparison
+		if(myFish.strength > opponentFish.strength || myFish.intelligence > opponentFish.intelligence || myFish.agility > opponentFish.agility) {
+			toast.error("Fighter Selection: Not Honorable");
+			return false;
+		}
+		if(opponentFish.strength > myFish.strength || opponentFish.intelligence > myFish.intelligence || opponentFish.agility > myFish.agility) {
+			toast.error("Fighter Selection: Not Honorable");
+			return false;
+		}
+
+		if(myFish.stakedBreeding) {
+			toast.error("Can't use Fish that's in the Breed Pool");
+			return false;
+		}
+
+		if(myFish.stakedFighting && myFish.stakedFighting.poolType !== 1) {
+			toast.error("In other Fight Pool");
+			return false;
+		}
+
+		setIsFighting(true)
+
+		try {
+			const deposited = await contractIsFighterNonLethalDeposited(myFish.tokenId);
+
+			// User Fish is already in fight pool, so no deposit or approvals required
+			if(deposited) {
+				contractDeathFightNonLethal(myFish, opponentFish);
+				return true;
+			}
+
+			// // User fish not deposited, but is approved
+			// if(fightingFishWeakApproval) {
+			// 	contractDeathFightWeak(myFish, opponentFish, true);
+			// 	return true;
+			// }
+			
+			// // Fish is not deposited, so approveAll Fish and then fight & deposit
+			// if(!fightingFishWeakApproval && !perTransactionApproval) {
+			// 	contractApproveFishForFightingWeak(0, () => contractDeathFightWeak(myFish, opponentFish, true))
+			// 	return true;		
+			// }
+
+			// // Fish is not deposited and owner wants per transaction approval
+			// if(!fightingFishWeakApproval && perTransactionApproval) {
+			// 	console.log("here")
+			// 	FishFight.fishFactory?.methods.getApproved(myFish.tokenId).call()
+			// 	.then(async (address: string) => {
+			// 		if(address === FishFight.readFightingWatersWeak.options.address) {
+			// 			contractDeathFightWeak(myFish, opponentFish, true);
+			// 			return true;
+			// 		} else {
+			// 			contractApproveFishForFightingWeak(myFish.tokenId, () => contractDeathFightWeak(myFish, opponentFish, true))
+			// 			return true;
+			// 		}
+			// 	})
+			// }
+
+		} catch (error: any) {
+			console.log(error);
+			// toast.error(error);
+			// setIsFighting(false);
+			// setMySelectedFish(null);
+			// setOpponentFish(null);
+			// setPendingTransaction(false);
+			return false;
+		}
+	};
+
+
+	const getFightNonLethalByIndex = async (fightIndex: number, myFish: Fish) => {
+		const fightInfo = await FishFight.fightingWatersWeak?.methods.getFightInfo(fightIndex).call();
+		let fightResult = new Fight(fightInfo);
+		if(myFish.tokenId === fightResult.winner) fightResult.playerResult = 1;
+		else if(fightResult.winner === 0) fightResult.playerResult = 0;
+		else fightResult.playerResult = -1;
+
+		return fightResult;
+	}
+
+
 	const value: ProviderInterface = {
 		catchFish: catchFish,
 		fightFish: fightFish,
 		fightFishWeak: fightFishWeak,
+		fightFishNonLethal: fightFishNonLethal,
 		depositFightingFish: depositFightingFish,
 		depositFightingFishWeak: depositFightingFishWeak,
+		depositFightingFishNonLethal: depositFightingFishNonLethal,
 		withdrawFightingFish: withdrawFightingFish,
 		withdrawFightingFishWeak: withdrawFightingFishWeak,
+		withdrawFightingFishNonLethal: withdrawFightingFishNonLethal,
 		breedFish: breedFish,
 		withdrawBreedingFish: withdrawBreedingFish,
 		depositBreedingFish: depositBreedingFish,
@@ -1808,9 +2219,11 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 		feedAllFish: feedAllFish,
 		contractApproveFishForFighting: contractApproveFishForFighting,
 		contractApproveFishForFightingWeak: contractApproveFishForFightingWeak,
+		contractApproveFishForFightingNonLethal: contractApproveFishForFightingNonLethal,
 		contractApproveFishForBreeding: contractApproveFishForBreeding,
 		contractApproveFoodForBreeding: contractApproveFoodForBreeding,
 		contractApproveFoodForTraining: contractApproveFoodForTraining,
+		contractApproveFoodForFighting: contractApproveFoodForFighting,
 		contractApproveERC20Modifiers: contractApproveERC20Modifiers,
 		setPerTransactionApproval: setPerTransactionApproval,
 		contractModifierDFK: contractModifierDFK,
@@ -1820,6 +2233,7 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 		perTransactionApproval: perTransactionApproval,
 		pendingTransaction: pendingTransaction,
 		showTrainingFoodApproval: showTrainingFoodApproval,
+		showFightingFoodApproval: showFightingFoodApproval,
 		showFightingFishApproval: showFightingFishApproval,
 		showBreedingFishApproval: showBreedingFishApproval,
 		showFightingDisclaimer: showFightingDisclaimer,
