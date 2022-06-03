@@ -213,12 +213,12 @@ const DisclaimerModal = () => {
             <span>Warning! </span>This will start a Fight between your deposited Fish and your selected opponent in the pool.
           </Text>
           <Text>
-            Winning a Fight will prevent your Fish from starting another fight for {Constants._lockTime / 60} minutes.
+            Winning a Fight will prevent your Fish from starting another fight for {Constants._cooldownTimeNonLethal / 60} minutes.
           </Text>
           <Text>Win reward: {" "}
           {currentPhase?.phase === 2
               ? web3.utils.fromWei(Constants._fishFoodPerWinInPhaseNonLethal)
-              : web3.utils.fromWei(Constants._fishFoodPerWin)}{" "}
+              : web3.utils.fromWei(Constants._fishFoodPerWinNonLethal)}{" "}
             $FISHFOOD.<br></br> Rewards are paid out on removal from the Fight pool.
           </Text>
           <Text>
@@ -254,7 +254,7 @@ const DisclaimerModal = () => {
             Winning Fights: in the event of a win, your Fish earns {" "}
             {web3.utils.fromWei(Constants._fishFoodPerWinInPhaseNonLethal)}{" "}
             $FISHFOOD in Fighting Phase OR {web3.utils.fromWei(Constants._fishFoodPerWinNonLethal)} $FISHFOOD out of phase.<br></br>
-            You also get to stay in the pool! So keep fighting until you are out! Note: There is a {Constants._lockTime / 60} minutes cooldown
+            You also get to stay in the pool! So keep fighting until you are out! Note: There is a {Constants._cooldownTimeNonLethal / 60} minutes cooldown
             before you can attack another Fish.
           </Text>
           <Text>
@@ -284,7 +284,7 @@ const DisclaimerModal = () => {
         <ContainerText>
           <Text>
             Breeding as the BETTA $FISH will consume{" "}
-            {Constants._bettaBreedPowerFee} of your $FISH's power, and put your
+            <span>{Constants._bettaBreedPowerFee}</span> of your $FISH's power + <span>{Constants._fishFoodBreedFee} $FISHFOOD</span>, and put your
             $FISH in a breed cooldown for {Constants._bettaBreedCooldown}.
           </Text>
           <Text>

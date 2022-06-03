@@ -159,23 +159,19 @@ const FightingWatersNonLethal = () => {
 				const expireTime = (mySelectedFish.stakedFighting.lockedExpire - secondsSinceEpoch) / 60;
 				const lockedFor = (Math.round(expireTime * 10) / 10).toFixed(1);
 				toast.error(`Attack cooldown for ${lockedFor} minutes`)
-				// setFighter1Error(`Attack cooldown`);
 				errors.push(`Attack cooldown`)
 			}
 			if (mySelectedFish.tokenId === opponentFish?.tokenId) {
 				toast.error("Fighter Selection: Same Fish");
-				// setFighter1Error(`Same Fish`);
 				errors.push(`Same Fish`)
 
 			} 
 			if (mySelectedFish.isUser && opponentFish?.isUser) {
-				// setFighter1Error(`Warning! About to Fight Owned Fish`);
 				errors.push(`Warning! About to Fight Owned Fish`)
 
 			} 
 			if (mySelectedFish.stakedBreeding || mySelectedFish.stakedFighting == null) {
 				toast.error("Fighter Selection: Must Deposit before Fighting");
-				// setFighter1Error(`Must Withdraw from Breed Pool`);
 				errors.push(`Must Deposit before Fighting`)
 			}
 		}
@@ -189,8 +185,6 @@ const FightingWatersNonLethal = () => {
 			) {
 			toast.error("May not be Honorable");
 			errors.push(`May not be Honorable`)
-
-			// setFighter1Error(`May not be Honorable`);
 		}
 
 		setFighterErrors(errors);
@@ -200,22 +194,6 @@ const FightingWatersNonLethal = () => {
 		setOpponentFish(fish);
 		unityContext.addFishFight2(fish);
 	};
-
-	const selectAnother = () => {
-		setMySelectedFish(null);
-		// unityContext.showFightingLocation(); // switch to FightingWaters view
-	};
-
-	// useEffect(() => {
-	// 	unityContext.UnityInstance.on('FishPoolFightWinner', function () {
-	// 		console.log('Confirm FishPoolFightWinner');
-	// 		setshowFightingLocationResult(true);
-	// 	});
-	// 	unityContext.UnityInstance.on('FishPoolFightTie', function () {
-	// 		console.log('Confirm FishPoolFightTie');
-	// 		setshowFightingLocationResult(true);
-	// 	});
-	// }, [unityContext.isFishPoolReady]);
 
 	const fightAgain = () => {
 		updateIsFighting(false);

@@ -2162,11 +2162,6 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 
 		} catch (error: any) {
 			console.log(error);
-			// toast.error(error);
-			// setIsFighting(false);
-			// setMySelectedFish(null);
-			// setOpponentFish(null);
-			// setPendingTransaction(false);
 			return false;
 		}
 	};

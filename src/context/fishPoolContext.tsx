@@ -116,7 +116,7 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
       // console.log("FIGHITNG DEPOSIT LISTENER")
       if(data.returnValues.tokenId) {
         refetchStats();
-        addFightingFishById(data.returnValues.tokenId)
+        addFightingFishById(web3.utils.toNumber(data.returnValues.tokenId))
       }
     })
 
@@ -127,7 +127,7 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
       // console.log("FIGHITNG DEPOSIT LISTENER")
       if(data.returnValues.tokenId) {
         refetchStats();
-        addFightingFishWeakById(data.returnValues.tokenId)
+        addFightingFishWeakById(web3.utils.toNumber(data.returnValues.tokenId))
       }
     })
 
@@ -138,7 +138,7 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
       // console.log("FIGHITNG DEPOSIT LISTENER")
       if(data.returnValues.tokenId) {
         refetchStats();
-        addFightingFishNonLethalById(data.returnValues.tokenId)
+        addFightingFishNonLethalById(web3.utils.toNumber(data.returnValues.tokenId))
       }
     })
 
@@ -147,7 +147,7 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
       // console.log(data)
       if(data.returnValues.tokenId) {
         refetchStats();
-        removeFightingFishById(data.returnValues.tokenId)
+        removeFightingFishById(web3.utils.toNumber(data.returnValues.tokenId))
       }
     })
 
@@ -156,16 +156,16 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
       // console.log(data)
       if(data.returnValues.tokenId) {
         refetchStats();
-        removeFightingFishWeakById(data.returnValues.tokenId)
+        removeFightingFishWeakById(web3.utils.toNumber(data.returnValues.tokenId))
       }
     })
 
     FishFight.listenFightingWatersNonLethal.events.Withdraw()
     .on("data", function(data: any){
-      // console.log(data)
+      console.log(data)
       if(data.returnValues.tokenId) {
         refetchStats();
-        removeFightingFishNonLethalById(data.returnValues.tokenId)
+        removeFightingFishNonLethalById(web3.utils.toNumber(data.returnValues.tokenId))
       }
     })
 
@@ -175,7 +175,7 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
       // console.log("BREEDING DEPOSIT LISTENER")
       if(data.returnValues.tokenId) {
         refetchStats();
-        addBreedingFishById(data.returnValues.tokenId)
+        addBreedingFishById(web3.utils.toNumber(data.returnValues.tokenId))
       }
     })
 
@@ -184,7 +184,7 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
       // console.log(data)
       if(data.returnValues.tokenId) {
         refetchStats();
-        removeBreedingFishById(data.returnValues.tokenId)
+        removeBreedingFishById(web3.utils.toNumber(data.returnValues.tokenId))
       }
     })
 

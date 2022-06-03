@@ -24,8 +24,8 @@ export let Constants = {
   _fightPowerFee : 5,
   // Breeding Waters
   _fishFoodBreedFee : ethers.utils.parseEther('250').toString(), // FISHFOOD
-  _oneBreedFee : ethers.utils.parseEther('960').toString(), // ONE,
-  _oneBreedFeeInPhase : ethers.utils.parseEther('420').toString(), // ONE,
+  _oneBreedFee : ethers.utils.parseEther('300').toString(), // ONE,
+  _oneBreedFeeInPhase : ethers.utils.parseEther('150').toString(), // ONE,
   _alphaFoodOwedFee : ethers.utils.parseEther('100').toString(), // FISHFOOD
   _alphaFoodOwedFeeInPhase : ethers.utils.parseEther('200').toString(),
   _bettaBreedPowerFee : 10,
@@ -73,6 +73,7 @@ export let Constants = {
   _fishFoodPerWinNonLethal : ethers.utils.parseEther('70').toString(), // FISHFOOD
   _fishFoodPerWinInPhaseNonLethal : ethers.utils.parseEther('90').toString(), // FISHFOOD
   _fishFoodPerBlockNonLethal : ethers.utils.parseEther('0.0023').toString(),
-  _fishFoodPerBlockNonLethalBN : ethers.utils.parseEther('0.0023')
+  _fishFoodPerBlockNonLethalBN : ethers.utils.parseEther('0.0023'),
+  _cooldownTimeNonLethal : 60 * 2 // 2 minutes 
 }
 

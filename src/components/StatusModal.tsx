@@ -326,11 +326,11 @@ const StatusModal = ({ children }: Props) => {
                   currentPhase.phase === 4
                     ? Constants._oneBreedFeeInPhase
                     : Constants._oneBreedFee
-                )} ONE`}</StatusText>
+                )} ONE + ${web3.utils.fromWei(Constants._fishFoodBreedFee)}`}</StatusText>
 								</DataItem>
                 <DataItem>
 
-                <StatusText>{`$FISHFOOD PER BREED: ${web3.utils.fromWei(
+                <StatusText>{`ALPHA $FISHFOOD PER BREED: ${web3.utils.fromWei(
                   currentPhase.phase === 2
                     ? Constants._alphaFoodOwedFeeInPhase
                     : Constants._alphaFoodOwedFee
