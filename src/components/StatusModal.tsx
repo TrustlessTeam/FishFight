@@ -323,7 +323,7 @@ const StatusModal = ({ children }: Props) => {
 				</DataItem>
                 <DataItem>
                 <StatusText>{`COST TO BREED : ${web3.utils.fromWei(
-                  currentPhase.phase === 4
+                  currentPhase.phase === 3
                     ? Constants._oneBreedFeeInPhase
                     : Constants._oneBreedFee
                 )} ONE + ${web3.utils.fromWei(Constants._fishFoodBreedFee)}`}</StatusText>
@@ -331,7 +331,7 @@ const StatusModal = ({ children }: Props) => {
                 <DataItem>
 
                 <StatusText>{`ALPHA $FISHFOOD PER BREED: ${web3.utils.fromWei(
-                  currentPhase.phase === 2
+                  currentPhase.phase === 3
                     ? Constants._alphaFoodOwedFeeInPhase
                     : Constants._alphaFoodOwedFee
                 )}`}</StatusText>

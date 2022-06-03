@@ -2089,11 +2089,13 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 						}
 						if(myFish.tokenId === fightResult.winner) {
 							refreshFish(myFish.tokenId, true, false)
+							refreshFish(opponentFish.tokenId, false, false);
 							// unityContext.refreshFishUnity(opponentFish)
 						}
 
 						if(opponentFish.tokenId === fightResult.winner) {
 							refreshFish(opponentFish.tokenId, true, false);
+							refreshFish(myFish.tokenId, false, false)
 						}
 
 					},

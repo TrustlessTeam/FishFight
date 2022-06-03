@@ -284,7 +284,7 @@ const DisclaimerModal = () => {
         <ContainerText>
           <Text>
             Breeding as the BETTA $FISH will consume{" "}
-            <span>{Constants._bettaBreedPowerFee}</span> of your $FISH's power + <span>{Constants._fishFoodBreedFee} $FISHFOOD</span>, and put your
+            <span>{Constants._bettaBreedPowerFee}</span> of your $FISH's power,  <span>{currentPhase?.phase === 3 ? web3.utils.fromWei(Constants._oneBreedFeeInPhase) : web3.utils.fromWei(Constants._oneBreedFeeInPhase)} ONE</span> + <span>{web3.utils.fromWei(Constants._fishFoodBreedFee)} $FISHFOOD</span>, and put your
             $FISH in a breed cooldown for {Constants._bettaBreedCooldown}.
           </Text>
           <Text>
