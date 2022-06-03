@@ -2056,11 +2056,11 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 		setOnAccept(() => async () => {
 			setShowFightingNonLethalDisclaimer(false);
 			setOnAccept(() => () => {})
-			try {
-				const gas = await FishFight.fightingWatersNonLethal?.methods.deathFight(myFish.tokenId, opponentFish.tokenId).estimateGas({from: account});
-			} catch (error: any) {
-				toast.error(error)
-			}
+			// try {
+			// 	const gas = await FishFight.fightingWatersNonLethal?.methods.deathFight(myFish.tokenId, opponentFish.tokenId).estimateGas({from: account});
+			// } catch (error: any) {
+			// 	toast.error(error)
+			// }
 			return FishFight.fightingWatersNonLethal?.methods.deathFight(myFish.tokenId, opponentFish.tokenId).send({
 				from: account,
 				gasPrice: await getGasPrice(),
