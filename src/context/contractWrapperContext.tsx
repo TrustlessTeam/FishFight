@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useEffect, useState } from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { Contract } from "web3-eth-contract";
 import { useWeb3React } from '@web3-react/core';
@@ -14,8 +14,6 @@ import BN from 'bn.js';
 import { Constants } from '../utils/constants';
 import { getProvider } from '../utils/provider';
 
-const BREEDCOSTONE = web3.utils.toBN(1);
-const BREEDCOSTFISHFOOD = web3.utils.toBN(100);
 const MAX_APPROVE = '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff';
 
 interface ProviderInterface {
@@ -41,7 +39,7 @@ interface ProviderInterface {
 	contractApproveFishForFightingWeak: (approvalType: number, callback: any) => void;
 	contractApproveFishForFightingNonLethal: (approvalType: number, callback: any) => void;
 	contractApproveFishForBreeding: (approvalType: number, callback: any) => void;
-	contractApproveFoodForBreeding: (amount: string) => void;
+	contractApproveFoodForBreeding: (amount: string, callback: any) => void;
 	contractApproveFoodForTraining: (amount: string, callback: any) => void;
 	contractApproveFoodForFighting: (amount: string, callback: any) => void;
 	contractApproveERC20Modifiers: (erc20Contract: Contract | null, amountToApprove: string, callBack: any) => void;
@@ -56,6 +54,7 @@ interface ProviderInterface {
 	showFightingFoodApproval: boolean;
 	showFightingFishApproval: boolean;
 	showBreedingFishApproval: boolean;
+	showBreedingFoodApproval: boolean;
 	showFightingDisclaimer: boolean;
 	showFightingNonLethalDisclaimer: boolean;
 	showFightingNonLethalDepositDisclaimer: boolean;
@@ -240,11 +239,9 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 		}
 		try {
 			if(Constants._fishFoodBreedFee !== '0' && perTransactionApproval && breedingFoodApproval.lt(new BN(Constants._fishFoodBreedFee))) {
-				const approveResults = await contractApproveFoodForBreeding(Constants._fishFoodBreedFee)
-				console.log(approveResults)
-				if(approveResults.events.Approval.returnValues.approved === FishFight.readBreedingWaters.options.address) {
-					contractBreed(fishAlpha, fishBetta)
-				}
+				contractApproveFoodForBreeding(Constants._fishFoodBreedFee, () => contractBreed(fishAlpha, fishBetta))
+			} else if(Constants._fishFoodBreedFee !== '0' && !perTransactionApproval && breedingFoodApproval.lt(new BN(Constants._fishFoodBreedFee))) {
+				contractApproveFoodForBreeding(MAX_APPROVE, () => contractBreed(fishAlpha, fishBetta))
 			} else {
 				contractBreed(fishAlpha, fishBetta)
 			}
@@ -462,29 +459,36 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 	}
 
 
-	const contractApproveFoodForBreeding = async (amountToApprove: string) => {
+	const contractApproveFoodForBreeding = async (amountToApprove: string, callback?: any) => {
 		setShowBreedingFoodApproval(true);
-		return FishFight.fishFood?.methods.approve(FishFight.readBreedingWaters.options.address, amountToApprove).send({
-			from: account,
-			gasPrice: await getGasPrice(),
-			gasLimit: await FishFight.fishFood?.methods.approve(FishFight.readBreedingWaters.options.address, amountToApprove).estimateGas({from: account})
-		})
-		.on('error', (error: any) => {
-			console.log(error)
-			toast.error('Approval Failed');
-			setPendingTransaction(false);
+		setOnAccept(() => async () => {
 			setShowBreedingFoodApproval(false);
-		})
-		.on('transactionHash', () => {
-			setPendingTransaction(true);
-		})
-		.on('receipt', (data: any) => {
-			console.log(data)
-			console.log('FishFood Approval completed')
-			toast.success('FishFood Approval Completed')
-			setBreedingFoodApproval(new BN(amountToApprove))
-			setPendingTransaction(false);
-			setShowBreedingFoodApproval(false);
+			return FishFight.fishFood?.methods.approve(FishFight.readBreedingWaters.options.address, amountToApprove).send({
+				from: account,
+				gasPrice: await getGasPrice(),
+				gasLimit: await FishFight.fishFood?.methods.approve(FishFight.readBreedingWaters.options.address, amountToApprove).estimateGas({from: account})
+			})
+			.on('error', (error: any) => {
+				console.log(error)
+				toast.error('Approval Failed');
+				setPendingTransaction(false);
+				setShowBreedingFoodApproval(false);
+			})
+			.on('transactionHash', () => {
+				setPendingTransaction(true);
+			})
+			.on('receipt', (data: any) => {
+				console.log(data)
+				console.log('FishFood Approval completed')
+				toast.success('FishFood Approval Completed')
+				setBreedingFoodApproval(new BN(amountToApprove))
+				setPendingTransaction(false);
+				setShowBreedingFoodApproval(false);
+				if(data.events.Approval.returnValues.spender === FishFight.readBreedingWaters.options.address &&
+					new BN(data.events.Approval.returnValues.value).gte(new BN(amountToApprove))) {
+					callback();
+				}
+			})
 		})
 	}
 
@@ -2052,7 +2056,11 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 		setOnAccept(() => async () => {
 			setShowFightingNonLethalDisclaimer(false);
 			setOnAccept(() => () => {})
-			// const gas = await FishFight.fightingWatersNonLethal?.methods.deathFight(myFish.tokenId, opponentFish.tokenId).estimateGas({from: account});
+			try {
+				const gas = await FishFight.fightingWatersNonLethal?.methods.deathFight(myFish.tokenId, opponentFish.tokenId).estimateGas({from: account});
+			} catch (error: any) {
+				toast.error(error)
+			}
 			return FishFight.fightingWatersNonLethal?.methods.deathFight(myFish.tokenId, opponentFish.tokenId).send({
 				from: account,
 				gasPrice: await getGasPrice(),
@@ -2072,7 +2080,6 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 				
 				const fightResult = await getFightNonLethalByIndex(fightIndex, myFish)
 				unityContext.sendFightResult(fightResult, myFish, opponentFish);
-				// unityContext.
 				toast.success('Fight Completed!', {
 					onOpen: async () => {
 						refetchBalance()
@@ -2087,7 +2094,6 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 
 						if(opponentFish.tokenId === fightResult.winner) {
 							refreshFish(opponentFish.tokenId, true, false);
-							// unityContext.refreshFishUnity(myFish)
 						}
 
 					},
@@ -2215,6 +2221,7 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 		showFightingFoodApproval: showFightingFoodApproval,
 		showFightingFishApproval: showFightingFishApproval,
 		showBreedingFishApproval: showBreedingFishApproval,
+		showBreedingFoodApproval: showBreedingFoodApproval,
 		showFightingDisclaimer: showFightingDisclaimer,
 		showFightingNonLethalDisclaimer: showFightingNonLethalDisclaimer,
 		showFightingNonLethalDepositDisclaimer: showFightingNonLethalDepositDisclaimer,

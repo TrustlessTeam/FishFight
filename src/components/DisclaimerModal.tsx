@@ -4,9 +4,7 @@ import { useWeb3React } from "@web3-react/core";
 import web3 from "web3";
 
 import {
-  BaseContainer,
   BaseText,
-  ContainerControls,
   StyledModal,
   Title,
 } from "./BaseStyles";
@@ -23,6 +21,7 @@ const DisclaimerModal = () => {
     showTrainingFoodApproval,
     showFightingFoodApproval,
     showBreedingFishApproval,
+    showBreedingFoodApproval,
     showFightingFishApproval,
 		showERC20Approval,
     showFightingDisclaimer,
@@ -32,15 +31,11 @@ const DisclaimerModal = () => {
     onAccept,
   } = useContractWrapper();
 
-  // console.log(showFightingDisclaimer)
-
   const toggleModel = () => {
     setModalIsOpen(!modalIsOpen);
   };
 
-  const AcceptButton = () => {};
 
-  // console.log(onAccept)
 
   const TrainingApproval = () => {
     return (
@@ -75,6 +70,20 @@ const DisclaimerModal = () => {
 						<BaseButton onClick={() => contractApproveFoodForTraining(MAX_APPROVE)}>{'Approve All $FISHFOOD'}</BaseButton>
 					} */}
           </OptionsContainer>
+        </ContainerText>
+      </>
+    );
+  };
+
+  const BreedingFoodApproval = () => {
+    return (
+      <>
+        <Title>Breeding Contract $FISHFOOD Approval</Title>
+        <ContainerText>
+          <Text>
+            <span>Approval Required! </span>Breeding requires
+            spending $FISHFOOD + ONE. Max allowance is set to reduce future approvals.
+          </Text>
         </ContainerText>
       </>
     );
@@ -306,6 +315,7 @@ const DisclaimerModal = () => {
     <StyledModal
       isOpen={
         showBreedingFishApproval ||
+        showBreedingFoodApproval ||
         showFightingFishApproval ||
         showTrainingFoodApproval ||
         showFightingFoodApproval ||
@@ -325,6 +335,7 @@ const DisclaimerModal = () => {
           {showFightingFishApproval && <FightingApproval></FightingApproval>}
           {showFightingFoodApproval && <FightingFoodApproval></FightingFoodApproval>}
           {showBreedingFishApproval && <BreedingApproval></BreedingApproval>}
+          {showBreedingFoodApproval && <BreedingFoodApproval></BreedingFoodApproval>}
           {showTrainingFoodApproval && <TrainingApproval></TrainingApproval>}
           {showFightingDisclaimer && <FightingDisclaimer></FightingDisclaimer>}
           {showFightingNonLethalDisclaimer && <FightingNonLethalDisclaimer></FightingNonLethalDisclaimer>}

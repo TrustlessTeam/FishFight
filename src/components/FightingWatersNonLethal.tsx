@@ -34,8 +34,7 @@ const FightingWatersNonLethal = () => {
 	const [mySelectedFish, setMySelectedFish] = useState<Fish | null>(null);
 	const [opponentFish, setOpponentFish] = useState<Fish | null>(null);
 	const [fishToShow, setFishToShow] = useState<number>(FishView.FightFish);
-	const [fighter1Error, setFighter1Error] = useState<string | null>(null);
-	const [fighter2Error, setFighter2Error] = useState<string | null>(null);
+	const [fighterErrors, setFighterErrors] = useState<string[]>([]);
 	// const [isFighting, setIsFighting] = useState<boolean>(false);
 	const [modalIsOpen, setModalIsOpen] = useState(false);
 	const [renderedFish, setRenderedFish] = useState<number[]>([]);
@@ -111,6 +110,10 @@ const FightingWatersNonLethal = () => {
 	}, [unityContext.isFishPoolReady, account, mySelectedFish, opponentFish, userFish, fightingFishNonLethal]);
 
 	useEffect(() => {
+		checkErrors();
+	}, [mySelectedFish, opponentFish]);
+
+	useEffect(() => {
 		if (account) {
 			setFishToShow(FishView.MyFish);
 		} else {
@@ -143,45 +146,57 @@ const FightingWatersNonLethal = () => {
 	const setUserFighter = async (fish: Fish) => {
 		// console.log("User Selected Fish: " + fish.tokenId)
 		// unityContext.showFightingUI();
-		const secondsSinceEpoch = Math.round(Date.now() / 1000)
-		if(fish.stakedFighting != null && fish.stakedFighting.lockedExpire > secondsSinceEpoch) {
-			const expireTime = (fish.stakedFighting.lockedExpire - secondsSinceEpoch) / 60;
-			const lockedFor = (Math.round(expireTime * 10) / 10).toFixed(1);
-			toast.error(`Attack cooldown for ${lockedFor} minutes`)
-			setFighter1Error(`Attack cooldown`);
-		}
-		else if (fish.tokenId === opponentFish?.tokenId) {
-			toast.error("Fighter Selection: Same Fish");
-			setFighter1Error(`Same Fish`);
-		} else if (fish.isUser && opponentFish?.isUser) {
-			setFighter1Error(`Warning! About to Fight Owned Fish`);
-		} else if (fish.stakedBreeding) {
-			toast.error("Fighter Selection: Must Withdraw");
-			setFighter1Error(`Must Withdraw from Breed Pool`);
-		} else if(opponentFish != null && (fish.strength > opponentFish.strength && fish.intelligence > opponentFish.intelligence && fish.agility > opponentFish.agility)) {
-			toast.error("May not be Honorable");
-			setFighter1Error(`May not be Honorable`);
-		} else {
-			setFighter1Error(null);
-		}
 		setMySelectedFish(fish);
 		unityContext.addFishFight1(fish);
 	};
 
-	const setOpponentFighter = (fish: Fish) => {
-		// console.log("Opponent Fish: " + fish.tokenId)
-		// unityContext.showFightingUI();
-		if (fish.tokenId == mySelectedFish?.tokenId) {
-			toast.error("Fighter Selection: Same Fish");
-			setFighter2Error(`Same Fish`);
-		} else if (fish.isUser && mySelectedFish?.isUser) {
-			setFighter2Error(`Warning! About to Fight Owned Fish`);
-		} else if(mySelectedFish != null && (fish.strength > mySelectedFish.strength && fish.intelligence > mySelectedFish.intelligence && fish.agility > mySelectedFish.agility)) {
-			toast.error("May not be Honorable");
-			setFighter2Error(`May not be Honorable`);
-		} else {
-			setFighter2Error(null);
+	const checkErrors = () => {
+		// check my Fish Errors
+		let errors = [];
+		if(mySelectedFish != null) {
+			const secondsSinceEpoch = Math.round(Date.now() / 1000)
+			if(mySelectedFish.stakedFighting != null && mySelectedFish.stakedFighting.lockedExpire > secondsSinceEpoch) {
+				const expireTime = (mySelectedFish.stakedFighting.lockedExpire - secondsSinceEpoch) / 60;
+				const lockedFor = (Math.round(expireTime * 10) / 10).toFixed(1);
+				toast.error(`Attack cooldown for ${lockedFor} minutes`)
+				// setFighter1Error(`Attack cooldown`);
+				errors.push(`Attack cooldown`)
+			}
+			if (mySelectedFish.tokenId === opponentFish?.tokenId) {
+				toast.error("Fighter Selection: Same Fish");
+				// setFighter1Error(`Same Fish`);
+				errors.push(`Same Fish`)
+
+			} 
+			if (mySelectedFish.isUser && opponentFish?.isUser) {
+				// setFighter1Error(`Warning! About to Fight Owned Fish`);
+				errors.push(`Warning! About to Fight Owned Fish`)
+
+			} 
+			if (mySelectedFish.stakedBreeding || mySelectedFish.stakedFighting == null) {
+				toast.error("Fighter Selection: Must Deposit before Fighting");
+				// setFighter1Error(`Must Withdraw from Breed Pool`);
+				errors.push(`Must Deposit before Fighting`)
+			}
 		}
+
+		if(opponentFish != null && mySelectedFish != null &&
+			(
+			(mySelectedFish.strength > opponentFish.strength && mySelectedFish.intelligence > opponentFish.intelligence && mySelectedFish.agility > opponentFish.agility)
+			||
+			(opponentFish.strength > mySelectedFish.strength && opponentFish.intelligence > mySelectedFish.intelligence && opponentFish.agility > mySelectedFish.agility)
+			)
+			) {
+			toast.error("May not be Honorable");
+			errors.push(`May not be Honorable`)
+
+			// setFighter1Error(`May not be Honorable`);
+		}
+
+		setFighterErrors(errors);
+	}
+
+	const setOpponentFighter = (fish: Fish) => {
 		setOpponentFish(fish);
 		unityContext.addFishFight2(fish);
 	};
@@ -206,8 +221,7 @@ const FightingWatersNonLethal = () => {
 		updateIsFighting(false);
 		setMySelectedFish(null);
 		setOpponentFish(null);
-		setFighter1Error(null);
-		setFighter2Error(null);
+		setFighterErrors([]);
 	};
 
 	const renderer = ({ hours, minutes, seconds, completed }: RenderProps) => {
@@ -301,20 +315,17 @@ const FightingWatersNonLethal = () => {
 			{!isFighting && (
 				<>
 					<OptionsContainer>
-						{fighter1Error && (
-							<ContainerColumn>
-								<Error>
-									<BaseText>{fighter1Error}</BaseText>
-								</Error>
-							</ContainerColumn>
-						)}
-						{fighter2Error && (
-							<ContainerColumn>
-								<Error>
-									<BaseText>{fighter2Error}</BaseText>
-								</Error>
-							</ContainerColumn>
-						)}
+						{
+							fighterErrors.map((item, index) => {
+								return (
+									<ContainerColumn key={index}>
+										<Error>
+											<BaseText>{item}</BaseText>
+										</Error>
+									</ContainerColumn>
+								)
+							})
+						}
 					</OptionsContainer>
 					{fishToShow === FishView.MyFish && (
 						<FishDrawer

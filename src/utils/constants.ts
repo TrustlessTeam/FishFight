@@ -23,7 +23,7 @@ export let Constants = {
   _lockTime : 60 * 10, // 10 mins
   _fightPowerFee : 5,
   // Breeding Waters
-  _fishFoodBreedFee : ethers.utils.parseEther('0').toString(), // FISHFOOD
+  _fishFoodBreedFee : ethers.utils.parseEther('250').toString(), // FISHFOOD
   _oneBreedFee : ethers.utils.parseEther('960').toString(), // ONE,
   _oneBreedFeeInPhase : ethers.utils.parseEther('420').toString(), // ONE,
   _alphaFoodOwedFee : ethers.utils.parseEther('100').toString(), // FISHFOOD

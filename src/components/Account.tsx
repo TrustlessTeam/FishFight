@@ -29,7 +29,7 @@ const Account = ({ children, textOverride }: Props) => {
 	const { balance, FishFight  } = useFishFight();
 
 	const { contractApproveFishForBreeding, perTransactionApproval, setPerTransactionApproval, contractApproveFoodForTraining, contractApproveFishForFighting,
-	contractApproveFoodForFighting, contractApproveFishForFightingNonLethal  } = useContractWrapper();
+	contractApproveFoodForFighting, contractApproveFishForFightingNonLethal, contractApproveFoodForBreeding } = useContractWrapper();
 
 	const parsedAccount = account && !isBech32Address(account) ? toBech32(account) : account;
 
@@ -169,6 +169,7 @@ const Account = ({ children, textOverride }: Props) => {
 							</Row>
 							<Row>
 								<Text>Breeding Contract <a target="_blank" rel="noopener noreferrer" href={`${Constants._explorer}address/${FishFight.readBreedingWaters.options.address}`}>{FishFight.readBreedingWaters.options.address}</a></Text>
+								<BaseButton onClick={() => contractApproveFoodForBreeding('0', ()=>{})}>Revoke $FISHFOOD Allowance</BaseButton>
 								<BaseButton onClick={() => contractApproveFishForBreeding(-1, ()=>{})}>Revoke $FISH Control</BaseButton>
 							</Row>
 						</ContainerColumnLeft>
