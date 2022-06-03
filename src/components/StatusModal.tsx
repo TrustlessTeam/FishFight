@@ -35,6 +35,7 @@ const StatusModal = ({ children }: Props) => {
     totalSupply,
     fightingWatersSupply,
     fightingWatersWeakSupply,
+    fightingWatersNonLethalSupply,
     breedingWatersSupply,
     FishFight,
   } = useFishFight();
@@ -79,9 +80,13 @@ const StatusModal = ({ children }: Props) => {
     const result2 = await FishFight.readFightingWatersWeak.methods
       .pendingAward(account)
       .call();
+    const result3 = await FishFight.readFightingWatersNonLethal.methods
+    .pendingAward(account)
+    .call();
     let pendingFreeforAll = new BN(result);
     let pendingUnder50 = new BN(result2);
-    let totalPending = pendingFreeforAll.add(pendingUnder50)
+    let pendingNonLethal = new BN(result3);
+    let totalPending = pendingFreeforAll.add(pendingUnder50).add(pendingNonLethal)
     setPendingAward(web3.utils.fromWei(totalPending));
   };
 
@@ -273,7 +278,7 @@ const StatusModal = ({ children }: Props) => {
 
               <DataItem>
                 <StatusText>{`FISH IN FIGHTING POOLS: ${
-                  fightingWatersSupply + fightingWatersWeakSupply
+                  fightingWatersSupply + fightingWatersWeakSupply + fightingWatersNonLethalSupply
                 }`}</StatusText>
               </DataItem>
 
@@ -318,15 +323,15 @@ const StatusModal = ({ children }: Props) => {
 				</DataItem>
                 <DataItem>
                 <StatusText>{`COST TO BREED : ${web3.utils.fromWei(
-                  currentPhase.phase === 4
+                  currentPhase.phase === 3
                     ? Constants._oneBreedFeeInPhase
                     : Constants._oneBreedFee
-                )} ONE`}</StatusText>
+                )} ONE + ${web3.utils.fromWei(Constants._fishFoodBreedFee)}`}</StatusText>
 								</DataItem>
                 <DataItem>
 
-                <StatusText>{`$FISHFOOD PER BREED: ${web3.utils.fromWei(
-                  currentPhase.phase === 2
+                <StatusText>{`ALPHA $FISHFOOD PER BREED: ${web3.utils.fromWei(
+                  currentPhase.phase === 3
                     ? Constants._alphaFoodOwedFeeInPhase
                     : Constants._alphaFoodOwedFee
                 )}`}</StatusText>

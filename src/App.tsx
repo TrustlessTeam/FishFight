@@ -67,7 +67,7 @@ const App = () => {
           {/* <Blockchain></Blockchain> */}
         </Container>
         <ToastContainer
-          position="top-right"
+          position="top-left"
           newestOnTop={false}
           pauseOnFocusLoss={false}
           pauseOnHover={false}
