@@ -152,7 +152,7 @@ export const FishFightProvider = ({ children }: FishFightProviderProps ) => {
   const setLogOut = () => {
     setLoggedOut(true);
   } 
-
+    
   const value: FishFightProviderContext = {
     FishFight: FishFightInstance,
     userConnected: userConnected,

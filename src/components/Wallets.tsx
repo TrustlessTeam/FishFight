@@ -16,7 +16,9 @@ import { mapWallets } from '../helpers/walletHelpers';
 import BaseButton from './BaseButton';
 import { ContainerColumn, Title } from './BaseStyles';
 import { useFishFight } from '../context/fishFightContext';
-
+import Web3 from 'web3';
+import Web3Modal from 'web3modal';
+import WalletConnectProvider from '@walletconnect/web3-provider';
 
 export interface Props {
 	closeModal: () => void;
@@ -25,6 +27,21 @@ export interface Props {
 const Wallets = ({ closeModal }: Props) => {
 	const { activate } = useWeb3React();
 	const {setLogOut} = useFishFight();
+
+	const web3Modal = new Web3Modal({
+		cacheProvider: true,
+		providerOptions: {
+		  walletconnect: {
+			package: WalletConnectProvider,
+			options: {
+			  infuraId: "0ce3f5bf076b47278cf8eb038803c232",
+			  rpc: {
+				1666600000: "https://api.harmony.one",
+			  },
+			},
+		  },
+		},
+	  });
 
 	const handleClick = (connector: AbstractConnector) => () => {
 		// Activate will take connector as an argument
@@ -35,11 +52,28 @@ const Wallets = ({ closeModal }: Props) => {
 		closeModal();
 	}; 
 
+	const handleWC = () => async () =>  {
+		closeModal();
+		try {
+			
+			web3Modal.clearCachedProvider();
+			var provider, accounts;
+			console.log("triggered");
+			provider = await web3Modal.connect();
+			const wcWeb3 = new Web3(provider);
+			console.log(`provider retrieval success`);
+			accounts = await provider.request({ method: 'eth_accounts' });
+			console.log(`accounts : ${accounts}`);
+		} catch (error){
+			console.log(error);
+		}
+	};
+
 	return (
 		<WalletsComponent>
-			<Title>
+			<WalletItem onClick={handleWC()}>
 				Wallet Connect
-			</Title>
+			</WalletItem>
 			{
 			Object.keys(connectorsByName).map(name => (
 				<WalletItem key={name} onClick={handleClick(connectorsByName[name])}>

@@ -55,6 +55,10 @@ code {
   height:  100%;
 }
 
+.web3modal-modal-lightbox { z-index: 150 !important; }
+
+/* .web3modal-modal-hitbox { z-index: 98 !important; } */
+
 .lds-ripple {
   display: inline-block;
   position: relative;
