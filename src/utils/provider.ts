@@ -42,7 +42,7 @@ const configProviders: { [name: string]: Provider } = {
 	mainnet: {
 		chainId: ChainID.HmyMainnet,
 		chainType: ChainType.Harmony,
-		url: 'https://rpc.hermesdefi.io/',
+		url: 'https://api.harmony.one',
 		networkId: '1666600000',
 	},
 };
