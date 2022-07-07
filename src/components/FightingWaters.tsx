@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { toast } from "react-toastify";
@@ -36,21 +37,19 @@ const FightingWaters = () => {
   const [fishToShow, setFishToShow] = useState<number>(FishView.FightFish);
   const [fighter1Error, setFighter1Error] = useState<string | null>(null);
   const [fighter2Error, setFighter2Error] = useState<string | null>(null);
-  // const [isFighting, setIsFighting] = useState<boolean>(false);
   const [modalIsOpen, setModalIsOpen] = useState(false);
-  const [renderedFish, setRenderedFish] = useState<number[]>([]);
 
   // Context
   const { userFish, fightingFish, loadingFish, loadingUserFish } =
     useFishPool();
-  const { maxSupply, currentPhase, fightingWatersSupply } = useFishFight();
+  const { currentPhase, fightingWatersSupply } = useFishFight();
   const { account } = useWeb3React();
   const unityContext = useUnity();
-  const { fightFish, pendingTransaction, isFighting, updateIsFighting } =
-    useContractWrapper();
+  const { fightFish, isFighting, updateIsFighting } = useContractWrapper();
   const toggleModal = () => {
     setModalIsOpen(!modalIsOpen);
   };
+
   const FishViewOptions: ToggleItem[] = [
     {
       name: "My $FISH",
@@ -68,13 +67,10 @@ const FightingWaters = () => {
     unityContext.UnityInstance.on(
       "UISelectionConfirm",
       async function (data: any) {
-        // console.log('UI changed catch fish');
-        // console.log(data)
         switch (data) {
           case "confirm":
             const fight = await fightFish(mySelectedFish, opponentFish);
             console.log(fight);
-            // if(fight) updateIsFighting(true);
             return;
           case "fightresults_confirm":
             unityContext.clearUIFish();
@@ -87,9 +83,6 @@ const FightingWaters = () => {
       }
     );
 
-    unityContext.UnityInstance.on("UI_Fighting_Start_Request", function () {
-      // console.log("UI_Fighting_Start_Request!");
-    });
   }, [unityContext.isFishPoolReady, account, mySelectedFish, opponentFish]);
 
   useEffect(() => {
@@ -101,10 +94,6 @@ const FightingWaters = () => {
   }, [account]);
 
   useEffect(() => {
-    // console.log("Show Fighting Location")
-    // unityContext.clearFishPool("Fighting")
-    // unityContext.clearFishPool("Breeding")
-    // unityContext.clearFishPool('Fish');
     unityContext.clearUIFish();
     unityContext.hideUI();
     unityContext.showFightingLocation();
@@ -112,19 +101,16 @@ const FightingWaters = () => {
     updateIsFighting(false);
   }, [unityContext.isFishPoolReady]);
 
-  useEffect(() => {
-    // console.log("Fighting Fish Changed")
-    // console.log(fightingFish)
-    if (!unityContext.isFishPoolReady) return;
-    // unityContext.clearFishPool("ShowFighting")
-    fightingFish.forEach((fish) => {
-      // unityContext.addFishFightingPool(fish);
-    });
-  }, [fightingFish, unityContext.isFishPoolReady]);
+  // TODO Unity-side -> refer to BreedingWaters unity render
+  // useEffect(() => {
+  //   if (!unityContext.isFishPoolReady) return;
+
+  //   fightingFish.forEach((fish) => {
+  //     unityContext.addFishFightingPool(fish);
+  //   });
+  // }, [fightingFish, unityContext.isFishPoolReady]);
 
   const setUserFighter = async (fish: Fish) => {
-    // console.log("User Selected Fish: " + fish.tokenId)
-    // unityContext.showFightingUI();
     if (fish.fishModifiers.alphaModifier.uses > 0) {
       toast.error("Fighter Selection: Fish is Alpha");
       setFighter1Error(`Alpha can't start Fight`);
@@ -147,9 +133,7 @@ const FightingWaters = () => {
   };
 
   const setOpponentFighter = (fish: Fish) => {
-    // console.log("Opponent Fish: " + fish.tokenId)
-    // unityContext.showFightingUI();
-    if (fish.tokenId == mySelectedFish?.tokenId) {
+    if (fish.tokenId === mySelectedFish?.tokenId) {
       toast.error("Fighter Selection: Same Fish");
       setFighter2Error(`Same Fish`);
     } else if (fish.isUser && mySelectedFish?.isUser) {
@@ -161,22 +145,6 @@ const FightingWaters = () => {
     unityContext.addFishFight2(fish);
   };
 
-  const selectAnother = () => {
-    setMySelectedFish(null);
-    // unityContext.showFightingLocation(); // switch to FightingWaters view
-  };
-
-  // useEffect(() => {
-  // 	unityContext.UnityInstance.on('FishPoolFightWinner', function () {
-  // 		console.log('Confirm FishPoolFightWinner');
-  // 		setshowFightingLocationResult(true);
-  // 	});
-  // 	unityContext.UnityInstance.on('FishPoolFightTie', function () {
-  // 		console.log('Confirm FishPoolFightTie');
-  // 		setshowFightingLocationResult(true);
-  // 	});
-  // }, [unityContext.isFishPoolReady]);
-
   const fightAgain = () => {
     updateIsFighting(false);
     setMySelectedFish(null);
@@ -185,7 +153,7 @@ const FightingWaters = () => {
     setFighter2Error(null);
   };
 
-  const renderer = ({ hours, minutes, seconds, completed }: RenderProps) => {
+  const renderer = ({ hours, minutes, seconds }: RenderProps) => {
     // Render a countdown
     return (
       <span>
@@ -198,8 +166,6 @@ const FightingWaters = () => {
     currentPhase?.phase === 3
       ? currentPhase.phaseEndtime + Constants._fishPhaseLength
       : currentPhase?.phaseEndtime;
-
-  // if(!unityContext.isFishPoolReady) return null;
 
   return (
     <BaseContainer>
@@ -227,7 +193,6 @@ const FightingWaters = () => {
             className={({ isActive }) => (isActive ? "active" : "")}
             to="/fighting/non-lethal"
           >{`NON-LETHAL`}</NavItem>
-          {/* <Option className={({isActive}) => isActive ? 'active' : ''} to='/fighting/start'>FIGHT!</Option> */}
         </NavContainer>
         {!loadingFish && !loadingUserFish && (
           <DataContainer>
@@ -336,8 +301,6 @@ const NavContainer = styled.div`
 `;
 
 const NavItem = styled(NavLink)<ActiveProps>`
-  /* height: 35px; */
-  /* border: 2px solid white;s */
   border-radius: 10px;
   padding: ${(props) => props.theme.spacing.gap};
   margin: 0 ${(props) => props.theme.spacing.gapSmall};
@@ -384,7 +347,6 @@ const InfoContainer = styled.div`
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
-  /* height: 100%; */
   width: 100%;
   margin-top: 60px;
   top: 0;

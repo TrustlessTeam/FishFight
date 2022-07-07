@@ -26,7 +26,6 @@ enum StatView {
 
 const StatusModal = ({ children }: Props) => {
   const {
-    currentCycle,
     currentPhase,
     totalCaught,
     totalBreeds,
@@ -48,9 +47,6 @@ const StatusModal = ({ children }: Props) => {
 
   const { account } = useWeb3React();
   const {
-    balanceFish,
-    balanceDeadFish,
-    balanceFood,
     balanceFightFish,
     balanceBreedFish,
   } = useFishFight();
@@ -62,6 +58,7 @@ const StatusModal = ({ children }: Props) => {
       getUserFishStats();
     };
     loadData(account);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [account, userFish, loadingUserFish]);
 
   const toggleModel = () => {
@@ -403,15 +400,6 @@ const DesktopButtons = styled.div`
   }
 `;
 
-const NextButton = styled(BaseButton)`
-  margin-right: ${(props) => props.theme.spacing.gapSmall};
-  height: 100%;
-
-  @media ${(props) => props.theme.device.tablet} {
-    height: ${(props) => props.theme.font.large};
-  }
-`;
-
 const Time = styled.div`
   display: flex;
   flex-flow: row nowrap;
@@ -473,9 +461,6 @@ const ImgContainer = styled.div`
   flex-flow: column;
   align-items: flex-start;
   justify-content: center;
-  /* padding: ${(props) => props.theme.spacing.gap}; */
-  /* justify-content: space-evenly;
-	align-items: flex-start; */
   width: 33%;
   max-width: 350px;
 
@@ -493,23 +478,14 @@ const StatusModalContainer = styled.div`
   flex-flow: column;
   justify-content: flex-start;
   align-items: flex-start;
-  /* background-color: white; */
   padding: ${(props) => props.theme.spacing.gapMedium};
   z-index: 10;
-  /* justify-content: space-evenly;
-	align-items: flex-start; */
 `;
 
 const DataContainer = styled.div`
   display: flex;
   flex-flow: column;
   align-items: flex-start;
-  /* @media ${(props) => props.theme.device.tablet} {
-		display: flex;
-		flex-flow: row nowrap;
-		justify-content: space-evenly;
-		align-items: flex-start;
-  } */
 `;
 
 const StatusContainer = styled.div`
@@ -583,24 +559,11 @@ const DataItem = styled.div`
   }
 `;
 
-const DataRow = styled.div`
-  display: flex;
-  flex-flow: row;
-  /* justify-content: space-between; */
-  margin-top: ${(props) => props.theme.spacing.gapSmall};
-  /* padding: ${(props) => props.theme.spacing.gap} ${(props) =>
-    props.theme.spacing.gap}; */
-  /* background-color: white; */
-  color: white;
-  width: 100%;
-`;
-
 const LogoButton = styled.button`
   position: relative;
 
   background: none;
   border: none;
-  /* padding: ${(props) => props.theme.spacing.gapSmall}; */
   cursor: pointer;
   animation: glow 1s infinite alternate;
   img:hover {

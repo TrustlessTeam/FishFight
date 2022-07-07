@@ -1,7 +1,5 @@
 import {ethers} from 'ethers'
 
-const ENV = 'MAINNET';
-
 export let Constants = {
   _MAXFISH: 18,
   _explorer: 'https://explorer.harmony.one/',

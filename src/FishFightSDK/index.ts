@@ -1,6 +1,5 @@
 // Harmony SDK
-import { Harmony, HarmonyExtension } from "@harmony-js/core"
-import { Contract as HarmonyContract } from "@harmony-js/contract"
+import { HarmonyExtension } from "@harmony-js/core"
 import { Contract } from "web3-eth-contract";
 import { getProvider, getWebSocketProvider } from "../utils/provider";
 
@@ -9,12 +8,10 @@ import {
   } from 'ethereum-multicall';
 
 // Contracts
-// import Contracts from '@fishfight-one/contracts/FishFightContracts/testnet/contracts.json'
 import Contracts from '../contracts/contracts.json';
 import ERC20Abi from '../contracts/erc20.json';
 import Web3 from "web3"
 import { Constants } from "../utils/constants";
-// import { WebsocketProvider } from 'web3-providers-ws';
 
 const wsOptions = {
     timeout: 30000, // ms

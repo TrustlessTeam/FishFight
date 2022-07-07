@@ -1,20 +1,19 @@
-import React, { useState } from "react";
 import styled from "styled-components";
 import { useWeb3React } from "@web3-react/core";
 import web3 from "web3";
+
+import BaseButton from "./BaseButton";
+import { useContractWrapper } from "../context/contractWrapperContext";
+import { Constants } from "../utils/constants";
+import { useFishFight } from "../context/fishFightContext";
 
 import {
   BaseText,
   StyledModal,
   Title,
 } from "./BaseStyles";
-import BaseButton from "./BaseButton";
-import { useContractWrapper } from "../context/contractWrapperContext";
-import { Constants } from "../utils/constants";
-import { useFishFight } from "../context/fishFightContext";
 
 const DisclaimerModal = () => {
-  const [modalIsOpen, setModalIsOpen] = useState(false);
   const { account } = useWeb3React();
   const { currentPhase } = useFishFight();
   const {
@@ -31,12 +30,6 @@ const DisclaimerModal = () => {
     onAccept,
   } = useContractWrapper();
 
-  const toggleModel = () => {
-    setModalIsOpen(!modalIsOpen);
-  };
-
-
-
   const TrainingApproval = () => {
     return (
       <>
@@ -46,11 +39,6 @@ const DisclaimerModal = () => {
             <span>Approval Required! </span>Feeding and Upgrading Fish requires
             spending $FISHFOOD. Max allowance is set to reduce future approvals.
           </Text>
-          <OptionsContainer>
-            {/* {!trainingFoodApproval && !checked &&
-						<BaseButton onClick={() => contractApproveFoodForTraining(MAX_APPROVE)}>{'Approve All $FISHFOOD'}</BaseButton>
-					} */}
-          </OptionsContainer>
         </ContainerText>
       </>
     );
@@ -65,11 +53,6 @@ const DisclaimerModal = () => {
             <span>Approval Required! </span>Fighting in Non-Lethal Pools requires
             spending $FISHFOOD. Max allowance is set to reduce future approvals.
           </Text>
-          <OptionsContainer>
-            {/* {!trainingFoodApproval && !checked &&
-						<BaseButton onClick={() => contractApproveFoodForTraining(MAX_APPROVE)}>{'Approve All $FISHFOOD'}</BaseButton>
-					} */}
-          </OptionsContainer>
         </ContainerText>
       </>
     );
@@ -98,11 +81,6 @@ const DisclaimerModal = () => {
             <span>Approval Required! </span>Upgrading Fish requires
             spending certain ERC20 tokens.
           </Text>
-          <OptionsContainer>
-            {/* {!trainingFoodApproval && !checked &&
-						<BaseButton onClick={() => contractApproveFoodForTraining(MAX_APPROVE)}>{'Approve All $FISHFOOD'}</BaseButton>
-					} */}
-          </OptionsContainer>
         </ContainerText>
       </>
     );
@@ -118,11 +96,6 @@ const DisclaimerModal = () => {
             approval of your $FISH. Approval for all $FISH is set to prevent
             many future approvals.
           </Text>
-          <OptionsContainer>
-            {/* {!breedingFishApproval && !checked &&
-					<BaseButton onClick={() => contractApproveAllFishForBreeding()}>{'Approve All $FISH'}</BaseButton>
-				} */}
-          </OptionsContainer>
         </ContainerText>
       </>
     );
@@ -138,11 +111,6 @@ const DisclaimerModal = () => {
             your $FISH. Approval for all $FISH is set to prevent many future
             approvals.
           </Text>
-          <OptionsContainer>
-            {/* {!fightingFishApproval && !checked &&
-							<BaseButton onClick={() => contractApproveAllForFighting()}>{'Approve All $FISH'}</BaseButton>
-						} */}
-          </OptionsContainer>
         </ContainerText>
       </>
     );
@@ -194,11 +162,6 @@ const DisclaimerModal = () => {
             Approving the transaction is your agreement to these terms. Good
             luck!
           </Text>
-          <OptionsContainer>
-            {/* {!fightingFishApproval && !checked &&
-								<BaseButton onClick={() => contractApproveAllForFighting()}>{'Approve All $FISH'}</BaseButton>
-							} */}
-          </OptionsContainer>
         </ContainerText>
       </>
     );
@@ -228,11 +191,6 @@ const DisclaimerModal = () => {
             Approving the transaction is your agreement to these terms. Good
             luck!
           </Text>
-          <OptionsContainer>
-            {/* {!fightingFishApproval && !checked &&
-								<BaseButton onClick={() => contractApproveAllForFighting()}>{'Approve All $FISH'}</BaseButton>
-							} */}
-          </OptionsContainer>
         </ContainerText>
       </>
     );
@@ -267,11 +225,6 @@ const DisclaimerModal = () => {
             Approving the transaction is your agreement to these terms. Good
             luck!
           </Text>
-          <OptionsContainer>
-            {/* {!fightingFishApproval && !checked &&
-								<BaseButton onClick={() => contractApproveAllForFighting()}>{'Approve All $FISH'}</BaseButton>
-							} */}
-          </OptionsContainer>
         </ContainerText>
       </>
     );
@@ -299,11 +252,6 @@ const DisclaimerModal = () => {
             Approving the transaction is your agreement to these terms. Good
             luck!
           </Text>
-          <OptionsContainer>
-            {/* {!fightingFishApproval && !checked &&
-								<BaseButton onClick={() => contractApproveAllForFighting()}>{'Approve All $FISH'}</BaseButton>
-							} */}
-          </OptionsContainer>
         </ContainerText>
       </>
     );
@@ -327,7 +275,6 @@ const DisclaimerModal = () => {
       }
       className="Modal"
       overlayClassName="Overlay"
-      // onRequestClose={onAccept}
       shouldCloseOnOverlayClick
     >
       <ApprovalsContainer>
@@ -357,8 +304,6 @@ const DisclaimerModal = () => {
   );
 };
 
-export default DisclaimerModal;
-
 const Text = styled.p`
   color: white;
   margin: 0;
@@ -370,11 +315,11 @@ const Text = styled.p`
   }
 `;
 
-export const ContainerText = styled.div`
+const ContainerText = styled.div`
   padding-top: ${(props) => props.theme.spacing.gapSmall};
 `;
 
-export const ApprovalsContainer = styled.div`
+const ApprovalsContainer = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -384,7 +329,7 @@ export const ApprovalsContainer = styled.div`
   padding: ${(props) => props.theme.spacing.gap};
 `;
 
-export const ApprovalDisclaimer = styled.div`
+const ApprovalDisclaimer = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -394,9 +339,5 @@ export const ApprovalDisclaimer = styled.div`
 	z-index: 10;
 `;
 
-export const OptionsContainer = styled.div`
-  display: flex;
-  flex-flow: row nowrap;
-  justify-content: center;
-  align-items: center;
-`;
+export default DisclaimerModal;
+

@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { toast } from "react-toastify";
@@ -36,22 +37,21 @@ const FightingWatersWeak = () => {
 	const [fishToShow, setFishToShow] = useState<number>(FishView.FightFish);
 	const [fighter1Error, setFighter1Error] = useState<string | null>(null);
 	const [fighter2Error, setFighter2Error] = useState<string | null>(null);
-	// const [isFighting, setIsFighting] = useState<boolean>(false);
 	const [modalIsOpen, setModalIsOpen] = useState(false);
-	const [renderedFish, setRenderedFish] = useState<number[]>([]);
 
 	// Context
 	const { userFish, fightingFishWeak, loadingFish, loadingUserFish } =
 		useFishPool();
-	const { maxSupply, totalSupply, currentPhase, fightingWatersWeakSupply } =
+	const { currentPhase, fightingWatersWeakSupply } =
 		useFishFight();
 	const { account } = useWeb3React();
 	const unityContext = useUnity();
-	const { fightFishWeak, pendingTransaction, isFighting, updateIsFighting } =
+	const { fightFishWeak, isFighting, updateIsFighting } =
 		useContractWrapper();
 	const toggleModal = () => {
 		setModalIsOpen(!modalIsOpen);
 	};
+
 	const FishViewOptions: ToggleItem[] = [
 		{
 			name: "My $FISH",
@@ -69,28 +69,20 @@ const FightingWatersWeak = () => {
 		unityContext.UnityInstance.on(
 			"UISelectionConfirm",
 			async function (data: any) {
-				// console.log('UI changed catch fish');
-				// console.log(data)
 				switch (data) {
 					case "confirm":
 						const fight = await fightFishWeak(mySelectedFish, opponentFish);
-						// console.log(fight)
-						// if(fight) updateIsFighting(true);
+						console.log(fight)
 						return;
 					case "fightresults_confirm":
 						unityContext.clearUIFish();
 						fightAgain();
-
 						return;
 					default:
 						return;
 				}
 			}
 		);
-
-		unityContext.UnityInstance.on("UI_Fighting_Start_Request", function () {
-			// console.log("UI_Fighting_Start_Request!");
-		});
 	}, [unityContext.isFishPoolReady, account, mySelectedFish, opponentFish]);
 
 	useEffect(() => {
@@ -102,10 +94,6 @@ const FightingWatersWeak = () => {
 	}, [account]);
 
 	useEffect(() => {
-		// console.log("Show Fighting Location")
-		// unityContext.clearFishPool("Fighting")
-		// unityContext.clearFishPool("Breeding")
-		// unityContext.clearFishPool('Fish');
 		unityContext.clearUIFish();
 		unityContext.hideUI();
 		unityContext.showFightingLocation();
@@ -113,19 +101,16 @@ const FightingWatersWeak = () => {
 		updateIsFighting(false);
 	}, [unityContext.isFishPoolReady]);
 
-	useEffect(() => {
-		// console.log("Fighting Fish Changed")
-		// console.log(fightingFish)
-		if (!unityContext.isFishPoolReady) return;
-		// unityContext.clearFishPool("ShowFighting")
-		fightingFishWeak.forEach((fish) => {
-			// unityContext.addFishFightingPool(fish);
-		});
-	}, [fightingFishWeak, unityContext.isFishPoolReady]);
+	// TODO: unity side -> refer to BreedingWaters
+	// useEffect(() => {
+	// 	if (!unityContext.isFishPoolReady) return;
+	// 	// unityContext.clearFishPool("ShowFighting")
+	// 	fightingFishWeak.forEach((fish) => {
+	// 		// unityContext.addFishFightingPool(fish);
+	// 	});
+	// }, [fightingFishWeak, unityContext.isFishPoolReady]);
 
 	const setUserFighter = async (fish: Fish) => {
-		// console.log("User Selected Fish: " + fish.tokenId)
-		// unityContext.showFightingUI();
 		if (fish.fishModifiers.alphaModifier.uses > 0) {
 			toast.error("Fighter Selection: Fish is Alpha");
 			setFighter1Error(`Alpha can't start Fight`);
@@ -152,9 +137,7 @@ const FightingWatersWeak = () => {
 	};
 
 	const setOpponentFighter = (fish: Fish) => {
-		// console.log("Opponent Fish: " + fish.tokenId)
-		// unityContext.showFightingUI();
-		if (fish.tokenId == mySelectedFish?.tokenId) {
+		if (fish.tokenId === mySelectedFish?.tokenId) {
 			toast.error("Fighter Selection: Same Fish");
 			setFighter2Error(`Same Fish`);
 		} else if (fish.isUser && mySelectedFish?.isUser) {
@@ -165,22 +148,6 @@ const FightingWatersWeak = () => {
 		setOpponentFish(fish);
 		unityContext.addFishFight2(fish);
 	};
-
-	const selectAnother = () => {
-		setMySelectedFish(null);
-		// unityContext.showFightingLocation(); // switch to FightingWaters view
-	};
-
-	// useEffect(() => {
-	// 	unityContext.UnityInstance.on('FishPoolFightWinner', function () {
-	// 		console.log('Confirm FishPoolFightWinner');
-	// 		setshowFightingLocationResult(true);
-	// 	});
-	// 	unityContext.UnityInstance.on('FishPoolFightTie', function () {
-	// 		console.log('Confirm FishPoolFightTie');
-	// 		setshowFightingLocationResult(true);
-	// 	});
-	// }, [unityContext.isFishPoolReady]);
 
 	const fightAgain = () => {
 		updateIsFighting(false);
@@ -230,7 +197,6 @@ const FightingWatersWeak = () => {
 						className={({ isActive }) => (isActive ? "active" : "")}
 						to="/fighting/non-lethal"
 					>{`NON-LETHAL`}</NavItem>
-					{/* <Option className={({isActive}) => isActive ? 'active' : ''} to='/fighting/start'>FIGHT!</Option> */}
 				</NavContainer>
 
 				<DataContainer>
@@ -345,8 +311,6 @@ const NavContainer = styled.div`
 `;
 
 const NavItem = styled(NavLink) <ActiveProps>`
-  /* height: 35px; */
-  /* border: 2px solid white;s */
   border-radius: 10px;
   padding: ${(props) => props.theme.spacing.gap};
   margin: 0 ${(props) => props.theme.spacing.gapSmall};
@@ -394,7 +358,6 @@ const InfoContainer = styled.div`
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
-  /* height: 100%; */
   width: 100%;
   margin-top: 60px;
   top: 0;

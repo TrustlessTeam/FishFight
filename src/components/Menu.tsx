@@ -3,9 +3,62 @@ import styled from "styled-components";
 import dropdownImg from "../img/icons/dropdown.svg"
 import useSound from 'use-sound';
 import { BaseButtonStyle } from "./BaseStyles";
-
 import { useFishFight } from "../context/fishFightContext";
 
+interface DropdownProps {
+	open: boolean;
+}
+
+type Props = {
+  name: string,
+  items: MenuItem[]
+}
+
+export type MenuItem = {
+  name: string;
+  onClick: () => void;
+};
+
+const Menu = ({name, items} : Props) => {
+  const [open, setOpen] = useState<boolean>(false);
+  const [playClick] = useSound('click.wav', {volume: 0.25});
+
+  const { globalMute } = useFishFight();
+
+  const toggleDropdown = () => {
+    console.log(items)
+    console.log(open)
+    setOpen(!open);
+    
+    if (!globalMute)
+    { playClick();}
+
+  };
+	
+	return (
+    <Drop>
+      <Dropbtn onClick={() => toggleDropdown()}>
+        {name}
+        <LogoImg open={open} src={dropdownImg} alt={"Dropdown arrow"}></LogoImg>
+        <DropContent open={open}>
+          {items.map((selection: MenuItem, index) => {
+            return (
+              <DropItem key={index} onClick={() => {
+                toggleDropdown();
+                console.log(selection)
+                selection.onClick();
+
+                if (!globalMute)
+                { playClick();}
+      
+              }}>{selection.name}</DropItem>
+            )
+          })}
+        </DropContent>
+      </Dropbtn>
+    </Drop>
+  );
+};
 
 const Drop = styled.div`
   position: relative;
@@ -66,7 +119,6 @@ const DropContent = styled.div<DropdownProps>`
   display: ${props => props.open ? "block" : "none"};
   position: absolute;
   background-color: white;
-  /* min-width: 20%; */
   box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
   z-index: 1;
   bottom: 30px;
@@ -76,8 +128,6 @@ const DropContent = styled.div<DropdownProps>`
     bottom: 50px;
   }
 `;
-
-
 
 const DropItem= styled.a`
   color: #61daff;
@@ -99,61 +149,5 @@ const LogoImg = styled.img<{open: boolean}>`
 	  height: 20px;
   }
 `;
-
-interface DropdownProps {
-	open: boolean;
-}
-
-type Props = {
-  name: string,
-  items: MenuItem[]
-}
-
-export type MenuItem = {
-  name: string;
-  onClick: () => void;
-  // extra?: any;
-};
-
-const Menu = ({name, items} : Props) => {
-  const [open, setOpen] = useState<boolean>(false);
-  const [playClick] = useSound('click.wav', {volume: 0.25});
-
-  const { globalMute } = useFishFight();
-
-  const toggleDropdown = () => {
-    console.log(items)
-    console.log(open)
-    setOpen(!open);
-    
-    if (!globalMute)
-    { playClick();}
-
-  };
-	
-	return (
-    <Drop>
-      <Dropbtn onClick={() => toggleDropdown()}>
-        {name}
-        <LogoImg open={open} src={dropdownImg} alt={"Dropdown arrow"}></LogoImg>
-        <DropContent open={open}>
-          {items.map((selection: MenuItem, index) => {
-            return (
-              <DropItem key={index} onClick={() => {
-                toggleDropdown();
-                console.log(selection)
-                selection.onClick();
-
-                if (!globalMute)
-                { playClick();}
-      
-              }}>{selection.name}</DropItem>
-            )
-          })}
-        </DropContent>
-      </Dropbtn>
-    </Drop>
-  );
-};
 
 export default Menu;

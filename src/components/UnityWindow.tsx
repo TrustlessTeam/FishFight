@@ -1,11 +1,11 @@
-import React, { Fragment } from 'react';
+import { Fragment } from 'react';
 import styled from 'styled-components';
 import {
   Outlet
 } from "react-router-dom";
 
 
-import Unity, { UnityContent } from 'react-unity-webgl';
+import Unity from 'react-unity-webgl';
 
 import { useUnity } from '../context/unityContext';
 

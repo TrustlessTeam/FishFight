@@ -103,7 +103,7 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 	const [showFightingNonLethalDisclaimer, setShowFightingNonLethalDisclaimer] = useState<boolean>(false);
 	const [showFightingNonLethalDepositDisclaimer, setShowFightingNonLethalDepositDisclaimer] = useState<boolean>(false);
 	const [showBreedingDisclaimer, setShowBreedingDisclaimer] = useState<boolean>(false);
-	const [showFishingDisclaimer, setShowFishingDisclaimer] = useState<boolean>(false);
+	const [showFishingDisclaimer] = useState<boolean>(false);
 
 	const DefaultAccept = () => console.log("Default Accept");
 	const [onAccept, setOnAccept] = useState(() => DefaultAccept);
@@ -117,6 +117,7 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 		if(account) {
 			checkApprovals(account)
 		}
+	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [account]);
 
 	const updateIsFighting = (value: boolean) => {
@@ -126,20 +127,6 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 	const clearCatchFishResult = () => {
 		setCatchFishResult(null);
 	}
-
-	// const onAccept = () => {
-	// 	if(showFightingDisclaimer) {
-
-	// 	}
-	// }
-
-	// const acceptFunction = useCallback(
-	// 	() => {
-	// 		doSomething(a, b);
-	// 	},
-	// 	[callback],
-	// );
-
 
   const checkApprovals = async (account: any) => {
     // Fighting Waters Fish approvals
@@ -246,13 +233,7 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 				contractBreed(fishAlpha, fishBetta)
 			}
 		} catch (error: any) {
-			// toast.error("Transaction Failed")
 			console.log(error)
-			// setPendingTransaction(false);
-			// toast.error(error);
-			// setIsBreeding(false)
-			// setSelectedUserFish(null)
-			// setSelectedPoolFish(null)
 		}
 	};
 
@@ -322,8 +303,6 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 			})
 			.on('receipt', async (data: any) => {
 				setPendingTransaction(false);
-				// withdrawUserBreedingFish(fish);
-				// setFishSelectionToShow(FishSelectionEnum.UserFish)
 				toast.success('Transaction done', {
 					onOpen: async () => {
 						refetchBalance()
@@ -426,10 +405,6 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 					toast.success('Breeding Approval completed')
 					setBreedingFishApproval(true);
 					setPendingTransaction(false);
-					// if(approvalAllResult.events.ApprovalForAll.returnValues.approved) {
-					// 	contractBreedDeposit(fish);
-					// 	return;
-					// }
 					callback();
 				})
 			}
@@ -448,10 +423,6 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 					toast.success('Breeding Approval completed')
 					setPendingTransaction(false);
 					setShowBreedingFishApproval(false);
-					// console.log(approveResult)
-					// if(approveResult.events.Approval.returnValues.approved === FishFight.readFightingWaters.options.address) {
-					// 	contractDeathFight(myFish, opponentFish, true);
-					// }
 					callback();
 				})
 			}	
@@ -523,14 +494,6 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 		})
 	}
 
-	// Event Handlers
-	const handleError = (name: string, error: any) => {
-		console.log(error)
-		toast.error(`${name} Failed`);
-		setPendingTransaction(false);
-	}
-
-
 	// Fighting Functions
 	const contractIsFighterDeposited = async (tokenId: number) => {
 		const owner = await FishFight.readFishFactory.methods.ownerOf(tokenId).call();
@@ -587,10 +550,6 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 					toast.success('Fighting Approval completed')
 					setFightingFishApproval(true);
 					setPendingTransaction(false);
-					// if(approvalAllResult.events.ApprovalForAll.returnValues.approved) {
-					// 	contractBreedDeposit(fish);
-					// 	return;
-					// }
 					callback();
 				})
 			}
@@ -609,10 +568,6 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 					toast.success('Fighting Approval completed')
 					setPendingTransaction(false);
 					setShowFightingFishApproval(false);
-					// console.log(approveResult)
-					// if(approveResult.events.Approval.returnValues.approved === FishFight.readFightingWaters.options.address) {
-					// 	contractDeathFight(myFish, opponentFish, true);
-					// }
 					callback();
 				})
 			}	
@@ -652,7 +607,6 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 				})
 			})
 		})
-
 	}
 
 	const depositFightingFish = async (fish : Fish | null) => {
@@ -689,10 +643,6 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 						contractDepositFightingFish(fish);
 					} else {
 						contractApproveFishForFighting(fish.tokenId, () => contractDepositFightingFish(fish))
-						// console.log(approveResult)
-						// if(approveResult.events.Approval.returnValues.approved === FishFight.readFightingWaters.options.address) {
-						// 	contractDepositFightingFish(fish);
-						// }
 					}
 				})
 			}
@@ -720,7 +670,6 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 		}
 
 		const gas = await FishFight.fightingWaters?.methods.withdraw(fish.tokenId).estimateGas({from: account});
-
 		return FishFight.fightingWaters?.methods.withdraw(fish.tokenId).send({
 			from: account,
 			gasPrice: await getGasPrice(),
@@ -735,8 +684,6 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 			setPendingTransaction(true);
 		}).on('receipt', async (data: any) => {
 			setPendingTransaction(false);
-			// withdrawUserFightingFish(fish);
-			// setFishSelectionToShow(FishSelectionEnum.FightFish)
 			toast.success('Transaction done', {
 				onOpen: async () => {
 					refetchBalance()
@@ -782,19 +729,14 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 						}
 						if(myFish.tokenId === fightResult.winner) {
 							refreshFish(myFish.tokenId, true, false)
-							// unityContext.refreshFishUnity(opponentFish)
 						}
-
 						if(opponentFish.tokenId === fightResult.winner) {
 							refreshFish(opponentFish.tokenId, true, false);
-							// unityContext.refreshFishUnity(myFish)
 						}
-
 					},
 				});
 			})
 		})
-		
 	}
 
 	const fightFish = async (myFish: Fish | null, opponentFish: Fish | null) => {
@@ -877,11 +819,6 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 
 		} catch (error: any) {
 			console.log(error);
-			// toast.error(error);
-			// setIsFighting(false);
-			// setMySelectedFish(null);
-			// setOpponentFish(null);
-			// setPendingTransaction(false);
 			return false;
 		}
 	};
@@ -960,10 +897,6 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 			toast.error(`Power Up requires ${Constants._fightModifierCost} POWER (You have ${fish.power})`);
 			return;
 		}
-		// if(fish.seasonStats != null && (fish.seasonStats.agiModifier > 0 || fish.seasonStats.strModifier > 0 || fish.seasonStats.intModifier > 0)) {
-		// 	toast.error(`Only 1 Attribute Upgrade allowed per season!`)
-		// 	return;
-		// }
 		try {
 			// User has allowance to Feed Fish
 			if(trainingFoodApproval.gte(new BN(Constants._questFee))) {
@@ -1089,7 +1022,6 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 		})
 		.on('transactionHash', () => {
 			setPendingTransaction(true);
-			//unityContext.isFighting ?
 		})
 		.on('receipt', async (result: any) => {
 			setPendingTransaction(false);
@@ -1344,7 +1276,6 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 	}
 
 	const getUserFish = async (tokenId: number) => {
-		// console.log(tokenId)
 		const newFish = await createUserFish(tokenId)
 		if(newFish != null) {
 			unityContext.addFishFishing(newFish);
@@ -1413,8 +1344,6 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 	const getGasPrice = async () => {
 		try {
 			const estimate = await FishFight.provider.eth.getGasPrice();
-			// console.log(estimate)
-
 			let boosted = new BN(estimate);
 			let multiplierToAdd = boosted.div(new BN(10));
 			boosted = boosted.add(multiplierToAdd);
@@ -1434,12 +1363,9 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 		return false;
 	}
 
-
 	// Fighting Weak Functions
 	const contractIsFighterWeakDeposited = async (tokenId: number) => {
 		const owner = await FishFight.readFishFactory.methods.ownerOf(tokenId).call();
-		// console.log(owner)
-		// console.log(FishFight.readFishingWaters.options.address)
 		return owner === FishFight.readFightingWatersWeak.options.address;
 	}
 
@@ -1491,10 +1417,6 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 					toast.success('Fighting Approval completed')
 					setFightingFishWeakApproval(true);
 					setPendingTransaction(false);
-					// if(approvalAllResult.events.ApprovalForAll.returnValues.approved) {
-					// 	contractBreedDeposit(fish);
-					// 	return;
-					// }
 					callback();
 				})
 			}
@@ -1513,10 +1435,6 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 					toast.success('Fighting Approval completed')
 					setPendingTransaction(false);
 					setShowFightingFishApproval(false);
-					// console.log(approveResult)
-					// if(approveResult.events.Approval.returnValues.approved === FishFight.readFightingWaters.options.address) {
-					// 	contractDeathFight(myFish, opponentFish, true);
-					// }
 					callback();
 				})
 			}	
@@ -1556,7 +1474,6 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 				})
 			})
 		})
-
 	}
 
 	const depositFightingFishWeak = async (fish : Fish | null) => {
@@ -1597,10 +1514,6 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 						contractDepositFightingFishWeak(fish);
 					} else {
 						contractApproveFishForFightingWeak(fish.tokenId, () => contractDepositFightingFishWeak(fish))
-						// console.log(approveResult)
-						// if(approveResult.events.Approval.returnValues.approved === FishFight.readFightingWaters.options.address) {
-						// 	contractDepositFightingFish(fish);
-						// }
 					}
 				})
 			}
@@ -1643,8 +1556,6 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 			setPendingTransaction(true);
 		}).on('receipt', async (data: any) => {
 			setPendingTransaction(false);
-			// withdrawUserFightingFish(fish);
-			// setFishSelectionToShow(FishSelectionEnum.FightFish)
 			toast.success('Transaction done', {
 				onOpen: async () => {
 					refetchBalance()
@@ -1788,11 +1699,6 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 
 		} catch (error: any) {
 			console.log(error);
-			// toast.error(error);
-			// setIsFighting(false);
-			// setMySelectedFish(null);
-			// setOpponentFish(null);
-			// setPendingTransaction(false);
 			return false;
 		}
 	};
@@ -1813,8 +1719,6 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 	// Fighting Functions
 	const contractIsFighterNonLethalDeposited = async (tokenId: number) => {
 		const owner = await FishFight.readFishFactory.methods.ownerOf(tokenId).call();
-		// console.log(owner)
-		// console.log(FishFight.readFishingWaters.options.address)
 		return owner === FishFight.readFightingWatersNonLethal.options.address;
 	}
 
@@ -1922,7 +1826,6 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 				})
 			})
 		})
-
 	}
 
 	const contractApproveFoodForFighting = async (amountToApprove: string, callback?: any) => {
@@ -1983,7 +1886,6 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 			// Check existing approvals
 			// Case: FishFood MAX Allowance not set, and FISH approve all not set
 			if(fightingFoodApproval.lt(new BN(Constants._fishFoodDepositFee)) && !fightingFishNonLethalApproval) {
-				console.log("Case 1")
 				contractApproveFoodForFighting(
 					MAX_APPROVE,
 					() => contractApproveFishForFightingNonLethal(0, () => contractDepositFightingFishNonLethal(fish))
@@ -1993,7 +1895,6 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 
 			// Case: FISH approveAll required, FISHFOOD MAX already set
 			if(!fightingFishNonLethalApproval && fightingFoodApproval.gte(new BN(Constants._fishFoodDepositFee))) {
-				console.log("Case 2")
 				contractApproveFishForFightingNonLethal(0, () => contractDepositFightingFishNonLethal(fish))
 				return;
 			}
@@ -2001,13 +1902,11 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 			// Case: FISHFOOD allowance not set, FISH already approved
 			// Not enough allowance, but user wants to not use Max int, so approve just enough
 			if(fightingFoodApproval.lt(new BN(Constants._fishFoodDepositFee)) && fightingFishNonLethalApproval) {
-				console.log("Case 3")
 				contractApproveFoodForFighting(MAX_APPROVE, () => contractDepositFightingFishNonLethal(fish));
 				return;
 			}
 
 			// Case: Both Food and Fish are approved
-			console.log("Case 4")
 			contractDepositFightingFishNonLethal(fish);
 			
 		} catch (error: any) {
@@ -2056,11 +1955,6 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 		setOnAccept(() => async () => {
 			setShowFightingNonLethalDisclaimer(false);
 			setOnAccept(() => () => {})
-			// try {
-			// 	const gas = await FishFight.fightingWatersNonLethal?.methods.deathFight(myFish.tokenId, opponentFish.tokenId).estimateGas({from: account});
-			// } catch (error: any) {
-			// 	toast.error(error)
-			// }
 			return FishFight.fightingWatersNonLethal?.methods.deathFight(myFish.tokenId, opponentFish.tokenId).send({
 				from: account,
 				gasPrice: await getGasPrice(),
@@ -2090,14 +1984,11 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 						if(myFish.tokenId === fightResult.winner) {
 							refreshFish(myFish.tokenId, true, false)
 							refreshFish(opponentFish.tokenId, false, false);
-							// unityContext.refreshFishUnity(opponentFish)
 						}
-
 						if(opponentFish.tokenId === fightResult.winner) {
 							refreshFish(opponentFish.tokenId, true, false);
 							refreshFish(myFish.tokenId, false, false)
 						}
-
 					},
 				});
 			})
@@ -2168,7 +2059,6 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 		}
 	};
 
-
 	const getFightNonLethalByIndex = async (fightIndex: number, myFish: Fish) => {
 		const fightInfo = await FishFight.fightingWatersNonLethal?.methods.getFightInfo(fightIndex).call();
 		let fightResult = new Fight(fightInfo);
@@ -2237,6 +2127,7 @@ export const useContractWrapper = () => {
 	const context = useContext(ContractWrapperContext);
 
 	if (!context) {
+		// eslint-disable-next-line no-throw-literal
 		throw 'useContractWrapper must be used within a ContractWrapperProvider';
 	}
 	return context;

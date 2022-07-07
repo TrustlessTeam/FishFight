@@ -1,4 +1,3 @@
-import { BigNumber } from 'ethers';
 import web3 from 'web3'
 import { Constants } from './constants';
 
@@ -30,12 +29,6 @@ export type FightHistory = {
   fightId: number;
   result: any;
 }
-
-// export type Modifier = {
-//   time: number;
-//   value: number;
-//   uses: number;
-// }
 
 export enum ModifierMapping {
 	"alpha",
@@ -85,22 +78,6 @@ const setModifierMapping = (index: number, value: number) => {
     return ""
   }
 }
-
-// export class TrainingStatus {
-//   feedCooldown: number;
-//   claimCooldown: number;
-//   canFeed: () => boolean;
-//   canClaim: () => boolean;
-
-//   constructor(
-//     trainingObject: any,
-//   ) {
-//     this.feedCooldown = web3.utils.toNumber(trainingObject.lastFed);
-//     this.claimCooldown = web3.utils.toNumber(trainingObject.lastClaimed);
-//     this.canFeed = () => {return this.feedCooldown <= Math.round(Date.now() / 1000)}
-//     this.canClaim = () => {return this.claimCooldown <= Math.round(Date.now() / 1000)}
-//   }
-// }
 
 export class FishModifiers {
 	alphaModifier: Modifier;
@@ -282,7 +259,7 @@ export class Fish {
   }
 
   mapTraitValueToRange(value: number, range: Array<number>) {
-    if(range[1] == 0) return 0;
+    if(range[1] === 0) return 0;
     return (value % range[1]) + range[0];
   }
 

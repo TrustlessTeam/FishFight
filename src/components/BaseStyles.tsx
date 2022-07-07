@@ -1,9 +1,6 @@
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import Modal from 'react-modal';
-import iceImg from "../img/ice.jpg";
-import bloodImg from "../img/blood.png";
-import waterImg from "../img/water.jpg";
 
 export const ContainerRow = styled.div`
 	position: relative;
@@ -35,7 +32,6 @@ export const Title = styled.h1`
 		display: block;
 	  font-size: ${props => props.theme.font.large};
   }
-	/* text-decoration: underline; */
 	text-transform: uppercase;
 
 	span {
@@ -50,15 +46,12 @@ export const StyledModal = styled(Modal)`
   position: absolute;
   top: 50%;
   left: 50%;
-  /* min-width: fit-content; */
-	/* max-width: 100%; */
 	width: 100%;
   max-height: 100%;
   transform: translate(-50%, -50%);
   border-radius: 20px;
   background-color: rgba(4, 49, 83, 0.906);
 	
-	/* padding: ${props => props.theme.spacing.gap}; */
 	box-shadow:  20px 20px 60px #254f67,
              -20px -20px 60px #336b8b;
   outline: none;
@@ -67,8 +60,6 @@ export const StyledModal = styled(Modal)`
 
 	&::before {    
 		content: "";
-		/* background: url(${waterImg}); */
-		/* background-blend-mode: lighten; */
 		opacity: 0.9;
 		border: solid white 2px;
 		border-radius: 20px;
@@ -100,7 +91,6 @@ export const BaseContainerCentered = styled.div`
 	align-items: center;
 	width: 100%;
 	height: 100%;
-	/* pointer-events: auto; */
 `;
 
 export const ContainerControls = styled.div`
@@ -108,8 +98,6 @@ export const ContainerControls = styled.div`
 	display: flex;
 	flex-flow: row nowrap;
 	padding: ${props => props.theme.spacing.gapSmall};
-	/* height: 17%; */
-	/* pointer-events: auto; */
 	justify-content: space-between;
 `;
 
@@ -166,7 +154,6 @@ export const BaseTitle = styled.p`
 	margin: 0;
 	color: white;
 	font-size: ${props => props.theme.font.medium};
-	/* -webkit-text-stroke: 1px #61daff; */
 
 	@media ${props => props.theme.device.tablet} {
 		font-size: ${props => props.theme.font.large};
@@ -192,11 +179,9 @@ export const BaseButtonStyle = styled.button`
   background-image: linear-gradient(#ffffff, #adadad);
   z-index: 1;
   box-shadow: inset 2px 2px 2px rgba(255, 255, 255, .3), inset -2px -2px 2px rgba(0, 0, 0, .3);
-  /* transition: transform 0.25s ease-in-out; */
 
   @media ${props => props.theme.device.tablet} {
 		font-size: ${props => props.theme.font.medium};
-    /* padding: 12px 20px; */
   }
 
 

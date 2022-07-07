@@ -1,12 +1,10 @@
-// React
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useWeb3React } from '@web3-react/core';
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-// Styled Components
 import styled from 'styled-components';
 import { useFishPool } from '../context/fishPoolContext';
 import { useUnity } from '../context/unityContext';
-import { BaseText, UIContainer } from './BaseStyles';
 
 import fishingImg from "../img/icons/fishing-dark.svg"
 import breedingImg from "../img/icons/breeding-dark.svg"
@@ -80,7 +78,6 @@ const Default = () => {
 
 const LogoImg = styled.img`
 	height: 50px;
-	/* border: 2px solid white;s */
 	border-radius: 50%;
   &.active {
     background-color: rgba(255, 255, 255, 0.5);
@@ -132,7 +129,6 @@ const Item = styled(Link)`
 	text-decoration: none;
   transition: all 0.25s ease-in-out;
 
-
 	@media ${props => props.theme.device.tablet} {
 		width: 160px;
 		height: 160px;
@@ -142,8 +138,5 @@ const Item = styled(Link)`
 		background-color: rgba(255,255,255,1);
 	}
 `;
-
-
-
 
 export default Default;

@@ -1,16 +1,9 @@
 // Harmony SDK
-import { Blockchain, Harmony, HarmonyExtension } from "@harmony-js/core"
+import { Blockchain, HarmonyExtension } from "@harmony-js/core"
 import { HarmonyAbstractConnector } from "@harmony-react/abstract-connector"
-
-// Web3 React
 import { AbstractConnector } from "@web3-react/abstract-connector"
-
-// Helpers
-import { getExtension } from "./harmonyHelpers"
-
-// Web3
 import Web3 from 'web3';
-import { getProvider } from "../utils/provider";
+
 
 const envProvider: string = process.env.REACT_APP_FRONTEND_NETWORK || 'mainnet';
 
@@ -19,30 +12,11 @@ type getWalletProviderReturn = {
 	type: "harmony" | "web3" // will let sdk know what type of provider we are dealing with to initiate contracts correctly. If type === default, user is not signed in
 }
 
-// To-do useMemo
-// export const getHarmonyProvider = (): getWalletProviderReturn => {
-// 	const prov = getProvider()
-// 	const provider = new Harmony(prov.url, {chainId: prov.chainId, chainType: prov.chainType})
-// 	return {provider, type: "default"}
-// }
-
 
 export const getWalletProvider = async (connector: AbstractConnector | HarmonyAbstractConnector | undefined, library: Blockchain | any | undefined ): Promise<getWalletProviderReturn> => {
-    let provider: HarmonyExtension | Web3
-		// console.log("CONNECTOR")
-		// console.log(connector)
-  //   const harmonyConnector = connector as HarmonyAbstractConnector;
-  //   // If connector is a HarmonyAbstractConnector, it will contain windowKey (mathWallet or OneWallet).
-	// if (harmonyConnector.windowKey) {
-	// 	// Get wallet provider from window
-	// 	const extensionWallet: any = window[harmonyConnector.windowKey];
-	// 	// Start a HarmonyExtension instance
-	// 	provider = getExtension(extensionWallet);
-	// 	// With that harmony extension initiate the contract
-  //       return new Promise(resolve => resolve({provider, type: "harmony"}));
-	// }
+  let provider: HarmonyExtension | Web3
 
-    // If connector is AbstractConnector (not a harmony wallet)
+  // If connector is AbstractConnector (not a harmony wallet)
 	// Get wallet provider from web3Provider
 	const accounts = await library.provider.request({ method: 'eth_requestAccounts' });
 	console.log(accounts)
@@ -97,12 +71,6 @@ export const getWalletProvider = async (connector: AbstractConnector | HarmonyAb
 		// if no window.ethereum then MetaMask is not installed
 		alert('MetaMask is not installed. Please consider installing it: https://metamask.io/download.html');
 	}
-	// console.log(provider.eth.getChainId())
-  //   if(await provider.eth.getChainId() != 1666700000) {
-	// 		console.log("Wrong network selected!! Switch to Harmony Testnet")
-	// 		await library.provider.request({ method: 'wallet_switchEthereumChain', params:[{chainId: '0x6357D2E0'}]});
-	// 		return getHarmonyProvider()
-	// 	}
-    
-    return new Promise(resolve => resolve({provider, type: "web3"}));
+	
+	return new Promise(resolve => resolve({provider, type: "web3"}));
 }

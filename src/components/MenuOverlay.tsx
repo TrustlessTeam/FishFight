@@ -1,18 +1,10 @@
-import { useWeb3React } from '@web3-react/core';
-
+import { useState } from "react";
 import 'react-toastify/dist/ReactToastify.css';
-
-// Styled Components
 import styled from 'styled-components';
-
 import { useFishFight } from "../context/fishFightContext";
-
 import HowToPlayModal from "./HowToPlayModal";
-
-// Components
 import Nav from './Nav';
 import Account from './Account';
-import { useState } from "react";
 import StatusModal from "./StatusModal";
 import BaseButton from "../components/BaseButton";
 import useSound from 'use-sound';
@@ -31,19 +23,14 @@ import { useFishPool } from '../context/fishPoolContext';
 import { toast } from 'react-toastify';
 
 const MenuOverlay = () => {
-	const { account } = useWeb3React();
-	const [open, setOpen] = useState(false);
-	const [openStore, setOpenStore] = useState(true);
+	const [open] = useState(false);
 	const [mutedMusic, setMutedMusic] = useState(true);
-	const [muted, setMuted] = useState(true);
+	const [muted] = useState(true);
 	const [play, { pause } ] = useSound('genesis_landing.mp3', {loop: true, volume: 0.05});
 	//const [playFight, { pauseFight } ] = useSound('genesis_landing_the_sea_of_no_mercy.mp3', {loop: true, volume: 0.05});
 	const { globalMute, toggleGlobalMute, refetchBalance, refetchStats } = useFishFight();
 	const { refreshLoadedFish } = useFishPool();
 
-	const HandleOpenStore = () => {
-		setOpenStore(true);		
-	}
 
 	const handleMusicClick = () => {
 		console.log(mutedMusic)
@@ -75,7 +62,6 @@ const MenuOverlay = () => {
 		else {
 			//pause();
 			//setMuted(true);
-
 		}
 		
 	}
@@ -91,40 +77,23 @@ const MenuOverlay = () => {
 
 			<MenuContainer>
 				
-				<StatusModal>
-
-				</StatusModal>
-					
-				<StyledNav>
-				</StyledNav>
-						 
+				<StatusModal></StatusModal>
+				<StyledNav></StyledNav>		 
 				<User>
-					<Account>
-					</Account>
+					<Account></Account>
 				</User>
-						
-				
-
-					
-				
-				
-				
-				
-				{/* <InfoContainer open={open}>
-					
-				</InfoContainer> */}
 			</MenuContainer>
 				
 				
-			<SoundButton onClick={() => HandleOpenStore()}><a href="https://discord.com/invite/23ArJsQKnT" target="_blank" rel=""><LogoImg src={discordImg }></LogoImg></a>
+			<SoundButton onClick={() => null}><a href="https://discord.com/invite/23ArJsQKnT" target="_blank" rel="noreferrer"><LogoImg src={discordImg }></LogoImg></a>
 			</SoundButton>
-			<SoundButton onClick={() => HandleOpenStore()}><a href="https://app.sushi.com/swap?inputCurrency=ONE&outputCurrency=0x81E9E682d2d7F016Ff7c3D17567Ee7511f29f653&chainId=1666600000" target="_blank" rel=""><LogoImg src={sushiImg }></LogoImg></a>
+			<SoundButton onClick={() => null}><a href="https://app.sushi.com/swap?inputCurrency=ONE&outputCurrency=0x81E9E682d2d7F016Ff7c3D17567Ee7511f29f653&chainId=1666600000" target="_blank" rel="noreferrer"><LogoImg src={sushiImg }></LogoImg></a>
 			</SoundButton>
-			<SoundButton onClick={() => HandleOpenStore()}><a href="https://game.defikingdoms.com/#/marketplace?outputCurrency=0x81E9E682d2d7F016Ff7c3D17567Ee7511f29f653" target="_blank" rel=""><LogoImg src={dfkImg }></LogoImg></a>
+			<SoundButton onClick={() => null}><a href="https://game.defikingdoms.com/#/marketplace?outputCurrency=0x81E9E682d2d7F016Ff7c3D17567Ee7511f29f653" target="_blank" rel="noreferrer"><LogoImg src={dfkImg }></LogoImg></a>
 			</SoundButton>
-			<SoundButton onClick={() => HandleOpenStore()}><a href="https://nftkey.app/collections/fishfight/" target="_blank" rel=""><LogoImg src={nftkeyImg }></LogoImg></a>
+			<SoundButton onClick={() => null}><a href="https://nftkey.app/collections/fishfight/" target="_blank" rel="noreferrer"><LogoImg src={nftkeyImg }></LogoImg></a>
 			</SoundButton>
-			<SoundButton onClick={() => HandleOpenStore()}><a href="https://tofunft.com/collection/fishfight/items" target="_blank" rel=""><LogoImg src={tofunftImg }></LogoImg></a>
+			<SoundButton onClick={() => null}><a href="https://tofunft.com/collection/fishfight/items" target="_blank" rel="noreferrer"><LogoImg src={tofunftImg }></LogoImg></a>
 			</SoundButton>
 			<SoundButton onClick={() => handleMusicClick()}><LogoImg src={mutedMusic ? muteImg : musicImg }></LogoImg>
 			</SoundButton>
@@ -133,10 +102,6 @@ const MenuOverlay = () => {
 		</Wrapper>
 	);
 };
-
-interface Props {
-	open?: boolean;
-}
 
 const SoundButton = styled(BaseButton)`
 	padding: 5px;
@@ -161,14 +126,6 @@ const SoundButton = styled(BaseButton)`
   }
 `;
 
-
-
-const StoreLogoImg = styled.img`
-	height: 25px;
-	@media ${props => props.theme.device.tablet} {
-		padding: 10px;
-  }
-`;
 const LogoImg = styled.img`
 	height: 15px;
 
@@ -193,7 +150,6 @@ const Wrapper = styled.div<{open: boolean}>`
 const MenuContainer = styled.div`
 	display: flex;
 	padding: ${props => props.theme.spacing.gapSmall};
-	/* flex-flow: column; */
 	justify-content: center;
 	flex-flow: row nowrap;
 	align-items: center;
@@ -205,7 +161,6 @@ const MenuContainer = styled.div`
 		flex-flow: row nowrap;
 		align-items: center;
 		justify-content: space-between;
-		/* width: 100%; */
   }
 `;
 
@@ -221,10 +176,6 @@ const User = styled.div`
 
 const StyledNav = styled(Nav)`
 	width: 33%;
-	/* order: 0;
-	@media ${props => props.theme.device.tablet} {
-		order: 1;
-  } */
 `;
 
 const RefreshButton = styled(BaseButton)`

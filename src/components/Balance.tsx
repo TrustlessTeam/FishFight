@@ -100,27 +100,12 @@ export const ItemBalance = () => {
   );
 };
 
-
-const Balances = styled.div`
-  position: relative;
-  display: flex;
-  flex-flow: row wrap;
-  align-items: space-evenly;
-  z-index: 5;
-
-  /* @media ${(props) => props.theme.device.tablet} {
-	  flex-flow: column;
-		align-items: flex-end;
-  } */
-`;
-
 const BalanceText = styled.b`
   display: flex;
   flex-flow: row nowrap;
   justify-content: center;
   align-items: center;
   font-size: ${(props) => props.theme.font.medium};
-  /* margin-right: ${(props) => props.theme.spacing.gapSmall}; */
   cursor: default;
   @media ${(props) => props.theme.device.tablet} {
     font-size: ${(props) => props.theme.font.medium};
@@ -132,11 +117,7 @@ const BalanceComponent = styled.div`
   flex-flow: row;
   justify-content: center;
   margin-left: ${(props) => props.theme.spacing.gap};
-  /* padding: ${(props) => props.theme.spacing.gap} ${(props) =>
-    props.theme.spacing.gap}; */
-  /* background-color: white; */
   color: white;
-  /* border: 2px solid white; */
   border-radius: 50%;
 
   & > span {

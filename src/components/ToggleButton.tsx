@@ -1,15 +1,7 @@
 
 import styled from "styled-components";
 import useSound from 'use-sound';
-
 import { useFishFight } from "../context/fishFightContext";
-
-// type Props = {
-//   onClick: () => void;
-//   children?: React.ReactNode;
-//   disabled?: boolean;
-//   style?: object;
-// }
 
 type Props = {
   items: ToggleItem[],
@@ -20,7 +12,6 @@ export type ToggleItem = {
   name: string;
 	id: number;
   onClick: () => void;
-  // extra?: any;
 };
 
 const ToggleButton = ({ items, selected } : Props) => {
@@ -44,10 +35,7 @@ const ToggleButton = ({ items, selected } : Props) => {
 							}}>{item.name}</ToggleOption>
 					)
 				})}
-				{/* <ToggleOption className={selected === FishView.Ocean ? 'active' : ''} onClick={() => setFishToShow(FishView.Ocean)}>Ocean Fish</ToggleOption>
-				<ToggleOption className={selected === FishView.User ? 'active' : ''} onClick={() => setFishToShow(FishView.User)}>My Fish</ToggleOption> */}
 			</ToggleGroup>
-			{/* <Menu name={FishView[fishToShow]} items={FishViewOptions}></Menu> */}
 		</>
 	)
 }
@@ -58,7 +46,6 @@ export default ToggleButton;
 export const ToggleGroup = styled.div`
 	display: flex;
 	flex-flow: row nowrap;
-	/* box-shadow: 2px 2px 8px 2px gray, -2px -2px 8px 2px white; */
 	pointer-events: auto;
 
 	border-radius: 10px;
@@ -72,7 +59,6 @@ export const ToggleGroup = styled.div`
 export const ToggleOption = styled.button`
 	position: relative;
 	background-color: #f0f1eb;
-  /* border: 2px solid white; */
 	border: none;
   color: white;
   padding: 6px 20px;
@@ -166,24 +152,6 @@ export const ToggleOption = styled.button`
 		background-image: linear-gradient(#ffffff, #e2e2e2);
 		box-shadow: inset 0 0 5px #000;
 		pointer-events: none;
-
-		/* &:hover {
-			background-image: linear-gradient(#ffffff, #e2e2e2);
-
-		}
-		&:first-child {
-			border-top-left-radius: 10px;
-			border-bottom-left-radius: 10px;
-		}
-
-		&:last-child {
-			border-top-right-radius: 10px;
-			border-bottom-right-radius: 10px;
-		}
-
-		&:not(:last-child) {
-			border-right: none; /* Prevent double borders */
-		} */
 	}
 
 	@media ${props => props.theme.device.tablet} {
@@ -194,8 +162,6 @@ export const ToggleOption = styled.button`
 	&:hover {
 		cursor: pointer;
 	}
-
-  
   
   &:hover::before {
     opacity: 1;

@@ -1,10 +1,7 @@
-import React, { useEffect, useRef } from "react";
+import React from "react";
 import { ScrollMenu, VisibilityContext } from "react-horizontal-scrolling-menu";
 import { Fish } from "../utils/fish";
-
 import { LeftArrow, RightArrow } from "../scrolling/arrows";
-
-
 import useDrag from "../scrolling/useDrag";
 import { useState } from "react";
 import styled from "styled-components";
@@ -14,9 +11,7 @@ import { ContainerControls } from './BaseStyles';
 import useSound from "use-sound";
 import { useFishPool, PoolFish, PoolTypes } from "../context/fishPoolContext";
 import { useFishFight } from "../context/fishFightContext";
-import web3 from 'web3'
-
-
+import web3 from 'web3';
 
 const sortId = (a: Fish, b: Fish) => a.tokenId - b.tokenId;
 const sortAlpha = (a: Fish, b: Fish) => {
@@ -111,15 +106,6 @@ const FishDrawer = ({
     }
   }
 
-  useEffect(() => {
-    
-  }, []);
-
-
-  // useEffect(() => {
-	// 	if(type == "Breeding") setSortOption(SortSelection.Betta)
-	// }, []);
-
   const SortOptions = [
     {
       name: "Id",
@@ -188,28 +174,7 @@ const FishDrawer = ({
     if(onClick) onClick(fish);
   };
 
-  // const selectedPrev = usePrevious(selected);
-  // const apiRef = useRef({} as scrollVisibilityApiType);
-  // useEffect(() => {
-  //   if(selected !== selectedPrev) {
-  //     const item = apiRef.current?.getItemElementById(selected);
-  //     if(item != null) {
-  //       apiRef.current?.scrollToItem?.(
-  //         // document.querySelector(`[data-key='${items.slice(-1)?.[0]?.id}']`)
-  //         item
-  //       );
-  //     }
-  //   }
-
-  // }, [selected, selectedPrev]);
-
   const loadMore = (index: number) => {
-    // if(loadingFish && !loadingUserFish) {
-
-    // }
-    // console.log(index)
-    const [lastItem] = fishCollection.slice(-1)
-    // console.log(fishCollection.length)
     let numLoaded = fishCollection.length;
     if(index === numLoaded) { // check if we are showing the last item
       
@@ -227,11 +192,8 @@ const FishDrawer = ({
     let numLoaded = fishCollection.length;
     if(fishPool === PoolFish.Ocean && numLoaded === totalSupply) return true;
     if(fishPool === PoolFish.User && balanceFish && balanceFightFish && balanceBreedFish) {
-      const userTotal = web3.utils.toNumber(balanceFish) + web3.utils.toNumber(balanceFightFish) + web3.utils.toNumber(balanceBreedFish)
-      // console.log("UserFish Check")
-      // console.log(fishCollection.length)
-      // console.log(userTotal)
-      return fishCollection.length === userTotal
+      const userTotal = web3.utils.toNumber(balanceFish) + web3.utils.toNumber(balanceFightFish) + web3.utils.toNumber(balanceBreedFish);
+      return fishCollection.length === userTotal;
     }
     if(fishPool === PoolFish.Breeding && breedingWatersSupply && fishCollection.length === web3.utils.toNumber(breedingWatersSupply)) return true;
     if(fishPool === PoolFish.Fighting && fightingWatersSupply && fishCollection.length === web3.utils.toNumber(fightingWatersSupply)) return true;
@@ -251,22 +213,8 @@ const FishDrawer = ({
         <Menu
           name={`Sort by: ${SortSelection[sortOption]}`}
           items={SortOptions}
-          // onChange={}
         ></Menu>
         )}
-        {/* <Search>
-          <TextLabel>
-            VIEW ID:
-            <SearchInput
-              type="text"
-              value={searchId}
-              onChange={(ev: React.ChangeEvent<HTMLInputElement>): void =>
-                setSearchId(ev.target.value)
-              }
-            />
-          </TextLabel>
-          <input type="submit" value="GO" />
-        </Search> */}
       </ContainerControls>
 
       <Container>
@@ -320,7 +268,7 @@ function onWheel(apiObj: scrollVisibilityApiType, ev: React.WheelEvent): void {
 const StyledScrollMenu = styled(ScrollMenu)`
 
 
-`
+`;
 
 const Container = styled.div`
   pointer-events: auto;
@@ -350,20 +298,9 @@ const PendingOverlay = styled.div<{open: boolean}>`
   width: 100%;
   height: 0;
   opacity: 0;
-  /* background-color: rgba(25, 22, 209, 0.466);
-  z-index: 100; */
   pointer-events: none;
   transition: opacity 0.25s ease-in-out;
-  /* ${({ open }) =>
-    open ?
-    `
-    display: block;
-    `
-    :
-    `
-    display: none;
-    `
-  } */
+
   &.active {
     pointer-events: auto;
     opacity: 1;
@@ -373,6 +310,5 @@ const PendingOverlay = styled.div<{open: boolean}>`
 
 const LoadingText = styled.h1`
   color: white;
-
   margin: 0 auto;
 `;

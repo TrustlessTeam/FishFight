@@ -1,30 +1,20 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect } from "react";
-
 import { PoolFish, PoolTypes, useFishPool } from "../context/fishPoolContext";
 import { useUnity } from "../context/unityContext";
 import { useWeb3React } from "@web3-react/core";
-
 import Account from "./Account";
-import BaseButton from "../components/BaseButton";
-import {
-  ContainerControls,
-  BaseLinkButton,
-  BaseContainer,
-  OptionsContainer,
-  StyledModal,
-  BaseTitle,
-  ContainerColumn,
-  ContainerRow,
-  BaseText,
-} from "./BaseStyles";
 import ToggleButton, { ToggleItem } from "./ToggleButton";
 import Fish from "../utils/fish";
 import { useContractWrapper } from "../context/contractWrapperContext";
-import { useFishFight } from "../context/fishFightContext";
 import FishDrawer from "./FishDrawer";
-import { Constants } from "../utils/constants";
 import BuffModal from "./BuffModal";
 import DepositModal from "./DepositModal";
+
+import {
+  BaseLinkButton,
+  BaseContainer,
+} from "./BaseStyles";
 
 enum FishView {
   Ocean,
@@ -40,17 +30,13 @@ const Ocean = () => {
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [modalIsOpenDeposit, setModalIsOpenDeposit] = useState(false);
 
-  // const [renderedFish, setRenderedFish] = useState<number[]>([]);
   const unityContext = useUnity();
   const {
     feedFish,
     claimFishFood,
-    questFish,
     depositBreedingFish,
-    depositFightingFish,
     smartWithdraw,
     withdrawBreedingFish,
-    pendingTransaction,
   } = useContractWrapper();
   const { account } = useWeb3React();
 
@@ -81,7 +67,6 @@ const Ocean = () => {
           toggleModal();
           return;
         case "deposit_fight_confirm":
-          // depositFightingFish(mySelectedFish);
           toggleModalDeposit();
           return;
         case "withdraw_fight_confirm":
@@ -100,10 +85,7 @@ const Ocean = () => {
   }, [unityContext.isFishPoolReady, mySelectedFish, account]);
 
   useEffect(() => {
-    console.log("CLEAR OCEAN");
-    // unityContext.showFishUI();
     unityContext.clearUIFish();
-    // unityContext.hideUI();
     unityContext.showOceanLocation();
   }, [unityContext.isFishPoolReady]);
 
@@ -113,7 +95,6 @@ const Ocean = () => {
     oceanFish.forEach((poolFish) => {
       if (!renderedOceanFish.some((tokenId) => poolFish.tokenId === tokenId)) {
         unityContext.addFishOcean(poolFish);
-        // if(renderedOceanFish.length > Constants._MAXFISH) renderedOceanFish.shift()
         renderedOceanFish.push(poolFish.tokenId);
       }
     });
@@ -125,17 +106,10 @@ const Ocean = () => {
     userFish.forEach((poolFish) => {
       if (!renderedOceanFish.some((tokenId) => poolFish.tokenId === tokenId)) {
         unityContext.addFishOcean(poolFish);
-        // if(renderedOceanFish.length > Constants._MAXFISH) renderedOceanFish.shift()
         renderedOceanFish.push(poolFish.tokenId);
       }
     });
   }, [unityContext.isFishPoolReady, userFish]);
-
-  // useEffect(() => {
-  // 	console.log("CLEAR OCEAN")
-  // 	unityContext.clearFishPool('showOceanLocation')
-  // 	unityContext.showOceanLocation();
-  // }, []);
 
   useEffect(() => {
     console.log("Account changed");
@@ -159,26 +133,6 @@ const Ocean = () => {
     setModalIsOpenDeposit(!modalIsOpenDeposit);
   };
 
-
-  // useEffect(() => {
-  // 	console.log("Ocean Fish Changed")
-  // 	// console.log(oceanFish)
-  // 	if(!unityContext.isFishPoolReady) return;
-  // 	let i = 0;
-  // 	oceanFish.forEach(fish => {
-  // 		if(!renderedFish.includes(fish.tokenId)) {
-  // 			unityContext.addFishOcean(fish);
-  // 			setRenderedFish(prevData => [...prevData, fish.tokenId])
-  // 			i++;
-  // 		}
-  // 	})
-  // 	console.log(i)
-  // }, [oceanFish, unityContext.isFishPoolReady]);
-
-  // useEffect(() => {
-  // 	unityContext.showOceanLocation();
-  // }, [unityContext.isFishPoolReady]);
-
   return (
     <BaseContainer>
       {mySelectedFish != null && (
@@ -197,7 +151,6 @@ const Ocean = () => {
 				/>
       )}
 
-      {/* <FishDrawer fishCollection={oceanFish}></FishDrawer> */}
       {fishToShow === FishView.Ocean && (
         <FishDrawer
           fishPool={PoolFish.Ocean}

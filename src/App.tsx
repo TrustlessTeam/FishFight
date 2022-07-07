@@ -1,15 +1,8 @@
 import { Routes, Route } from "react-router-dom";
-
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
-// Styled Components
 import styled, { ThemeProvider } from "styled-components";
 import { BaseTheme } from "./default-theme";
-
-// Components
-import Countdown from 'react-countdown';
-
 
 import UnityWindow from "./components/UnityWindow";
 import Ocean from "./components/Ocean";
@@ -22,17 +15,6 @@ import DisclaimerModal from "./components/DisclaimerModal";
 import { useContractWrapper } from "./context/contractWrapperContext";
 import FightingWatersWeak from "./components/FightingWatersWeak";
 import FightingWatersNonLethal from "./components/FightingWatersNonLethal";
-
-type RenderProps = {
-  hours: any;
-  minutes: any;
-  seconds: any;
-  completed: boolean;
-}
-const renderer = ({ hours, minutes, seconds, completed }: RenderProps) => {
-  // Render a countdown
-  return <Time><Hour>{hours} hrs</Hour><Minute>{minutes} mins</Minute><Second>{seconds} secs</Second></Time>;
-};
 
 const App = () => {
   const { pendingTransaction } = useContractWrapper()
@@ -51,20 +33,13 @@ const App = () => {
               <Route path="/" element={<Default />} />
               <Route path="/ocean" element={<Ocean />} />
               <Route path="/fishing" element={<FishingWaters />} />
-              <Route path="/fighting" element={<FightingWaters />}>
-                {/* <Route path="/fighting/user" element={<FightingWaters />} /> */}
-                {/* <Route path="/fighting/weak" element={<FightingWaters />} /> */}
-              </Route>
+              <Route path="/fighting" element={<FightingWaters />}></Route>
               <Route path="/fighting/weak" element={<FightingWatersWeak />} />
               <Route path="/fighting/non-lethal" element={<FightingWatersNonLethal/>} />
-              <Route path="/breeding" element={<BreedingWaters />}>
-                {/* <Route path="/breeding/user" element={<UserBreedingWaters />} /> */}
-                {/* <Route path="/breeding/start" element={<StartBreed />} /> */}
-              </Route>
+              <Route path="/breeding" element={<BreedingWaters />}></Route>
             </Route>
           </Routes>
 
-          {/* <Blockchain></Blockchain> */}
         </Container>
         <ToastContainer
           position="top-left"
@@ -91,16 +66,7 @@ const PendingOverlay = styled.div<{open: boolean}>`
   z-index: 100;
   pointer-events: none;
   transition: all 0.25s ease-in-out;
-  /* ${({ open }) =>
-    open ?
-    `
-    display: block;
-    `
-    :
-    `
-    display: none;
-    `
-  } */
+  
   &.active {
     pointer-events: auto;
     opacity: 1;
@@ -134,44 +100,6 @@ const Container = styled.div`
   justify-content: flex-start;
   height: 100%;
   margin: 0 auto;
-`;
-
-const Time = styled.div`
-	display: flex;
-	flex-flow: row nowrap;
-	align-items: center;
-	justify-content: space-between;
-`;
-
-const Text = styled.p`
-  color: white;
-`
-
-const Hour = styled(Text)`
-	font-size: ${props => props.theme.font.medium};
-	padding-right: ${props => props.theme.spacing.gapSmall};
-	
-	@media ${props => props.theme.device.tablet} {
-	  font-size: ${props => props.theme.font.large};
-  }
-`;
-
-const Minute = styled(Text)`
-	font-size: ${props => props.theme.font.small};
-	padding-right: ${props => props.theme.spacing.gapSmall};
-
-	@media ${props => props.theme.device.tablet} {
-	  font-size: ${props => props.theme.font.medium};
-  }
-`;
-
-const Second = styled(Text)`
-	font-size: 10px;
-	padding-right: ${props => props.theme.spacing.gapSmall};
-
-	@media ${props => props.theme.device.tablet} {
-	  font-size: ${props => props.theme.font.small};
-  }
 `;
 
 export default App;

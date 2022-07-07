@@ -1,28 +1,17 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import styled from "styled-components";
-import { useWeb3React } from "@web3-react/core";
 import web3 from "web3";
 import { useLocalStorage } from "../helpers/localStorageHelper";
+import BaseButton from "./BaseButton";
+import { Constants } from "../utils/constants";
+import { Route, Routes } from "react-router-dom";
 
 import {
-  BaseContainer,
-  BaseText,
-  ContainerControls,
   StyledModal,
   Title,
 } from "./BaseStyles";
-import BaseButton from "./BaseButton";
-import { useContractWrapper } from "../context/contractWrapperContext";
-import { Constants } from "../utils/constants";
-import { useFishFight } from "../context/fishFightContext";
-import { Route, Routes } from "react-router-dom";
-import { Link } from "react-router-dom";
 
 const HowToPlayModal = () => {
-  const [modalIsOpen, setModalIsOpen] = useState(false);
-  const { account } = useWeb3React();
-  const { currentPhase } = useFishFight();
-
   const [ackOcean, setAckOcean] = useLocalStorage<boolean>("ackOcean", true);
   const [ackFishing, setAckFishing] = useLocalStorage<boolean>(
     "ackFishing",
@@ -47,16 +36,6 @@ const HowToPlayModal = () => {
   const [fightText, setFightText] = useState(0);
   const [breedText, setBreedText] = useState(0);
 
-  // console.log(showFightingDisclaimer)
-
-  const toggleModel = () => {
-    setModalIsOpen(!modalIsOpen);
-  };
-
-  const AcceptButton = () => {};
-
-  // console.log(onAccept)
-
   const HowToOcean = () => {
     return (
       <>
@@ -65,7 +44,6 @@ const HowToPlayModal = () => {
           isOpen={showOceanHowTo || ackOcean}
           className="Modal"
           overlayClassName="Overlay"
-          // onRequestClose={onAccept}
           shouldCloseOnOverlayClick
         >
           <Wrapper>
@@ -149,7 +127,6 @@ const HowToPlayModal = () => {
           isOpen={showFightingHowTo || ackFighting}
           className="Modal"
           overlayClassName="Overlay"
-          // onRequestClose={onAccept}
           shouldCloseOnOverlayClick
         >
           <Wrapper>
@@ -246,7 +223,6 @@ const HowToPlayModal = () => {
           isOpen={showBreedingHowTo || ackBreeding}
           className="Modal"
           overlayClassName="Overlay"
-          // onRequestClose={onAccept}
           shouldCloseOnOverlayClick
         >
           <Wrapper>
@@ -342,7 +318,6 @@ const HowToPlayModal = () => {
           isOpen={showFishingHowTo || ackFishing}
           className="Modal"
           overlayClassName="Overlay"
-          // onRequestClose={onAccept}
           shouldCloseOnOverlayClick
         >
           <Wrapper>
@@ -578,21 +553,7 @@ const SmallText = styled(Text)`
   }
 `;
 
-export const ContainerText = styled.div`
-  padding-top: ${(props) => props.theme.spacing.gapSmall};
-`;
-
-export const ApprovalsContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  height: 100%;
-  padding: ${(props) => props.theme.spacing.gap};
-`;
-
-export const ContainerLeft = styled.div`
+const ContainerLeft = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -601,7 +562,7 @@ export const ContainerLeft = styled.div`
   padding: ${(props) => props.theme.spacing.gap};
 `;
 
-export const Container = styled.div`
+const Container = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -611,7 +572,7 @@ export const Container = styled.div`
   padding: ${(props) => props.theme.spacing.gap};
 `;
 
-export const OptionsContainer = styled.div`
+const OptionsContainer = styled.div`
   display: flex;
   flex-flow: row nowrap;
   justify-content: center;

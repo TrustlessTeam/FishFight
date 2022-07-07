@@ -1,16 +1,15 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import FishFight from "../FishFightSDK";
 import { createContext, useContext, useEffect, useState, useCallback} from "react"
 import { useWeb3React } from "@web3-react/core";
 import { getWalletProvider } from '../helpers/providerHelper'
-import { toBech32 } from '@harmony-js/crypto';
-import { isBech32Address, fromWei, hexToNumber, Units } from '@harmony-js/utils';
-import { EtherscanProvider, Web3Provider } from "@ethersproject/providers";
+import { fromWei, Units } from '@harmony-js/utils';
 import Web3 from 'web3';
 import BN from 'bn.js'
 import { Phase } from '../utils/cycles';
 import { ContractCallContext, ContractCallResults } from "ethereum-multicall";
 import Contracts from '../contracts/contracts.json';
-import ERC20 from '../contracts/erc20.json';
+// import ERC20 from '../contracts/erc20.json';
 import { connectorsByName, ConnectorNames } from '../utils/connectors';
 import { InjectedConnector } from "@web3-react/injected-connector";
 
@@ -62,11 +61,11 @@ const FishFightContext = createContext<FishFightProviderContext | undefined>(und
 // Defining context provider
 export const FishFightProvider = ({ children }: FishFightProviderProps ) => {
   // FishFight instance initiates with default url provider upon visiting page
-  const [FishFightInstance, setFishFightInstance] = useState<FishFight>(new FishFight())
+  const [FishFightInstance] = useState<FishFight>(new FishFight())
   const [userConnected, setUserConnected] = useState<boolean>(false);
   const [loggedOut, setLoggedOut] = useState<boolean>(false);
   const [globalMute, setGlobalMute] = useState<boolean>(false);
-  const [currentBlock, setCurrentBlock] = useState<number>(0);
+  const [currentBlock] = useState<number>(0);
   // State of web3React
   const { account, connector, library, active, activate, error} = useWeb3React();
 
@@ -104,12 +103,6 @@ export const FishFightProvider = ({ children }: FishFightProviderProps ) => {
         setUserConnected(true)
       })
   }, [activate, active, error])
-
-  // console.log(account)
-  // console.log(active)
-  // console.log(connector)
-  // console.log(library)
-
   
   useEffect(() => {
     // When user logs in, get wallet provider (harmonyExtension or web3provider)
@@ -117,14 +110,13 @@ export const FishFightProvider = ({ children }: FishFightProviderProps ) => {
       getWalletProvider(connector, library).then(async (wallet) =>
       {
         FishFightInstance.setProviderWallet(wallet.provider, wallet.type);
-        // setFishFightInstance(new FishFight())
         setUserConnected(true);
         refetchBalance();
         refetchStats();
       })
     }
     if(!account) {
-      // console.log("account not connected");
+      console.log("account not connected");
       setUserConnected(false);
       refetchStats();
     }
@@ -466,6 +458,7 @@ export const useFishFight = () => {
   const context = useContext(FishFightContext)
 
   if(!context) {
+    // eslint-disable-next-line no-throw-literal
     throw 'useFishFight must be used within a FishFightProvider';
   }
   return context

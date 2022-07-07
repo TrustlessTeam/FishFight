@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect } from 'react';
 import styled from 'styled-components';
 import { useWeb3React } from '@web3-react/core';
@@ -17,8 +18,6 @@ type RenderProps = {
 	completed: boolean;
 }
 
-
-
 const FishingWaters = () => {
 	const unityContext = useUnity()
 	const { account } = useWeb3React();
@@ -34,8 +33,6 @@ const FishingWaters = () => {
 
 	useEffect(() => {
 		unityContext.UnityInstance.on('UISelectionConfirm', function (data: any) {
-			// console.log('UI changed catch fish');
-			// console.log(data)
 			switch (data) {
 				case 'mint_fish':
 					catchFish();

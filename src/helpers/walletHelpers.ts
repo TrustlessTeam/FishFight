@@ -1,7 +1,6 @@
 import { ConnectorNames } from "../utils/connectors";
 
 import CoinbaseImg from "../img/wallets/coinbase.png";
-import OneWallet from "../img/wallets/one.svg";
 import Metamask from "../img/wallets/metamask.svg";
 
 interface WalletUI {

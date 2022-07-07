@@ -50,6 +50,7 @@ const useBalance = () => {
 			const parsedBalance = fromWei(hexToNumber(balance.result), Units.one);
 			setBalance(parsedBalance);
 		},
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[hmy, setBalance],
 	);
 
@@ -68,6 +69,7 @@ const useBalance = () => {
 export const useHarmony = () => {
 	const context = useContext(HarmonyContext);
 	if (!context) {
+		// eslint-disable-next-line no-throw-literal
 		throw 'No Harmony provider';
 	}
 	return context;

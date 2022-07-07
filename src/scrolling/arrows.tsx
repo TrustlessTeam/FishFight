@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React from "react";
 
 import { VisibilityContext } from "react-horizontal-scrolling-menu";
@@ -81,9 +82,9 @@ export function RightArrow({
 
   const { loadingUserFish, loadingFish } = useFishPool();
 
-  const [disabled, setDisabled] = React.useState(
-    true
-  );
+  // const [disabled, setDisabled] = React.useState(
+  //   true
+  // );
   React.useEffect(() => {
     tryLoadMore();
   }, [isLastItemVisible, visibleItemsWithoutSeparators]);
@@ -105,7 +106,7 @@ export function RightArrow({
         // setDisabled(true);
 
       }
-      setDisabled(false);
+      // setDisabled(false);
       // loadMoreFish(0);
     }
   }

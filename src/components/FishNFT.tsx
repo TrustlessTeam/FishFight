@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import { Fish } from "../utils/fish";
 import defaultImage from "../img/default.png";
-import { useContext, useState } from "react";
+import { useState } from "react";
 import breedingImg from "../img/icons/breeding-dark.svg";
 import fightingImg from "../img/icons/fighting-dark.svg";
 import fishImg from "../img/icons/fish-dark.svg";
@@ -15,11 +15,11 @@ import agiImg from "../img/icons/agi.png";
 import { useContractWrapper } from "../context/contractWrapperContext";
 import { Constants } from "../utils/constants";
 import BaseButton from "../components/BaseButton";
-import { BaseText, BaseTitle, ContainerColumn, ContainerRow, StyledModal, Title } from "./BaseStyles";
-import { VisibilityContext } from "react-horizontal-scrolling-menu";
 import { useFishFight } from "../context/fishFightContext";
 import web3 from 'web3';
 import { PoolFish, PoolTypes } from "../context/fishPoolContext";
+
+import { BaseText, ContainerColumn, ContainerRow, StyledModal, Title } from "./BaseStyles";
 
 
 type Props = {
@@ -52,9 +52,7 @@ const FishNFT = ({
   poolType,
   buffModal
 }: Props) => {
-  const [showStats, setShowStats] = useState<boolean>(false);
 	const [modalIsOpen, setModalIsOpen] = useState(false);
-
   const { FishFight } = useFishFight();
 
   const {
@@ -75,21 +73,9 @@ const FishNFT = ({
     smartWithdraw
   } = useContractWrapper();
 
-  const toggleStats = () => {
-    setShowStats((prevShowStats) => !prevShowStats);
-  };
-
-  const toggleModel = () => {
-		setModalIsOpen(!modalIsOpen);
-	};
-
 	const closeModal = () => {
 		setModalIsOpen(false);
 	};
-
-  const visibility = useContext(VisibilityContext);
-
-  const visible = visibility.isItemVisible(itemId);
 
   return (
     <FishContainer
@@ -98,12 +84,10 @@ const FishNFT = ({
     >
       <StyledModal
         isOpen={modalIsOpen}
-        // className="Modal"
         overlayClassName="Overlay"
         onRequestClose={closeModal}
         shouldCloseOnOverlayClick
       >
-        {/* {active ? <SignOut account={parsedAccount} closeModal={closeModal} /> : <Wallets closeModal={closeModal} />} */}
         <ContainerWrapper> 
           <Title>{`Core Fight Buffs`}</Title>
           <BaseText>{`Consume ${Constants._fightModifierCost} of your Fish's Power to increase an attribute of your $FISH for 3 Fights!`}</BaseText>
@@ -144,7 +128,6 @@ const FishNFT = ({
         </ContainerWrapper>
 
       </StyledModal>
-      {/* <ToggleButton onClick={() => toggleStats()}>info</ToggleButton> */}
       <FishStats>
         <FishId>{fish.tokenId}</FishId>
         {!fish.stakedFighting && !fish.stakedBreeding && (
@@ -187,7 +170,7 @@ const FishNFT = ({
           {fish.fishModifiers.canCollect() && !fish.stakedBreeding && !fish.stakedFighting &&
             <FishButton onClick={() => claimFishFood(fish)}>Collect</FishButton>
           }
-          {!fish.stakedBreeding && !fish.stakedFighting && buffModal != undefined &&
+          {!fish.stakedBreeding && !fish.stakedFighting && buffModal !== undefined &&
             <FishButton onClick={() => buffModal()}>Buff</FishButton>
           }
           {fish.stakedFighting && poolType === PoolTypes.Ocean && (
@@ -228,18 +211,6 @@ const FishNFT = ({
           <FishButton onClick={() => feedFish(fish)}>Feed</FishButton>
         </Options>
       }
-
-      {/* {showStats &&
-				<FishStatsOverlay>
-					<FishData>Str:{fish.strength}</FishData>
-					<FishData>Int:{fish.intelligence}</FishData>
-					<FishData>Agi:{fish.agility}</FishData>
-					<FishData>Wins: {fish.lifetimeWins}</FishData>
-					{fish.ipfsLink &&
-					<FishData><a target="_blank" href={fish.ipfsLink}>IPFS</a></FishData>
-					}
-				</FishStatsOverlay>
-			} */}
     </FishContainer>
   );
 };
@@ -281,7 +252,7 @@ const FishButton = styled(BaseButton)`
 	}
 `;
 
-export const Text = styled.p`
+const Text = styled.p`
 	display: flex;
 	flex-flow: column;
 	justify-content: center;
@@ -297,7 +268,7 @@ export const Text = styled.p`
   }
 `;
 
-export const SubText = styled.p`
+const SubText = styled.p`
 	display: flex;
 	flex-flow: column;
 	justify-content: center;
@@ -331,9 +302,6 @@ const LogoSmallImg = styled.img`
 const LogoImg = styled.img`
   height: 30px;
 
-  /* background: linear-gradient(#caf0f8, #48cae4);
-  box-shadow: inset 2px 2px 2px rgba(255, 255, 255, .3), inset -2px -2px 2px rgba(0, 0, 0, .3); */
-
   @media ${props => props.theme.device.tablet} {
 		height: 40px;
   }
@@ -352,9 +320,8 @@ const FishImg = styled.img<ImgProps>`
   height: 100px;
   width: 100px;
   border-radius: 50%;
-  /* border-radius: 40px; */
-  /* border: 0.5vh solid rgba(255, 255, 255, 0.5); */
   cursor: pointer;
+
   ${({ selectedUser }) =>
     selectedUser &&
     `
@@ -384,10 +351,8 @@ const FishImg = styled.img<ImgProps>`
   ${({ selectedOpponent }) =>
     selectedOpponent &&
     `
-    // border-color: rgba(154, 3, 30, 0.5);
 		height: 150px;
     width: 150px;
-
   `}
   }
 
@@ -400,8 +365,6 @@ const FishId = styled.p`
   align-items: center;
   padding: 3px 10px;
   margin: 0;
-  /* background-color: white; */
-  /* opacity: 0.6; */
   color: black;
   font-size: ${(props) => props.theme.font.small};
   font-weight: bold;

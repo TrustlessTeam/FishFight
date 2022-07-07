@@ -1,30 +1,13 @@
 import styled from 'styled-components';
-import { Fish } from '../utils/fish';
 import {
-  BrowserRouter as Router,
-  Route,
-  Link,
   NavLink,
   useLocation
 } from "react-router-dom";
-import { useState } from 'react';
 
 import fishingImg from "../img/icons/fishing-dark.svg"
 import breedingImg from "../img/icons/breeding-dark.svg"
 import fightingImg from "../img/icons/fighting-dark.svg"
 import oceanImg from "../img/icons/ocean-dark.svg"
-
-type Props = {
-  fish: Fish;
-	onClick?: () => void;
-	selectedUser?: boolean;
-	selectedOpponent?: boolean;
-};
-
-interface ImgProps {
-	selectedOpponent?: boolean;
-	selectedUser?: boolean;
-}
 
 const Nav = () => {
 
@@ -32,24 +15,15 @@ const Nav = () => {
 
 	return (
     <NavMenu>
-      {/* <BubbleButton to="/ocean"><span>Ocean</span></BubbleButton> */}
       <NavItem>
         <NavImg className={({isActive}) => isActive ? 'active' : ''} to="/ocean">
           <LogoImg src={oceanImg} alt="Ocean"></LogoImg>
         </NavImg>
-        {/* <SubContainer>
-          <Option className={({isActive}) => isActive ? 'active' : ''} to='/ocean'>Ocean View</Option>
-          <Option className={({isActive}) => isActive ? 'active' : ''} to='/ocean/tank'>Tank View</Option>
-          <Option className={({isActive}) => isActive ? 'active' : ''} to='/ocean/swim'>Go Swimming!</Option>
-        </SubContainer> */}
       </NavItem>
       <NavItem>
         <NavImg className={({isActive}) => isActive ? 'active' : ''} to="/fishing">
           <LogoImg active={location === 'fishing'} src={fishingImg} alt="Fishing"></LogoImg>
         </NavImg>
-        {/* <SubContainer>
-          <Option className={({isActive}) => isActive ? 'active' : ''} to='/fishing' end>Fishing Waters</Option>
-        </SubContainer> */}
       </NavItem>
       <NavItem>
         <NavImg className={({isActive}) => isActive ? 'active' : ''} to="/fighting">
@@ -61,15 +35,7 @@ const Nav = () => {
         <NavImg className={({isActive}) => isActive ? 'active' : ''} to="/breeding">
           <LogoImg active={location === 'breeding'} src={breedingImg} alt="Breeding"></LogoImg>
         </NavImg>
-        {/* <SubContainer>
-          <Option className={({isActive}) => isActive ? 'active' : ''} to='/breeding' end>Breeding Waters</Option>
-          <Option className={({isActive}) => isActive ? 'active' : ''} to='/breeding/user'>My Breeding Fish</Option>
-          <Option className={({isActive}) => isActive ? 'active' : ''} to='/breeding/start'>Breed!</Option>
-        </SubContainer> */}
       </NavItem>
-      {/* <GameButton to="/fishing"><span>Fishing</span></GameButton> */}
-      {/* <GameButton to="/fighting"><span>Fighting</span></GameButton> */}
-      {/* <GameButton to="/breeding"><span>Breeding</span></GameButton> */}
     </NavMenu>
 	);
 };
@@ -80,19 +46,9 @@ interface ActiveProps {
 	active?: boolean;
 }
 
-const Logo = styled(Link)`
-	/* @media ${props => props.theme.device.tablet} {
-    display: flex;
-		flex-flow: row nowrap;
-		justify-content: center;
-		align-items: center;
-		width: 20%;
-  } */
-`;
-
 const LogoImg = styled.img<ActiveProps>`
 	height: 35px;
-	/* border: 2px solid white;s */
+
 	border-radius: 50%;
   padding: 3px;
   background-image: linear-gradient(#D5D5D5, #D5D5D5);
@@ -120,11 +76,6 @@ const NavMenu = styled.nav`
 `;
 
 const NavItem = styled.div`
-  /* height: 100%; */
-  /* position: relative; */
-  /* display: flex;
-  flex-flow: column;
-  align-items: center; */
   height: 100%;
   position: relative;
   display: inline-block;
@@ -137,47 +88,10 @@ const NavItem = styled.div`
   }
 `;
 
-const SubContainer = styled.div<ActiveProps>`
-  /* display: none;
-  flex-flow: column;
-  align-items: center; */
-  display: none;
-    position: absolute;
-    flex-flow: row nowrap;
-    border-radius: 20px;
-    left: 51%;
-    transform: translateX(-51%);
-  @media ${props => props.theme.device.tablet} {
-		
-  }
-`;
-
-const Option = styled(NavLink)<ActiveProps>`
-	color: white;
-  padding: ${props => props.theme.spacing.gapSmall};
-  display: flex;
-  flex-flow: row nowrap;
-	font-size: ${props => props.theme.font.medium};
-  white-space: nowrap;
-  overflow: hidden;
-  text-decoration: none;
-
-  @media ${props => props.theme.device.tablet} {
-	  font-size: ${props => props.theme.font.medium};
-  }
-
-  &.active {
-    font-weight: bold;
-    background-color: rgba(255, 255, 255, 0.5);
-    border-radius: 25px;
-  }
-`;
-
 const NavImg = styled(NavLink)<ActiveProps>`
   &.active {
     font-weight: bold;
     & > img {
-      /* background-color: rgba(0, 4, 4, 0.712); */
       background-image: linear-gradient(#d5d5d5, #038ec59b);
     }
     & + div {

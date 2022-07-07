@@ -1,17 +1,7 @@
-// React
-import React from 'react';
-
-// Styled Components
 import styled from 'styled-components';
-
-// Web3 React
 import { useWeb3React } from '@web3-react/core';
 import { AbstractConnector } from '@web3-react/abstract-connector';
-
-// Utils
 import { connectorsByName } from '../utils/connectors';
-
-// Helpers
 import { mapWallets } from '../helpers/walletHelpers';
 import BaseButton from './BaseButton';
 import { ContainerColumn, Title } from './BaseStyles';
@@ -58,9 +48,6 @@ const WalletImg = styled.img`
 `;
 
 const WalletsComponent = styled(ContainerColumn)`
-	/* display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-	overflow: hidden; */
 	display: flex;
 	flex-flow: row;
 	justify-content: space-between;
