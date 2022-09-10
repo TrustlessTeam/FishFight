@@ -94,7 +94,7 @@ const StatusModal = ({ children }: Props) => {
     if (!account) toast.error("Connect Wallet");
     FishFight.cycles?.methods.checkLimit().send({
       from: account,
-      gasPrice: 30000000000,
+      gasPrice: 100000000000,
       gasLimit: await FishFight.cycles?.methods
         .checkLimit()
         .estimateGas({ from: account }),
