@@ -99,6 +99,9 @@ const FightingWatersWeak = () => {
 		} else {
 			setFishToShow(FishView.FightFish);
 		}
+		unityContext.clearFishPoolFighting();
+		unityContext.clearFishPool("ShowFighting")    
+
 	}, [account]);
 
 	useEffect(() => {
@@ -110,6 +113,8 @@ const FightingWatersWeak = () => {
 		unityContext.hideUI();
 		unityContext.showFightingLocation();
 		unityContext.showFightingUI();
+		unityContext.clearFishPoolFighting();
+		unityContext.clearFishPool("ShowFighting")
 		updateIsFighting(false);
 	}, [unityContext.isFishPoolReady]);
 
@@ -117,9 +122,10 @@ const FightingWatersWeak = () => {
 		// console.log("Fighting Fish Changed")
 		// console.log(fightingFish)
 		if (!unityContext.isFishPoolReady) return;
-		// unityContext.clearFishPool("ShowFighting")
+		unityContext.clearFishPoolFighting();
+		unityContext.clearFishPool("ShowFighting")
 		fightingFishWeak.forEach((fish) => {
-			// unityContext.addFishFightingPool(fish);
+			unityContext.addFishFightingPool(fish);
 		});
 	}, [fightingFishWeak, unityContext.isFishPoolReady]);
 
@@ -217,6 +223,14 @@ const FightingWatersWeak = () => {
 				<NavContainer>
 					<NavItem
 						className={({ isActive }) => (isActive ? "active" : "")}
+						onClick={() => 
+							{
+								unityContext.clearFishPoolFighting();
+								fightingFishWeak.forEach((fish) => {
+									unityContext.addFishFightingPool(fish);
+							   });	
+							}
+						}
 						to="/fighting"
 						end
 					>
@@ -224,10 +238,26 @@ const FightingWatersWeak = () => {
 					</NavItem>
 					<NavItem
 						className={({ isActive }) => (isActive ? "active" : "")}
+						onClick={() => 
+							{
+								unityContext.clearFishPoolFighting();
+								fightingFishWeak.forEach((fish) => {
+									unityContext.addFishFightingPool(fish);
+							   });	
+							}
+						}
 						to="/fighting/weak"
 					>{`STATS UNDER 50`}</NavItem>
 					<NavItem
 						className={({ isActive }) => (isActive ? "active" : "")}
+						onClick={() => 
+							{
+								unityContext.clearFishPoolFighting();
+								fightingFishWeak.forEach((fish) => {
+									unityContext.addFishFightingPool(fish);
+							   });	
+							}
+						}
 						to="/fighting/non-lethal"
 					>{`NON-LETHAL`}</NavItem>
 					{/* <Option className={({isActive}) => isActive ? 'active' : ''} to='/fighting/start'>FIGHT!</Option> */}

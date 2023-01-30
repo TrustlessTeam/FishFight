@@ -1,0 +1,16 @@
+{
+"companyName": "Trustless Team",
+"productName": "unity_project",
+"productVersion": "1.0",
+"dataUrl": "Default WebGL.data.unityweb",
+"wasmCodeUrl": "Default WebGL.wasm.code.unityweb",
+"wasmFrameworkUrl": "Default WebGL.wasm.framework.unityweb",
+"graphicsAPI": ["WebGL 1.0"],
+"webglContextAttributes": {"preserveDrawingBuffer": false},
+"splashScreenStyle": "Light",
+"backgroundColor": "#FFFFFF",
+"cacheControl": {"default": "must-revalidate"},
+"developmentBuild": false,
+"multithreading": false,
+"unityVersion": "2019.4.40f1"
+}

@@ -55,7 +55,11 @@ const FightingWaters = () => {
     {
       name: "My $FISH",
       id: FishView.MyFish,
-      onClick: () => setFishToShow(FishView.MyFish),
+      onClick: () => 
+    {
+      unityContext.clearFishPoolFighting()
+      setFishToShow(FishView.MyFish)
+    },
     },
     {
       name: "Opponent $FISH",
@@ -98,17 +102,20 @@ const FightingWaters = () => {
     } else {
       setFishToShow(FishView.FightFish);
     }
+    unityContext.clearFishPool("ShowFighting")    
   }, [account]);
 
   useEffect(() => {
     // console.log("Show Fighting Location")
-    // unityContext.clearFishPool("Fighting")
-    // unityContext.clearFishPool("Breeding")
-    // unityContext.clearFishPool('Fish');
+    //unityContext.clearFishPool("Fighting")
+    //unityContext.clearFishPool("Breeding")
+    //unityContext.clearFishPool('Fish');
     unityContext.clearUIFish();
     unityContext.hideUI();
     unityContext.showFightingLocation();
     unityContext.showFightingUI();
+    unityContext.clearFishPoolFighting();
+    unityContext.clearFishPool("ShowFighting");
     updateIsFighting(false);
   }, [unityContext.isFishPoolReady]);
 
@@ -116,9 +123,10 @@ const FightingWaters = () => {
     // console.log("Fighting Fish Changed")
     // console.log(fightingFish)
     if (!unityContext.isFishPoolReady) return;
-    // unityContext.clearFishPool("ShowFighting")
+    unityContext.clearFishPoolFighting();
+    unityContext.clearFishPool("ShowFighting");
     fightingFish.forEach((fish) => {
-      // unityContext.addFishFightingPool(fish);
+       unityContext.addFishFightingPool(fish);
     });
   }, [fightingFish, unityContext.isFishPoolReady]);
 
@@ -211,20 +219,47 @@ const FightingWaters = () => {
         />
       )}
       <InfoContainer>
-        <NavContainer>
+        <NavContainer
+          >
           <NavItem
             className={({ isActive }) => (isActive ? "active" : "")}
+            onClick={() => 
+              {
+								unityContext.clearFishPoolFighting();
+								fightingFish.forEach((fish) => {
+									unityContext.addFishFightingPool(fish);
+							   });	
+							}
+            }
             to="/fighting"
             end
-          >
+            >
+            
             FREE FOR ALL
+            
           </NavItem>
           <NavItem
             className={({ isActive }) => (isActive ? "active" : "")}
+            onClick={() => 
+              {
+								unityContext.clearFishPoolFighting();
+								fightingFish.forEach((fish) => {
+									unityContext.addFishFightingPool(fish);
+							   });	
+							}
+             }
             to="/fighting/weak"
-          >{`STATS UNDER 50`}</NavItem>
+            >{`STATS UNDER 50`}</NavItem>
           <NavItem
             className={({ isActive }) => (isActive ? "active" : "")}
+            onClick={() =>
+              {
+								unityContext.clearFishPoolFighting();
+								fightingFish.forEach((fish) => {
+									unityContext.addFishFightingPool(fish);
+							   });	
+							}
+            }
             to="/fighting/non-lethal"
           >{`NON-LETHAL`}</NavItem>
           {/* <Option className={({isActive}) => isActive ? 'active' : ''} to='/fighting/start'>FIGHT!</Option> */}

@@ -36,6 +36,7 @@ interface UnityProviderContext {
   refreshFishUnity: (fish: Fish) => void;
   showFish: (fish: Fish) => void;
   clearFishPool: (pool: string) => void;
+  clearFishPoolFighting: () => void;
   sendRound: (round: number, roundStat: number) => void;
 	clearUIFish: () => void;
 	hideUI: () => void;
@@ -65,7 +66,7 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
   // FishFight instance initiates with default url provider upon visiting page
   const [UnityInstance, setUnityInstance] = useState<UnityContent>(
     new UnityContent(
-      `${basePath}/Unity/fishfight-one-frontend.json`,
+      `${basePath}/Unity/Default WebGL.json`,
       `${basePath}/Unity/UnityLoader.js`
     )
   );
@@ -184,6 +185,8 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
     if (!isLoaded || !fishPoolReady) return;
     UnityInstance.send("Camera", "SetAnimState", "ShowFighting");
     setCurrentLocation(Location.Fighting)
+    UnityInstance.send("FishPool", "ClearPool", "ShowFighting");
+    
     // UnityInstance.send("CanvasUserInterface", "SetAnimState", "ShowFighting");
     // // console.log("showFightingLocation Completed")
   };
@@ -257,11 +260,18 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
 	}
 
   const clearFishPool = (pool: string) => {
-    // // console.log("ClearFishPool Called " + pool)
-    if (!isLoaded || !fishPoolReady) return;
-    UnityInstance.send("FishPool", "ClearPool", pool);
-    // // console.log("ClearFishPool Called " + pool)
-  };
+    console.log("ClearFishPool Called " + pool)
+   UnityInstance.send("FishPool", "ClearPool", pool);
+   if (!isLoaded || !fishPoolReady) return;
+   // // console.log("ClearFishPool Called " + pool)
+ };
+ const clearFishPoolFighting = () => {
+//  console.log("ClearFishPool Called " + pool)
+ UnityInstance.send("FishPool", "ClearPoolFighting");
+ if (!isLoaded || !fishPoolReady) return;
+ // // console.log("ClearFishPool Called " + pool)
+};
+
   const addFishOcean = (fish: Fish) => {
     // console.log(`AddFish ${fish.tokenId}`);
     if (!isLoaded || !fishPoolReady) return;
@@ -277,7 +287,7 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
     // // console.log("AddFish Completed")
   };
   const addFishFightingPool = (fish: Fish) => {
-    // // console.log("AddFish Called")
+    console.log("addFishFightingPool: AddFish Called")
     if (!isLoaded || !fishPoolReady) return;
     // console.log(fish);
     UnityInstance.send(
@@ -541,6 +551,7 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
     showFish: showFish,
     refreshFishUnity: refreshFishUnity,
     clearFishPool: clearFishPool,
+    clearFishPoolFighting: clearFishPoolFighting,
 		clearUIFish: clearUIFish,
 		hideUI: hideUI,
     sendRound: sendRound,
