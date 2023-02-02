@@ -31,7 +31,7 @@ const Account = ({ children, textOverride }: Props) => {
 	const { contractApproveFishForBreeding, perTransactionApproval, setPerTransactionApproval, contractApproveFoodForTraining, contractApproveFishForFighting,
 	contractApproveFoodForFighting, contractApproveFishForFightingNonLethal, contractApproveFoodForBreeding } = useContractWrapper();
 
-	const parsedAccount = account && !isBech32Address(account) ? toBech32(account) : account;
+	const parsedAccount = account;//account && !isBech32Address(account) ? toBech32(account) : account;
 
 	const openModal = () => {
 		setModalIsOpen(true);
