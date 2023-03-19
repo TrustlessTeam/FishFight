@@ -17,8 +17,9 @@ import StatusModal from "./StatusModal";
 import BaseButton from "../components/BaseButton";
 import useSound from 'use-sound';
 
-import sushiImg from "../img/icons/sushi-logo.svg";
-import dfkImg from "../img/icons/jewel-icon.png";
+//import sushiImg from "../img/icons/sushi-logo.svg";
+//import dfkImg from "../img/icons/jewel-icon.png";
+import fuzzImg from "../img/icons/fuzz.png";
 import nftkeyImg from "../img/icons/nftkey-logo-circle.svg";
 import discordImg from "../img/icons/discord.svg"
 import tofunftImg from "../img/icons/tofunft.svg"
@@ -118,9 +119,7 @@ const MenuOverlay = () => {
 				
 			<SoundButton onClick={() => HandleOpenStore()}><a href="https://discord.com/invite/23ArJsQKnT" target="_blank" rel=""><LogoImg src={discordImg }></LogoImg></a>
 			</SoundButton>
-			<SoundButton onClick={() => HandleOpenStore()}><a href="https://app.sushi.com/swap?inputCurrency=ONE&outputCurrency=0x81E9E682d2d7F016Ff7c3D17567Ee7511f29f653&chainId=1666600000" target="_blank" rel=""><LogoImg src={sushiImg }></LogoImg></a>
-			</SoundButton>
-			<SoundButton onClick={() => HandleOpenStore()}><a href="https://game.defikingdoms.com/#/marketplace?outputCurrency=0x81E9E682d2d7F016Ff7c3D17567Ee7511f29f653" target="_blank" rel=""><LogoImg src={dfkImg }></LogoImg></a>
+			<SoundButton onClick={() => HandleOpenStore()}><a href="https://swap.fuzz.fi/swap?outputCurrency=0x81e9e682d2d7f016ff7c3d17567ee7511f29f653" target="_blank" rel=""><LogoImg src={fuzzImg }></LogoImg></a>
 			</SoundButton>
 			<SoundButton onClick={() => HandleOpenStore()}><a href="https://nftkey.app/collections/fishfight/" target="_blank" rel=""><LogoImg src={nftkeyImg }></LogoImg></a>
 			</SoundButton>
@@ -139,7 +138,7 @@ interface Props {
 }
 
 const SoundButton = styled(BaseButton)`
-	padding: 5px;
+	padding: 2.5px;
 
 	border-radius: 50%;
 
@@ -170,10 +169,10 @@ const StoreLogoImg = styled.img`
   }
 `;
 const LogoImg = styled.img`
-	height: 15px;
+	height: 22px;
 
 	@media ${props => props.theme.device.tablet} {
-	  height: 20px;
+	  height: 35px;
   }
 `;
 

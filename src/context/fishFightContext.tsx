@@ -242,12 +242,12 @@ const useBalance = () => {
           abi: Contracts.contracts.FishScale.abi,
           calls: [{ reference: 'scaleBalance', methodName: 'balanceOf', methodParameters: [account] }]
         },
-        // {
-        //   reference: 'bloater',
-        //   contractAddress: FishFight.readBloater.options.address,
-        //   abi: ERC20,
-        //   calls: [{ reference: 'bloaterBalance', methodName: 'balanceOf', methodParameters: [account] }]
-        // },
+        {
+          reference: 'bloater',
+          contractAddress: FishFight.readBloater.options.address,
+          abi: ERC20,
+          calls: [{ reference: 'bloaterBalance', methodName: 'balanceOf', methodParameters: [account] }]
+        },
       ];
     
       const results: ContractCallResults = await FishFight.multicall.call(contractCallContext);
@@ -261,7 +261,7 @@ const useBalance = () => {
       let foodBalance = results.results.fishFood.callsReturnContext[0].success ? results.results.fishFood.callsReturnContext[0].returnValues[0].hex : null;
       let eggBalance = results.results.fishEgg.callsReturnContext[0].success ? results.results.fishEgg.callsReturnContext[0].returnValues[0].hex : null;
       let scaleBalance = results.results.fishScale.callsReturnContext[0].success ? results.results.fishScale.callsReturnContext[0].returnValues[0].hex : null;
-      // let bloaterBalance = results.results.bloater.callsReturnContext[0].success ? results.results.bloater.callsReturnContext[0].returnValues[0].hex : null;
+       let bloaterBalance = results.results.bloater.callsReturnContext[0].success ? results.results.bloater.callsReturnContext[0].returnValues[0].hex : null;
       
 
       fishBalance = Web3.utils.hexToNumberString(fishBalance)
@@ -274,7 +274,7 @@ const useBalance = () => {
       foodBalance = new BN(Web3.utils.hexToNumberString(foodBalance))
       eggBalance = new BN(Web3.utils.hexToNumberString(eggBalance))
       scaleBalance = new BN(Web3.utils.hexToNumberString(scaleBalance))
-      // bloaterBalance = new BN(Web3.utils.hexToNumberString(bloaterBalance))
+       bloaterBalance = new BN(Web3.utils.hexToNumberString(bloaterBalance))
 
 
       // when account is connected get balances - uses default and read only providers
@@ -292,7 +292,7 @@ const useBalance = () => {
       setBalanceBreedFish(breederBalance);
       setBalanceFishEgg(eggBalance);
       setBalanceFishScale(scaleBalance);
-      // setBalanceBloater(bloaterBalance);
+      setBalanceBloater(bloaterBalance);
 
 		},
 		[setBalance, setBalanceFish, setBalanceFood, setBalanceDeadFish, setBalanceFightFish, setBalanceBreedFish, setBalanceFishEgg, setBalanceFishScale],

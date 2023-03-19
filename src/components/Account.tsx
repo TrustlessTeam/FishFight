@@ -31,7 +31,7 @@ const Account = ({ children, textOverride }: Props) => {
 	const { contractApproveFishForBreeding, perTransactionApproval, setPerTransactionApproval, contractApproveFoodForTraining, contractApproveFishForFighting,
 	contractApproveFoodForFighting, contractApproveFishForFightingNonLethal, contractApproveFoodForBreeding } = useContractWrapper();
 
-	const parsedAccount = account && !isBech32Address(account) ? toBech32(account) : account;
+	const parsedAccount = account;////account && !isBech32Address(account) ? toBech32(account) : account;
 
 	const openModal = () => {
 		setModalIsOpen(true);
@@ -129,13 +129,12 @@ const Account = ({ children, textOverride }: Props) => {
 							<Title>Connected Wallet</Title>
 							<Row>
 								<AccountText>
-									{parsedAccount?.substring(0, 6)}...{parsedAccount?.substring(parsedAccount?.length - 4)}
+									{parsedAccount?.substring(0, 8)}...{parsedAccount?.substring(parsedAccount?.length - 8)}
 								</AccountText>
 								<SignOut account={parsedAccount} closeModal={closeModal} />
 							</Row>
 
 							<Row>
-								<BalanceText>{balance?.split('.')[0]} ONE</BalanceText>
 								<Balance></Balance>
 								<ItemBalance></ItemBalance>
 							</Row>
@@ -146,31 +145,52 @@ const Account = ({ children, textOverride }: Props) => {
 						
 						<ContainerColumnLeft>
 							<Title>Offical Contracts and Approvals</Title>
-							<Row>
+							{/* <Row>
 								<Text>$FISH ERC721 Contract <a target="_blank" rel="noopener noreferrer" href={`${Constants._explorer}address/${FishFight.readFishFactory.options.address}`}>{FishFight.readFishFactory.options.address}</a></Text>
-								<BaseButton onClick={addFishToMetaMask}>Add $FISH to MetaMask</BaseButton>		
+								<BaseButton onClick={addFishToMetaMask}>Add $FISH </BaseButton>		
+							</Row> */}
+							<Row>
+								<Text>$FISHFOOD ERC20 Contract 
+									<a target="_blank" rel="noopener noreferrer" href={`${Constants._explorer}address/${FishFight.readFishFood.options.address}`}>
+										
+									{FishFight.readFishFood.options.address?.substring(0, 6)}...{FishFight.readFishFood.options.address?.substring(FishFight.readFishFood.options.address?.length - 4)+ "-"}
+									</a>
+								</Text>
+								<BaseButton onClick={addFishFoodToMetaMask}>Add $FISHFOOD</BaseButton>		
 							</Row>
 							<Row>
-								<Text>$FISHFOOD ERC20 Contract <a target="_blank" rel="noopener noreferrer" href={`${Constants._explorer}address/${FishFight.readFishFood.options.address}`}>{FishFight.readFishFood.options.address}</a></Text>
-								<BaseButton onClick={addFishFoodToMetaMask}>Add $FISHFOOD to MetaMask</BaseButton>		
+								<Text>Training Contract 
+									<a target="_blank" rel="noopener noreferrer" href={`${Constants._explorer}address/${FishFight.readTrainingWaters.options.address}`}>
+									{FishFight.readTrainingWaters.options.address?.substring(0, 6)}...{FishFight.readTrainingWaters.options.address?.substring(FishFight.readTrainingWaters.options.address?.length - 4) + "-"} 
+									</a>
+								</Text>
+								<BaseButton onClick={() => contractApproveFoodForTraining('0', ()=>{})}>Revoke $FISHFOOD</BaseButton>		
 							</Row>
 							<Row>
-								<Text>Training Contract <a target="_blank" rel="noopener noreferrer" href={`${Constants._explorer}address/${FishFight.readTrainingWaters.options.address}`}>{FishFight.readTrainingWaters.options.address}</a></Text>
-								<BaseButton onClick={() => contractApproveFoodForTraining('0', ()=>{})}>Revoke $FISHFOOD Allowance</BaseButton>		
+								<Text>FIGHTING NON-LETHAL Contract 
+									<a target="_blank" rel="noopener noreferrer" href={`${Constants._explorer}address/${FishFight.readFightingWatersNonLethal.options.address}`}>
+									{FishFight.readFightingWatersNonLethal.options.address?.substring(0, 6)}...{FishFight.readFightingWatersNonLethal.options.address?.substring(FishFight.readFightingWatersNonLethal.options.address?.length - 4)+ "-"}
+										</a>
+										</Text>
+								<BaseButton onClick={() => contractApproveFoodForFighting('0', ()=>{})}>Revoke $FISHFOOD</BaseButton>
+								<BaseButton onClick={() => contractApproveFishForFightingNonLethal(-1, ()=>{})}>Revoke $FISH</BaseButton>
 							</Row>
 							<Row>
-								<Text>Fighting Non-Lethal Contract <a target="_blank" rel="noopener noreferrer" href={`${Constants._explorer}address/${FishFight.readFightingWatersNonLethal.options.address}`}>{FishFight.readFightingWatersNonLethal.options.address}</a></Text>
-								<BaseButton onClick={() => contractApproveFoodForFighting('0', ()=>{})}>Revoke $FISHFOOD Allowance</BaseButton>
-								<BaseButton onClick={() => contractApproveFishForFightingNonLethal(-1, ()=>{})}>Revoke $FISH Control</BaseButton>
+								<Text>FIGHTING Contract 
+									<a target="_blank" rel="noopener noreferrer" href={`${Constants._explorer}address/${FishFight.readFightingWaters.options.address}`}>
+									{FishFight.readFightingWaters.options.address?.substring(0, 6)}...{FishFight.readFightingWaters.options.address?.substring(FishFight.readFightingWaters.options.address?.length - 4)+ "-"}
+									</a>
+								</Text>
+								<BaseButton onClick={() => contractApproveFishForFighting(-1, ()=>{})}>Revoke $FISH</BaseButton>
 							</Row>
 							<Row>
-								<Text>Fighting Contract <a target="_blank" rel="noopener noreferrer" href={`${Constants._explorer}address/${FishFight.readFightingWaters.options.address}`}>{FishFight.readFightingWaters.options.address}</a></Text>
-								<BaseButton onClick={() => contractApproveFishForFighting(-1, ()=>{})}>Revoke $FISH Control</BaseButton>
-							</Row>
-							<Row>
-								<Text>Breeding Contract <a target="_blank" rel="noopener noreferrer" href={`${Constants._explorer}address/${FishFight.readBreedingWaters.options.address}`}>{FishFight.readBreedingWaters.options.address}</a></Text>
-								<BaseButton onClick={() => contractApproveFoodForBreeding('0', ()=>{})}>Revoke $FISHFOOD Allowance</BaseButton>
-								<BaseButton onClick={() => contractApproveFishForBreeding(-1, ()=>{})}>Revoke $FISH Control</BaseButton>
+								<Text>BREEDING Contract
+									<a target="_blank" rel="noopener noreferrer" href={`${Constants._explorer}address/${FishFight.readBreedingWaters.options.address}`}>
+									{FishFight.readBreedingWaters.options.address?.substring(0, 6)}...{FishFight.readBreedingWaters.options.address?.substring(FishFight.readBreedingWaters.options.address?.length - 4)+ "-"}
+									</a>
+								</Text>
+								<BaseButton onClick={() => contractApproveFoodForBreeding('0', ()=>{})}>Revoke $FISHFOOD</BaseButton>
+								<BaseButton onClick={() => contractApproveFishForBreeding(-1, ()=>{})}>Revoke $FISH</BaseButton>
 							</Row>
 						</ContainerColumnLeft>
 						<IndividualApprovals></IndividualApprovals>

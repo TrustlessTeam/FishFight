@@ -158,11 +158,6 @@ const DisclaimerModal = () => {
             <span>DEATH (token burned)</span> of the losing $FISH.
           </Text>
           <Text>
-            The loser will receive a $DEADFISH token in place of their now
-            burned $FISH token, plus any $FISHFOOD the $FISH had earned while in
-            the Fight Pool.
-          </Text>
-          <Text>
             The FREE FOR ALL FIGHTING POOL Fight winner gains{" "}
             {currentPhase?.phase === 2
               ? web3.utils.fromWei(Constants._fishFoodPerWinInPhase)
@@ -180,19 +175,6 @@ const DisclaimerModal = () => {
             When you trigger a Fight, your fish will be deposited in the Fight
             pool and locked for {Constants._lockTime / 60} minutes. During that
             time your $FISH is still at risk of being attacked and dying!
-          </Text>
-          <Text>
-            Depositing via a Fight or from a Deposit, will make your Fish
-            eligible to a share of the Fight Pool emission rewards.<br></br>
-            FREE FOR ALL : {" "}{web3.utils.fromWei(Constants._fishFoodPerBlock)} $FISHFOOD per
-            block.<br></br>
-            STATS UNDER 50 : {" "}{web3.utils.fromWei(Constants._fishFoodPerBlockWeak)} $FISHFOOD per
-            block.
-          </Text>
-
-          <Text>
-            Approving the transaction is your agreement to these terms. Good
-            luck!
           </Text>
           <OptionsContainer>
             {/* {!fightingFishApproval && !checked &&
@@ -223,10 +205,6 @@ const DisclaimerModal = () => {
           </Text>
           <Text>
             Losing Fights: in the event of a loss, your Fish will be removed from the pool and returned to you! It is NOT burned.
-          </Text>
-          <Text>
-            Approving the transaction is your agreement to these terms. Good
-            luck!
           </Text>
           <OptionsContainer>
             {/* {!fightingFishApproval && !checked &&
@@ -262,10 +240,6 @@ const DisclaimerModal = () => {
           </Text>
           <Text>
             <span>Rewards </span>are paid out on withdrawl or once your winning Fish eventually loses. You can view pending awards in the FishFight menu.
-          </Text>
-          <Text>
-            Approving the transaction is your agreement to these terms. Good
-            luck!
           </Text>
           <OptionsContainer>
             {/* {!fightingFishApproval && !checked &&

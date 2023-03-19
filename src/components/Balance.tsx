@@ -7,10 +7,14 @@ import foodImg from "../img/icons/food.svg";
 import breedingImg from "../img/icons/breeding.svg";
 import fightingImg from "../img/icons/fighting.svg";
 import eggImg from "../img/icons/FishEgg.png";
+import eggImgBW from "../img/icons/FishEggBW.png";
 import scaleImg from "../img/icons/FishScale.png";
+import scaleImgBW from "../img/icons/FishScaleBW.png";
 import bloaterImg from "../img/icons/dfk-bloater.png";
 
 import web3 from "web3";
+import { parse } from "path";
+import { parseBytes32String } from "ethers/lib/utils";
 
 const Balance = () => {
   const {
@@ -19,11 +23,16 @@ const Balance = () => {
     balanceDeadFish,
 		balanceFightFish,
     balanceBreedFish,
-    balanceFood
+    balanceFood,
+    balanceBloater,
+    balanceFishScale,
+    balanceFishEgg
   } = useFishFight();
 
-  if (!balance) return null;
+  if (!balance || !balanceFishScale || !balanceFishEgg  || !balanceBloater) return null;
+  //console.log("balance Bloater : " + balanceBloater );
 
+  //console.log( "balance Fish Scale : " + balanceFishScale );
   return (
     <>
       <BalanceComponent title="FISHFOOD Balance">
@@ -32,12 +41,14 @@ const Balance = () => {
           <LogoImg src={foodImg} alt="FISHFOOD"></LogoImg>
         </BalanceText>
       </BalanceComponent>
+
       <BalanceComponent title="FISH Balance">
         <BalanceText>
           {balanceFish}
           <LogoImg src={fishImg} alt="FISH"></LogoImg>
         </BalanceText>
       </BalanceComponent>
+
       <BalanceComponent title="DEADFISH Balance">
         <BalanceText>
           {balanceDeadFish}
@@ -57,6 +68,28 @@ const Balance = () => {
           <LogoImg src={breedingImg} alt="BREEDFISH"></LogoImg>
         </BalanceText>
       </BalanceComponent>
+{/* 
+      <BalanceComponent title="FISHSCALE Balance">
+        <BalanceText>
+          { new BN(web3.utils.fromWei(balanceFishScale)).toString()}
+          <LogoImg src={scaleImgBW} alt="FISHSCALE"></LogoImg>
+        </BalanceText>
+      </BalanceComponent>
+
+      <BalanceComponent title="FISHEGG Balance">
+        <BalanceText>
+          { new BN(web3.utils.fromWei(balanceFishEgg)).toString()}
+          <LogoImg src={eggImgBW} alt="FISHEGG"></LogoImg>
+        </BalanceText>
+      </BalanceComponent>
+
+      <BalanceComponent title="Bloater Balance">
+        <BalanceText>
+        {web3.utils.fromWei(balanceBloater,"wei")}
+          <LogoImg src={bloaterImg} alt="Bloater"></LogoImg>
+        </BalanceText>
+      </BalanceComponent>       */}
+
     </>
   );
 };
@@ -68,6 +101,8 @@ export const ItemBalance = () => {
     balanceBloater,
   } = useFishFight();
 
+    //console.log("balance Bloater : " + balanceBloater );
+    
   if (!balanceFishEgg || !balanceFishScale || !balanceBloater) return null;
 
   return (
@@ -76,7 +111,7 @@ export const ItemBalance = () => {
 				<BalanceComponent title="FISHEGG Balance">
 					<BalanceText>
 						{web3.utils.fromWei(balanceFishEgg)}
-						<LogoImg src={eggImg} alt="FISHEGG"></LogoImg>
+						<LogoImg src={eggImgBW} alt="FISHEGG"></LogoImg>
 					</BalanceText>
 				</BalanceComponent>
 			}
@@ -84,7 +119,7 @@ export const ItemBalance = () => {
 				<BalanceComponent title="FISHSCALE Balance">
 					<BalanceText>
 						{web3.utils.fromWei(balanceFishScale)}
-						<LogoImg src={scaleImg} alt="FISHSCALE"></LogoImg>
+						<LogoImg src={scaleImgBW} alt="FISHSCALE"></LogoImg>
 					</BalanceText>
 				</BalanceComponent>
 			}
