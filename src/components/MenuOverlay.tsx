@@ -19,7 +19,8 @@ import useSound from 'use-sound';
 
 //import sushiImg from "../img/icons/sushi-logo.svg";
 //import dfkImg from "../img/icons/jewel-icon.png";
-import fuzzImg from "../img/icons/fuzz.png";
+//import fuzzImg from "../img/icons/fuzz.png";
+import sonicImg from "../img/icons/sonic.png";
 import nftkeyImg from "../img/icons/nftkey-logo-circle.svg";
 import discordImg from "../img/icons/discord.svg"
 import tofunftImg from "../img/icons/tofunft.svg"
@@ -119,7 +120,7 @@ const MenuOverlay = () => {
 				
 			<SoundButton onClick={() => HandleOpenStore()}><a href="https://discord.com/invite/23ArJsQKnT" target="_blank" rel=""><LogoImg src={discordImg }></LogoImg></a>
 			</SoundButton>
-			<SoundButton onClick={() => HandleOpenStore()}><a href="https://swap.fuzz.fi/swap?outputCurrency=0x81e9e682d2d7f016ff7c3d17567ee7511f29f653" target="_blank" rel=""><LogoImg src={fuzzImg }></LogoImg></a>
+			<SoundButton onClick={() => HandleOpenStore()}><a href="https://sonicswap.io/#/swap?outputCurrency=0x81e9e682d2d7f016ff7c3d17567ee7511f29f653" target="_blank" rel=""><LogoImg src={sonicImg }></LogoImg></a>
 			</SoundButton>
 			<SoundButton onClick={() => HandleOpenStore()}><a href="https://nftkey.app/collections/fishfight/" target="_blank" rel=""><LogoImg src={nftkeyImg }></LogoImg></a>
 			</SoundButton>
