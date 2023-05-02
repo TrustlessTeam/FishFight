@@ -23,7 +23,7 @@ import useSound from 'use-sound';
 import sonicImg from "../img/icons/sonic.png";
 import nftkeyImg from "../img/icons/nftkey-logo-circle.svg";
 import discordImg from "../img/icons/discord.svg"
-import tofunftImg from "../img/icons/tofunft.svg"
+//import tofunftImg from "../img/icons/tofunft.svg"
 import muteImg from "../img/icons/mute-dark.svg";
 import musicImg from "../img/icons/music-notes.svg";
 import noMuteImg from "../img/icons/nomute-dark.svg";
@@ -118,17 +118,15 @@ const MenuOverlay = () => {
 			</MenuContainer>
 				
 				
-			<SoundButton onClick={() => HandleOpenStore()}><a href="https://discord.com/invite/23ArJsQKnT" target="_blank" rel=""><LogoImg src={discordImg }></LogoImg></a>
+			<SoundButton  onClick={() => HandleOpenStore()}><a title="Join FishFight Discord" href="https://discord.com/invite/23ArJsQKnT" target="_blank" rel=""><LogoImg src={discordImg }></LogoImg></a>
 			</SoundButton>
-			<SoundButton onClick={() => HandleOpenStore()}><a href="https://sonicswap.io/#/swap?outputCurrency=0x81e9e682d2d7f016ff7c3d17567ee7511f29f653" target="_blank" rel=""><LogoImg src={sonicImg }></LogoImg></a>
+			<SoundButton onClick={() => HandleOpenStore()}><a title="Buy/Sell $FISHFOOD" href="https://sonicswap.io/#/swap?outputCurrency=0x81e9e682d2d7f016ff7c3d17567ee7511f29f653" target="_blank" rel=""><LogoImg src={sonicImg }></LogoImg></a>
 			</SoundButton>
-			<SoundButton onClick={() => HandleOpenStore()}><a href="https://nftkey.app/collections/fishfight/" target="_blank" rel=""><LogoImg src={nftkeyImg }></LogoImg></a>
+			<SoundButton onClick={() => HandleOpenStore()}><a title="Buy/Sell/Trade $FISH NFT" href="https://nftkey.app/collections/fishfight/" target="_blank" rel=""><LogoImg src={nftkeyImg }></LogoImg></a>
 			</SoundButton>
-			<SoundButton onClick={() => HandleOpenStore()}><a href="https://tofunft.com/collection/fishfight/items" target="_blank" rel=""><LogoImg src={tofunftImg }></LogoImg></a>
+			<SoundButton onClick={() => handleMusicClick()}><LogoImg title="Mute/Unmute Music" src={mutedMusic ? muteImg : musicImg }></LogoImg>
 			</SoundButton>
-			<SoundButton onClick={() => handleMusicClick()}><LogoImg src={mutedMusic ? muteImg : musicImg }></LogoImg>
-			</SoundButton>
-			<SoundButton onClick={() => handleSoundClick()}><LogoImg src={globalMute ? muteImg : noMuteImg }></LogoImg>
+			<SoundButton onClick={() => handleSoundClick()}><LogoImg title="Mute/Unmute Sounds" src={globalMute ? muteImg : noMuteImg }></LogoImg>
 			</SoundButton>
 		</Wrapper>
 	);

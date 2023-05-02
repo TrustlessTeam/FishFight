@@ -35,7 +35,7 @@ const Nav = () => {
       {/* <BubbleButton to="/ocean"><span>Ocean</span></BubbleButton> */}
       <NavItem>
         <NavImg className={({isActive}) => isActive ? 'active' : ''} to="/ocean">
-          <LogoImg src={oceanImg} alt="Ocean"></LogoImg>
+          <LogoImg title="View ALL $FISH 🌊" src={oceanImg} alt="Ocean"></LogoImg>
         </NavImg>
         {/* <SubContainer>
           <Option className={({isActive}) => isActive ? 'active' : ''} to='/ocean'>Ocean View</Option>
@@ -45,7 +45,7 @@ const Nav = () => {
       </NavItem>
       <NavItem>
         <NavImg className={({isActive}) => isActive ? 'active' : ''} to="/fishing">
-          <LogoImg active={location === 'fishing'} src={fishingImg} alt="Fishing"></LogoImg>
+          <LogoImg title="CATCH $FISH 🎣" active={location === 'fishing'} src={fishingImg} alt="Fishing"></LogoImg>
         </NavImg>
         {/* <SubContainer>
           <Option className={({isActive}) => isActive ? 'active' : ''} to='/fishing' end>Fishing Waters</Option>
@@ -53,13 +53,13 @@ const Nav = () => {
       </NavItem>
       <NavItem>
         <NavImg className={({isActive}) => isActive ? 'active' : ''} to="/fighting">
-          <LogoImg src={fightingImg} alt="Fighting"></LogoImg>
+          <LogoImg title="FIGHT $FISH 💀" src={fightingImg} alt="Fighting"></LogoImg>
         </NavImg>
         
       </NavItem>
       <NavItem>
         <NavImg className={({isActive}) => isActive ? 'active' : ''} to="/breeding">
-          <LogoImg active={location === 'breeding'} src={breedingImg} alt="Breeding"></LogoImg>
+          <LogoImg title="BREED $FISH 💞" active={location === 'breeding'} src={breedingImg} alt="Breeding"></LogoImg>
         </NavImg>
         {/* <SubContainer>
           <Option className={({isActive}) => isActive ? 'active' : ''} to='/breeding' end>Breeding Waters</Option>
