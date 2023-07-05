@@ -2066,11 +2066,6 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 		setShowFishingFoodApproval(true);
 		setOnAccept(() => async () => {
 			setShowFishingFoodApproval(false);
-			if ( fishingFoodApproval )
-			{
-				callback();
-				return;
-			}
 	
 			return FishFight.fishFood?.methods.approve(FishFight.readFishingWaters.options.address, amountToApprove).send({
 				from: account,
