@@ -20,6 +20,7 @@ const DisclaimerModal = () => {
   const {
     showTrainingFoodApproval,
     showFightingFoodApproval,
+    showFishingFoodApproval,
     showBreedingFishApproval,
     showBreedingFoodApproval,
     showFightingFishApproval,
@@ -63,6 +64,24 @@ const DisclaimerModal = () => {
         <ContainerText>
           <Text>
             <span>Approval Required! </span>Fighting in Non-Lethal Pools requires
+            spending $FISHFOOD. Max allowance is set to reduce future approvals.
+          </Text>
+          <OptionsContainer>
+            {/* {!trainingFoodApproval && !checked &&
+						<BaseButton onClick={() => contractApproveFoodForTraining(MAX_APPROVE)}>{'Approve All $FISHFOOD'}</BaseButton>
+					} */}
+          </OptionsContainer>
+        </ContainerText>
+      </>
+    );
+  };
+  const FishingFoodApproval = () => {
+    return (
+      <>
+        <Title>Fishing Contract Approval</Title>
+        <ContainerText>
+          <Text>
+            <span>Approval Required! </span>Fishing requires
             spending $FISHFOOD. Max allowance is set to reduce future approvals.
           </Text>
           <OptionsContainer>
@@ -293,6 +312,7 @@ const DisclaimerModal = () => {
         showFightingFishApproval ||
         showTrainingFoodApproval ||
         showFightingFoodApproval ||
+        showFishingFoodApproval ||
         showFightingDisclaimer ||
         showFightingNonLethalDisclaimer ||
         showFightingNonLethalDepositDisclaimer ||
@@ -308,6 +328,7 @@ const DisclaimerModal = () => {
         <ApprovalDisclaimer>
           {showFightingFishApproval && <FightingApproval></FightingApproval>}
           {showFightingFoodApproval && <FightingFoodApproval></FightingFoodApproval>}
+          {showFishingFoodApproval && <FishingFoodApproval></FishingFoodApproval>}
           {showBreedingFishApproval && <BreedingApproval></BreedingApproval>}
           {showBreedingFoodApproval && <BreedingFoodApproval></BreedingFoodApproval>}
           {showTrainingFoodApproval && <TrainingApproval></TrainingApproval>}

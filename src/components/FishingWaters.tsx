@@ -23,7 +23,7 @@ const FishingWaters = () => {
 	const unityContext = useUnity()
 	const { account } = useWeb3React();
 	const { maxSupply, totalSupply, currentPhase } = useFishFight()
-	const { catchFish, clearCatchFishResult, catchFishResult } = useContractWrapper();
+	const { catchFish, catchFishwFood, approveAndCatchFishwFood, clearCatchFishResult, catchFishResult } = useContractWrapper();
 
 	
 
@@ -37,8 +37,11 @@ const FishingWaters = () => {
 			// console.log('UI changed catch fish');
 			// console.log(data)
 			switch (data) {
-				case 'mint_fish':
+				case 'mint_fish_one':
 					catchFish();
+					return;
+				case 'mint_fish_fishfood':
+					approveAndCatchFishwFood();
 					return;
 				case 'fishingresults_confirm':
 					unityContext.showFishingUI();
@@ -93,13 +96,13 @@ const FishingWaters = () => {
 							{`then ${web3.utils.fromWei(Constants._fishingPriceInPhase)} ONE`} 
 						</DataText>
 					}
-					{totalSupply > 10000 ?
+					{totalSupply > 2500 ?
 						<DataText>
-							{`Fish Left: ${maxSupply - totalSupply} -> Chance: ${totalSupply > 10000 ? (((maxSupply - totalSupply) / maxSupply) * 100).toFixed(2) : 100}%`}
+							{`Fish Remaining: ${maxSupply - totalSupply} -> Catch Chance: ${totalSupply > 2500 ? (((maxSupply - totalSupply) / maxSupply) * 100).toFixed(2) : 100}%`}
 						</DataText>
 						:
 						<DataText>
-							{`Fish Left at 100% chance: ${10000 - totalSupply}`}
+							{`${2500-totalSupply} Fish Remaining at 100% Catch Chance `}
 						</DataText>
 					}
 

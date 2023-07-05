@@ -10266,6 +10266,422 @@
       ]
     },
     "FishingWaters": {
+      "address": "0xae6e9d43F9Cff1c294674165d24Cf83E45530f79",
+      "abi": [
+        {
+          "inputs": [
+            {
+              "internalType": "contract FishFood",
+              "name": "fishFood",
+              "type": "address"
+            },
+            {
+              "internalType": "contract IFishFactory",
+              "name": "fish",
+              "type": "address"
+            },
+            {
+              "internalType": "contract Cycles",
+              "name": "cycles",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "fishPrice",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "fishPriceInPhase",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "fishingPriceFishFood",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "catchFoodAmount",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint8",
+              "name": "fishTypeMinRange",
+              "type": "uint8"
+            },
+            {
+              "internalType": "uint8",
+              "name": "fishTypeMaxRange",
+              "type": "uint8"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "constructor"
+        },
+        {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "previousOwner",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "newOwner",
+              "type": "address"
+            }
+          ],
+          "name": "DAOMSigChanges",
+          "type": "event"
+        },
+        {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "index",
+              "type": "uint256"
+            },
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "owner",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "roll",
+              "type": "uint256"
+            }
+          ],
+          "name": "FishingResult",
+          "type": "event"
+        },
+        {
+          "inputs": [],
+          "name": "goFishing",
+          "outputs": [
+            {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+            }
+          ],
+          "stateMutability": "payable",
+          "type": "function"
+        },
+        {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "previousOwner",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "newOwner",
+              "type": "address"
+            }
+          ],
+          "name": "OwnerMSigChanges",
+          "type": "event"
+        },
+        {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "previousOwner",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "newOwner",
+              "type": "address"
+            }
+          ],
+          "name": "OwnershipTransferred",
+          "type": "event"
+        },
+        {
+          "inputs": [],
+          "name": "renounceOwnership",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "newOwner",
+              "type": "address"
+            }
+          ],
+          "name": "transferOwnership",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "newAddress",
+              "type": "address"
+            }
+          ],
+          "name": "updateDAOMSigAddress",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "newAddress",
+              "type": "address"
+            }
+          ],
+          "name": "updateOwnerMSigAddress",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "bool",
+              "name": "disabledOnSpecialPhase",
+              "type": "bool"
+            },
+            {
+              "internalType": "uint256",
+              "name": "fishingPrice",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "fishingPriceInPhase",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "fishingPriceFishFood",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "newCatchFoodAmount",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint8",
+              "name": "newFishTypeMinRange",
+              "type": "uint8"
+            },
+            {
+              "internalType": "uint8",
+              "name": "newFishTypeMaxRange",
+              "type": "uint8"
+            }
+          ],
+          "name": "updateParameters",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "uint8",
+              "name": "percentSplit",
+              "type": "uint8"
+            }
+          ],
+          "name": "updateWithdrawPercents",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        },
+        {
+          "inputs": [],
+          "name": "withdrawFees",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        },
+        {
+          "inputs": [],
+          "name": "_catchFoodAmount",
+          "outputs": [
+            {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [],
+          "name": "_cycles",
+          "outputs": [
+            {
+              "internalType": "contract Cycles",
+              "name": "",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [],
+          "name": "_disabledOnSpecialPhase",
+          "outputs": [
+            {
+              "internalType": "bool",
+              "name": "",
+              "type": "bool"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [],
+          "name": "_fish",
+          "outputs": [
+            {
+              "internalType": "contract IFishFactory",
+              "name": "",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [],
+          "name": "_fishFood",
+          "outputs": [
+            {
+              "internalType": "contract FishFood",
+              "name": "",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [],
+          "name": "_fishingPrice",
+          "outputs": [
+            {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [],
+          "name": "_fishingPriceFishFood",
+          "outputs": [
+            {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [],
+          "name": "_fishingPriceInPhase",
+          "outputs": [
+            {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [],
+          "name": "_fishTypeMaxRange",
+          "outputs": [
+            {
+              "internalType": "uint8",
+              "name": "",
+              "type": "uint8"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [],
+          "name": "_fishTypeMinRange",
+          "outputs": [
+            {
+              "internalType": "uint8",
+              "name": "",
+              "type": "uint8"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [],
+          "name": "_percentSplit",
+          "outputs": [
+            {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [],
+          "name": "owner",
+          "outputs": [
+            {
+              "internalType": "address",
+              "name": "",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        }
+      ]
+    },
+    "FishingWatersOG": {
       "address": "0xE26ba8691491e550137D8C234Da6a48af995eE0D",
       "abi": [
         {

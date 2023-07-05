@@ -29,7 +29,7 @@ const Account = ({ children, textOverride }: Props) => {
 	const { balance, FishFight  } = useFishFight();
 
 	const { contractApproveFishForBreeding, perTransactionApproval, setPerTransactionApproval, contractApproveFoodForTraining, contractApproveFishForFighting,
-	contractApproveFoodForFighting, contractApproveFishForFightingNonLethal, contractApproveFoodForBreeding } = useContractWrapper();
+		contractApproveFoodForFighting, contractApproveFoodForFishing, contractApproveFishForFightingNonLethal, contractApproveFoodForBreeding } = useContractWrapper();
 
 	const parsedAccount = account;////account && !isBech32Address(account) ? toBech32(account) : account;
 
@@ -149,6 +149,16 @@ const Account = ({ children, textOverride }: Props) => {
 								<Text>$FISH ERC721 Contract <a target="_blank" rel="noopener noreferrer" href={`${Constants._explorer}address/${FishFight.readFishFactory.options.address}`}>{FishFight.readFishFactory.options.address}</a></Text>
 								<BaseButton onClick={addFishToMetaMask}>Add $FISH </BaseButton>		
 							</Row> */}
+							<Row>
+								<Text>FISHING Contract  
+								<a target="_blank" rel="noopener noreferrer" href={`${Constants._explorer}address/${FishFight.readFishingWaters.options.address}`}>
+										
+									{FishFight.readFishingWaters.options.address?.substring(0, 6)}...{FishFight.readFishingWaters.options.address?.substring(FishFight.readFishingWaters.options.address?.length - 4) + "-"} 
+									</a>
+								</Text>
+								
+								<BaseButton onClick={() => contractApproveFoodForFishing('0', ()=>{})}>Add $FISHFOOD access</BaseButton>		
+							</Row>
 							<Row>
 								<Text>$FISHFOOD ERC20 Contract 
 									<a target="_blank" rel="noopener noreferrer" href={`${Constants._explorer}address/${FishFight.readFishFood.options.address}`}>
