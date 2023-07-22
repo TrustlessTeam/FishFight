@@ -120,7 +120,7 @@ const MenuOverlay = () => {
 				
 			<SoundButton  onClick={() => HandleOpenStore()}><a title="Join FishFight Discord" href="https://discord.com/invite/23ArJsQKnT" target="_blank" rel=""><LogoImg src={discordImg }></LogoImg></a>
 			</SoundButton>
-			<SoundButton onClick={() => HandleOpenStore()}><a title="Buy/Sell $FISHFOOD" href="https://sonicswap.io/#/swap?outputCurrency=0x81e9e682d2d7f016ff7c3d17567ee7511f29f653" target="_blank" rel=""><LogoImg src={sonicImg }></LogoImg></a>
+			<SoundButton onClick={() => HandleOpenStore()}><a title="Buy/Sell $FISHFOOD" href="https://harmony.sonicswap.io/#/swap?outputCurrency=0x81e9e682d2d7f016ff7c3d17567ee7511f29f653" target="_blank" rel=""><LogoImg src={sonicImg }></LogoImg></a>
 			</SoundButton>
 			<SoundButton onClick={() => HandleOpenStore()}><a title="Buy/Sell/Trade $FISH NFT" href="https://nftkey.app/collections/fishfight/" target="_blank" rel=""><LogoImg src={nftkeyImg }></LogoImg></a>
 			</SoundButton>
