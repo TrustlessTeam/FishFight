@@ -215,11 +215,11 @@ const FishDrawer = ({
       
       if(fishPool === PoolFish.Ocean && numLoaded < totalSupply) loadMoreFish(PoolFish.Ocean);
       if(fishPool === PoolFish.User && balanceFish && balanceFightFish && balanceBreedFish) {
-        const userTotal = web3.utils.toNumber(balanceFish) + web3.utils.toNumber(balanceFightFish) + web3.utils.toNumber(balanceBreedFish)
+        const userTotal = Number(balanceFish) + Number(balanceFightFish) + Number(balanceBreedFish)
         if(fishCollection.length < userTotal) loadMoreFish(PoolFish.User);
       }
-      if(fishPool === PoolFish.Breeding && breedingWatersSupply && fishCollection.length < web3.utils.toNumber(breedingWatersSupply)) loadMoreFish(PoolFish.Breeding);
-      if(fishPool === PoolFish.Fighting && fightingWatersSupply && fishCollection.length < web3.utils.toNumber(fightingWatersSupply)) loadMoreFish(PoolFish.Fighting);
+      if(fishPool === PoolFish.Breeding && breedingWatersSupply && fishCollection.length < Number(breedingWatersSupply)) loadMoreFish(PoolFish.Breeding);
+      if(fishPool === PoolFish.Fighting && fightingWatersSupply && fishCollection.length < Number(fightingWatersSupply)) loadMoreFish(PoolFish.Fighting);
     }
   }
 
@@ -227,7 +227,7 @@ const FishDrawer = ({
     let numLoaded = fishCollection.length;
     if(fishPool === PoolFish.Ocean && numLoaded === totalSupply) return true;
     if(fishPool === PoolFish.User && balanceFish && balanceFightFish && balanceBreedFish) {
-      const userTotal = web3.utils.toNumber(balanceFish) + web3.utils.toNumber(balanceFightFish) + web3.utils.toNumber(balanceBreedFish)
+      const userTotal = Number(balanceFish) + Number(balanceFightFish) + Number(balanceBreedFish)
       // console.log("UserFish Check")
       // console.log(fishCollection.length)
       // console.log(userTotal)

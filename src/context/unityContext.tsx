@@ -59,7 +59,7 @@ const UnityContext = createContext<UnityProviderContext | undefined>(undefined);
 export const UnityProvider = ({ children }: UnityProviderProps) => {
   const pathsCount = useLocation().pathname.split("/").length;
   let basePath = ".";
-  if (pathsCount == 3) {
+  if (pathsCount === 3) {
     basePath = "..";
   }
   // FishFight instance initiates with default url provider upon visiting page

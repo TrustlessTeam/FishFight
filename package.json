@@ -7,8 +7,6 @@
     "@ethersproject/units": "^5.4.0",
     "@harmony-js/core": "^0.1.57",
     "@harmony-react/abstract-connector": "^1.0.2",
-    "@harmony-react/mathwallet-connector": "^1.0.2",
-    "@harmony-react/onewallet-connector": "^1.0.2",
     "@types/react-loading-overlay": "^1.0.0",
     "@types/react-router-dom": "^5.1.8",
     "@types/styled-components": "^5.1.11",
@@ -34,6 +32,7 @@
     "web3": "^1.4.0"
   },
   "devDependencies": {
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@harmony-js/core": "^0.1.57",
     "@openzeppelin/contracts": "^4.2.0",
     "@testing-library/jest-dom": "^5.11.4",
@@ -60,7 +59,7 @@
     "ts-node": "^10.0.0",
     "tsconfig-paths": "^3.9.0",
     "typechain": "^5.1.1",
-    "typescript": "^4.1.5",
+    "typescript": "^4.4.4",
     "web-vitals": "^1.0.1"
   },
   "scripts": {
@@ -68,6 +67,8 @@
     "lint": "eslint \"**/*.{js,ts}?(x)\"",
     "lint:fix": "eslint --fix \"**/*.{js,ts}?(x)\"",
     "start": "react-scripts start",
+    "dev:testnet": "cross-env REACT_APP_FRONTEND_NETWORK=testnet react-scripts dev",
+    "dev:mainnet": "cross-env REACT_APP_FRONTEND_NETWORK=mainnet react-scripts dev",
     "start:testnet": "cross-env REACT_APP_FRONTEND_NETWORK=testnet react-scripts start",
     "start:mainnet": "cross-env REACT_APP_FRONTEND_NETWORK=mainnet react-scripts start",
     "build": "react-scripts build",

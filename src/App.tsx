@@ -22,6 +22,7 @@ import DisclaimerModal from "./components/DisclaimerModal";
 import { useContractWrapper } from "./context/contractWrapperContext";
 import FightingWatersWeak from "./components/FightingWatersWeak";
 import FightingWatersNonLethal from "./components/FightingWatersNonLethal";
+import FightingPageV2 from './components/FightingPageV2';
 
 type RenderProps = {
   hours: any;
@@ -61,6 +62,7 @@ const App = () => {
                 {/* <Route path="/breeding/user" element={<UserBreedingWaters />} /> */}
                 {/* <Route path="/breeding/start" element={<StartBreed />} /> */}
               </Route>
+              <Route path="/fighting-v2" element={<FightingPageV2 />} />
             </Route>
           </Routes>
 

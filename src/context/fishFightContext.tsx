@@ -13,51 +13,121 @@ import Contracts from '../contracts/contracts.json';
 import ERC20 from '../contracts/erc20.json';
 import { connectorsByName, ConnectorNames } from '../utils/connectors';
 import { InjectedConnector } from "@web3-react/injected-connector";
+import { Constants } from '../utils/constants';
+import { Fish } from '../utils/fish';
 
 
 // Typescript
+interface FishStats {
+  power: number;
+  // Add other stats as needed
+}
+
+interface OpponentStats {
+  minPower: number;
+  maxPower: number;
+  // other stats...
+}
+
+// First, let's define what comes from useBalance
+interface BalanceContext {
+  balance: string | undefined;
+  balanceFish: string | undefined;
+  balanceDeadFish: string | undefined;
+  balanceFightFish: string | undefined;
+  balanceBreedFish: string | undefined;
+  balanceFood: string | undefined;
+  balanceFoodWei: BN | undefined;
+  balanceFishEgg: BN | undefined;
+  balanceFishScale: BN | undefined;
+  balanceBloater: BN | undefined;
+  // Make sure account matches useWeb3React type
+  account: string | null | undefined;
+}
+
 interface FishFightProviderContext {
-  FishFight: FishFight
-  userConnected: boolean
-  globalMute: boolean
-  currentBlock: number
+  FishFight: FishFight;
+  userConnected: boolean;
+  globalMute: boolean;
+  currentBlock: number;
 
-  balance: string | undefined
-  balanceFish: string | undefined
-  balanceDeadFish: string | undefined
-  balanceFightFish: string | undefined
-  balanceBreedFish: string | undefined
-  balanceFood: string | undefined
-  balanceFoodWei: BN | undefined
-  balanceFishEgg: BN | undefined
-  balanceFishScale: BN | undefined
-  balanceBloater: BN | undefined
+  // Spread the balance context type
+  balance: string | undefined;
+  balanceFish: string | undefined;
+  balanceDeadFish: string | undefined;
+  balanceFightFish: string | undefined;
+  balanceBreedFish: string | undefined;
+  balanceFood: string | undefined;
+  balanceFoodWei: BN | undefined;
+  balanceFishEgg: BN | undefined;
+  balanceFishScale: BN | undefined;
+  balanceBloater: BN | undefined;
+  account: string | null | undefined;  // Match useWeb3React type
 
-  totalSupply: number
-  fishCurrentIndex: number
-  fightingWatersWeakSupply: number
-  fightingWatersNonLethalSupply: number
-  fightingWatersSupply: number
-  breedingWatersSupply: number
-  totalSupplyDead: number
-  totalDeadBurned: number
-  currentCycle: number
-  currentPhase: Phase | undefined
-  maxSupply: number
-  totalCaught: number
-  totalFights: number
-  totalBreeds: number
-  refetchBalance: () => void
-  resetBalance: () => void
-  refetchStats: () => void
-  toggleGlobalMute: () => void
-  setLogOut: (value: boolean) => void
+  totalSupply: number;
+  fishCurrentIndex: number;
+  fightingWatersWeakSupply: number;
+  fightingWatersNonLethalSupply: number;
+  fightingWatersSupply: number;
+  breedingWatersSupply: number;
+  totalSupplyDead: number;
+  totalDeadBurned: number;
+  currentCycle: number;
+  currentPhase: Phase | undefined;
+  maxSupply: number;
+  totalCaught: number;
+  totalFights: number;
+  totalBreeds: number;
+  refetchBalance: () => void;
+  resetBalance: () => void;
+  refetchStats: () => void;
+  toggleGlobalMute: () => void;
+  setLogOut: (value: boolean) => void;
+
+  // New properties for UI
+  isInCooldown: boolean;
+  cooldownTimeRemaining: number;
+  currentPower: number;
+  availableModifiers: Array<{
+    type: number;
+    usesLeft: number;
+    cost: number;
+  }>;
+  
+  // Methods
+  startRegularFight: (powerLevel: number) => Promise<void>;
+  startNonLethalFight: (powerLevel: number) => Promise<void>;
+  startWeakFight: (powerLevel: number) => Promise<void>;
+  applyModifier: (modifierType: number) => Promise<void>;
+
+  // Fight state
+  lastFightResult?: {
+    won: boolean;
+    fishFoodEarned: string;
+    powerUsed: number;
+  };
+
+  selectedFish?: Fish;
+  opponentStats?: OpponentStats;
+  selectFish: (fishId: number) => Promise<void>;
 }
 
 type FishFightProviderProps = { children: React.ReactNode }
 
 // Initiating context as undefined
 const FishFightContext = createContext<FishFightProviderContext | undefined>(undefined);
+
+// Add type for fight result
+interface FightResult {
+  events: {
+    FightResult: {
+      returnValues: {
+        won: boolean;
+        // Add other event return values
+      }
+    }
+  }
+}
 
 // Defining context provider
 export const FishFightProvider = ({ children }: FishFightProviderProps ) => {
@@ -153,18 +223,207 @@ export const FishFightProvider = ({ children }: FishFightProviderProps ) => {
     setLoggedOut(true);
   } 
 
+  const [isInCooldown, setIsInCooldown] = useState(false);
+  const [cooldownTimeRemaining, setCooldownTimeRemaining] = useState(0);
+  const [lastFightResult, setLastFightResult] = useState<FishFightProviderContext['lastFightResult']>();
+
+  const startCooldownTimer = (duration: number) => {
+    setIsInCooldown(true);
+    setCooldownTimeRemaining(duration);
+
+    const timer = setInterval(() => {
+      setCooldownTimeRemaining((prev) => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          setIsInCooldown(false);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+  };
+
+  const [selectedFish, setSelectedFish] = useState<Fish>();
+  const [opponentStats, setOpponentStats] = useState<OpponentStats>();
+
+  const selectFish = async (fishId: number) => {
+    try {
+      if (!FishFightInstance.fishFactory || !FishFightInstance.fightingWaters) {
+        throw new Error('Required contracts not initialized');
+      }
+
+      // Get full fish data from contract
+      const fish = await FishFightInstance.fishFactory.methods.getFish(fishId).call();
+      setSelectedFish(fish);
+
+      // Get the opponent pool stats based on fish's level/power
+      const poolStats = await FishFightInstance.fightingWaters.methods
+        .getPoolStats(fish.level)
+        .call();
+
+      setOpponentStats({
+        minPower: Number(poolStats.minPower),
+        maxPower: Number(poolStats.maxPower)
+      });
+    } catch (error) {
+      console.error('Failed to get fish stats:', error);
+    }
+  };
+
+  const startRegularFight = async (powerLevel: number) => {
+    try {
+      if (!selectedFish) {
+        throw new Error('No fish selected');
+      }
+
+      if (!account) {
+        throw new Error('Wallet not connected');
+      }
+
+      if (!FishFightInstance.fishFood || !FishFightInstance.fightingWaters) {
+        throw new Error('Required contracts not initialized');
+      }
+
+      // First approve the power fee if needed
+      const powerFee = powerLevel * Constants._fightPowerFee;
+      await FishFightInstance.fishFood.methods.approve(
+        FishFightInstance.fightingWaters.options.address,
+        powerFee
+      ).send({ from: account });
+
+      // Then start the fight - use tokenId instead of id
+      const result = await FishFightInstance.fightingWaters.methods
+        .fight(selectedFish.tokenId, powerLevel)  // Changed from id to tokenId
+        .send({ from: account });
+      
+      // Handle result...
+      startCooldownTimer(Constants._lockTime);
+      
+      setLastFightResult({
+        won: result.events.FightResult.returnValues.won,
+        fishFoodEarned: result.won ? Constants._fishFoodPerWin : '0',
+        powerUsed: powerLevel
+      });
+
+      refetchBalance();
+    } catch (error) {
+      console.error('Fight failed:', error);
+      throw error;
+    }
+  };
+
+  const startNonLethalFight = async (powerLevel: number) => {
+    try {
+      if (!FishFightInstance.fightingWatersNonLethal) {
+        throw new Error('Non-lethal Fighting Waters contract not initialized');
+      }
+
+      const result = await FishFightInstance.fightingWatersNonLethal.methods.fight(powerLevel).call();
+      
+      startCooldownTimer(Constants._cooldownTimeNonLethal);
+      
+      setLastFightResult({
+        won: result.won,
+        fishFoodEarned: result.won ? Constants._fishFoodPerWinNonLethal : '0',
+        powerUsed: powerLevel
+      });
+
+      refetchBalance();
+    } catch (error) {
+      console.error('Non-lethal fight failed:', error);
+      throw error;
+    }
+  };
+
+  const startWeakFight = async (powerLevel: number) => {
+    try {
+      if (!FishFightInstance.fightingWatersWeak) {
+        throw new Error('Weak Fighting Waters contract not initialized');
+      }
+
+      const result = await FishFightInstance.fightingWatersWeak.methods.fight(powerLevel).call();
+      
+      startCooldownTimer(Constants._lockTimeWeak);
+      
+      setLastFightResult({
+        won: result.won,
+        fishFoodEarned: result.won ? Constants._fishFoodPerWinWeak : '0',
+        powerUsed: powerLevel
+      });
+
+      refetchBalance();
+    } catch (error) {
+      console.error('Weak fight failed:', error);
+      throw error;
+    }
+  };
+
+  const applyModifier = async (modifierType: number) => {
+    // Implementation of applyModifier method
+  };
+
   const value: FishFightProviderContext = {
     FishFight: FishFightInstance,
-    userConnected: userConnected,
-    globalMute: globalMute,
-    currentBlock: currentBlock,
-    ...contextBalance,
+    userConnected,
+    globalMute,
+    currentBlock,
+    ...contextBalance,  // This spread now has the correct account type
     ...contextStats,
     refetchBalance,
     refetchStats,
     toggleGlobalMute,
-    setLogOut
+    setLogOut,
+    isInCooldown,
+    cooldownTimeRemaining,
+    currentPower: 0,
+    availableModifiers: [],
+    startRegularFight,
+    startNonLethalFight,
+    startWeakFight,
+    applyModifier,
+    lastFightResult,
+    selectedFish,
+    opponentStats,
+    selectFish,
+    account,  // This will now match the type from useWeb3React
+    totalSupply: 0,
+    fishCurrentIndex: 0,
+    fightingWatersWeakSupply: 0,
+    fightingWatersNonLethalSupply: 0,
+    fightingWatersSupply: 0,
+    breedingWatersSupply: 0,
+    totalSupplyDead: 0,
+    totalDeadBurned: 0,
+    currentCycle: 0,
+    currentPhase: undefined,
+    maxSupply: 0,
+    totalCaught: 0,
+    totalFights: 0,
+    totalBreeds: 0,
   }
+
+  // Update the useEffect that was listening to Unity
+  useEffect(() => {
+    const handleFishSelection = async (fishId: number) => {
+      if (!FishFightInstance.fishFactory) {
+        console.error('Fish Factory contract not initialized');
+        return;
+      }
+
+      try {
+        const fish = await FishFightInstance.fishFactory.methods.getFish(fishId).call();
+        setSelectedFish(fish);
+        
+        setOpponentStats({
+          minPower: 5, // placeholder
+          maxPower: 15 // placeholder
+        });
+      } catch (error) {
+        console.error('Failed to get fish stats:', error);
+      }
+    };
+  }, [FishFightInstance]);
+
   return (
       <FishFightContext.Provider value={value}>{children}</FishFightContext.Provider>
   )
@@ -288,7 +547,7 @@ const useBalance = () => {
 
       setBalanceFish(fishBalance);
       setBalanceDeadFish(deadFishBalance);
-      setBalanceFightFish((Web3.utils.toNumber(fighterBalance) + Web3.utils.toNumber(fighterBalanceWeak) + Web3.utils.toNumber(fighterBalanceNonLethal)).toString());
+      setBalanceFightFish((Number(fighterBalance) + Number(fighterBalanceWeak) + Number(fighterBalanceNonLethal)).toString());
       setBalanceBreedFish(breederBalance);
       setBalanceFishEgg(eggBalance);
       setBalanceFishScale(scaleBalance);
@@ -406,22 +665,22 @@ const useStats = () => {
       let totalFights = results.results.cycles.callsReturnContext[4].success ? results.results.cycles.callsReturnContext[4].returnValues[0].hex : null;
       let totalBreeds = results.results.cycles.callsReturnContext[5].success ? results.results.cycles.callsReturnContext[5].returnValues[0].hex : null;
 
-      setTotalSupply(Web3.utils.hexToNumber(totalFish));
-      setFishCurrentIndex(Web3.utils.hexToNumber(currentFishIndex));
-      setFightingWatersSupply(Web3.utils.hexToNumber(totalFighters));
-      setFightingWatersWeakSupply(Web3.utils.hexToNumber(totalFightersWeak));
-      setFightingWatersNonLethalSupply(Web3.utils.hexToNumber(totalFightersNonLethal));
-      setBreedingWatersSupply(Web3.utils.hexToNumber(totalBreeders));
+      setTotalSupply(Number(totalFish));
+      setFishCurrentIndex(Number(currentFishIndex));
+      setFightingWatersSupply(Number(totalFighters));
+      setFightingWatersWeakSupply(Number(totalFightersWeak));
+      setFightingWatersNonLethalSupply(Number(totalFightersNonLethal));
+      setBreedingWatersSupply(Number(totalBreeders));
 
-      setTotalSupplyDead(Web3.utils.hexToNumber(totalDead))
-      setTotalDeadBurned(Web3.utils.hexToNumber(burnedDead))
+      setTotalSupplyDead(Number(totalDead))
+      setTotalDeadBurned(Number(burnedDead))
 
-      setCurrentCycle(Web3.utils.hexToNumber(currentCycle));
+      setCurrentCycle(Number(currentCycle));
       setCurrentPhase(new Phase(currentPhase));
-      setMaxSupply(Web3.utils.hexToNumber(maxSupply));
-      setTotalCaught(Web3.utils.hexToNumber(totalCatches))
-      setTotalFights(Web3.utils.hexToNumber(totalFights))
-      setTotalBreeds(Web3.utils.hexToNumber(totalBreeds))
+      setMaxSupply(Number(maxSupply));
+      setTotalCaught(Number(totalCatches))
+      setTotalFights(Number(totalFights))
+      setTotalBreeds(Number(totalBreeds))
 		},
 		[
       setTotalSupply,

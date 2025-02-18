@@ -1,0 +1,71 @@
+.fight-mode-selector {
+  text-align: center;
+  padding: 2rem;
+  margin: 2rem auto;
+  max-width: 800px;
+}
+
+.mode-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.mode-button {
+  flex: 1;
+  padding: 1.5rem;
+  border: 2px solid #ccc;
+  border-radius: 8px;
+  background: white;
+  cursor: pointer;
+  transition: all 0.2s;
+  max-width: 200px;
+}
+
+.mode-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.mode-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.mode-button h3 {
+  margin: 0 0 0.5rem;
+  color: #333;
+}
+
+.mode-button p {
+  margin: 0 0 1rem;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.mode-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  color: #888;
+}
+
+.mode-button.regular {
+  border-color: #ff4444;
+}
+
+.mode-button.nonlethal {
+  border-color: #44aa44;
+}
+
+.mode-button.weak {
+  border-color: #4444ff;
+}
+
+.cooldown-timer {
+  margin-top: 1rem;
+  color: #ff4444;
+  font-weight: bold;
+} 

@@ -1,5 +1,5 @@
 // Harmony SDK
-import { Blockchain, Harmony, HarmonyExtension } from "@harmony-js/core"
+import { Blockchain, HarmonyExtension } from "@harmony-js/core"
 import { HarmonyAbstractConnector } from "@harmony-react/abstract-connector"
 
 // Web3 React
