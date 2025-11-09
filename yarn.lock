@@ -1689,26 +1689,6 @@
     "@web3-react/types" latest
     tiny-warning "^1.0.3"
 
-"@harmony-react/mathwallet-connector@^1.0.2":
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/@harmony-react/mathwallet-connector/-/mathwallet-connector-1.0.2.tgz#c10e87b9fa4981ff83a6393600e62b74798a1be4"
-  integrity sha512-gHPnB/j2zuQhCn9K+tL7EwAi+2R8v0day+aFiBNszv8z+gm6GfUJJqJeMEmzj/dMofwQN/0b44v6vFPPHr1zow==
-  dependencies:
-    "@harmony-js/core" "^0.1.55"
-    "@harmony-react/abstract-connector" latest
-    "@web3-react/types" latest
-    tiny-warning "^1.0.3"
-
-"@harmony-react/onewallet-connector@^1.0.2":
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/@harmony-react/onewallet-connector/-/onewallet-connector-1.0.2.tgz#1cfa2c7c94423364334857113ec9bb8229f752df"
-  integrity sha512-wZHXBZ8FecA1pRh8Ap7aKwLTI5cwBcHodKo+K5Q+YDljlw47oUsljwYCpawtYuM5rLHGjaX/38lM8xd82KKV4A==
-  dependencies:
-    "@harmony-js/core" "^0.1.55"
-    "@harmony-react/abstract-connector" latest
-    "@web3-react/types" latest
-    tiny-warning "^1.0.3"
-
 "@harmony-react/types@latest":
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/@harmony-react/types/-/types-1.0.2.tgz#aaa7c11b68ced71f6a742759d5172aa6c4336684"
