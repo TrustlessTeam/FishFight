@@ -22,6 +22,7 @@ import DisclaimerModal from "./components/DisclaimerModal";
 import { useContractWrapper } from "./context/contractWrapperContext";
 import FightingWatersWeak from "./components/FightingWatersWeak";
 import FightingWatersNonLethal from "./components/FightingWatersNonLethal";
+import PuppetMasterConsole from "./components/PuppetMasterConsole";
 
 type RenderProps = {
   hours: any;
@@ -56,11 +57,12 @@ const App = () => {
                 {/* <Route path="/fighting/weak" element={<FightingWaters />} /> */}
               </Route>
               <Route path="/fighting/weak" element={<FightingWatersWeak />} />
-              <Route path="/fighting/non-lethal" element={<FightingWatersNonLethal/>} />
+              <Route path="/fighting/non-lethal" element={<FightingWatersNonLethal />} />
               <Route path="/breeding" element={<BreedingWaters />}>
                 {/* <Route path="/breeding/user" element={<UserBreedingWaters />} /> */}
                 {/* <Route path="/breeding/start" element={<StartBreed />} /> */}
               </Route>
+              <Route path="/puppetmaster" element={<PuppetMasterConsole />} />
             </Route>
           </Routes>
 
