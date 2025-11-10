@@ -1,3 +1,12 @@
-[variables]
+[build]
+builder = "NIXPACKS"
+
+[build.env]
 CI = "false"
+
+[deploy]
+healthcheckPath = "/health.html"
+healthcheckTimeout = 60
+
+[variables]
 REACT_APP_FRONTEND_NETWORK = "mainnet"
