@@ -48,19 +48,14 @@ const App = () => {
           <DisclaimerModal></DisclaimerModal>
           <Routes>
             <Route element={<UnityWindow />}>
+              <Route index element={<Default />} />
               <Route path="/" element={<Default />} />
               <Route path="/ocean" element={<Ocean />} />
               <Route path="/fishing" element={<FishingWaters />} />
-              <Route path="/fighting" element={<FightingWaters />}>
-                {/* <Route path="/fighting/user" element={<FightingWaters />} /> */}
-                {/* <Route path="/fighting/weak" element={<FightingWaters />} /> */}
-              </Route>
+              <Route path="/fighting" element={<FightingWaters />} />
               <Route path="/fighting/weak" element={<FightingWatersWeak />} />
               <Route path="/fighting/non-lethal" element={<FightingWatersNonLethal/>} />
-              <Route path="/breeding" element={<BreedingWaters />}>
-                {/* <Route path="/breeding/user" element={<UserBreedingWaters />} /> */}
-                {/* <Route path="/breeding/start" element={<StartBreed />} /> */}
-              </Route>
+              <Route path="/breeding" element={<BreedingWaters />} />
             </Route>
           </Routes>
 

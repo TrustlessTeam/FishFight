@@ -96,7 +96,7 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
     .on("data", function(data: any){
       // console.log(data)
       if(data.returnValues.tokenId) {
-        fishBurned(web3.utils.toNumber(data.returnValues.tokenId));
+        fishBurned(Number(web3.utils.toNumber(data.returnValues.tokenId)));
       }
     })
 
@@ -116,7 +116,7 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
       // console.log("FIGHITNG DEPOSIT LISTENER")
       if(data.returnValues.tokenId) {
         refetchStats();
-        addFightingFishById(web3.utils.toNumber(data.returnValues.tokenId))
+        addFightingFishById(Number(web3.utils.toNumber(data.returnValues.tokenId)))
       }
     })
 
@@ -127,7 +127,7 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
       // console.log("FIGHITNG DEPOSIT LISTENER")
       if(data.returnValues.tokenId) {
         refetchStats();
-        addFightingFishWeakById(web3.utils.toNumber(data.returnValues.tokenId))
+        addFightingFishWeakById(Number(web3.utils.toNumber(data.returnValues.tokenId)))
       }
     })
 
@@ -138,7 +138,7 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
       // console.log("FIGHITNG DEPOSIT LISTENER")
       if(data.returnValues.tokenId) {
         refetchStats();
-        addFightingFishNonLethalById(web3.utils.toNumber(data.returnValues.tokenId))
+        addFightingFishNonLethalById(Number(web3.utils.toNumber(data.returnValues.tokenId)))
       }
     })
 
@@ -147,7 +147,7 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
       // console.log(data)
       if(data.returnValues.tokenId) {
         refetchStats();
-        removeFightingFishById(web3.utils.toNumber(data.returnValues.tokenId))
+        removeFightingFishById(Number(web3.utils.toNumber(data.returnValues.tokenId)))
       }
     })
 
@@ -156,7 +156,7 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
       // console.log(data)
       if(data.returnValues.tokenId) {
         refetchStats();
-        removeFightingFishWeakById(web3.utils.toNumber(data.returnValues.tokenId))
+        removeFightingFishWeakById(Number(web3.utils.toNumber(data.returnValues.tokenId)))
       }
     })
 
@@ -165,7 +165,7 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
       console.log(data)
       if(data.returnValues.tokenId) {
         refetchStats();
-        removeFightingFishNonLethalById(web3.utils.toNumber(data.returnValues.tokenId))
+        removeFightingFishNonLethalById(Number(web3.utils.toNumber(data.returnValues.tokenId)))
       }
     })
 
@@ -175,7 +175,7 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
       // console.log("BREEDING DEPOSIT LISTENER")
       if(data.returnValues.tokenId) {
         refetchStats();
-        addBreedingFishById(web3.utils.toNumber(data.returnValues.tokenId))
+        addBreedingFishById(Number(web3.utils.toNumber(data.returnValues.tokenId)))
       }
     })
 
@@ -184,7 +184,7 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
       // console.log(data)
       if(data.returnValues.tokenId) {
         refetchStats();
-        removeBreedingFishById(web3.utils.toNumber(data.returnValues.tokenId))
+        removeBreedingFishById(Number(web3.utils.toNumber(data.returnValues.tokenId)))
       }
     })
 
@@ -280,9 +280,9 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
       });
 
       await Promise.all(oceanIds.map(async tokenId => {
-        const parsedTokenId = web3.utils.toNumber(tokenId);
+        const parsedTokenId = Number(web3.utils.toNumber(tokenId));
         if(!oceanFish.some(fish => fish.tokenId == parsedTokenId)) {
-          const fishData = await buildFish(FishFight, web3.utils.toNumber(parsedTokenId))
+          const fishData = await buildFish(FishFight, Number(web3.utils.toNumber(parsedTokenId)))
           if(fishData != null) {
             setOceanFish(prevData => [...prevData, fishData])
           }
@@ -291,7 +291,7 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
 
       setLoadingFish(false);
       const [lastItem] = oceanIds.slice(-1)
-      setOceanFishIndex(web3.utils.toNumber(lastItem))
+      setOceanFishIndex(Number(web3.utils.toNumber(lastItem)))
 
     } catch (error) {
       console.log(error)
@@ -316,7 +316,7 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
       const userFishIds = [...Array(numUserFish).keys()].map(x => x++);
       await Promise.all(userFishIds.map(async index => {
         const tokenId = await FishFight.readFishFactory.methods.tokenOfOwnerByIndex(account, index).call();
-        const parsedTokenId = web3.utils.toNumber(tokenId);
+        const parsedTokenId = Number(web3.utils.toNumber(tokenId));
         if(!userFish.some(fish => fish.tokenId === parsedTokenId)) {
           await addUserFishById(parsedTokenId)
         }
@@ -330,7 +330,7 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
       const fightingFishIds = [...Array(numUserFightingFish).keys()].map(x => x++);
       await Promise.all(fightingFishIds.map(async index => {
         const tokenId = await FishFight.readFightingWaters.methods.tokenOfOwnerByIndex(account, index).call()
-        const parsedTokenId = web3.utils.toNumber(tokenId);
+        const parsedTokenId = Number(web3.utils.toNumber(tokenId));
         if(!userFish.some(fish => fish.tokenId === parsedTokenId)) {
           await addUserFishById(parsedTokenId)
         }
@@ -343,7 +343,7 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
       const fightingFishIdsWeak = [...Array(numUserFightingFishWeak).keys()].map(x => x++);
       await Promise.all(fightingFishIdsWeak.map(async index => {
         const tokenId = await FishFight.readFightingWatersWeak.methods.tokenOfOwnerByIndex(account, index).call()
-        const parsedTokenId = web3.utils.toNumber(tokenId);
+        const parsedTokenId = Number(web3.utils.toNumber(tokenId));
         if(!userFish.some(fish => fish.tokenId === parsedTokenId)) {
           await addUserFishById(parsedTokenId)
         }
@@ -356,7 +356,7 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
       const fightingFishIdsNonLethal = [...Array(numUserFightingFishNonLethal).keys()].map(x => x++);
       await Promise.all(fightingFishIdsNonLethal.map(async index => {
         const tokenId = await FishFight.readFightingWatersNonLethal.methods.tokenOfOwnerByIndex(account, index).call()
-        const parsedTokenId = web3.utils.toNumber(tokenId);
+        const parsedTokenId = Number(web3.utils.toNumber(tokenId));
         if(!userFish.some(fish => fish.tokenId === parsedTokenId)) {
           await addUserFishById(parsedTokenId)
         }
@@ -369,7 +369,7 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
       const breedingFishIds = [...Array(numUserBreedingFish).keys()].map(x => x++);
       await Promise.all(breedingFishIds.map(async index => {
         const tokenId = await FishFight.readBreedingWaters.methods.tokenOfOwnerByIndex(account, index).call()
-        const parsedTokenId = web3.utils.toNumber(tokenId);
+        const parsedTokenId = Number(web3.utils.toNumber(tokenId));
         if(!userFish.some(fish => fish.tokenId === parsedTokenId)) {
           await addUserFishById(parsedTokenId)
         }
@@ -406,7 +406,7 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
       for(let i = 0; i < numUserFish; i++) {
         FishFight.readFightingWaters.methods.tokenOfOwnerByIndex(account, i).call()
         .then((tokenId: any) => {
-          addUserFishById(web3.utils.toNumber(tokenId))
+          addUserFishById(Number(web3.utils.toNumber(tokenId)))
         });
       }
     } catch (error) {
@@ -433,7 +433,7 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
       // console.log(fightingFishIds)
       await Promise.all(fightingFishIds.map(async tokenId => {
       // const tokenId = await FishFight.readFishFactory.methods.tokenOfOwnerByIndex(account, index).call();
-        const parsedTokenId = web3.utils.toNumber(tokenId);
+        const parsedTokenId = Number(web3.utils.toNumber(tokenId));
         if(!fightingFish.some(fish => fish.tokenId === parsedTokenId)) {
           await addFightingFishById(parsedTokenId)
         }
@@ -466,7 +466,7 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
       // console.log(fightingFishIds)
       await Promise.all(fightingFishIds.map(async tokenId => {
       // const tokenId = await FishFight.readFishFactory.methods.tokenOfOwnerByIndex(account, index).call();
-        const parsedTokenId = web3.utils.toNumber(tokenId);
+        const parsedTokenId = Number(web3.utils.toNumber(tokenId));
         if(!fightingFishWeak.some(fish => fish.tokenId === parsedTokenId)) {
           await addFightingFishWeakById(parsedTokenId)
         }
@@ -499,7 +499,7 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
       // console.log(fightingFishIds)
       await Promise.all(fightingFishIds.map(async tokenId => {
       // const tokenId = await FishFight.readFishFactory.methods.tokenOfOwnerByIndex(account, index).call();
-        const parsedTokenId = web3.utils.toNumber(tokenId);
+        const parsedTokenId = Number(web3.utils.toNumber(tokenId));
         if(!fightingFishNonLethal.some(fish => fish.tokenId === parsedTokenId)) {
           await addFightingFishNonLethalById(parsedTokenId)
         }
@@ -523,7 +523,7 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
       for(let i = 0; i < numUserFish; i++) {
         FishFight.readBreedingWaters.methods.tokenOfOwnerByIndex(account, i).call()
         .then((tokenId: any) => {
-          addUserFishById(web3.utils.toNumber(tokenId))
+          addUserFishById(Number(web3.utils.toNumber(tokenId)))
         });
       }
     } catch (error) {
@@ -549,7 +549,7 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
       // console.log(breedingFishIds)
       await Promise.all(breedingFishIds.map(async tokenId => {
       // const tokenId = await FishFight.readFishFactory.methods.tokenOfOwnerByIndex(account, index).call();
-        const parsedTokenId = web3.utils.toNumber(tokenId);
+        const parsedTokenId = Number(web3.utils.toNumber(tokenId));
         if(!breedingFish.some(fish => fish.tokenId === parsedTokenId)) {
           await addBreedingFishById(parsedTokenId)
         }
@@ -576,7 +576,7 @@ export const FishPoolProvider = ({ children }: UnityProviderProps) => {
   }
 
   const createUserFish = async (tokenId: number) => {
-    const fishData = await buildFish(FishFight, web3.utils.toNumber(tokenId))
+    const fishData = await buildFish(FishFight, Number(web3.utils.toNumber(tokenId)))
     if(fishData != null) {
       setUserFish(prevTokens => [...prevTokens, fishData])
       return fishData;
@@ -913,21 +913,21 @@ const buildFish = async (fishFightInstance: FishFight, tokenId: number, isParent
   if(fightingWatersGetPoolInfo != null) {
     fish.stakedFighting = {
       earnedFishFood: web3.utils.fromWei(fightingWatersGetPoolInfo[0].hex),
-      lockedExpire: web3.utils.toNumber(fightingWatersGetPoolInfo[2].hex),
+      lockedExpire: Number(web3.utils.toNumber(fightingWatersGetPoolInfo[2].hex)),
       poolType: 0
     }
   }
   if(fightingWatersWeakGetPoolInfo != null) {
     fish.stakedFighting = {
       earnedFishFood: web3.utils.fromWei(fightingWatersWeakGetPoolInfo[0].hex),
-      lockedExpire: web3.utils.toNumber(fightingWatersWeakGetPoolInfo[2].hex),
+      lockedExpire: Number(web3.utils.toNumber(fightingWatersWeakGetPoolInfo[2].hex)),
       poolType: 1
     }
   }
   if(fightingWatersNonLethalGetPoolInfo != null) {
     fish.stakedFighting = {
       earnedFishFood: web3.utils.fromWei(fightingWatersNonLethalGetPoolInfo[0].hex),
-      lockedExpire: web3.utils.toNumber(fightingWatersNonLethalGetPoolInfo[2].hex),
+      lockedExpire: Number(web3.utils.toNumber(fightingWatersNonLethalGetPoolInfo[2].hex)),
       poolType: 2
     }
   }

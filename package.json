@@ -6,9 +6,6 @@
     "@ethersproject/providers": "^5.4.1",
     "@ethersproject/units": "^5.4.0",
     "@harmony-js/core": "^0.1.57",
-    "@harmony-react/abstract-connector": "^1.0.2",
-    "@harmony-react/mathwallet-connector": "^1.0.2",
-    "@harmony-react/onewallet-connector": "^1.0.2",
     "@types/react-loading-overlay": "^1.0.0",
     "@types/react-router-dom": "^5.1.8",
     "@types/styled-components": "^5.1.11",
@@ -67,12 +64,12 @@
     "format": "prettier --write \"**/*.{ts,js}?(x)\"",
     "lint": "eslint \"**/*.{js,ts}?(x)\"",
     "lint:fix": "eslint --fix \"**/*.{js,ts}?(x)\"",
-    "start": "react-scripts start",
-    "start:testnet": "cross-env REACT_APP_FRONTEND_NETWORK=testnet react-scripts start",
-    "start:mainnet": "cross-env REACT_APP_FRONTEND_NETWORK=mainnet react-scripts start",
-    "build": "react-scripts build",
-    "build:testnet": "cross-env REACT_APP_FRONTEND_NETWORK=testnet react-scripts build",
-    "build:mainnet": "cross-env REACT_APP_FRONTEND_NETWORK=mainnet react-scripts build",
+    "start": "NODE_OPTIONS=--openssl-legacy-provider react-scripts start",
+    "start:testnet": "cross-env NODE_OPTIONS=--openssl-legacy-provider REACT_APP_FRONTEND_NETWORK=testnet react-scripts start",
+    "start:mainnet": "cross-env NODE_OPTIONS=--openssl-legacy-provider REACT_APP_FRONTEND_NETWORK=mainnet react-scripts start",
+    "build": "NODE_OPTIONS=--openssl-legacy-provider react-scripts build",
+    "build:testnet": "cross-env NODE_OPTIONS=--openssl-legacy-provider REACT_APP_FRONTEND_NETWORK=testnet react-scripts build",
+    "build:mainnet": "cross-env NODE_OPTIONS=--openssl-legacy-provider REACT_APP_FRONTEND_NETWORK=mainnet react-scripts build",
     "deploy": "cp build/index.html build/200.html && surge ./build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
@@ -84,7 +81,7 @@
     ]
   },
   "engines": {
-    "node": "12.13.1"
+    "node": ">=14.0.0 <=22.x"
   },
   "browserslist": {
     "production": [

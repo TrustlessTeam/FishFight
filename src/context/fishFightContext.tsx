@@ -97,13 +97,34 @@ export const FishFightProvider = ({ children }: FishFightProviderProps ) => {
       .then(async (isAuthorized) => {
         setUserConnected(true)
         if (isAuthorized && !active && !error && !loggedOut) {
-          await activate(mmConnector)
+          try {
+            // For auto-connect, check if we're on Harmony network first
+            // If not, skip auto-connect (user can manually connect when ready)
+            const { getCurrentChainId, getHarmonyNetwork } = await import('../utils/walletConnector');
+            const currentChainId = await getCurrentChainId();
+            const harmonyNetwork = getHarmonyNetwork();
+            
+            // Only auto-connect if already on Harmony network
+            // This prevents errors when user is on a different network
+            if (currentChainId === harmonyNetwork.chainId) {
+              // Already on Harmony, safe to activate
+              await activate(mmConnector, undefined, true);
+            } else {
+              // Not on Harmony network - skip auto-connect
+              // User will need to manually connect (which will prompt for network switch)
+              console.log(`Auto-connect skipped: Wallet is on chain ${currentChainId}, but Harmony requires ${harmonyNetwork.chainId}. Please connect manually.`);
+            }
+          } catch (activationError: any) {
+            // Silently fail auto-connect - user can manually connect
+            console.warn('Auto-connect failed (this is normal if wallet is on wrong network):', activationError?.message || activationError)
+          }
         }
       })
-      .catch(() => {
+      .catch((err) => {
+        console.error('isAuthorized check failed:', err)
         setUserConnected(true)
       })
-  }, [activate, active, error])
+  }, [activate, active, error, loggedOut])
 
   // console.log(account)
   // console.log(active)
@@ -149,8 +170,8 @@ export const FishFightProvider = ({ children }: FishFightProviderProps ) => {
     setGlobalMute(prev => !prev);
   }
 
-  const setLogOut = () => {
-    setLoggedOut(true);
+  const setLogOut = (value: boolean) => {
+    setLoggedOut(value);
   } 
 
   const value: FishFightProviderContext = {
@@ -288,7 +309,7 @@ const useBalance = () => {
 
       setBalanceFish(fishBalance);
       setBalanceDeadFish(deadFishBalance);
-      setBalanceFightFish((Web3.utils.toNumber(fighterBalance) + Web3.utils.toNumber(fighterBalanceWeak) + Web3.utils.toNumber(fighterBalanceNonLethal)).toString());
+      setBalanceFightFish((Number(Web3.utils.toNumber(fighterBalance)) + Number(Web3.utils.toNumber(fighterBalanceWeak)) + Number(Web3.utils.toNumber(fighterBalanceNonLethal))).toString());
       setBalanceBreedFish(breederBalance);
       setBalanceFishEgg(eggBalance);
       setBalanceFishScale(scaleBalance);
@@ -406,22 +427,22 @@ const useStats = () => {
       let totalFights = results.results.cycles.callsReturnContext[4].success ? results.results.cycles.callsReturnContext[4].returnValues[0].hex : null;
       let totalBreeds = results.results.cycles.callsReturnContext[5].success ? results.results.cycles.callsReturnContext[5].returnValues[0].hex : null;
 
-      setTotalSupply(Web3.utils.hexToNumber(totalFish));
-      setFishCurrentIndex(Web3.utils.hexToNumber(currentFishIndex));
-      setFightingWatersSupply(Web3.utils.hexToNumber(totalFighters));
-      setFightingWatersWeakSupply(Web3.utils.hexToNumber(totalFightersWeak));
-      setFightingWatersNonLethalSupply(Web3.utils.hexToNumber(totalFightersNonLethal));
-      setBreedingWatersSupply(Web3.utils.hexToNumber(totalBreeders));
+      setTotalSupply(Number(Web3.utils.hexToNumber(totalFish)));
+      setFishCurrentIndex(Number(Web3.utils.hexToNumber(currentFishIndex)));
+      setFightingWatersSupply(Number(Web3.utils.hexToNumber(totalFighters)));
+      setFightingWatersWeakSupply(Number(Web3.utils.hexToNumber(totalFightersWeak)));
+      setFightingWatersNonLethalSupply(Number(Web3.utils.hexToNumber(totalFightersNonLethal)));
+      setBreedingWatersSupply(Number(Web3.utils.hexToNumber(totalBreeders)));
 
-      setTotalSupplyDead(Web3.utils.hexToNumber(totalDead))
-      setTotalDeadBurned(Web3.utils.hexToNumber(burnedDead))
+      setTotalSupplyDead(Number(Web3.utils.hexToNumber(totalDead)))
+      setTotalDeadBurned(Number(Web3.utils.hexToNumber(burnedDead)))
 
-      setCurrentCycle(Web3.utils.hexToNumber(currentCycle));
+      setCurrentCycle(Number(Web3.utils.hexToNumber(currentCycle)));
       setCurrentPhase(new Phase(currentPhase));
-      setMaxSupply(Web3.utils.hexToNumber(maxSupply));
-      setTotalCaught(Web3.utils.hexToNumber(totalCatches))
-      setTotalFights(Web3.utils.hexToNumber(totalFights))
-      setTotalBreeds(Web3.utils.hexToNumber(totalBreeds))
+      setMaxSupply(Number(Web3.utils.hexToNumber(maxSupply)));
+      setTotalCaught(Number(Web3.utils.hexToNumber(totalCatches)))
+      setTotalFights(Number(Web3.utils.hexToNumber(totalFights)))
+      setTotalBreeds(Number(Web3.utils.hexToNumber(totalBreeds)))
 		},
 		[
       setTotalSupply,

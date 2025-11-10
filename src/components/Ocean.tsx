@@ -50,6 +50,7 @@ const Ocean = () => {
     depositFightingFish,
     smartWithdraw,
     withdrawBreedingFish,
+    testWithdrawSimple,
     pendingTransaction,
   } = useContractWrapper();
   const { account } = useWeb3React();
@@ -86,6 +87,9 @@ const Ocean = () => {
           return;
         case "withdraw_fight_confirm":
           smartWithdraw(mySelectedFish);
+          return;
+        case "test_withdraw_confirm":
+          testWithdrawSimple(mySelectedFish);
           return;
         case "deposit_breed_confirm":
           depositBreedingFish(mySelectedFish);

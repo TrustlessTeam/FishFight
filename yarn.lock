@@ -1610,7 +1610,7 @@
     "@harmony-js/transaction" "0.1.56"
     "@harmony-js/utils" "0.1.56"
 
-"@harmony-js/core@0.1.57", "@harmony-js/core@^0.1.55", "@harmony-js/core@^0.1.57":
+"@harmony-js/core@0.1.57", "@harmony-js/core@^0.1.57":
   version "0.1.57"
   resolved "https://registry.yarnpkg.com/@harmony-js/core/-/core-0.1.57.tgz#bf10eb017f0086868fa8aefab097894e7b36acb3"
   integrity sha512-4d48MoR/3xabsoiV0fXjVwtL4u9AeNO72+UZWSZl2ZzrPvij2ucn14wvIZwCL69xJwD4bsqgy68Ju+DRLFVW3A==
@@ -1677,42 +1677,6 @@
   dependencies:
     "@types/bn.js" "^4.11.3"
     bn.js "^4.11.8"
-
-"@harmony-react/abstract-connector@^1.0.2", "@harmony-react/abstract-connector@latest":
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/@harmony-react/abstract-connector/-/abstract-connector-1.0.2.tgz#911e46c5426ced6c3463d8023231bd31ca86f710"
-  integrity sha512-EDvFxQc1Qao1r6ryOIj06neOt8VSH+sY7Flq9V9eEXSf2Gck1hvTDNQX2jvLgBdVPt1BPc3dzczEX5P2aVf8dA==
-  dependencies:
-    "@harmony-js/core" "^0.1.55"
-    "@harmony-react/types" latest
-    "@web3-react/abstract-connector" latest
-    "@web3-react/types" latest
-    tiny-warning "^1.0.3"
-
-"@harmony-react/mathwallet-connector@^1.0.2":
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/@harmony-react/mathwallet-connector/-/mathwallet-connector-1.0.2.tgz#c10e87b9fa4981ff83a6393600e62b74798a1be4"
-  integrity sha512-gHPnB/j2zuQhCn9K+tL7EwAi+2R8v0day+aFiBNszv8z+gm6GfUJJqJeMEmzj/dMofwQN/0b44v6vFPPHr1zow==
-  dependencies:
-    "@harmony-js/core" "^0.1.55"
-    "@harmony-react/abstract-connector" latest
-    "@web3-react/types" latest
-    tiny-warning "^1.0.3"
-
-"@harmony-react/onewallet-connector@^1.0.2":
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/@harmony-react/onewallet-connector/-/onewallet-connector-1.0.2.tgz#1cfa2c7c94423364334857113ec9bb8229f752df"
-  integrity sha512-wZHXBZ8FecA1pRh8Ap7aKwLTI5cwBcHodKo+K5Q+YDljlw47oUsljwYCpawtYuM5rLHGjaX/38lM8xd82KKV4A==
-  dependencies:
-    "@harmony-js/core" "^0.1.55"
-    "@harmony-react/abstract-connector" latest
-    "@web3-react/types" latest
-    tiny-warning "^1.0.3"
-
-"@harmony-react/types@latest":
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/@harmony-react/types/-/types-1.0.2.tgz#aaa7c11b68ced71f6a742759d5172aa6c4336684"
-  integrity sha512-AyqsMFOfEVyakYqylRoPpyYMlbr8JrNkD2LizJnFe3GA3NlixJYXdZ68UU+ct+C4XaXAXt53zPkPo6TOqsy9Pg==
 
 "@humanwhocodes/config-array@^0.5.0":
   version "0.5.0"
@@ -2692,7 +2656,7 @@
     "@typescript-eslint/types" "4.33.0"
     eslint-visitor-keys "^2.0.0"
 
-"@web3-react/abstract-connector@^6.0.7", "@web3-react/abstract-connector@latest":
+"@web3-react/abstract-connector@^6.0.7":
   version "6.0.7"
   resolved "https://registry.yarnpkg.com/@web3-react/abstract-connector/-/abstract-connector-6.0.7.tgz#401b3c045f1e0fab04256311be49d5144e9badc6"
   integrity sha512-RhQasA4Ox8CxUC0OENc1AJJm8UTybu/oOCM61Zjg6y0iF7Z0sqv1Ai1VdhC33hrQpA8qSBgoXN9PaP8jKmtdqg==
@@ -2719,7 +2683,7 @@
     "@web3-react/types" "^6.0.7"
     tiny-warning "^1.0.3"
 
-"@web3-react/types@^6.0.7", "@web3-react/types@latest":
+"@web3-react/types@^6.0.7":
   version "6.0.7"
   resolved "https://registry.yarnpkg.com/@web3-react/types/-/types-6.0.7.tgz#34a6204224467eedc6123abaf55fbb6baeb2809f"
   integrity sha512-ofGmfDhxmNT1/P/MgVa8IKSkCStFiyvXe+U5tyZurKdrtTDFU+wJ/LxClPDtFerWpczNFPUSrKcuhfPX1sI6+A==
@@ -4063,9 +4027,9 @@ caniuse-api@^3.0.0:
     lodash.uniq "^4.5.0"
 
 caniuse-lite@^1.0.0, caniuse-lite@^1.0.30000981, caniuse-lite@^1.0.30001109, caniuse-lite@^1.0.30001125, caniuse-lite@^1.0.30001312:
-  version "1.0.30001312"
-  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001312.tgz#e11eba4b87e24d22697dae05455d5aea28550d5f"
-  integrity sha512-Wiz1Psk2MEK0pX3rUzWaunLTZzqS2JYZFzNKqAiJGiuxIjRPLgV6+VDPOg6lQOUxmDwhTlh198JsTTi8Hzw6aQ==
+  version "1.0.30001754"
+  resolved "https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30001754.tgz"
+  integrity sha512-x6OeBXueoAceOmotzx3PO4Zpt4rzpeIFsSr6AAePTZxSkXiYDUmpypEl7e2+8NCd9bD7bXjqyef8CJYPC1jfxg==
 
 capture-exit@^2.0.0:
   version "2.0.0"

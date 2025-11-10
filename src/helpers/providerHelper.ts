@@ -1,6 +1,5 @@
 // Harmony SDK
 import { Blockchain, Harmony, HarmonyExtension } from "@harmony-js/core"
-import { HarmonyAbstractConnector } from "@harmony-react/abstract-connector"
 
 // Web3 React
 import { AbstractConnector } from "@web3-react/abstract-connector"
@@ -27,7 +26,7 @@ type getWalletProviderReturn = {
 // }
 
 
-export const getWalletProvider = async (connector: AbstractConnector | HarmonyAbstractConnector | undefined, library: Blockchain | any | undefined ): Promise<getWalletProviderReturn> => {
+export const getWalletProvider = async (connector: AbstractConnector | undefined, library: Blockchain | any | undefined ): Promise<getWalletProviderReturn> => {
     let provider: HarmonyExtension | Web3
 		// console.log("CONNECTOR")
 		// console.log(connector)
@@ -44,6 +43,9 @@ export const getWalletProvider = async (connector: AbstractConnector | HarmonyAb
 
     // If connector is AbstractConnector (not a harmony wallet)
 	// Get wallet provider from web3Provider
+	if (!library || !library.provider) {
+		throw new Error('Library provider is not available');
+	}
 	const accounts = await library.provider.request({ method: 'eth_requestAccounts' });
 	console.log(accounts)
 	// Initiate provider instance
@@ -71,6 +73,24 @@ export const getWalletProvider = async (connector: AbstractConnector | HarmonyAb
 			// if it is not, then install it into the user MetaMask
 			if (error.code === 4902) {
 				try {
+					if(envProvider === 'testnet') {
+						await window.ethereum.request({
+							method: 'wallet_addEthereumChain',
+							params: [
+								{
+									chainId: '0x6357D2E0',
+									rpcUrls: ['https://api.s0.b.hmny.io'],
+									chainName: 'Harmony Testnet',
+									nativeCurrency: {
+										name: "Harmony ONE",
+										symbol: "ONE",
+										decimals: 18
+									},
+									blockExplorerUrls: ["https://explorer.pops.one/"]
+								},
+							],
+						});
+					} else {
 					await window.ethereum.request({
 						method: 'wallet_addEthereumChain',
 						params: [
@@ -87,6 +107,7 @@ export const getWalletProvider = async (connector: AbstractConnector | HarmonyAb
 							},
 						],
 					});
+					}
 				} catch (addError) {
 					console.error(addError);
 				}

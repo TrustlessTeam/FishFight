@@ -20,7 +20,7 @@ export class Phase {
 		{	
 			this.phase = phaseResponse[0];
 			this.phaseString = phaseResponse[1];
-			this.phaseEndtime = web3.utils.hexToNumber(phaseResponse[2].hex);
+			this.phaseEndtime = Number(web3.utils.hexToNumber(phaseResponse[2].hex));
 			this.phaseEndtimeDate = new Date(this.phaseEndtime * 1000);
 		};
 }

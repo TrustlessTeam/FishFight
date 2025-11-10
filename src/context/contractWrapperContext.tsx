@@ -13,6 +13,7 @@ import { Fight } from '../utils/fight';
 import BN from 'bn.js';
 import { Constants } from '../utils/constants';
 import { getProvider } from '../utils/provider';
+import Web3 from 'web3';
 
 const MAX_APPROVE = '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff';
 
@@ -50,6 +51,8 @@ interface ProviderInterface {
 	contractModifierDFK: (fish: Fish, type: number) => void;
 	contractModifierFishProducts: (fish: Fish, type: number) => void;
 	smartWithdraw: (fish: Fish | null) => void;
+	testWithdrawSimple: (fish: Fish | null) => void;
+	testWithdrawRaw: (fish: Fish | null) => void;
 	onAccept: any;
 	perTransactionApproval: boolean;
 	pendingTransaction: boolean;
@@ -73,7 +76,11 @@ interface ProviderInterface {
 
 type ProviderProps = { children: React.ReactNode };
 
-type CatchFishResponse = {success: boolean, roll: number}
+interface CatchFishResponse {
+	success: boolean;
+	roll?: number;
+	fish?: Fish | null;
+}
 
 const ContractWrapperContext = createContext<ProviderInterface | undefined>(undefined);
 
@@ -188,19 +195,26 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 	const smartWithdraw = async (fish: Fish | null) => {
 		console.log(fish)
 		if(!fish) return;
+		
+		// Ensure account is available before proceeding
+		if(!account) {
+			toast.error('Connect your wallet');
+			return;
+		}
+		
 		const ownerAddress = await FishFight.readFishFactory.methods.ownerOf(fish.tokenId).call();
 		console.log(ownerAddress)
 		if(ownerAddress === FishFight.readFightingWaters.options.address) {
-			withdrawFightingFish(fish)
+			await withdrawFightingFish(fish)
 		}
 		else if(ownerAddress === FishFight.readFightingWatersWeak.options.address) {
-			withdrawFightingFishWeak(fish)
+			await withdrawFightingFishWeak(fish)
 		}
 		else if(ownerAddress === FishFight.readFightingWatersNonLethal.options.address) {
-			withdrawFightingFishNonLethal(fish)
+			await withdrawFightingFishNonLethal(fish)
 		}
 		else if(ownerAddress === FishFight.readBreedingWaters.options.address) {
-			withdrawBreedingFish(fish)
+			await withdrawBreedingFish(fish)
 		}
 	}
 
@@ -293,7 +307,7 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 				setPendingTransaction(false);
 				toast.success('Breeding completed!', {
 					onOpen: async () => {
-						const fish = await createUserFish(web3.utils.toNumber(data.events.BreedingResult.returnValues.tokenId));
+						const fish = await createUserFish(Number(web3.utils.toNumber(data.events.BreedingResult.returnValues.tokenId)));
 						if(fish != null) {
 							// unityContext.showFish(fish);
 							unityContext.addBreedOffspring(fish)
@@ -309,7 +323,24 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 	}
 
 	const withdrawBreedingFish = async (fish: Fish | null) => {
-		if(!account) {
+		let currentAccount = account;
+		
+		// Fallback: Get account from provider if hook value is undefined
+		if(!currentAccount && FishFight.providerWallet) {
+			try {
+				const web3Provider = FishFight.providerWallet as any;
+				if (web3Provider.eth) {
+					const accounts = await web3Provider.eth.getAccounts();
+					if (accounts && accounts.length > 0) {
+						currentAccount = accounts[0];
+					}
+				}
+			} catch (error) {
+				console.error('Failed to get account from provider:', error);
+			}
+		}
+		
+		if(!currentAccount) {
 			toast.error('Connect your wallet');
 			return;
 		}
@@ -321,20 +352,24 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 			toast.error('Select a Fish');
 			return;
 		}
-		try {
-			const gas = await FishFight.breedingWaters?.methods.withdraw(fish.tokenId).estimateGas({from: account})
-			await FishFight.breedingWaters?.methods.withdraw(fish.tokenId).send({
-				from: account,
+
+		// EXACT copy of deposit function pattern - but with 1 confirmation block like working approval function
+		return FishFight.breedingWaters?.methods.withdraw(fish.tokenId).estimateGas({from: currentAccount}).then(async (gas: any) => {
+			FishFight.breedingWaters?.methods.withdraw(fish.tokenId).send({
+				from: currentAccount,
 				gasPrice: await getGasPrice(),
 				gasLimit: gas,
+			}, 1) // Pass 1 as second parameter to only wait for 1 confirmation block
+			.on('error', (error: any) => {
+				console.log(error)
+				toast.error('Withdraw Failed');
+				setPendingTransaction(false);
 			})
 			.on('transactionHash', () => {
 				setPendingTransaction(true);
 			})
 			.on('receipt', async (data: any) => {
 				setPendingTransaction(false);
-				// withdrawUserBreedingFish(fish);
-				// setFishSelectionToShow(FishSelectionEnum.UserFish)
 				toast.success('Transaction done', {
 					onOpen: async () => {
 						refetchBalance()
@@ -343,9 +378,7 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 					},
 				});
 			})
-		} catch (error: any) {
-			toast.error(error);
-		}
+		})
 	}
 
 	const depositBreedingFish = async (fish: Fish | null) => {
@@ -717,6 +750,28 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 			toast.error('Select a Fish');
 			return;
 		}
+		
+		let currentAccount = account;
+		
+		// Fallback: Get account from provider if hook value is undefined
+		if(!currentAccount && FishFight.providerWallet) {
+			try {
+				const web3Provider = FishFight.providerWallet as any;
+				if (web3Provider.eth) {
+					const accounts = await web3Provider.eth.getAccounts();
+					if (accounts && accounts.length > 0) {
+						currentAccount = accounts[0];
+					}
+				}
+			} catch (error) {
+				console.error('Failed to get account from provider:', error);
+			}
+		}
+		
+		if(!currentAccount) {
+			toast.error('Connect your wallet');
+			return;
+		}
 		if(await wrongNetwork()) {
 			toast.error('Wrong Network');
 			return;
@@ -730,13 +785,13 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 			return;
 		}
 
-		const gas = await FishFight.fightingWaters?.methods.withdraw(fish.tokenId).estimateGas({from: account});
-
-		return FishFight.fightingWaters?.methods.withdraw(fish.tokenId).send({
-			from: account,
+		// EXACT copy of deposit function pattern - but with 1 confirmation block like working approval function
+		return FishFight.fightingWaters?.methods.withdraw(fish.tokenId).estimateGas({from: currentAccount}).then(async (gas: any) => {
+			FishFight.fightingWaters?.methods.withdraw(fish.tokenId).send({
+				from: currentAccount,
 			gasPrice: await getGasPrice(),
 			gasLimit: gas,
-		})
+			}, 1) // Pass 1 as second parameter to only wait for 1 confirmation block
 		.on('error', (error: any) => {
 			console.log(error)
 			toast.error('Withdraw Failed');
@@ -744,10 +799,9 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 		})
 		.on('transactionHash', () => {
 			setPendingTransaction(true);
-		}).on('receipt', async (data: any) => {
+			})
+			.on('receipt', async (data: any) => {
 			setPendingTransaction(false);
-			// withdrawUserFightingFish(fish);
-			// setFishSelectionToShow(FishSelectionEnum.FightFish)
 			toast.success('Transaction done', {
 				onOpen: async () => {
 					refetchBalance()
@@ -755,6 +809,7 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 					if(updatedFish != null) unityContext.refreshFishUnity(updatedFish);
 				},
 			});
+			})
 		})
 	}
 
@@ -778,7 +833,7 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 			.on('transactionHash', () => {
 				setPendingTransaction(true);
 			}).on('receipt', async (result: any) => {
-				const fightIndex = web3.utils.toNumber(result.events.FightCompleted.returnValues._fightIndex);
+				const fightIndex = Number(web3.utils.toNumber(result.events.FightCompleted.returnValues._fightIndex));
 				setPendingTransaction(false);
 				
 				const fightResult = await getFightByIndex(fightIndex, myFish)
@@ -1360,6 +1415,7 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 		if(newFish != null) {
 			unityContext.addFishFishing(newFish);
 		}
+		return newFish || null;
 	}
 
 	const catchFish = async () => {
@@ -1391,7 +1447,7 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 			})
 			.on('transactionHash', () => {
 				setPendingTransaction(true);
-			}).on('receipt', (result: any) => {
+			}).on('receipt', async (result: any) => {
 				console.log(result)
 				setPendingTransaction(false);
 				
@@ -1404,21 +1460,21 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 							refetchBalance()
 						},
 					});
-					setCatchFishResult({success: true, roll: result.events.FishingResult.returnValues.roll})
+					setCatchFishResult({success: false, roll: result.events.FishingResult.returnValues.roll})
 				}
 				
 				// Fish Caught
-				getUserFish(result.events.FishingResult.returnValues.index);
+				const newFish = await getUserFish(result.events.FishingResult.returnValues.index);
 				toast.success('Fish Caught!', {
 					onOpen: async () => {
 						refetchBalance()
 					},
 				});
-				setCatchFishResult(null)
+				setCatchFishResult({success: true, fish: newFish})
 				
 			})
 		} catch (error: any) {
-			toast.error(error);
+			toast.error(error.message || 'Error');
 			console.log(error)
 		}
 	};
@@ -1435,15 +1491,28 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 		}
 
 		try {
-
-			// Not enough allowance of Fish food spend, so approve and use MAX int
-			//if(fishingFoodApproval.lt(new BN(Constants._fishFoodBreedFee)) && !perTransactionApproval) {
+			// Check if we need approval - only send transaction if approval is insufficient
+			// For fishing, we use MAX_APPROVE (unlimited) if not using per-transaction approval
+			if (!perTransactionApproval && fishingFoodApproval.lt(new BN(MAX_APPROVE))) {
 				contractApproveFoodForFishing(MAX_APPROVE, () => catchFishwFood() );
-
-			//}
+			} else if (perTransactionApproval) {
+				// Per-transaction approval mode - check if we need to approve
+				// For now, fishing doesn't have a specific fee constant, so we'll check if approval is very low
+				// If approval is less than 1 FISHFOOD (1e18), we'll approve MAX
+				const minApproval = new BN('1000000000000000000'); // 1 FISHFOOD
+				if (fishingFoodApproval.lt(minApproval)) {
+					contractApproveFoodForFishing(MAX_APPROVE, () => catchFishwFood() );
+				} else {
+					// Already have approval, proceed directly
+					catchFishwFood();
+				}
+			} else {
+				// Already have sufficient approval, proceed directly
+				catchFishwFood();
+			}
 
 		} catch (error: any) {
-			toast.error(error);
+			toast.error(error.message || 'Error');
 			console.log(error)
 		}
 	};
@@ -1482,7 +1551,7 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 			})
 			.on('transactionHash', () => {
 				setPendingTransaction(true);
-			}).on('receipt', (result: any) => {
+			}).on('receipt', async (result: any) => {
 				console.log(result)
 				setPendingTransaction(false);
 				
@@ -1495,21 +1564,21 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 							refetchBalance()
 						},
 					});
-					setCatchFishResult({success: true, roll: result.events.FishingResult.returnValues.roll})
+					setCatchFishResult({success: false, roll: result.events.FishingResult.returnValues.roll})
 				}
 				
 				// Fish Caught
-				getUserFish(result.events.FishingResult.returnValues.index);
+				const newFish = await getUserFish(result.events.FishingResult.returnValues.index);
 				toast.success('Fish Caught!', {
 					onOpen: async () => {
 						refetchBalance()
 					},
 				});
-				setCatchFishResult(null)
+				setCatchFishResult({success: true, fish: newFish})
 				
 			})
 		} catch (error: any) {
-			toast.error(error);
+			toast.error(error.message || 'Error');
 			console.log(error)
 		}
 	};
@@ -1532,7 +1601,7 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 
 	const wrongNetwork = async () => {
 		const currentProvider = getProvider();
-		if(await FishFight.provider.eth.getChainId() !== web3.utils.toNumber(currentProvider.networkId)) {
+		if(await FishFight.provider.eth.getChainId() !== Number(web3.utils.toNumber(currentProvider.networkId))) {
 			return true;
 		}
 		return false;
@@ -1718,6 +1787,28 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 			toast.error('Select a Fish');
 			return;
 		}
+		
+		let currentAccount = account;
+		
+		// Fallback: Get account from provider if hook value is undefined
+		if(!currentAccount && FishFight.providerWallet) {
+			try {
+				const web3Provider = FishFight.providerWallet as any;
+				if (web3Provider.eth) {
+					const accounts = await web3Provider.eth.getAccounts();
+					if (accounts && accounts.length > 0) {
+						currentAccount = accounts[0];
+					}
+				}
+			} catch (error) {
+				console.error('Failed to get account from provider:', error);
+			}
+		}
+		
+		if(!currentAccount) {
+			toast.error('Connect your wallet');
+			return;
+		}
 		if(await wrongNetwork()) {
 			toast.error('Wrong Network');
 			return;
@@ -1731,13 +1822,13 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 			return;
 		}
 
-		const gas = await FishFight.fightingWatersWeak?.methods.withdraw(fish.tokenId).estimateGas({from: account});
-
-		return FishFight.fightingWatersWeak?.methods.withdraw(fish.tokenId).send({
-			from: account,
+		// EXACT copy of deposit function pattern - but with 1 confirmation block like working approval function
+		return FishFight.fightingWatersWeak?.methods.withdraw(fish.tokenId).estimateGas({from: currentAccount}).then(async (gas: any) => {
+			FishFight.fightingWatersWeak?.methods.withdraw(fish.tokenId).send({
+				from: currentAccount,
 			gasPrice: await getGasPrice(),
 			gasLimit: gas,
-		})
+			}, 1) // Pass 1 as second parameter to only wait for 1 confirmation block
 		.on('error', (error: any) => {
 			console.log(error)
 			toast.error('Withdraw Failed');
@@ -1745,10 +1836,9 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 		})
 		.on('transactionHash', () => {
 			setPendingTransaction(true);
-		}).on('receipt', async (data: any) => {
+			})
+			.on('receipt', async (data: any) => {
 			setPendingTransaction(false);
-			// withdrawUserFightingFish(fish);
-			// setFishSelectionToShow(FishSelectionEnum.FightFish)
 			toast.success('Transaction done', {
 				onOpen: async () => {
 					refetchBalance()
@@ -1756,6 +1846,7 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 					if(updatedFish != null) unityContext.refreshFishUnity(updatedFish);
 				},
 			});
+			})
 		})
 	}
 
@@ -1782,7 +1873,7 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 				const fightIndex = web3.utils.toNumber(result.events.FightCompleted.returnValues._fightIndex);
 				setPendingTransaction(false);
 				
-				const fightResult = await getFightWeakByIndex(fightIndex, myFish)
+				const fightResult = await getFightWeakByIndex(Number(fightIndex), myFish)
 				unityContext.sendFightResult(fightResult, myFish, opponentFish);
 				// unityContext.
 				toast.success('Fight Completed!', {
@@ -2063,33 +2154,228 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 
 	const contractApproveFoodForFishing = async (amountToApprove: string, callback?: any) => {
 		console.log("contract food called")
+		
+		if (!account) {
+			toast.error('No wallet connected');
+			return;
+		}
+		
+		if (!FishFight.fishFood) {
+			toast.error('Contract not initialized');
+			return;
+		}
+		
+		// Check current on-chain allowance before sending transaction
+		try {
+			const currentAllowance = new BN(await FishFight.readFishFood.methods.allowance(account, FishFight.readFishingWaters.options.address).call());
+			const amountToApproveBN = new BN(amountToApprove);
+			
+			// If current allowance is already sufficient, skip the transaction
+			if (currentAllowance.gte(amountToApproveBN)) {
+				console.log('Sufficient approval already exists:', currentAllowance.toString(), '>=', amountToApprove);
+				// Update state to reflect current allowance
+				setFishingFoodApproval(currentAllowance);
+				// Call callback immediately without sending transaction
+				if (callback) {
+					callback();
+				}
+				return;
+			}
+		} catch (error) {
+			console.error('Failed to check current allowance, proceeding with approval:', error);
+			// Continue with approval if check fails
+		}
+		
 		setShowFishingFoodApproval(true);
 		setOnAccept(() => async () => {
 			setShowFishingFoodApproval(false);
 	
-			return FishFight.fishFood?.methods.approve(FishFight.readFishingWaters.options.address, amountToApprove).send({
+			// Ensure account is available - log for debugging
+			console.log('Approval callback - account:', account, 'type:', typeof account);
+			if (!account) {
+				console.error('Account is undefined in approval callback!');
+				toast.error('No wallet connected');
+				setPendingTransaction(false);
+				setShowFishingFoodApproval(false);
+				return;
+			}
+			
+			// Set defaultAccount on provider and contract as fallback
+			if (FishFight.providerWallet && typeof FishFight.providerWallet === 'object' && 'eth' in FishFight.providerWallet) {
+				const web3Provider = FishFight.providerWallet as any;
+				if (web3Provider.eth) {
+					web3Provider.eth.defaultAccount = account;
+					console.log('Set defaultAccount on provider:', account);
+				}
+			}
+			
+			if (FishFight.fishFood) {
+				(FishFight.fishFood as any).defaultAccount = account;
+				console.log('Set defaultAccount on contract:', account);
+			}
+			
+			// Match the exact pattern used in contractApproveFoodForBreeding which works
+			const txOptions = {
 				from: account,
 				gasPrice: await getGasPrice(),
 				gasLimit: await FishFight.fishFood?.methods.approve(FishFight.readFishingWaters.options.address, amountToApprove).estimateGas({from: account})
-			})
+			};
+			
+			console.log('Sending approval with options:', txOptions);
+			
+			// Track if we got a transaction hash (transaction was sent successfully)
+			let txHashReceived = false;
+			let receiptReceived = false;
+			let txHash: string | null = null;
+			
+			// Set a timeout to proceed if we get hash but no receipt
+			let timeoutId: NodeJS.Timeout | null = null;
+			let pollInterval: NodeJS.Timeout | null = null;
+			
+			// Pass 1 as second parameter to only wait for 1 confirmation block (Harmony is fast)
+			const txPromise = FishFight.fishFood?.methods.approve(FishFight.readFishingWaters.options.address, amountToApprove).send(txOptions, 1)
 			.on('error', (error: any) => {
-				console.log(error)
-				toast.error('Approval Failed');
+				console.log('Approval error event:', error)
+				if (timeoutId) clearTimeout(timeoutId);
+				if (pollInterval) clearInterval(pollInterval);
+				// Don't fail on timeout if we got a transaction hash
+				if (error.message && error.message.includes('not mined within') && txHashReceived) {
+					console.log('Transaction timeout but hash was received - transaction was sent successfully');
+					toast.info('Transaction sent! Proceeding...');
+					setFishingFoodApproval(new BN(amountToApprove));
 				setPendingTransaction(false);
 				setShowFishingFoodApproval(false);
+					if (callback && !receiptReceived) {
+						callback();
+					}
+				} else {
+					toast.error('Approval Failed: ' + (error.message || 'Unknown error'));
+					setPendingTransaction(false);
+					setShowFishingFoodApproval(false);
+				}
 			})
-			.on('transactionHash', () => {
+			.on('transactionHash', (hash: string) => {
+				console.log('Approval transaction hash received:', hash);
+				txHash = hash;
+				txHashReceived = true;
 				setPendingTransaction(true);
+				toast.info('Transaction sent! Waiting for confirmation...');
+				
+				// Poll for receipt manually if web3.js doesn't get it
+				// This helps when transactions take longer than expected
+				const pollForReceipt = async () => {
+					if (!FishFight.providerWallet || receiptReceived) return false;
+					
+					try {
+						const web3Provider = FishFight.providerWallet as any;
+						if (web3Provider.eth) {
+							const receipt = await web3Provider.eth.getTransactionReceipt(hash);
+							if (receipt && receipt.status) {
+								console.log('Manually polled receipt received:', receipt);
+								receiptReceived = true;
+								if (timeoutId) clearTimeout(timeoutId);
+								if (pollInterval) clearInterval(pollInterval);
+								console.log('FishFood Approval completed (via polling)');
+								toast.success('FishFood Approval Completed');
+								setFishingFoodApproval(new BN(amountToApprove));
+								setPendingTransaction(false);
+								setShowFishingFoodApproval(false);
+								if (callback) {
+									callback();
+								}
+								return true;
+							}
+						}
+					} catch (error) {
+						// Receipt not ready yet, continue polling
+						// Only log occasionally to avoid spam
+						if (Math.random() < 0.1) { // Log ~10% of the time
+							console.log('Receipt not ready yet, will retry...');
+						}
+					}
+					return false;
+				};
+				
+				// Start polling every 2 seconds
+				pollInterval = setInterval(async () => {
+					if (receiptReceived) {
+						if (pollInterval) clearInterval(pollInterval);
+						return;
+					}
+					const gotReceipt = await pollForReceipt();
+					if (gotReceipt && pollInterval) {
+						clearInterval(pollInterval);
+					}
+				}, 2000); // Poll every 2 seconds
+				
+				// Set a longer timeout - if we don't get receipt in 60 seconds, proceed anyway
+				// Harmony is fast, but sometimes web3.js doesn't get the receipt
+				timeoutId = setTimeout(() => {
+					if (pollInterval) clearInterval(pollInterval);
+					if (!receiptReceived && txHashReceived) {
+						console.log('Transaction hash received but no receipt after 60s - checking one more time then proceeding');
+						// Try one final check
+						pollForReceipt().then((gotReceipt) => {
+							if (!gotReceipt) {
+								console.log('Final check failed - proceeding anyway (transaction was sent)');
+								toast.info('Transaction sent! Proceeding...');
+								setFishingFoodApproval(new BN(amountToApprove));
+								setPendingTransaction(false);
+								setShowFishingFoodApproval(false);
+								if (callback) {
+									callback();
+								}
+							}
+						});
+					}
+				}, 60000); // 60 second timeout
 			})
 			.on('receipt', (data: any) => {
-				console.log(data)
+				console.log('Approval receipt received:', data)
+				receiptReceived = true;
+				if (timeoutId) clearTimeout(timeoutId);
+				if (pollInterval) clearInterval(pollInterval);
 				console.log('FishFood Approval completed')
 				toast.success('FishFood Approval Completed')
 				setFishingFoodApproval(new BN(amountToApprove))
 				setPendingTransaction(false);
 				setShowFishingFoodApproval(false);
+				if(data.events.Approval.returnValues.spender === FishFight.readFishingWaters.options.address &&
+					new BN(data.events.Approval.returnValues.value).gte(new BN(amountToApprove))) {
 				callback();
+				}
 			})
+			.catch((error: any) => {
+				// Handle promise rejection (timeout)
+				console.log('Approval catch (timeout):', error)
+				if (timeoutId) clearTimeout(timeoutId);
+				if (pollInterval) clearInterval(pollInterval);
+				if (error.message && error.message.includes('not mined within')) {
+					if (txHashReceived && !receiptReceived) {
+						// Transaction was sent (got hash) but timed out waiting for confirmation
+						// This is OK - proceed anyway
+						console.log('Transaction timeout but was sent successfully - proceeding');
+						toast.info('Transaction sent! Proceeding...');
+						setFishingFoodApproval(new BN(amountToApprove));
+						setPendingTransaction(false);
+						setShowFishingFoodApproval(false);
+						if (callback) {
+							callback();
+						}
+					} else {
+						// No hash received - transaction might not have been sent
+						toast.error('Transaction timeout. Please check MetaMask.');
+						setPendingTransaction(false);
+						setShowFishingFoodApproval(false);
+					}
+				} else {
+					toast.error('Approval Failed: ' + (error.message || 'Unknown error'));
+					setPendingTransaction(false);
+					setShowFishingFoodApproval(false);
+				}
+			});
+			
+			return txPromise;
 		})
 	}
 
@@ -2153,31 +2439,203 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 		}
 	}
 
+	// SIMPLE TEST WITHDRAW FUNCTION - Minimal code to test
+	const testWithdrawSimple = async (fish: Fish | null) => {
+		console.log('=== TEST WITHDRAW CALLED ===');
+		console.log('Fish:', fish);
+		console.log('Account:', account);
+		
+		if(!fish) {
+			console.error('❌ No fish provided');
+			toast.error('Missing fish');
+			return;
+		}
+		
+		if(!account) {
+			console.error('❌ No account');
+			toast.error('Missing account - connect wallet');
+			return;
+		}
+
+		if(!FishFight.fightingWatersNonLethal) {
+			console.error('❌ Contract not initialized');
+			toast.error('Contract not initialized');
+			return;
+		}
+
+		console.log('=== SIMPLE TEST WITHDRAW ===');
+		console.log('Account:', account);
+		console.log('TokenId:', fish.tokenId);
+		console.log('Contract exists:', !!FishFight.fightingWatersNonLethal);
+		console.log('Read contract exists:', !!FishFight.readFightingWatersNonLethal);
+		
+		try {
+			// Step 1: Check if we own the stake token
+			console.log('Step 1: Checking stake token ownership...');
+			if (!FishFight.readFightingWatersNonLethal) {
+				throw new Error('Read contract not initialized');
+			}
+			const stakeOwner = await FishFight.readFightingWatersNonLethal.methods.ownerOf(fish.tokenId).call();
+			console.log('✅ Stake token owner:', stakeOwner);
+			console.log('My account:', account);
+			console.log('Match:', stakeOwner?.toLowerCase() === account.toLowerCase());
+			
+			if (stakeOwner?.toLowerCase() !== account.toLowerCase()) {
+				toast.error('You do not own the stake token');
+				return;
+			}
+
+			// Step 2: Try to estimate gas
+			console.log('Step 2: Estimating gas...');
+			if (!FishFight.fightingWatersNonLethal) {
+				throw new Error('Write contract not initialized');
+			}
+			const gas = await FishFight.fightingWatersNonLethal.methods.withdraw(fish.tokenId).estimateGas({from: account});
+			console.log('✅ Gas estimated:', gas.toString());
+
+			// Step 3: Send transaction with 1 confirmation block (like working approval function)
+			console.log('Step 3: Sending transaction...');
+			console.log('Transaction options:', { from: account, gasLimit: gas.toString() });
+			const tx = FishFight.fightingWatersNonLethal.methods.withdraw(fish.tokenId).send({
+				from: account,
+				gasPrice: await getGasPrice(),
+				gasLimit: gas,
+			}, 1); // Pass 1 as second parameter to only wait for 1 confirmation block
+
+			tx.on('transactionHash', (hash: string) => {
+				console.log('✅ Transaction hash:', hash);
+				setPendingTransaction(true);
+				toast.success('Transaction sent! Hash: ' + hash.substring(0, 10) + '...');
+			});
+
+			tx.on('receipt', (receipt: any) => {
+				console.log('✅ Transaction confirmed:', receipt);
+				setPendingTransaction(false);
+				toast.success('Withdraw successful!');
+				refetchBalance();
+				refreshFish(fish.tokenId, false, false).then((updatedFish) => {
+					if(updatedFish != null) unityContext.refreshFishUnity(updatedFish);
+				});
+			});
+
+			tx.on('error', (error: any) => {
+				console.error('❌ Transaction error event:', error);
+				console.error('Error type:', typeof error);
+				console.error('Error keys:', Object.keys(error));
+				console.error('Error message:', error.message);
+				console.error('Error code:', error.code);
+				console.error('Error data:', error.data);
+				setPendingTransaction(false);
+				toast.error('Error: ' + (error.message || JSON.stringify(error)));
+			});
+
+			// Also catch promise rejection
+			tx.catch((error: any) => {
+				console.error('❌ Transaction promise rejection:', error);
+				setPendingTransaction(false);
+				toast.error('Promise rejected: ' + (error.message || JSON.stringify(error)));
+			});
+
+			return tx;
+		} catch (error: any) {
+			console.error('❌ Catch error:', error);
+			console.error('Error type:', typeof error);
+			console.error('Error name:', error.name);
+			console.error('Error message:', error.message);
+			console.error('Error stack:', error.stack);
+			toast.error('Failed: ' + (error.message || JSON.stringify(error)));
+			setPendingTransaction(false);
+		}
+	}
+
 	const withdrawFightingFishNonLethal = async (fish : Fish | null) => {
 		if(fish == null) {
 			toast.error('Select a Fish');
 			return;
 		}
+		
+		// CRITICAL: Get account from hook - it might be undefined
+		let currentAccount = account;
+		console.log('=== WITHDRAW START ===');
+		console.log('Account from hook:', currentAccount);
+		console.log('Account type:', typeof currentAccount);
+		
+		// Fallback: Get account from provider if hook value is undefined
+		if(!currentAccount && FishFight.providerWallet) {
+			try {
+				const web3Provider = FishFight.providerWallet as any;
+				if (web3Provider.eth) {
+					const accounts = await web3Provider.eth.getAccounts();
+					if (accounts && accounts.length > 0) {
+						currentAccount = accounts[0];
+						console.log('Got account from provider:', currentAccount);
+					}
+				}
+			} catch (error) {
+				console.error('Failed to get account from provider:', error);
+			}
+		}
+		
+		if(!currentAccount) {
+			console.error('❌ Account is undefined after all attempts!');
+			toast.error('Connect your wallet');
+			return;
+		}
+		
 		if(await wrongNetwork()) {
 			toast.error('Wrong Network');
 			return;
 		}
 
-		const gas = await FishFight.fightingWatersNonLethal?.methods.withdraw(fish.tokenId).estimateGas({from: account});
+		try {
+			console.log('TokenId:', fish.tokenId);
+			console.log('Contract:', FishFight.fightingWatersNonLethal);
+			console.log('Provider:', FishFight.providerWallet);
+			console.log('Using account for transaction:', currentAccount);
 
+			// Set defaultAccount on provider and contract as fallback (like working approval function does)
+			if (FishFight.providerWallet && typeof FishFight.providerWallet === 'object' && 'eth' in FishFight.providerWallet) {
+				const web3Provider = FishFight.providerWallet as any;
+				if (web3Provider.eth) {
+					web3Provider.eth.defaultAccount = currentAccount;
+					console.log('Set defaultAccount on provider:', currentAccount);
+				}
+			}
+			
+			if (FishFight.fightingWatersNonLethal) {
+				(FishFight.fightingWatersNonLethal as any).defaultAccount = currentAccount;
+				if (FishFight.fightingWatersNonLethal.options) {
+					FishFight.fightingWatersNonLethal.options.from = currentAccount;
+					console.log('Set contract options.from:', currentAccount);
+				}
+				console.log('Set defaultAccount on contract:', currentAccount);
+			}
+
+			// EXACT copy of deposit function pattern - but with 1 confirmation block like working approval function
+			return FishFight.fightingWatersNonLethal?.methods.withdraw(fish.tokenId).estimateGas({from: currentAccount}).then(async (gas: any) => {
+				console.log('Gas estimated successfully:', gas);
+				console.log('Sending with account:', currentAccount);
 		return FishFight.fightingWatersNonLethal?.methods.withdraw(fish.tokenId).send({
-			from: account,
+					from: currentAccount,
 			gasPrice: await getGasPrice(),
 			gasLimit: gas,
-		})
+				}, 1) // Pass 1 as second parameter to only wait for 1 confirmation block
 		.on('error', (error: any) => {
-			console.log(error)
-			toast.error('Withdraw Failed');
+					console.error('=== WITHDRAW ERROR EVENT ===');
+					console.error('Full error object:', error);
+					console.error('Error message:', error.message);
+					console.error('Error code:', error.code);
+					console.error('Error data:', error.data);
+					console.error('Transaction hash:', error.transactionHash);
+					toast.error('Withdraw Failed: ' + (error.message || 'Unknown error'));
 			setPendingTransaction(false);
 		})
-		.on('transactionHash', () => {
+				.on('transactionHash', (hash: string) => {
+					console.log('Transaction hash received:', hash);
 			setPendingTransaction(true);
-		}).on('receipt', async (data: any) => {
+				})
+				.on('receipt', async (data: any) => {
+					console.log('Transaction receipt received:', data);
 			setPendingTransaction(false);
 			toast.success('Transaction done', {
 				onOpen: async () => {
@@ -2187,6 +2645,22 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 				},
 			});
 		})
+			}).catch((error: any) => {
+				console.error('=== WITHDRAW CATCH ERROR ===');
+				console.error('Full error object:', error);
+				console.error('Error message:', error.message);
+				console.error('Error code:', error.code);
+				console.error('Error data:', error.data);
+				toast.error('Withdraw Failed: ' + (error.message || 'Unknown error'));
+				setPendingTransaction(false);
+			});
+		} catch (error: any) {
+			console.error('=== WITHDRAW OUTER CATCH ===');
+			console.error('Full error object:', error);
+			console.error('Error message:', error.message);
+			toast.error('Withdraw Error: ' + (error.message || 'Unknown error'));
+			setPendingTransaction(false);
+		}
 	}
 
 	const contractDeathFightNonLethal = (myFish: Fish, opponentFish: Fish) => {
@@ -2216,7 +2690,7 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 				const fightIndex = web3.utils.toNumber(result.events.FightCompleted.returnValues._fightIndex);
 				setPendingTransaction(false);
 				
-				const fightResult = await getFightNonLethalByIndex(fightIndex, myFish)
+				const fightResult = await getFightNonLethalByIndex(Number(fightIndex), myFish)
 				unityContext.sendFightResult(fightResult, myFish, opponentFish);
 				toast.success('Fight Completed!', {
 					onOpen: async () => {
@@ -2317,6 +2791,83 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 		return fightResult;
 	}
 
+	// Add this new function after testWithdrawSimple
+	const testWithdrawRaw = async (fish: Fish | null) => {
+	  if (!fish || !account) {
+		toast.error('Missing fish or account');
+		return;
+	  }
+
+	  console.log('=== RAW TEST WITHDRAW ===');
+	  console.log('Account:', account);
+	  console.log('TokenId:', fish.tokenId);
+	  
+	  if (!FishFight.fightingWatersNonLethal) {
+		console.error('FightingWatersNonLethal not initialized');
+		toast.error('Contract not initialized');
+		return;
+	  }
+	  console.log('Contract address:', FishFight.fightingWatersNonLethal.options.address);
+
+	  if (!FishFight.providerWallet) {
+		console.error('ProviderWallet not initialized');
+		toast.error('Provider not initialized');
+		return;
+	  }
+
+	  try {
+		// Get gas price
+		let gasPrice = '40000000000'; // Default gas price
+		if (FishFight.providerWallet instanceof Web3) {
+		  const web3Provider = FishFight.providerWallet as Web3;
+		  try {
+			gasPrice = await web3Provider.eth.getGasPrice();
+			console.log('Gas price:', gasPrice);
+		  } catch (error) {
+			console.error('Failed to get gas price:', error);
+		  }
+		} else {
+		  console.error('Provider is not Web3 instance, using default gas price');
+		}
+
+		// Encode the method call
+		const data = FishFight.fightingWatersNonLethal.methods.withdraw(fish.tokenId).encodeABI();
+		console.log('Encoded data:', data.substring(0, 50) + '...');
+
+		// Estimate gas
+		if (FishFight.providerWallet instanceof Web3) {
+		  const web3Provider = FishFight.providerWallet as Web3;
+		  const gas = await web3Provider.eth.estimateGas({
+			from: account,
+			to: FishFight.fightingWatersNonLethal.options.address,
+			data: data
+		  });
+		  console.log('Gas estimated:', gas);
+
+		// Send legacy transaction
+		const receipt = await web3Provider.eth.sendTransaction({
+			from: account,
+			to: FishFight.fightingWatersNonLethal.options.address,
+			gas: gas.toString(),
+			gasPrice: gasPrice,
+			data: data
+		});
+		console.log('Transaction receipt:', receipt);
+
+		toast.success('Transaction sent!');
+		  
+		  toast.success('Withdraw successful!');
+		  refetchBalance();
+		  const updatedFish = await refreshFish(fish.tokenId, false, false);
+		  if (updatedFish != null) unityContext.refreshFishUnity(updatedFish);
+		} else {
+		  throw new Error('Provider is not Web3 instance');
+		}
+	  } catch (error: any) {
+		console.error('❌ Raw Withdraw Error:', error);
+		toast.error('Failed: ' + (error.message || 'Unknown error'));
+	  }
+	};
 
 	const value: ProviderInterface = {
 		catchFish: catchFish,
@@ -2353,6 +2904,8 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 		contractModifierFishProducts: contractModifierFishProducts,
 		onAccept: onAccept,
 		smartWithdraw: smartWithdraw,
+		testWithdrawSimple: testWithdrawSimple,
+		testWithdrawRaw: testWithdrawRaw,
 		perTransactionApproval: perTransactionApproval,
 		pendingTransaction: pendingTransaction,
 		showTrainingFoodApproval: showTrainingFoodApproval,

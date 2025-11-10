@@ -10,13 +10,13 @@ import { AbstractConnector } from '@web3-react/abstract-connector';
 
 // Utils
 import { connectorsByName } from '../utils/connectors';
+import { isInjectedWalletAvailable } from '../utils/walletConnector';
 
 // Helpers
 import { mapWallets } from '../helpers/walletHelpers';
 import BaseButton from './BaseButton';
 import { ContainerColumn, Title } from './BaseStyles';
 import { useFishFight } from '../context/fishFightContext';
-
 
 export interface Props {
 	closeModal: () => void;
@@ -26,13 +26,32 @@ const Wallets = ({ closeModal }: Props) => {
 	const { activate } = useWeb3React();
 	const {setLogOut} = useFishFight();
 
-	const handleClick = (connector: AbstractConnector) => () => {
+	const handleClick = (connector: AbstractConnector) => async () => {
 		// Activate will take connector as an argument
 		// And then initialize web3React context with a provider.
 		// Provider depends on the connector (i.e wallet) that has been chosen
 		setLogOut(false);
-		activate(connector);
+		
+		// Check if wallet is available
+		if (!isInjectedWalletAvailable()) {
+			alert('Please install MetaMask or another Web3 wallet to continue.');
+			return;
+		}
+
+		try {
+			// Modern MetaMask supports multichain - just connect, no network switching needed
+			await activate(connector, undefined, true);
 		closeModal();
+		} catch (error: any) {
+			console.error('Failed to activate wallet:', error);
+			
+			// Handle user rejection
+			if (error?.message?.includes('rejected') || error?.code === 4001) {
+				alert('Connection rejected. Please approve the connection in your wallet.');
+			} else {
+				alert(`Failed to connect wallet: ${error?.message || 'Unknown error'}`);
+			}
+		}
 	}; 
 
 	return (

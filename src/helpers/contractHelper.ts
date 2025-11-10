@@ -3,7 +3,6 @@ import { Blockchain, Harmony, HarmonyExtension } from '@harmony-js/core';
 import { Contract as HarmonyContract } from '@harmony-js/contract';
 
 // Web3 React
-import { HarmonyAbstractConnector } from '@harmony-react/abstract-connector';
 import { AbstractConnector } from '@web3-react/abstract-connector';
 
 // Helpers
@@ -24,18 +23,15 @@ export const createFishFactoryContract = (hmy: Harmony | HarmonyExtension): Harm
 	return hmyContract
 };
 
-export const getFishFactoryContractFromConnector = async (connector: AbstractConnector | HarmonyAbstractConnector, web3Provider: Web3Provider | Blockchain | any): Promise<any> => {
-	const harmonyConnector = connector as HarmonyAbstractConnector;
-
-	// If connector is a HarmonyAbstractConnector (mathWallet or OneWallet), it will contain windowKey.
-	if (harmonyConnector.windowKey) {
-		// Get wallet provider
-		const extensionWallet: any = window[harmonyConnector.windowKey];
-		// Start a harmony instance that can handle user interactions.
-		const hmyExtension = getExtension(extensionWallet);
-		// With that harmony extension initiate the contract
-		return new Promise(resolve => resolve(createFishFactoryContract(hmyExtension)));
-	}
+export const getFishFactoryContractFromConnector = async (connector: AbstractConnector, web3Provider: Web3Provider | Blockchain | any): Promise<any> => {
+	// Harmony-specific connectors (OneWallet, MathWallet) are not currently used
+	// If needed in the future, check for windowKey property:
+	// const harmonyConnector = connector as any;
+	// if (harmonyConnector?.windowKey) {
+	//   const extensionWallet: any = window[harmonyConnector.windowKey];
+	//   const hmyExtension = getExtension(extensionWallet);
+	//   return new Promise(resolve => resolve(createFishFactoryContract(hmyExtension)));
+	// }
 
 
 	// If connector is AbstractConnector (not a harmony wallet)

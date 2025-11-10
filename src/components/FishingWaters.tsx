@@ -66,19 +66,41 @@ const FishingWaters = () => {
 
 		return (
 			<BaseContainer>
-			{catchFishResult != null && !catchFishResult.success &&
-				<MissedCatchContainer>
-					<CaughtFish>
-						{/* <Text>Missed the big one! Looks like you caught some $FISHFOOD...</Text> */}
-						<Text>{`You rolled a ${catchFishResult?.roll}, but needed less than ${maxSupply - totalSupply}`}</Text>
-					</CaughtFish>
+			{catchFishResult != null &&
+				<>
+					{!catchFishResult.success ? 
+						<MissedCatchContainer>
+							<CaughtFish>
+								{/* <Text>Missed the big one! Looks like you caught some $FISHFOOD...</Text> */}
+								<Text>{`You rolled a ${catchFishResult?.roll}, but needed less than ${maxSupply - totalSupply}`}</Text>
+							</CaughtFish>
 
-					<BaseButton onClick={() => {
-						clearCatchFishResult();
-					}}>
-						Try again!
-					</BaseButton>
-				</MissedCatchContainer>
+							<BaseButton onClick={() => {
+								clearCatchFishResult();
+							}}>
+								Try again!
+							</BaseButton>
+						</MissedCatchContainer>
+					: 
+						<MissedCatchContainer>
+							<CaughtFish>
+								<Text>Congratulations! You caught a fish!</Text>
+								<Text>Token ID: {catchFishResult.fish?.tokenId}</Text>
+								<Text>Rarity: {catchFishResult.fish?.rarity}</Text>
+								<Text>Strength: {catchFishResult.fish?.strength}</Text>
+								<Text>Intelligence: {catchFishResult.fish?.intelligence}</Text>
+								<Text>Agility: {catchFishResult.fish?.agility}</Text>
+								{/* Add more fish details as needed */}
+							</CaughtFish>
+
+							<BaseButton onClick={() => {
+								clearCatchFishResult();
+							}}>
+								Great!
+							</BaseButton>
+						</MissedCatchContainer>
+					}
+				</>
 			}
 
 			<InfoContainer>

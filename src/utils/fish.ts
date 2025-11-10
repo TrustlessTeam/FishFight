@@ -9,7 +9,7 @@ export class StakedFighting {
   constructor(
     stakedFightFishObject: any,
   ) {
-    this.lockedExpire = web3.utils.toNumber(stakedFightFishObject.lockedExpire);
+    this.lockedExpire = Number(web3.utils.toNumber(stakedFightFishObject.lockedExpire));
     this.earnedFishFood = web3.utils.fromWei(stakedFightFishObject.earnedFishFood);
     this.poolType = stakedFightFishObject.poolType;
   }
@@ -67,7 +67,7 @@ export class Modifier {
     modifierObject: any,
     index: number
   ) {
-    this.time = web3.utils.toNumber(modifierObject[0].hex);
+    this.time = Number(web3.utils.toNumber(modifierObject[0].hex));
     this.value = modifierObject[1];
     this.uses = modifierObject[2];
     this.name = setModifierMapping(index, this.value)
@@ -172,24 +172,24 @@ export class Fish {
     ipfsLink: string | null,
   )
   {
-    this.tokenId = web3.utils.toNumber(fishInfo.tokenId);
-    this.birthTime = web3.utils.toNumber(fishInfo.birthTime);
+    this.tokenId = Number(web3.utils.toNumber(fishInfo.tokenId));
+    this.birthTime = Number(web3.utils.toNumber(fishInfo.birthTime));
     this.genes = fishInfo.genes;
-    this.fishType = web3.utils.toNumber(fishInfo.fishType);
-    this.rarity = web3.utils.toNumber(fishInfo.rarity);
-    this.strength = web3.utils.toNumber(fishInfo.strength);
-    this.intelligence = web3.utils.toNumber(fishInfo.intelligence);
-    this.agility = web3.utils.toNumber(fishInfo.agility);
-    this.lifetimeWins = web3.utils.toNumber(fishInfo.lifetimeWins);
-    this.generation = web3.utils.toNumber(fishInfo.generation);
-    this.parentA = web3.utils.toNumber(fishInfo.parentA);
+    this.fishType = Number(web3.utils.toNumber(fishInfo.fishType));
+    this.rarity = Number(web3.utils.toNumber(fishInfo.rarity));
+    this.strength = Number(web3.utils.toNumber(fishInfo.strength));
+    this.intelligence = Number(web3.utils.toNumber(fishInfo.intelligence));
+    this.agility = Number(web3.utils.toNumber(fishInfo.agility));
+    this.lifetimeWins = Number(web3.utils.toNumber(fishInfo.lifetimeWins));
+    this.generation = Number(web3.utils.toNumber(fishInfo.generation));
+    this.parentA = Number(web3.utils.toNumber(fishInfo.parentA));
     this.parentAFish = null;
-    this.parentB = web3.utils.toNumber(fishInfo.parentB);
+    this.parentB = Number(web3.utils.toNumber(fishInfo.parentB));
     this.parentBFish = null;
     this.breedKey = fishInfo.breedKey;
-    this.deathTime = web3.utils.toNumber(fishInfo.deathTime);
+    this.deathTime = Number(web3.utils.toNumber(fishInfo.deathTime));
     this.revived = fishInfo.revived;
-    this.offspringHistory = fishInfo.offspring.map((item: any) => web3.utils.toNumber(item.hex));
+    this.offspringHistory = fishInfo.offspring.map((item: any) => Number(web3.utils.toNumber(item.hex)));
     this.genesArray = this.parseGenes(this.genes);
     this.visualTraits = this.parseTraits();
     this.imgSrc = imgSrc;

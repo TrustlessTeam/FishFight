@@ -72,7 +72,9 @@ const FishNFT = ({
     contractApproveERC20Modifiers,
     contractModifierDFK,
     contractModifierFishProducts,
-    smartWithdraw
+    smartWithdraw,
+    testWithdrawSimple,
+    testWithdrawRaw
   } = useContractWrapper();
 
   const toggleStats = () => {
@@ -200,7 +202,10 @@ const FishNFT = ({
             <FishButton onClick={() => withdrawFightingFishWeak(fish)}>Withdraw</FishButton>
           )}
           {fish.stakedFighting && poolType === PoolTypes.FightingNonLethal && (
+            <>
             <FishButton onClick={() => withdrawFightingFishNonLethal(fish)}>Withdraw</FishButton>
+              <FishButton onClick={() => testWithdrawRaw(fish)} style={{backgroundColor: 'orange'}}>TEST Raw Withdraw</FishButton>
+            </>
           )}
 					{fish.stakedBreeding && (
             <FishButton onClick={() => withdrawBreedingFish(fish)}>Withdraw</FishButton>
