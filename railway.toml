@@ -3,6 +3,7 @@ builder = "NIXPACKS"
 
 [build.env]
 CI = "false"
+NODE_VERSION = "18"
 
 [deploy]
 healthcheckPath = "/health.html"
