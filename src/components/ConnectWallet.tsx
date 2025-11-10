@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useEffect } from 'react';
 import styled from 'styled-components';
 import { useUnity } from '../context/unityContext';

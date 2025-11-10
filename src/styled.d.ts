@@ -1,7 +1,20 @@
 import 'styled-components';
+import { ReactElement } from 'react';
 
-// and extend them!
+// Fix for React 18 compatibility with styled-components v5
 declare module 'styled-components' {
+  // Override the return type to fix React 18 JSX compatibility
+  export interface StyledComponent<
+    C extends keyof JSX.IntrinsicElements | React.ComponentType<any>,
+    T extends object,
+    O extends object = {},
+    A extends keyof any = never
+  > extends React.ForwardRefExoticComponent<
+      React.ComponentPropsWithRef<C> & O & { as?: C; forwardedAs?: C }
+    > {
+    (props: React.ComponentPropsWithRef<C> & O & { as?: C; forwardedAs?: C }): ReactElement;
+  }
+
   export interface DefaultTheme {
     borderRadius: string;
 

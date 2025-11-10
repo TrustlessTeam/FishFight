@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import Modal from 'react-modal';

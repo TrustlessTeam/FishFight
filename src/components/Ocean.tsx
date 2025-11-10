@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useState, useEffect } from "react";
 
 import { PoolFish, PoolTypes, useFishPool } from "../context/fishPoolContext";

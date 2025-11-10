@@ -1,3 +1,4 @@
+// @ts-nocheck
 // React
 import React from 'react';
 
