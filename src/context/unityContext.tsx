@@ -173,11 +173,13 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
   };
   const showFishingLocation = () => {
     // // console.log("showFishingLocation Called")
-    if (!isLoaded || !fishPoolReady) return;
-    UnityInstance.send("Camera", "SetAnimState", "ShowFishing");
-    UnityInstance.send("CanvasUserInterface", "SetAnimState", "ShowFishing");
-    setCurrentLocation(Location.Fishing)
-    // // console.log("showFishingLocation Completed")
+    if (!isLoaded) return;
+    setTimeout(() => {
+      UnityInstance.send("Camera", "SetAnimState", "ShowFishing");
+      UnityInstance.send("CanvasUserInterface", "SetAnimState", "ShowFishing");
+      setCurrentLocation(Location.Fishing)
+      // // console.log("showFishingLocation Completed")
+    }, 100);
   };
   const showFightingLocation = () => {
     // // console.log("showFightingLocation Called")
@@ -266,26 +268,32 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
     // console.log(`AddFish ${fish.tokenId}`);
     if (!isLoaded || !fishPoolReady) return;
     // // console.log(fish)
-    UnityInstance.send("FishPool", "AddFish_OceanView", JSON.stringify(fish));
-    // // console.log("AddFish Completed")
+    setTimeout(() => {
+      UnityInstance.send("FishPool", "AddFish_OceanView", JSON.stringify(fish));
+      // // console.log("AddFish Completed")
+    }, 100);
   };
   const addFishTank = (fish: Fish) => {
     // console.log(`AddFish Tank${fish.tokenId}`);
     if (!isLoaded || !fishPoolReady) return;
     // // console.log(fish)
-    UnityInstance.send("FishPool", "AddFish_TankView", JSON.stringify(fish));
-    // // console.log("AddFish Completed")
+    setTimeout(() => {
+      UnityInstance.send("FishPool", "AddFish_TankView", JSON.stringify(fish));
+      // // console.log("AddFish Completed")
+    }, 100);
   };
   const addFishFightingPool = (fish: Fish) => {
     // // console.log("AddFish Called")
     if (!isLoaded || !fishPoolReady) return;
     // console.log(fish);
-    UnityInstance.send(
-      "FishPool",
-      "AddFish_FightingView",
-      JSON.stringify(fish)
-    );
-    // // console.log("AddFish Completed")
+    setTimeout(() => {
+      UnityInstance.send(
+        "FishPool",
+        "AddFish_FightingView",
+        JSON.stringify(fish)
+      );
+      // // console.log("AddFish Completed")
+    }, 100);
   };
   const addFishFight1 = (fish: Fish) => {
     // // console.log("AddFish Called")
@@ -353,12 +361,14 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
     // // console.log("AddFish Called")
     if (!isLoaded || !fishPoolReady) return;
     console.log(fish);
-    UnityInstance.send(
-      "FishPool",
-      "AddFish_BreedingView",
-      JSON.stringify(fish)
-    );
-    // // console.log("AddFish Completed")
+    setTimeout(() => {
+      UnityInstance.send(
+        "FishPool",
+        "AddFish_BreedingView",
+        JSON.stringify(fish)
+      );
+      // // console.log("AddFish Completed")
+    }, 100);
   };
   const addFishBreed1 = (fish: Fish) => {
     // // console.log("AddFish Called")
