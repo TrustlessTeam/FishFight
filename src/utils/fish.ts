@@ -282,7 +282,7 @@ export class Fish {
   }
 
   mapTraitValueToRange(value: number, range: Array<number>) {
-    if(range[1] == 0) return 0;
+    if(range[1] === 0) return 0;
     return (value % range[1]) + range[0];
   }
 
