@@ -153,12 +153,12 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
     UnityInstance.on("FishPoolFightRound3", function () {
       // console.log("Confirm FishPoolFightRound3");
     });
-    // UnityInstance.on('FishPoolFightWinner', function () {
-    // 	// console.log('Confirm FishPoolFightWinner');
-    // });
-    // UnityInstance.on('FishPoolFightTie', function () {
-    // 	// console.log('Confirm FishPoolFightTie');
-    // });
+    UnityInstance.on('FishPoolFightWinner', function () {
+      console.log('Confirm FishPoolFightWinner');
+    });
+    UnityInstance.on('FishPoolFightTie', function () {
+      console.log('Confirm FishPoolFightTie');
+    });
   }, []);
 
   const fishCaught = (fish: Fish) => {
@@ -498,12 +498,14 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
       console.log("Unity not ready - isLoaded:", isLoaded, "fishPoolReady:", fishPoolReady);
       return;
     }
-    // Try multiple potential method names - Unity might use different naming
+    // Based on Unity patterns, try these method names to start the fight animation
+    // Unity might start automatically after rounds are set, or need explicit trigger
     UnityInstance.send("FishPool", "StartFight");
-    UnityInstance.send("CanvasUserInterface", "FightingUI_StartFight");
-    // Alternative method names that might work
     UnityInstance.send("FishPool", "BeginFight");
+    UnityInstance.send("CanvasUserInterface", "FightingUI_StartFight");
     UnityInstance.send("CanvasUserInterface", "StartFight");
+    // Also try setting fight state explicitly
+    UnityInstance.send("FishPool", "SetFightState", "Start");
     console.log("StartFight Completed - sent multiple method calls");
   };
 

@@ -48,6 +48,8 @@ const UnityController = () => {
       "FishPoolFightRound1",
       "FishPoolFightRound2",
       "FishPoolFightRound3",
+      "FishPoolFightWinner",
+      "FishPoolFightTie",
     ];
 
     eventHandlers.forEach((eventName) => {
@@ -331,6 +333,7 @@ const UnityController = () => {
           
           addLog("action", "Starting fight sequence test...");
           addLog("action", `Fight rounds: R1=${testFight.round1.description}, R2=${testFight.round2.description}, R3=${testFight.round3.description}`);
+          addLog("action", "NOTE: Watch for Unity events: FishPoolFightRound1/2/3, FishPoolFightWinner/Tie");
           
           unityContext.showFightingLocation();
           setTimeout(() => {
@@ -355,14 +358,16 @@ const UnityController = () => {
                       setTimeout(() => {
                         // Now start the fight animation
                         unityContext.startFight();
-                        addLog("action", "Fight started, waiting for animation to complete...");
-                        // Wait longer for fight animation to complete before showing results
+                        addLog("action", "Fight start command sent - Unity should animate rounds now");
+                        addLog("action", "Waiting for Unity callbacks: FishPoolFightRound1/2/3, then FishPoolFightWinner/Tie");
+                        // Wait for Unity to complete the fight animation via callbacks
+                        // In production, we'd listen for FishPoolFightWinner/Tie events
                         setTimeout(() => {
                           unityContext.sendFightResult(testFight, testFish1, testFish2);
                           addLog("action", `Fight results sent - Winner: Fish ${testFight.winner}`);
                           addLog("action", "Fight sequence test completed");
-                        }, 4000); // Give Unity time to animate the fight (increased from 3000)
-                      }, 300);
+                        }, 5000); // Give Unity time to animate all 3 rounds
+                      }, 500); // Give Unity time to process rounds before starting
                     }, 300);
                   }, 300);
                 }, 500);
