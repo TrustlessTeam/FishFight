@@ -348,18 +348,28 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
     if (!isLoaded || !fishPoolReady) return;
     console.log(fight)
     
-    // Send round stats first (Unity might need these before processing results)
+    // Ensure fighting UI is visible before sending rounds/results
+    showFightingUI();
+    
+    // Send round stats sequentially with delays to allow Unity to animate each round
+    // Unity needs time to process and display each round animation
     if (fight.round1) {
       UnityInstance.send("FishPool", "SetRound1Stat", fight.round1.value);
     }
-    if (fight.round2) {
-      UnityInstance.send("FishPool", "SetRound2Stat", fight.round2.value);
-    }
-    if (fight.round3) {
-      UnityInstance.send("FishPool", "SetRound3Stat", fight.round3.value);
-    }
     
-    // Small delay to ensure rounds are set before results
+    setTimeout(() => {
+      if (fight.round2) {
+        UnityInstance.send("FishPool", "SetRound2Stat", fight.round2.value);
+      }
+    }, 500);
+    
+    setTimeout(() => {
+      if (fight.round3) {
+        UnityInstance.send("FishPool", "SetRound3Stat", fight.round3.value);
+      }
+    }, 1000);
+    
+    // Wait for all rounds to be processed before showing results
     setTimeout(() => {
       UnityInstance.send("FishPool", "SetFightResults", JSON.stringify(fight));
       UnityInstance.send("CanvasUserInterface", "SetAnimState", "ShowFightResultsSuccess");
@@ -368,7 +378,7 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
         UnityInstance.send("CanvasUserInterface", "FightingResultsUI_SetFish1", JSON.stringify(fish1) ); 
         UnityInstance.send("CanvasUserInterface", "FightingResultsUI_SetFish2", JSON.stringify(fish2) ); 
       }, 100);
-    }, 100);
+    }, 1500);
   };
 
   const addFishBreedingPool = (fish: Fish) => {
