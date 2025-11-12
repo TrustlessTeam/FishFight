@@ -354,21 +354,22 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
     
     // Unity requires ShowFightingResults1, ShowFightingResults2, ShowFightingResults3 sequence
     // before ShowFightingResults, or the animation will fail
+    // All are sent via SetAnimState method
     setTimeout(() => {
-      console.log("Step 1: ShowFightingResults1");
-      UnityInstance.send("CanvasUserInterface", "ShowFightingResults1", "");
+      console.log("Step 1: SetAnimState('ShowFightingResults1')");
+      UnityInstance.send("CanvasUserInterface", "SetAnimState", "ShowFightingResults1");
       
       setTimeout(() => {
-        console.log("Step 2: ShowFightingResults2");
-        UnityInstance.send("CanvasUserInterface", "ShowFightingResults2", "");
+        console.log("Step 2: SetAnimState('ShowFightingResults2')");
+        UnityInstance.send("CanvasUserInterface", "SetAnimState", "ShowFightingResults2");
         
         setTimeout(() => {
-          console.log("Step 3: ShowFightingResults3");
-          UnityInstance.send("CanvasUserInterface", "ShowFightingResults3", "");
+          console.log("Step 3: SetAnimState('ShowFightingResults3')");
+          UnityInstance.send("CanvasUserInterface", "SetAnimState", "ShowFightingResults3");
           
           setTimeout(() => {
-            console.log("Step 4: ShowFightingResults (trigger)");
-            UnityInstance.send("CanvasUserInterface", "ShowFightingResults", "");
+            console.log("Step 4: SetAnimState('ShowFightingResults')");
+            UnityInstance.send("CanvasUserInterface", "SetAnimState", "ShowFightingResults");
             
             setTimeout(() => {
               console.log("Setting fish data in results UI");

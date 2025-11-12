@@ -414,17 +414,17 @@ const UnityController = () => {
         case "step8_showFightingResults":
           addLog("action", "Step 8: Showing Fighting Results UI (required sequence)");
           if (unityContext.UnityInstance) {
-            addLog("action", "  → ShowFightingResults1");
-            unityContext.UnityInstance.send("CanvasUserInterface", "ShowFightingResults1", "");
+            addLog("action", "  → SetAnimState('ShowFightingResults1')");
+            unityContext.UnityInstance.send("CanvasUserInterface", "SetAnimState", "ShowFightingResults1");
             setTimeout(() => {
-              addLog("action", "  → ShowFightingResults2");
-              unityContext.UnityInstance.send("CanvasUserInterface", "ShowFightingResults2", "");
+              addLog("action", "  → SetAnimState('ShowFightingResults2')");
+              unityContext.UnityInstance.send("CanvasUserInterface", "SetAnimState", "ShowFightingResults2");
               setTimeout(() => {
-                addLog("action", "  → ShowFightingResults3");
-                unityContext.UnityInstance.send("CanvasUserInterface", "ShowFightingResults3", "");
+                addLog("action", "  → SetAnimState('ShowFightingResults3')");
+                unityContext.UnityInstance.send("CanvasUserInterface", "SetAnimState", "ShowFightingResults3");
                 setTimeout(() => {
-                  addLog("action", "  → ShowFightingResults (trigger)");
-                  unityContext.UnityInstance.send("CanvasUserInterface", "ShowFightingResults", "");
+                  addLog("action", "  → SetAnimState('ShowFightingResults')");
+                  unityContext.UnityInstance.send("CanvasUserInterface", "SetAnimState", "ShowFightingResults");
                 }, 300);
               }, 300);
             }, 300);
@@ -478,17 +478,17 @@ const UnityController = () => {
                         // Step 8
                         addLog("action", "Step 8: Show Fighting Results UI (required sequence)");
                         if (unityContext.UnityInstance) {
-                          addLog("action", "  → ShowFightingResults1");
-                          unityContext.UnityInstance.send("CanvasUserInterface", "ShowFightingResults1", "");
+                          addLog("action", "  → SetAnimState('ShowFightingResults1')");
+                          unityContext.UnityInstance.send("CanvasUserInterface", "SetAnimState", "ShowFightingResults1");
                           setTimeout(() => {
-                            addLog("action", "  → ShowFightingResults2");
-                            unityContext.UnityInstance.send("CanvasUserInterface", "ShowFightingResults2", "");
+                            addLog("action", "  → SetAnimState('ShowFightingResults2')");
+                            unityContext.UnityInstance.send("CanvasUserInterface", "SetAnimState", "ShowFightingResults2");
                             setTimeout(() => {
-                              addLog("action", "  → ShowFightingResults3");
-                              unityContext.UnityInstance.send("CanvasUserInterface", "ShowFightingResults3", "");
+                              addLog("action", "  → SetAnimState('ShowFightingResults3')");
+                              unityContext.UnityInstance.send("CanvasUserInterface", "SetAnimState", "ShowFightingResults3");
                               setTimeout(() => {
-                                addLog("action", "  → ShowFightingResults (trigger)");
-                                unityContext.UnityInstance.send("CanvasUserInterface", "ShowFightingResults", "");
+                                addLog("action", "  → SetAnimState('ShowFightingResults')");
+                                unityContext.UnityInstance.send("CanvasUserInterface", "SetAnimState", "ShowFightingResults");
                                 setTimeout(() => {
                                   // Step 9
                                   addLog("action", "Step 9: Set Fish Data in Results");
@@ -521,21 +521,21 @@ const UnityController = () => {
             unityContext.UnityInstance.send("FishPool", "SetFightResults", JSON.stringify(forceFight));
             
             setTimeout(() => {
-              addLog("action", "2. Sending required sequence: ShowFightingResults1 → 2 → 3 → ShowFightingResults");
-              addLog("action", "   → ShowFightingResults1");
-              unityContext.UnityInstance.send("CanvasUserInterface", "ShowFightingResults1", "");
+              addLog("action", "2. Sending required sequence via SetAnimState:");
+              addLog("action", "   → SetAnimState('ShowFightingResults1')");
+              unityContext.UnityInstance.send("CanvasUserInterface", "SetAnimState", "ShowFightingResults1");
               
               setTimeout(() => {
-                addLog("action", "   → ShowFightingResults2");
-                unityContext.UnityInstance.send("CanvasUserInterface", "ShowFightingResults2", "");
+                addLog("action", "   → SetAnimState('ShowFightingResults2')");
+                unityContext.UnityInstance.send("CanvasUserInterface", "SetAnimState", "ShowFightingResults2");
                 
                 setTimeout(() => {
-                  addLog("action", "   → ShowFightingResults3");
-                  unityContext.UnityInstance.send("CanvasUserInterface", "ShowFightingResults3", "");
+                  addLog("action", "   → SetAnimState('ShowFightingResults3')");
+                  unityContext.UnityInstance.send("CanvasUserInterface", "SetAnimState", "ShowFightingResults3");
                   
                   setTimeout(() => {
-                    addLog("action", "   → ShowFightingResults (trigger)");
-                    unityContext.UnityInstance.send("CanvasUserInterface", "ShowFightingResults", "");
+                    addLog("action", "   → SetAnimState('ShowFightingResults')");
+                    unityContext.UnityInstance.send("CanvasUserInterface", "SetAnimState", "ShowFightingResults");
                     
                     setTimeout(() => {
                       addLog("action", "3. Setting fish data in results UI");
