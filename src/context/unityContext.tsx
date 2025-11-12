@@ -345,16 +345,43 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
   const sendFightResult = (fight: Fight, fish1: Fish, fish2: Fish) => {
     // console.log("SendFight Called");
     console.log(fight)
-    UnityInstance.send("FishPool", "SetFightResults", JSON.stringify(fight));
-    UnityInstance.send("CanvasUserInterface", "SetAnimState", "ShowFightResultsSuccess");
     
-    //console.log( JSON.stringify(fish1));
-    //console.log( JSON.stringify(fish2));
-
+    // Ensure fighting UI is visible before sending rounds/results
+    if (!isLoaded || !fishPoolReady) return;
+    showFightingUI();
+    
+    // First, send all round stats to Unity sequentially so it can animate through them
+    // Unity needs these before showing the results. Send with delays to allow animation.
+    if (fight.round1) {
+      UnityInstance.send("FishPool", "SetRound1Stat", fight.round1.value);
+    }
+    
     setTimeout(() => {
-      UnityInstance.send("CanvasUserInterface", "FightingResultsUI_SetFish1", JSON.stringify(fish1) ); 
-      UnityInstance.send("CanvasUserInterface", "FightingResultsUI_SetFish2", JSON.stringify(fish2) ); 
-    }, 100);
+      if (fight.round2) {
+        UnityInstance.send("FishPool", "SetRound2Stat", fight.round2.value);
+      }
+    }, 500);
+    
+    setTimeout(() => {
+      if (fight.round3) {
+        UnityInstance.send("FishPool", "SetRound3Stat", fight.round3.value);
+      }
+    }, 1000);
+    
+    // Wait for rounds to be processed before showing results
+    setTimeout(() => {
+      // Send the fight results to FishPool
+      UnityInstance.send("FishPool", "SetFightResults", JSON.stringify(fight));
+      
+      // Show the fight results UI
+      UnityInstance.send("CanvasUserInterface", "SetAnimState", "ShowFightResultsSuccess");
+      
+      // Send fish data to the results UI after a brief delay
+      setTimeout(() => {
+        UnityInstance.send("CanvasUserInterface", "FightingResultsUI_SetFish1", JSON.stringify(fish1) ); 
+        UnityInstance.send("CanvasUserInterface", "FightingResultsUI_SetFish2", JSON.stringify(fish2) ); 
+      }, 100);
+    }, 1500);
   };
 
   const addFishBreedingPool = (fish: Fish) => {
