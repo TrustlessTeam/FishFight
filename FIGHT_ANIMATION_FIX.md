@@ -4,7 +4,8 @@
 When onchain fight actions complete, Unity fighting animations were not displaying properly. The UI elements weren't updating to reflect fight results.
 
 ## Root Cause
-The `sendFightResult` function was sending all round statistics simultaneously without delays, preventing Unity from properly animating through each round before showing results.
+1. The `sendFightResult` function was sending all round statistics simultaneously without delays, preventing Unity from properly animating through each round before showing results.
+2. **CRITICAL BUG**: The frontend uses `"ShowFightResultsSuccess"` but Unity's `CanvasController` expects `"ShowFightingResults"` (note: "Fighting" not "Fight", and no "Success" suffix). This mismatch prevents the results UI from displaying.
 
 ## Solution
 Update `sendFightResult` in `src/context/unityContext.tsx` to send rounds sequentially with delays, ensuring Unity has time to process and animate each round.
@@ -47,7 +48,8 @@ const sendFightResult = (fight: Fight, fish1: Fish, fish2: Fish) => {
   // Wait for all rounds to be processed before showing results
   setTimeout(() => {
     UnityInstance.send("FishPool", "SetFightResults", JSON.stringify(fight));
-    UnityInstance.send("CanvasUserInterface", "SetAnimState", "ShowFightResultsSuccess");
+    // CRITICAL: Unity expects "ShowFightingResults" not "ShowFightResultsSuccess"
+    UnityInstance.send("CanvasUserInterface", "SetAnimState", "ShowFightingResults");
     
     setTimeout(() => {
       UnityInstance.send("CanvasUserInterface", "FightingResultsUI_SetFish1", JSON.stringify(fish1) ); 
@@ -82,7 +84,7 @@ const sendFightResult = (fight: Fight, fish1: Fish, fish2: Fish) => {
    - Contains: winner, playerResult, typeOfFight, etc.
 
 6. **Show Results UI** (immediate after step 5)
-   - `CanvasUserInterface.SetAnimState("ShowFightResultsSuccess")`
+   - `CanvasUserInterface.SetAnimState("ShowFightingResults")` ⚠️ Note: "ShowFightingResults" not "ShowFightResultsSuccess"
 
 7. **Set Fish Data in Results UI** (after 100ms delay from step 6)
    - `CanvasUserInterface.FightingResultsUI_SetFish1(JSON.stringify(fish1))`
@@ -118,7 +120,7 @@ These are already set up in the `useEffect` hook (lines 147-160).
 
 ### CanvasUserInterface GameObject Methods:
 - `SetAnimState("ShowFighting")` - Shows fighting UI
-- `SetAnimState("ShowFightResultsSuccess")` - Shows results UI
+- `SetAnimState("ShowFightingResults")` - Shows results UI ⚠️ CRITICAL: Must be "ShowFightingResults" not "ShowFightResultsSuccess"
 - `FightingUI_SetFish1(string)` - Sets fish 1 in fighting UI (JSON)
 - `FightingUI_SetFish2(string)` - Sets fish 2 in fighting UI (JSON)
 - `FightingResultsUI_SetFish1(string)` - Sets fish 1 in results UI (JSON)
