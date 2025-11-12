@@ -24,6 +24,7 @@ import { useContractWrapper } from "./context/contractWrapperContext";
 import FightingWatersWeak from "./components/FightingWatersWeak";
 import FightingWatersNonLethal from "./components/FightingWatersNonLethal";
 import { ServerMonitor } from "./components/ServerMonitor";
+import FishDetail from "./components/FishDetail";
 
 type RenderProps = {
   hours: any;
@@ -58,6 +59,7 @@ const App = () => {
               <Route path="/fighting/weak" element={<FightingWatersWeak />} />
               <Route path="/fighting/non-lethal" element={<FightingWatersNonLethal/>} />
               <Route path="/breeding" element={<BreedingWaters />} />
+              <Route path="/fish/:tokenId" element={<FishDetail />} />
             </Route>
             {/* Server Console - No Unity wrapper needed */}
             <Route path="/server" element={<ServerMonitor />} />
