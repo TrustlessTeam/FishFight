@@ -25,6 +25,7 @@ import FightingWatersWeak from "./components/FightingWatersWeak";
 import FightingWatersNonLethal from "./components/FightingWatersNonLethal";
 import { ServerMonitor } from "./components/ServerMonitor";
 import FishDetail from "./components/FishDetail";
+import UnityController from "./components/UnityController";
 
 type RenderProps = {
   hours: any;
@@ -65,6 +66,10 @@ const App = () => {
             <Route path="/server" element={<ServerMonitor />} />
             <Route path="/admin" element={<ServerMonitor />} />
             <Route path="/console" element={<ServerMonitor />} />
+            {/* Unity Controller - Needs Unity wrapper for debugging */}
+            <Route element={<UnityWindow />}>
+              <Route path="/unity-controller" element={<UnityController />} />
+            </Route>
           </Routes>
 
           {/* <Blockchain></Blockchain> */}
