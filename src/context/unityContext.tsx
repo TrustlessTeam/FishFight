@@ -367,8 +367,8 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
           UnityInstance.send("CanvasUserInterface", "ShowFightingResults3", "");
           
           setTimeout(() => {
-            console.log("Step 4: ShowFightingResults (final state)");
-            UnityInstance.send("CanvasUserInterface", "SetAnimState", "ShowFightingResults");
+            console.log("Step 4: ShowFightingResults (trigger)");
+            UnityInstance.send("CanvasUserInterface", "ShowFightingResults", "");
             
             setTimeout(() => {
               console.log("Setting fish data in results UI");

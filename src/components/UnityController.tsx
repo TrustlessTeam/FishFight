@@ -423,8 +423,8 @@ const UnityController = () => {
                 addLog("action", "  → ShowFightingResults3");
                 unityContext.UnityInstance.send("CanvasUserInterface", "ShowFightingResults3", "");
                 setTimeout(() => {
-                  addLog("action", "  → SetAnimState('ShowFightingResults')");
-                  unityContext.UnityInstance.send("CanvasUserInterface", "SetAnimState", "ShowFightingResults");
+                  addLog("action", "  → ShowFightingResults (trigger)");
+                  unityContext.UnityInstance.send("CanvasUserInterface", "ShowFightingResults", "");
                 }, 300);
               }, 300);
             }, 300);
@@ -487,8 +487,8 @@ const UnityController = () => {
                               addLog("action", "  → ShowFightingResults3");
                               unityContext.UnityInstance.send("CanvasUserInterface", "ShowFightingResults3", "");
                               setTimeout(() => {
-                                addLog("action", "  → SetAnimState('ShowFightingResults')");
-                                unityContext.UnityInstance.send("CanvasUserInterface", "SetAnimState", "ShowFightingResults");
+                                addLog("action", "  → ShowFightingResults (trigger)");
+                                unityContext.UnityInstance.send("CanvasUserInterface", "ShowFightingResults", "");
                                 setTimeout(() => {
                                   // Step 9
                                   addLog("action", "Step 9: Set Fish Data in Results");
@@ -534,8 +534,8 @@ const UnityController = () => {
                   unityContext.UnityInstance.send("CanvasUserInterface", "ShowFightingResults3", "");
                   
                   setTimeout(() => {
-                    addLog("action", "   → SetAnimState('ShowFightingResults')");
-                    unityContext.UnityInstance.send("CanvasUserInterface", "SetAnimState", "ShowFightingResults");
+                    addLog("action", "   → ShowFightingResults (trigger)");
+                    unityContext.UnityInstance.send("CanvasUserInterface", "ShowFightingResults", "");
                     
                     setTimeout(() => {
                       addLog("action", "3. Setting fish data in results UI");
