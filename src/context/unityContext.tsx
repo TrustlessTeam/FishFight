@@ -42,6 +42,9 @@ interface UnityProviderContext {
   startFight: () => void;
   sendFightResult: (fight: Fight, fish1: Fish, fish2: Fish) => void;
   sendTie: () => void;
+  progressToNextRound: () => void;
+  resetFightResults: () => void;
+  currentFightRound: 1 | 2 | 3 | "final" | null;
 }
 
 enum Location {
@@ -80,6 +83,10 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
   const [fish1, setFish1] = useState<Fish | undefined>(undefined);
   const [fish2, setFish2] = useState<Fish | undefined>(undefined);
   const [fish3, setFish3] = useState<Fish | undefined>(undefined);
+  
+  // State for manual round progression
+  const [currentFightRound, setCurrentFightRound] = useState<1 | 2 | 3 | "final" | null>(null);
+  const [currentFightData, setCurrentFightData] = useState<{ fight: Fight; fish1: Fish; fish2: Fish } | null>(null);
 
   useEffect(() => {
     // console.log(UnityInstance);
@@ -347,35 +354,70 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
     if (!isLoaded || !fishPoolReady) return;
     console.log("sendFightResult - Winner:", fight.winner);
     
+    // Store fight data for manual progression
+    setCurrentFightData({ fight, fish1, fish2 });
+    setCurrentFightRound(1);
+    
     // Send fight results data to FishPool
     UnityInstance.send("FishPool", "SetFightResults", JSON.stringify(fight));
     
-    // Unity requires ShowFightingResults1/2/3 sequence before ShowFightingResults
-    // Send them quickly in sequence, then show final results
+    // Show Round 1 UI - user will click button to progress
     setTimeout(() => {
-      console.log("Sending required sequence: ShowFightingResults1 → 2 → 3 → ShowFightingResults");
+      console.log("Showing Round 1 results UI");
       UnityInstance.send("CanvasUserInterface", "SetAnimState", "ShowFightingResults1");
       
+      // Set fish data for Round 1
       setTimeout(() => {
-        UnityInstance.send("CanvasUserInterface", "SetAnimState", "ShowFightingResults2");
-        
-        setTimeout(() => {
-          UnityInstance.send("CanvasUserInterface", "SetAnimState", "ShowFightingResults3");
-          
-          setTimeout(() => {
-            console.log("Showing final fighting results UI");
-            UnityInstance.send("CanvasUserInterface", "SetAnimState", "ShowFightingResults");
-            
-            setTimeout(() => {
-              console.log("Setting fish data in final results UI");
-              UnityInstance.send("CanvasUserInterface", "FightingResultsUI_SetFish1", JSON.stringify(fish1));
-              UnityInstance.send("CanvasUserInterface", "FightingResultsUI_SetFish2", JSON.stringify(fish2));
-              console.log("Final results UI should be visible");
-            }, 300);
-          }, 200);
-        }, 200);
-      }, 200);
+        UnityInstance.send("CanvasUserInterface", "FightingResultsRound1UI_SetFish1", JSON.stringify(fish1));
+        UnityInstance.send("CanvasUserInterface", "FightingResultsRound1UI_SetFish2", JSON.stringify(fish2));
+      }, 300);
     }, 300);
+  };
+
+  const progressToNextRound = () => {
+    if (!isLoaded || !fishPoolReady || !currentFightData || !currentFightRound) return;
+    
+    const { fight, fish1, fish2 } = currentFightData;
+    
+    if (currentFightRound === 1) {
+      // Progress to Round 2
+      console.log("Progressing to Round 2");
+      setCurrentFightRound(2);
+      UnityInstance.send("CanvasUserInterface", "SetAnimState", "ShowFightingResults2");
+      
+      setTimeout(() => {
+        UnityInstance.send("CanvasUserInterface", "FightingResultsRound2UI_SetFish1", JSON.stringify(fish1));
+        UnityInstance.send("CanvasUserInterface", "FightingResultsRound2UI_SetFish2", JSON.stringify(fish2));
+      }, 300);
+    } else if (currentFightRound === 2) {
+      // Progress to Round 3
+      console.log("Progressing to Round 3");
+      setCurrentFightRound(3);
+      UnityInstance.send("CanvasUserInterface", "SetAnimState", "ShowFightingResults3");
+      
+      setTimeout(() => {
+        UnityInstance.send("CanvasUserInterface", "FightingResultsRound3UI_SetFish1", JSON.stringify(fish1));
+        UnityInstance.send("CanvasUserInterface", "FightingResultsRound3UI_SetFish2", JSON.stringify(fish2));
+      }, 300);
+    } else if (currentFightRound === 3) {
+      // Progress to Final Results
+      console.log("Progressing to Final Results");
+      setCurrentFightRound("final");
+      UnityInstance.send("CanvasUserInterface", "SetAnimState", "ShowFightingResults");
+      
+      setTimeout(() => {
+        UnityInstance.send("CanvasUserInterface", "FightingResultsUI_SetFish1", JSON.stringify(fish1));
+        UnityInstance.send("CanvasUserInterface", "FightingResultsUI_SetFish2", JSON.stringify(fish2));
+      }, 300);
+    } else if (currentFightRound === "final") {
+      // Close/reset - this will be handled by Unity's fightresults_confirm event
+      console.log("Final results shown, waiting for Unity confirm");
+    }
+  };
+
+  const resetFightResults = () => {
+    setCurrentFightRound(null);
+    setCurrentFightData(null);
   };
 
   const addFishBreedingPool = (fish: Fish) => {
@@ -596,6 +638,9 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
     startFight: startFight,
     sendFightResult: sendFightResult,
     sendTie: sendTie,
+    progressToNextRound: progressToNextRound,
+    resetFightResults: resetFightResults,
+    currentFightRound: currentFightRound,
   };
   return (
     <UnityContext.Provider value={value}>{children}</UnityContext.Provider>
