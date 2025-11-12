@@ -29,11 +29,10 @@ const METADATA_SERVER_URL =
 
 const FishDetail = () => {
   const { tokenId } = useParams<{ tokenId: string }>();
-  const navigate = useNavigate();
   const unityContext = useUnity();
   const { account } = useWeb3React();
-  const { getUserFish } = useContractWrapper();
   const { FishFight } = useFishFight();
+  const { createUserFish } = useFishPool();
   
   const [fish, setFish] = useState<Fish | null>(null);
   const [metadata, setMetadata] = useState<any>(null);
@@ -65,8 +64,8 @@ const FishDetail = () => {
         setLoading(true);
         setError(null);
 
-        // Try to get fish from contract
-        const fishData = await getUserFish(parseInt(tokenId));
+        // Try to get fish from contract using createUserFish (works for any fish, not just user's)
+        const fishData = await createUserFish(parseInt(tokenId));
         
         if (fishData) {
           setFish(fishData);
@@ -86,7 +85,7 @@ const FishDetail = () => {
     };
 
     fetchFish();
-  }, [tokenId, FishFight, getUserFish, unityContext]);
+  }, [tokenId, FishFight, createUserFish, unityContext]);
 
   // Fetch metadata from server
   useEffect(() => {
