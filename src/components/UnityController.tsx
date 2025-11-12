@@ -287,6 +287,9 @@ const UnityController = () => {
         case "sendRound":
           unityContext.sendRound(roundNumber, roundStat);
           break;
+        case "startFight":
+          unityContext.startFight();
+          break;
         case "sendFightResult":
           let fight: Fight;
           let fish1: Fish;
@@ -324,28 +327,44 @@ const UnityController = () => {
           // Complete fight sequence test
           const testFish1 = mockFish1 ? JSON.parse(mockFish1) : createMockFish(1);
           const testFish2 = mockFish2 ? JSON.parse(mockFish2) : createMockFish(2);
+          const testFight = createMockFight(testFish1, testFish2);
           
           addLog("action", "Starting fight sequence test...");
+          addLog("action", `Fight rounds: R1=${testFight.round1.description}, R2=${testFight.round2.description}, R3=${testFight.round3.description}`);
+          
           unityContext.showFightingLocation();
           setTimeout(() => {
             unityContext.showFightingUI();
+            addLog("action", "Fighting UI shown");
             setTimeout(() => {
               unityContext.addFishFight1(testFish1);
+              addLog("action", "Fish 1 added");
               setTimeout(() => {
                 unityContext.addFishFight2(testFish2);
+                addLog("action", "Fish 2 added");
                 setTimeout(() => {
-                  unityContext.sendRound(1, 0);
+                  // Send all round stats BEFORE starting the fight
+                  unityContext.sendRound(1, testFight.round1.value); // Round 1
+                  addLog("action", `Round 1 stat sent: ${testFight.round1.value} (${testFight.round1.description})`);
                   setTimeout(() => {
-                    unityContext.sendRound(2, 1);
+                    unityContext.sendRound(2, testFight.round2.value); // Round 2
+                    addLog("action", `Round 2 stat sent: ${testFight.round2.value} (${testFight.round2.description})`);
                     setTimeout(() => {
-                      unityContext.sendRound(3, 2);
+                      unityContext.sendRound(3, testFight.round3.value); // Round 3
+                      addLog("action", `Round 3 stat sent: ${testFight.round3.value} (${testFight.round3.description})`);
                       setTimeout(() => {
-                        const testFight = createMockFight(testFish1, testFish2);
-                        unityContext.sendFightResult(testFight, testFish1, testFish2);
-                        addLog("action", "Fight sequence test completed");
-                      }, 500);
-                    }, 500);
-                  }, 500);
+                        // Now start the fight animation
+                        unityContext.startFight();
+                        addLog("action", "Fight started, waiting for animation to complete...");
+                        // Wait longer for fight animation to complete before showing results
+                        setTimeout(() => {
+                          unityContext.sendFightResult(testFight, testFish1, testFish2);
+                          addLog("action", `Fight results sent - Winner: Fish ${testFight.winner}`);
+                          addLog("action", "Fight sequence test completed");
+                        }, 4000); // Give Unity time to animate the fight (increased from 3000)
+                      }, 300);
+                    }, 300);
+                  }, 300);
                 }, 500);
               }, 500);
             }, 500);
@@ -450,6 +469,7 @@ const UnityController = () => {
             <Button onClick={() => handleAction("addFishFight1")}>Add Fish Fight 1</Button>
             <Button onClick={() => handleAction("addFishFight2")}>Add Fish Fight 2</Button>
             <Button onClick={() => handleAction("sendRound")}>Send Round ({roundNumber}, {roundStat})</Button>
+            <Button onClick={() => handleAction("startFight")}>Start Fight</Button>
             <Button onClick={() => handleAction("sendFightResult")}>Send Fight Result</Button>
             <Button onClick={() => handleAction("sendTie")}>Send Tie</Button>
             <Button className="test-button" onClick={() => handleAction("testFightSequence")}>
