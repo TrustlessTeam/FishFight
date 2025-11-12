@@ -344,62 +344,29 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
   };
 
   const sendFightResult = (fight: Fight, fish1: Fish, fish2: Fish) => {
-    console.log("=== sendFightResult START ===");
-    console.log("isLoaded:", isLoaded, "fishPoolReady:", fishPoolReady);
-    console.log("Fight winner:", fight.winner);
-    console.log("Fish1 tokenId:", fish1.tokenId, "Fish2 tokenId:", fish2.tokenId);
+    if (!isLoaded || !fishPoolReady) return;
+    console.log("sendFightResult - Winner:", fight.winner);
     
-    if (!isLoaded || !fishPoolReady) {
-      console.error("Unity not ready! isLoaded:", isLoaded, "fishPoolReady:", fishPoolReady);
-      return;
-    }
-    
-    // Step 1: Show fighting location (only if fishPoolReady)
-    console.log("Step 1: Showing fighting location...");
+    // Show fighting location and UI
     showFightingLocation();
-    
-    // Step 2: Show fighting UI
-    console.log("Step 2: Showing fighting UI...");
     showFightingUI();
     
-    // Step 3: Add fish to scene
-    console.log("Step 3: Adding fish to scene...");
+    // Add fish to scene
     addFishFight1(fish1);
     setTimeout(() => {
       addFishFight2(fish2);
-      console.log("Step 3 complete: Both fish added");
     }, 200);
     
-    // Step 4: Wait for fish to be added, then show results
+    // Show results after fish are added
     setTimeout(() => {
-      console.log("Step 4: Sending fight results to Unity...");
       UnityInstance.send("FishPool", "SetFightResults", JSON.stringify(fight));
-      
-      // Try hiding UI first to ensure clean state transition
-      console.log("Step 5a: Hiding UI for clean transition...");
-      UnityInstance.send("CanvasUserInterface", "SetAnimState", "Hide");
+      UnityInstance.send("CanvasUserInterface", "SetAnimState", "ShowFightingResults");
       
       setTimeout(() => {
-        console.log("Step 5b: Setting UI state to ShowFightingResults...");
-        // Try the state name from CanvasController
-        UnityInstance.send("CanvasUserInterface", "SetAnimState", "ShowFightingResults");
-        
-        // Also try with Success suffix (like breeding uses)
-        setTimeout(() => {
-          console.log("Step 5c: Trying ShowFightingResultsSuccess...");
-          UnityInstance.send("CanvasUserInterface", "SetAnimState", "ShowFightingResultsSuccess");
-        }, 200);
-        
-        setTimeout(() => {
-          console.log("Step 6: Setting fish data in results UI...");
-          UnityInstance.send("CanvasUserInterface", "FightingResultsUI_SetFish1", JSON.stringify(fish1));
-          UnityInstance.send("CanvasUserInterface", "FightingResultsUI_SetFish2", JSON.stringify(fish2));
-          console.log("=== sendFightResult COMPLETE ===");
-          console.log("Check Unity - Results UI should be visible. Winner:", fight.winner);
-          console.log("If still not visible, check Unity console for errors");
-        }, 400);
+        UnityInstance.send("CanvasUserInterface", "FightingResultsUI_SetFish1", JSON.stringify(fish1));
+        UnityInstance.send("CanvasUserInterface", "FightingResultsUI_SetFish2", JSON.stringify(fish2));
       }, 200);
-    }, 800); // Increased delay to ensure fish are fully added
+    }, 500);
   };
 
   const addFishBreedingPool = (fish: Fish) => {
