@@ -372,7 +372,8 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
     // Wait for all rounds to be processed before showing results
     setTimeout(() => {
       UnityInstance.send("FishPool", "SetFightResults", JSON.stringify(fight));
-      UnityInstance.send("CanvasUserInterface", "SetAnimState", "ShowFightResultsSuccess");
+      // CRITICAL FIX: Unity expects "ShowFightingResults" not "ShowFightResultsSuccess"
+      UnityInstance.send("CanvasUserInterface", "SetAnimState", "ShowFightingResults");
       
       setTimeout(() => {
         UnityInstance.send("CanvasUserInterface", "FightingResultsUI_SetFish1", JSON.stringify(fish1) ); 
