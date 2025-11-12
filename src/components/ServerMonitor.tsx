@@ -45,17 +45,28 @@ interface FishList {
 // Use production server URL, fallback to localhost for development
 // In production, always use the production server
 const getServerUrl = () => {
-  // Check environment variables first
+  // Check environment variables first (set at build time)
   if (process.env.REACT_APP_SERVER_URL) {
     return process.env.REACT_APP_SERVER_URL;
   }
   if (process.env.REACT_APP_METADATA_SERVER_URL) {
     return process.env.REACT_APP_METADATA_SERVER_URL;
   }
-  // In production build, use production server
+  
+  // Check if we're running in browser (not SSR)
+  if (typeof window !== 'undefined') {
+    // If hostname is not localhost/127.0.0.1, use production server
+    const hostname = window.location.hostname;
+    if (hostname !== 'localhost' && hostname !== '127.0.0.1' && !hostname.startsWith('192.168.')) {
+      return 'https://fishfight-server-production.up.railway.app';
+    }
+  }
+  
+  // In production build (NODE_ENV check)
   if (process.env.NODE_ENV === 'production') {
     return 'https://fishfight-server-production.up.railway.app';
   }
+  
   // Development fallback
   return 'http://localhost:3001';
 };

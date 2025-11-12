@@ -11,3 +11,5 @@ healthcheckTimeout = 60
 
 [variables]
 REACT_APP_FRONTEND_NETWORK = "mainnet"
+# Backend server URL - set this in Railway Variables tab for it to work
+# REACT_APP_SERVER_URL = "https://fishfight-server-production.up.railway.app"
