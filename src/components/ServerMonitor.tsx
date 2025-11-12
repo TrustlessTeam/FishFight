@@ -335,8 +335,16 @@ const Container = styled.div`
   max-width: 1200px;
   margin: 0 auto;
   padding: 20px;
+  padding-top: 100px; /* Add padding to account for nav bar */
   color: white;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  position: relative;
+  z-index: 10; /* Higher than MenuOverlay's z-index: 5 */
+  min-height: 100vh;
+  
+  @media (min-width: 768px) {
+    padding-top: 120px; /* More padding on larger screens */
+  }
 `;
 
 const Header = styled.div`
