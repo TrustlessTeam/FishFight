@@ -52,11 +52,16 @@ const BreedingWaters = () => {
 	]
 
 	useEffect(() => {
+		if (!unityContext.isFishPoolReady) return;
+		
 		// console.log("Breeding Fish")
-		unityContext.clearUIFish();
-		// unityContext.clearFishPool("ShowBreeding")
-		unityContext.hideUI();
-		unityContext.showBreedingLocation();
+		// Add a small delay to ensure Unity is fully ready after FishPoolStartConfirm
+		setTimeout(() => {
+			unityContext.clearUIFish();
+			// unityContext.clearFishPool("ShowBreeding")
+			unityContext.hideUI();
+			unityContext.showBreedingLocation();
+		}, 200);
 	}, [unityContext.isFishPoolReady]);
 
 	useEffect(() => {

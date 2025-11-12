@@ -105,11 +105,16 @@ const Ocean = () => {
   }, [unityContext.isFishPoolReady, mySelectedFish, account]);
 
   useEffect(() => {
+    if (!unityContext.isFishPoolReady) return;
+    
     console.log("CLEAR OCEAN");
-    // unityContext.showFishUI();
-    unityContext.clearUIFish();
-    // unityContext.hideUI();
-    unityContext.showOceanLocation();
+    // Add a small delay to ensure Unity is fully ready after FishPoolStartConfirm
+    setTimeout(() => {
+      // unityContext.showFishUI();
+      unityContext.clearUIFish();
+      // unityContext.hideUI();
+      unityContext.showOceanLocation();
+    }, 200);
   }, [unityContext.isFishPoolReady]);
 
   useEffect(() => {

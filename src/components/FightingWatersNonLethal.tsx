@@ -123,15 +123,20 @@ const FightingWatersNonLethal = () => {
 	}, [account]);
 
 	useEffect(() => {
+		if (!unityContext.isFishPoolReady) return;
+		
 		// console.log("Show Fighting Location")
 		// unityContext.clearFishPool("Fighting")
 		// unityContext.clearFishPool("Breeding")
 		// unityContext.clearFishPool('Fish');
-		unityContext.clearUIFish();
-		unityContext.hideUI();
-		unityContext.showFightingLocation();
-		unityContext.showFightingUI();
-		updateIsFighting(false);
+		// Add a small delay to ensure Unity is fully ready after FishPoolStartConfirm
+		setTimeout(() => {
+			unityContext.clearUIFish();
+			unityContext.hideUI();
+			unityContext.showFightingLocation();
+			unityContext.showFightingUI();
+			updateIsFighting(false);
+		}, 200);
 	}, [unityContext.isFishPoolReady]);
 
 	useEffect(() => {
