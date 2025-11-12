@@ -346,85 +346,36 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
   const sendFightResult = (fight: Fight, fish1: Fish, fish2: Fish) => {
     if (!isLoaded || !fishPoolReady) return;
     console.log("sendFightResult - Winner:", fight.winner);
-    console.log("Fight data:", JSON.stringify(fight));
     
-    // Send fight results data first to FishPool
-    console.log("Sending SetFightResults to FishPool");
+    // Send fight results data to FishPool
     UnityInstance.send("FishPool", "SetFightResults", JSON.stringify(fight));
     
-    // CRITICAL ISSUE: Each FightingUIController needs SetFightResults() called BEFORE SetupRoundX()
-    // because SetupRoundX() uses round1WinStat/round2WinStat/round3WinStat which are set by SetFightResults()
-    // 
-    // PROBLEM: UIRelay doesn't have relay methods for SetFightResults on the round controllers.
-    // We need to call SetFightResults on each FightingUIController (Round1, Round2, Round3) 
-    // before calling SetupRoundX() via the fish setter methods.
-    //
-    // SOLUTION: Try calling SetFightResults directly on the game objects that have FightingUIController.
-    // The game object names might be something like "FightingResultsRound1UI", "FightingResultsRound2UI", etc.
-    // OR we need to add relay methods to UIRelay.cs
-    
+    // Unity requires ShowFightingResults1/2/3 sequence before ShowFightingResults
+    // Send them quickly in sequence, then show final results
     setTimeout(() => {
-      // Try calling SetFightResults on each round controller directly by game object name
-      // Note: These game object names might need to be adjusted based on Unity scene setup
-      console.log("Setting fight results on Round controllers (may need game object names)");
-      UnityInstance.send("FightingResultsRound1UI", "SetFightResults", JSON.stringify(fight));
-      UnityInstance.send("FightingResultsRound2UI", "SetFightResults", JSON.stringify(fight));
-      UnityInstance.send("FightingResultsRound3UI", "SetFightResults", JSON.stringify(fight));
+      console.log("Sending required sequence: ShowFightingResults1 → 2 → 3 → ShowFightingResults");
+      UnityInstance.send("CanvasUserInterface", "SetAnimState", "ShowFightingResults1");
       
       setTimeout(() => {
-        // Step 1: Show Round 1 UI
-        console.log("Step 1: SetAnimState('ShowFightingResults1') - Shows Round 1 UI");
-        UnityInstance.send("CanvasUserInterface", "SetAnimState", "ShowFightingResults1");
+        UnityInstance.send("CanvasUserInterface", "SetAnimState", "ShowFightingResults2");
         
         setTimeout(() => {
-          // Set fish data for Round 1 (UIRelay calls SetupRound1() which should now have round stats)
-          console.log("Setting fish data for Round 1 UI");
-          UnityInstance.send("CanvasUserInterface", "FightingResultsRound1UI_SetFish1", JSON.stringify(fish1));
-          UnityInstance.send("CanvasUserInterface", "FightingResultsRound1UI_SetFish2", JSON.stringify(fish2));
+          UnityInstance.send("CanvasUserInterface", "SetAnimState", "ShowFightingResults3");
           
           setTimeout(() => {
-            // Step 2: Show Round 2 UI
-            console.log("Step 2: SetAnimState('ShowFightingResults2') - Shows Round 2 UI");
-            UnityInstance.send("CanvasUserInterface", "SetAnimState", "ShowFightingResults2");
+            console.log("Showing final fighting results UI");
+            UnityInstance.send("CanvasUserInterface", "SetAnimState", "ShowFightingResults");
             
             setTimeout(() => {
-              // Set fish data for Round 2 (UIRelay calls SetupRound2())
-              console.log("Setting fish data for Round 2 UI");
-              UnityInstance.send("CanvasUserInterface", "FightingResultsRound2UI_SetFish1", JSON.stringify(fish1));
-              UnityInstance.send("CanvasUserInterface", "FightingResultsRound2UI_SetFish2", JSON.stringify(fish2));
-              
-              setTimeout(() => {
-                // Step 3: Show Round 3 UI
-                console.log("Step 3: SetAnimState('ShowFightingResults3') - Shows Round 3 UI");
-                UnityInstance.send("CanvasUserInterface", "SetAnimState", "ShowFightingResults3");
-                
-                setTimeout(() => {
-                  // Set fish data for Round 3 (UIRelay calls SetupRound3())
-                  console.log("Setting fish data for Round 3 UI");
-                  UnityInstance.send("CanvasUserInterface", "FightingResultsRound3UI_SetFish1", JSON.stringify(fish1));
-                  UnityInstance.send("CanvasUserInterface", "FightingResultsRound3UI_SetFish2", JSON.stringify(fish2));
-                  
-                  setTimeout(() => {
-                    // Step 4: Show Final Results UI
-                    console.log("Step 4: SetAnimState('ShowFightingResults') - Shows Final Results UI");
-                    UnityInstance.send("CanvasUserInterface", "SetAnimState", "ShowFightingResults");
-                    
-                    setTimeout(() => {
-                      // Set fish data for Final Results UI
-                      console.log("Setting fish data for Final Results UI");
-                      UnityInstance.send("CanvasUserInterface", "FightingResultsUI_SetFish1", JSON.stringify(fish1));
-                      UnityInstance.send("CanvasUserInterface", "FightingResultsUI_SetFish2", JSON.stringify(fish2));
-                      
-                      console.log("All results UI commands sent");
-                    }, 300);
-                  }, 500); // Give Round 3 time to display
-                }, 300);
-              }, 500); // Give Round 2 time to display
+              console.log("Setting fish data in final results UI");
+              UnityInstance.send("CanvasUserInterface", "FightingResultsUI_SetFish1", JSON.stringify(fish1));
+              UnityInstance.send("CanvasUserInterface", "FightingResultsUI_SetFish2", JSON.stringify(fish2));
+              console.log("Final results UI should be visible");
             }, 300);
-          }, 500); // Give Round 1 time to display
-        }, 300);
-      }, 300);
-    }, 500);
+          }, 200);
+        }, 200);
+      }, 200);
+    }, 300);
   };
 
   const addFishBreedingPool = (fish: Fish) => {
