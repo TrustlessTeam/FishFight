@@ -352,29 +352,37 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
     console.log("Sending SetFightResults to FishPool");
     UnityInstance.send("FishPool", "SetFightResults", JSON.stringify(fight));
     
-    // Try multiple methods to trigger the results UI
+    // Unity requires ShowFightingResults1, ShowFightingResults2, ShowFightingResults3 sequence
+    // before ShowFightingResults, or the animation will fail
     setTimeout(() => {
-      console.log("Attempting to show Fighting Results UI");
-      
-      // Method 1: Direct animator state change
-      UnityInstance.send("CanvasUserInterface", "SetAnimState", "ShowFightingResults");
-      
-      // Method 2: Try alternative method names (in case Unity expects different call)
-      UnityInstance.send("CanvasUserInterface", "ShowFightingResults", "");
-      
-      // Method 3: Try setting fight results on UI directly
-      UnityInstance.send("CanvasUserInterface", "FightingResultsUI_SetFightResults", JSON.stringify(fight));
+      console.log("Step 1: ShowFightingResults1");
+      UnityInstance.send("CanvasUserInterface", "ShowFightingResults1", "");
       
       setTimeout(() => {
-        console.log("Setting fish data in results UI");
-        UnityInstance.send("CanvasUserInterface", "FightingResultsUI_SetFish1", JSON.stringify(fish1));
-        UnityInstance.send("CanvasUserInterface", "FightingResultsUI_SetFish2", JSON.stringify(fish2));
+        console.log("Step 2: ShowFightingResults2");
+        UnityInstance.send("CanvasUserInterface", "ShowFightingResults2", "");
         
-        // Also try setting winner directly
-        UnityInstance.send("CanvasUserInterface", "FightingResultsUI_SetWinner", fight.winner.toString());
-        
-        console.log("All results UI commands sent");
-      }, 500);
+        setTimeout(() => {
+          console.log("Step 3: ShowFightingResults3");
+          UnityInstance.send("CanvasUserInterface", "ShowFightingResults3", "");
+          
+          setTimeout(() => {
+            console.log("Step 4: ShowFightingResults (final state)");
+            UnityInstance.send("CanvasUserInterface", "SetAnimState", "ShowFightingResults");
+            
+            setTimeout(() => {
+              console.log("Setting fish data in results UI");
+              UnityInstance.send("CanvasUserInterface", "FightingResultsUI_SetFish1", JSON.stringify(fish1));
+              UnityInstance.send("CanvasUserInterface", "FightingResultsUI_SetFish2", JSON.stringify(fish2));
+              
+              // Also try setting winner directly
+              UnityInstance.send("CanvasUserInterface", "FightingResultsUI_SetWinner", fight.winner.toString());
+              
+              console.log("All results UI commands sent");
+            }, 300);
+          }, 300);
+        }, 300);
+      }, 300);
     }, 500);
   };
 
