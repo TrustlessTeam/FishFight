@@ -81,6 +81,8 @@ const FightingWaters = () => {
             return;
           case "fightresults_confirm":
             unityContext.clearUIFish();
+            // Reset fight round state
+            unityContext.resetFightResults();
             fightAgain();
 
             return;
@@ -205,6 +207,7 @@ const FightingWaters = () => {
     setOpponentFish(null);
     setFighter1Error(null);
     setFighter2Error(null);
+    // Note: currentFightRound is reset in the fightresults_confirm handler above
   };
 
   const renderer = ({ hours, minutes, seconds, completed }: RenderProps) => {
@@ -291,6 +294,26 @@ const FightingWaters = () => {
           </DataContainer>
         )}
       </InfoContainer>
+      {/* Round Progression Button - Shows when fight results are displayed */}
+      {unityContext.currentFightRound !== null && (
+        <RoundProgressionButton
+          onClick={() => {
+            if (unityContext.currentFightRound === "final") {
+              // Close/reset when on final results
+              unityContext.resetFightResults();
+              unityContext.clearUIFish();
+            } else {
+              // Progress to next round
+              unityContext.progressToNextRound();
+            }
+          }}
+        >
+          {unityContext.currentFightRound === 1 && "View Round 2 →"}
+          {unityContext.currentFightRound === 2 && "View Round 3 →"}
+          {unityContext.currentFightRound === 3 && "View Final Results →"}
+          {unityContext.currentFightRound === "final" && "Close"}
+        </RoundProgressionButton>
+      )}
       {!isFighting && (
         <>
           <OptionsContainer>
@@ -440,6 +463,40 @@ const DataText = styled.p`
   @media ${(props) => props.theme.device.tablet} {
     margin: 0;
     font-size: ${(props) => props.theme.font.medium};
+  }
+`;
+
+const RoundProgressionButton = styled.button`
+  position: fixed;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  padding: 15px 40px;
+  background-image: linear-gradient(#038ec5, #0277a3);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: ${(props) => props.theme.font.medium};
+  font-weight: bold;
+  cursor: pointer;
+  pointer-events: auto;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  transition: all 0.2s;
+
+  &:hover {
+    background-image: linear-gradient(#0277a3, #015d7a);
+    transform: translateX(-50%) translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+  }
+
+  &:active {
+    transform: translateX(-50%) translateY(0);
+  }
+
+  @media ${(props) => props.theme.device.tablet} {
+    font-size: ${(props) => props.theme.font.large};
+    padding: 18px 50px;
   }
 `;
 
