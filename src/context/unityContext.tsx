@@ -39,6 +39,7 @@ interface UnityProviderContext {
   sendRound: (round: number, roundStat: number) => void;
 	clearUIFish: () => void;
 	hideUI: () => void;
+  startFight: () => void;
   sendFightResult: (fight: Fight, fish1: Fish, fish2: Fish) => void;
   sendTie: () => void;
 }
@@ -152,12 +153,12 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
     UnityInstance.on("FishPoolFightRound3", function () {
       // console.log("Confirm FishPoolFightRound3");
     });
-    // UnityInstance.on('FishPoolFightWinner', function () {
-    // 	// console.log('Confirm FishPoolFightWinner');
-    // });
-    // UnityInstance.on('FishPoolFightTie', function () {
-    // 	// console.log('Confirm FishPoolFightTie');
-    // });
+    UnityInstance.on('FishPoolFightWinner', function () {
+      console.log('Confirm FishPoolFightWinner');
+    });
+    UnityInstance.on('FishPoolFightTie', function () {
+      console.log('Confirm FishPoolFightTie');
+    });
   }, []);
 
   const fishCaught = (fish: Fish) => {
@@ -344,44 +345,30 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
 
   const sendFightResult = (fight: Fight, fish1: Fish, fish2: Fish) => {
     // console.log("SendFight Called");
+    if (!isLoaded || !fishPoolReady) return;
     console.log(fight)
     
-    // Ensure fighting UI is visible before sending rounds/results
-    if (!isLoaded || !fishPoolReady) return;
-    showFightingUI();
-    
-    // First, send all round stats to Unity sequentially so it can animate through them
-    // Unity needs these before showing the results. Send with delays to allow animation.
+    // Send round stats first (Unity might need these before processing results)
     if (fight.round1) {
       UnityInstance.send("FishPool", "SetRound1Stat", fight.round1.value);
     }
+    if (fight.round2) {
+      UnityInstance.send("FishPool", "SetRound2Stat", fight.round2.value);
+    }
+    if (fight.round3) {
+      UnityInstance.send("FishPool", "SetRound3Stat", fight.round3.value);
+    }
     
+    // Small delay to ensure rounds are set before results
     setTimeout(() => {
-      if (fight.round2) {
-        UnityInstance.send("FishPool", "SetRound2Stat", fight.round2.value);
-      }
-    }, 500);
-    
-    setTimeout(() => {
-      if (fight.round3) {
-        UnityInstance.send("FishPool", "SetRound3Stat", fight.round3.value);
-      }
-    }, 1000);
-    
-    // Wait for rounds to be processed before showing results
-    setTimeout(() => {
-      // Send the fight results to FishPool
       UnityInstance.send("FishPool", "SetFightResults", JSON.stringify(fight));
-      
-      // Show the fight results UI
       UnityInstance.send("CanvasUserInterface", "SetAnimState", "ShowFightResultsSuccess");
       
-      // Send fish data to the results UI after a brief delay
       setTimeout(() => {
         UnityInstance.send("CanvasUserInterface", "FightingResultsUI_SetFish1", JSON.stringify(fish1) ); 
         UnityInstance.send("CanvasUserInterface", "FightingResultsUI_SetFish2", JSON.stringify(fish2) ); 
       }, 100);
-    }, 1500);
+    }, 100);
   };
 
   const addFishBreedingPool = (fish: Fish) => {
@@ -489,6 +476,7 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
 
   const sendRound = (round: number, roundStat: number) => {
     // console.log(roundStat);
+    if (!isLoaded || !fishPoolReady) return;
     switch (round) {
       case 1:
         UnityInstance.send("FishPool", "SetRound1Stat", roundStat);
@@ -502,6 +490,23 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
       default:
         break;
     }
+  };
+
+  const startFight = () => {
+    console.log("StartFight Called");
+    if (!isLoaded || !fishPoolReady) {
+      console.log("Unity not ready - isLoaded:", isLoaded, "fishPoolReady:", fishPoolReady);
+      return;
+    }
+    // Based on Unity patterns, try these method names to start the fight animation
+    // Unity might start automatically after rounds are set, or need explicit trigger
+    UnityInstance.send("FishPool", "StartFight");
+    UnityInstance.send("FishPool", "BeginFight");
+    UnityInstance.send("CanvasUserInterface", "FightingUI_StartFight");
+    UnityInstance.send("CanvasUserInterface", "StartFight");
+    // Also try setting fight state explicitly
+    UnityInstance.send("FishPool", "SetFightState", "Start");
+    console.log("StartFight Completed - sent multiple method calls");
   };
 
   const refreshFishUnity = (fish: Fish) => {
@@ -581,6 +586,7 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
 		clearUIFish: clearUIFish,
 		hideUI: hideUI,
     sendRound: sendRound,
+    startFight: startFight,
     sendFightResult: sendFightResult,
     sendTie: sendTie,
   };

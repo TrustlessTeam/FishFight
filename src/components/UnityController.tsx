@@ -1,674 +1,778 @@
 // @ts-nocheck
-import { useState, useEffect, useRef } from 'react';
-import styled from 'styled-components';
-import { useUnity } from '../context/unityContext';
-import { useFishPool } from '../context/fishPoolContext';
-import { Fish } from '../utils/fish';
-import { Fight } from '../utils/fight';
+import { useState, useEffect, useRef, Fragment } from "react";
+import styled from "styled-components";
+import { useUnity } from "../context/unityContext";
+import { Fish } from "../utils/fish";
+import { Fight } from "../utils/fight";
+import Unity from "react-unity-webgl";
 
 const UnityController = () => {
   const unityContext = useUnity();
-  const { userFish, fightingFish } = useFishPool();
-  const [logs, setLogs] = useState<Array<{ time: string; message: string; type: 'info' | 'error' | 'success' }>>([]);
-  const [fish1Json, setFish1Json] = useState<string>('');
-  const [fish2Json, setFish2Json] = useState<string>('');
-  const [fightJson, setFightJson] = useState<string>('');
+  const [logs, setLogs] = useState<Array<{ time: string; type: string; message: string }>>([]);
+  const [mockFish1, setMockFish1] = useState<string>("");
+  const [mockFish2, setMockFish2] = useState<string>("");
+  const [mockFight, setMockFight] = useState<string>("");
   const [roundNumber, setRoundNumber] = useState<number>(1);
   const [roundStat, setRoundStat] = useState<number>(0);
-  const [poolName, setPoolName] = useState<string>('Fighting');
   const logsEndRef = useRef<HTMLDivElement>(null);
 
-  const addLog = (message: string, type: 'info' | 'error' | 'success' = 'info') => {
+  const addLog = (type: string, message: string) => {
     const time = new Date().toLocaleTimeString();
-    setLogs(prev => [...prev, { time, message, type }]);
+    setLogs((prev) => [...prev, { time, type, message }]);
   };
 
   useEffect(() => {
-    logsEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    logsEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [logs]);
 
-  const parseFish = (json: string): Fish | null => {
-    try {
-      const parsed = JSON.parse(json);
-      // Create a minimal Fish object if needed
-      return parsed as Fish;
-    } catch (e) {
-      addLog(`Error parsing Fish JSON: ${e}`, 'error');
-      return null;
-    }
-  };
+  // Set up Unity event listeners for logging
+  useEffect(() => {
+    if (!unityContext.UnityInstance) return;
 
-  const parseFight = (json: string): Fight | null => {
-    try {
-      const parsed = JSON.parse(json);
-      return parsed as Fight;
-    } catch (e) {
-      addLog(`Error parsing Fight JSON: ${e}`, 'error');
-      return null;
-    }
-  };
+    const eventHandlers = [
+      "progress",
+      "loaded",
+      "error",
+      "log",
+      "canvas",
+      "CameraStartConfirm",
+      "CanvasUIStartConfirm",
+      "UISelectionConfirm",
+      "FishPoolStartConfirm",
+      "SetAnimStateConfirm",
+      "ClearPoolConfirm",
+      "AddFishConfirm",
+      "SetFishingStateConfirm",
+      "SetFightStateConfirm",
+      "FishCaughtReceived",
+      "FishPoolFightRound1",
+      "FishPoolFightRound2",
+      "FishPoolFightRound3",
+      "FishPoolFightWinner",
+      "FishPoolFightTie",
+    ];
 
-  const handleAction = (actionName: string, action: () => void) => {
-    try {
-      addLog(`Executing: ${actionName}`, 'info');
-      action();
-      addLog(`Success: ${actionName}`, 'success');
-    } catch (e: any) {
-      addLog(`Error in ${actionName}: ${e?.message || e}`, 'error');
-    }
-  };
+    eventHandlers.forEach((eventName) => {
+      unityContext.UnityInstance.on(eventName, function (data: any) {
+        addLog("event", `${eventName}: ${JSON.stringify(data)}`);
+      });
+    });
 
-  // Location Controls
-  const locationControls = [
-    { name: 'Show Fishing Location', action: () => unityContext.showFishingLocation() },
-    { name: 'Show Breeding Location', action: () => unityContext.showBreedingLocation() },
-    { name: 'Show Ocean Location', action: () => unityContext.showOceanLocation() },
-    { name: 'Show Fighting Location', action: () => unityContext.showFightingLocation() },
-    { name: 'Show Home', action: () => unityContext.showHome() },
-    { name: 'Show Tank', action: () => unityContext.showTank() },
-  ];
+    return () => {
+      // Cleanup listeners if needed
+    };
+  }, [unityContext.UnityInstance]);
 
-  // UI Controls
-  const uiControls = [
-    { name: 'Show Fighting UI', action: () => unityContext.showFightingUI() },
-    { name: 'Show Breeding UI', action: () => unityContext.showBreedingUI() },
-    { name: 'Show Fishing UI', action: () => unityContext.showFishingUI() },
-    { name: 'Show Fish UI', action: () => unityContext.showFishUI() },
-    { name: 'Hide UI', action: () => unityContext.hideUI() },
-    { name: 'Clear UI Fish', action: () => unityContext.clearUIFish() },
-  ];
-
-  // Fish Controls
-  const handleAddFishOcean = () => {
-    const fish = parseFish(fish1Json);
-    if (fish) unityContext.addFishOcean(fish);
-  };
-
-  const handleAddFishTank = () => {
-    const fish = parseFish(fish1Json);
-    if (fish) unityContext.addFishTank(fish);
-  };
-
-  const handleAddFishFightingPool = () => {
-    const fish = parseFish(fish1Json);
-    if (fish) unityContext.addFishFightingPool(fish);
-  };
-
-  const handleAddFishBreedingPool = () => {
-    const fish = parseFish(fish1Json);
-    if (fish) unityContext.addFishBreedingPool(fish);
-  };
-
-  const handleAddFishFight1 = () => {
-    const fish = parseFish(fish1Json);
-    if (fish) {
-      addLog(`Adding Fish 1 to fight: TokenId ${fish.tokenId}`, 'info');
-      unityContext.addFishFight1(fish);
-    }
-  };
-
-  const handleAddFishFight2 = () => {
-    const fish = parseFish(fish2Json);
-    if (fish) {
-      addLog(`Adding Fish 2 to fight: TokenId ${fish.tokenId}`, 'info');
-      unityContext.addFishFight2(fish);
-    }
-  };
-
-  const handleSendFightResult = () => {
-    const fight = parseFight(fightJson);
-    const fish1 = parseFish(fish1Json);
-    const fish2 = parseFish(fish2Json);
-    if (fight && fish1 && fish2) {
-      addLog(`Sending fight result: Winner ${fight.winner}`, 'info');
-      unityContext.sendFightResult(fight, fish1, fish2);
-    }
-  };
-
-  const handleSendRound = () => {
-    addLog(`Sending Round ${roundNumber} with stat ${roundStat}`, 'info');
-    unityContext.sendRound(roundNumber, roundStat);
-  };
-
-  const handleSendTie = () => {
-    addLog('Sending Tie', 'info');
-    unityContext.sendTie();
-  };
-
-  const handleClearFishPool = () => {
-    addLog(`Clearing pool: ${poolName}`, 'info');
-    unityContext.clearFishPool(poolName);
-  };
-
-  const handleFishCaught = () => {
-    const fish = parseFish(fish1Json);
-    if (fish) unityContext.fishCaught(fish);
-  };
-
-  const handleShowFish = () => {
-    const fish = parseFish(fish1Json);
-    if (fish) unityContext.showFish(fish);
-  };
-
-  // Quick actions using real fish from context
-  const quickFishActions = [
-    {
-      name: 'Use First User Fish as Fish 1',
-      action: () => {
-        if (userFish.length > 0) {
-          const fish = userFish[0];
-          setFish1Json(JSON.stringify(fish, null, 2));
-          addLog(`Loaded User Fish ${fish.tokenId} as Fish 1`, 'success');
-        } else {
-          addLog('No user fish available', 'error');
-        }
-      },
-    },
-    {
-      name: 'Use First Fighting Fish as Fish 2',
-      action: () => {
-        if (fightingFish.length > 0) {
-          const fish = fightingFish[0];
-          setFish2Json(JSON.stringify(fish, null, 2));
-          addLog(`Loaded Fighting Fish ${fish.tokenId} as Fish 2`, 'success');
-        } else {
-          addLog('No fighting fish available', 'error');
-        }
-      },
-    },
-  ];
-
-  // Sample fight data generator
-  const generateSampleFight = () => {
-    const fish1 = parseFish(fish1Json);
-    const fish2 = parseFish(fish2Json);
-    if (fish1 && fish2) {
-      const sampleFight: Fight = {
-        typeOfFight: 0,
-        fishChallenger: fish1.tokenId,
-        fishChallenged: fish2.tokenId,
-        timeOfFight: Math.floor(Date.now() / 1000),
-        round1: { value: 0, description: 'Strength' },
-        round2: { value: 1, description: 'Intelligence' },
-        round3: { value: 2, description: 'Agility' },
-        winner: fish1.tokenId, // Change to fish2.tokenId or 0 for tie
-        playerResult: 1,
-      };
-      setFightJson(JSON.stringify(sampleFight, null, 2));
-      addLog('Generated sample fight data', 'success');
-    } else {
-      addLog('Please load Fish 1 and Fish 2 first', 'error');
-    }
-  };
-
-  // Complete fighting animation sequence
-  const runFightingSequence = async () => {
-    const fish1 = parseFish(fish1Json);
-    const fish2 = parseFish(fish2Json);
-    const fight = parseFight(fightJson);
-
-    if (!fish1 || !fish2) {
-      addLog('Please load Fish 1 and Fish 2 first', 'error');
-      return;
-    }
-
-    if (!fight) {
-      addLog('Please load fight data first', 'error');
-      return;
-    }
-
-    addLog('=== Starting Fighting Animation Sequence ===', 'info');
+  const createMockFish = (tokenId: number): any => {
+    // Generate a proper genes string (128 hex chars = 64 bytes)
+    const genesArray = Array.from({ length: 128 }, () => 
+      Math.floor(Math.random() * 16).toString(16)
+    ).join('');
+    const genes = "0x" + genesArray;
     
-    // Step 1: Show fighting location
-    addLog('Step 1: Showing fighting location...', 'info');
-    unityContext.showFightingLocation();
-    await new Promise(resolve => setTimeout(resolve, 500));
+    // Parse genes array for visual traits
+    const genesArrayParsed = [];
+    for (let j = 0; j < 128; j++) {
+      genesArrayParsed.push(parseInt(genes.slice(2 + (j * 2), 4 + (j * 2)), 16));
+    }
+    
+    // Create basic visual traits structure
+    const createColor = (r: number, g: number, b: number) => ({ r, g, b, a: 255 });
+    const visualTraits = {
+      ColorBodyPrimary: createColor(genesArrayParsed[6] || 100, genesArrayParsed[7] || 150, genesArrayParsed[8] || 200),
+      ColorBodySecondary: createColor(genesArrayParsed[9] || 120, genesArrayParsed[10] || 160, genesArrayParsed[11] || 210),
+      ColorBodyTertiary: createColor(genesArrayParsed[12] || 110, genesArrayParsed[13] || 155, genesArrayParsed[14] || 205),
+      ColorHeadPrimary: createColor(genesArrayParsed[15] || 100, genesArrayParsed[16] || 150, genesArrayParsed[17] || 200),
+      ColorHeadSecondary: createColor(genesArrayParsed[18] || 120, genesArrayParsed[19] || 160, genesArrayParsed[20] || 210),
+      ColorHeadTertiary: createColor(genesArrayParsed[21] || 110, genesArrayParsed[22] || 155, genesArrayParsed[23] || 205),
+      ColorTailPrimary: createColor(genesArrayParsed[24] || 100, genesArrayParsed[25] || 150, genesArrayParsed[26] || 200),
+      ColorTailSecondary: createColor(genesArrayParsed[27] || 120, genesArrayParsed[28] || 160, genesArrayParsed[29] || 210),
+      ColorTailTertiary: createColor(genesArrayParsed[30] || 110, genesArrayParsed[31] || 155, genesArrayParsed[32] || 205),
+      ColorPectoralPrimary: createColor(genesArrayParsed[33] || 100, genesArrayParsed[34] || 150, genesArrayParsed[35] || 200),
+      ColorPectoralSecondary: createColor(genesArrayParsed[36] || 120, genesArrayParsed[37] || 160, genesArrayParsed[38] || 210),
+      ColorPectoralTertiary: createColor(genesArrayParsed[39] || 110, genesArrayParsed[40] || 155, genesArrayParsed[41] || 205),
+      ColorDorsalPrimary: createColor(genesArrayParsed[42] || 100, genesArrayParsed[43] || 150, genesArrayParsed[44] || 200),
+      ColorDorsalSecondary: createColor(genesArrayParsed[45] || 120, genesArrayParsed[46] || 160, genesArrayParsed[47] || 210),
+      ColorDorsalTertiary: createColor(genesArrayParsed[48] || 110, genesArrayParsed[49] || 155, genesArrayParsed[50] || 205),
+      ColorJawPrimary: createColor(genesArrayParsed[51] || 100, genesArrayParsed[52] || 150, genesArrayParsed[53] || 200),
+      ColorJawSecondary: createColor(genesArrayParsed[54] || 120, genesArrayParsed[55] || 160, genesArrayParsed[56] || 210),
+      ColorJawTertiary: createColor(genesArrayParsed[57] || 110, genesArrayParsed[58] || 155, genesArrayParsed[59] || 205),
+      ColorEyePrimary: createColor(genesArrayParsed[60] || 100, genesArrayParsed[61] || 150, genesArrayParsed[62] || 200),
+      ColorEyeSecondary: createColor(genesArrayParsed[63] || 120, genesArrayParsed[64] || 160, genesArrayParsed[65] || 210),
+      ColorEyeTertiary: createColor(genesArrayParsed[66] || 110, genesArrayParsed[67] || 155, genesArrayParsed[68] || 205),
+      HeadEdges: genesArrayParsed[69] || 0,
+      HeadNose: genesArrayParsed[70] || 0,
+      HeadFrills: genesArrayParsed[71] || 0,
+      HeadFlat: genesArrayParsed[72] || 0,
+      HeadSplit: genesArrayParsed[73] || 0,
+      HeadFlatnose: genesArrayParsed[74] || 0,
+      BodyFat: genesArrayParsed[75] || 0,
+      TextureBodyPrimary: genesArrayParsed[76] || 0,
+      TextureBodySecondary: genesArrayParsed[77] || 0,
+      TextureHeadPrimary: genesArrayParsed[78] || 0,
+      TextureHeadSecondary: genesArrayParsed[79] || 0,
+      TexturePectoralPrimary: genesArrayParsed[80] || 0,
+      TexturePectoralSecondary: genesArrayParsed[81] || 0,
+      TextureDorsalPrimary: genesArrayParsed[82] || 0,
+      TextureDorsalSecondary: genesArrayParsed[83] || 0,
+      TextureTailPrimary: genesArrayParsed[84] || 0,
+      TextureTailSecondary: genesArrayParsed[85] || 0,
+      TextureJawPrimary: genesArrayParsed[86] || 0,
+      TextureJawSecondary: genesArrayParsed[87] || 0,
+      MeshBodyIndex: genesArrayParsed[88] || 0,
+      MeshJawIndex: genesArrayParsed[89] || 0,
+      MeshEyeIndex: genesArrayParsed[90] || 0,
+      MeshDorsalIndex: genesArrayParsed[91] || 0,
+      MeshPectoralIndex: genesArrayParsed[92] || 0,
+      MeshTailIndex: genesArrayParsed[93] || 0,
+      GlimmerStrength: genesArrayParsed[94] || 0,
+    };
+    
+    return {
+      tokenId,
+      birthTime: Math.floor(Date.now() / 1000),
+      genes,
+      fishType: 1,
+      rarity: 1,
+      generation: 1,
+      strength: Math.floor(Math.random() * 100),
+      intelligence: Math.floor(Math.random() * 100),
+      agility: Math.floor(Math.random() * 100),
+      power: Math.floor(Math.random() * 100),
+      lifetimeWins: 0,
+      parentA: 0,
+      parentAFish: null,
+      parentB: 0,
+      parentBFish: null,
+      breedKey: "",
+      deathTime: 0,
+      revived: false,
+      genesArray: genesArrayParsed,
+      visualTraits,
+      imgSrc: null,
+      ipfsLink: null,
+      modifiers: [],
+      offspringHistory: null,
+      fightingHistory: null,
+      stakedFighting: null,
+      stakedBreeding: null,
+      isUser: false,
+      canQuest: true,
+      fishModifiers: {
+        alphaModifier: { time: 0, value: 0, uses: 0, name: "" },
+        bettaModifier: { time: 0, value: 0, uses: 0, name: "" },
+        collectModifier: { time: 0, value: 0, uses: 0, name: "" },
+        feedModifier: { time: 0, value: 0, uses: 0, name: "" },
+        strModifier: { time: 0, value: 0, uses: 0, name: "" },
+        intModifier: { time: 0, value: 0, uses: 0, name: "" },
+        agiModifier: { time: 0, value: 0, uses: 0, name: "" },
+        powerModifier: { time: 0, value: 0, uses: 0, name: "" },
+        canFeed: false,
+        canCollect: false,
+        inBettaCooldown: false,
+      },
+    };
+  };
 
-    // Step 2: Show fighting UI
-    addLog('Step 2: Showing fighting UI...', 'info');
-    unityContext.showFightingUI();
-    await new Promise(resolve => setTimeout(resolve, 500));
+  const createMockFight = (fish1: any, fish2: any): Fight => {
+    return {
+      typeOfFight: 0,
+      fishChallenger: fish1.tokenId,
+      fishChallenged: fish2.tokenId,
+      timeOfFight: Math.floor(Date.now() / 1000),
+      round1: { value: 0, description: "Strength" },
+      round2: { value: 1, description: "Intelligence" },
+      round3: { value: 2, description: "Agility" },
+      winner: fish1.tokenId,
+      playerResult: 1,
+    };
+  };
 
-    // Step 3: Add fish 1
-    addLog('Step 3: Adding Fish 1...', 'info');
-    unityContext.addFishFight1(fish1);
-    await new Promise(resolve => setTimeout(resolve, 1000));
+  const handleAction = (action: string, ...args: any[]) => {
+    try {
+      addLog("action", `Calling: ${action}(${args.map((a) => JSON.stringify(a)).join(", ")})`);
+      
+      switch (action) {
+        case "showFishingLocation":
+          unityContext.showFishingLocation();
+          break;
+        case "showBreedingLocation":
+          unityContext.showBreedingLocation();
+          break;
+        case "showOceanLocation":
+          unityContext.showOceanLocation();
+          break;
+        case "showFightingLocation":
+          unityContext.showFightingLocation();
+          break;
+        case "showFightingUI":
+          unityContext.showFightingUI();
+          break;
+        case "showBreedingUI":
+          unityContext.showBreedingUI();
+          break;
+        case "showFishingUI":
+          unityContext.showFishingUI();
+          break;
+        case "showFishUI":
+          unityContext.showFishUI();
+          break;
+        case "showHome":
+          unityContext.showHome();
+          break;
+        case "showTank":
+          unityContext.showTank();
+          break;
+        case "hideUI":
+          unityContext.hideUI();
+          break;
+        case "clearUIFish":
+          unityContext.clearUIFish();
+          break;
+        case "clearFishPool":
+          unityContext.clearFishPool(args[0] || "Fighting");
+          break;
+        case "addFishOcean":
+          if (mockFish1) {
+            const fish = JSON.parse(mockFish1);
+            unityContext.addFishOcean(fish);
+          } else {
+            const fish = createMockFish(1);
+            unityContext.addFishOcean(fish);
+          }
+          break;
+        case "addFishTank":
+          if (mockFish1) {
+            const fish = JSON.parse(mockFish1);
+            unityContext.addFishTank(fish);
+          } else {
+            const fish = createMockFish(1);
+            unityContext.addFishTank(fish);
+          }
+          break;
+        case "addFishFightingPool":
+          if (mockFish1) {
+            const fish = JSON.parse(mockFish1);
+            unityContext.addFishFightingPool(fish);
+          } else {
+            const fish = createMockFish(1);
+            unityContext.addFishFightingPool(fish);
+          }
+          break;
+        case "addFishBreedingPool":
+          if (mockFish1) {
+            const fish = JSON.parse(mockFish1);
+            unityContext.addFishBreedingPool(fish);
+          } else {
+            const fish = createMockFish(1);
+            unityContext.addFishBreedingPool(fish);
+          }
+          break;
+        case "addFishFight1":
+          if (mockFish1) {
+            const fish = JSON.parse(mockFish1);
+            unityContext.addFishFight1(fish);
+          } else {
+            const fish = createMockFish(1);
+            unityContext.addFishFight1(fish);
+          }
+          break;
+        case "addFishFight2":
+          if (mockFish2) {
+            const fish = JSON.parse(mockFish2);
+            unityContext.addFishFight2(fish);
+          } else {
+            const fish = createMockFish(2);
+            unityContext.addFishFight2(fish);
+          }
+          break;
+        case "sendRound":
+          unityContext.sendRound(roundNumber, roundStat);
+          break;
+        case "startFight":
+          unityContext.startFight();
+          break;
+        case "sendFightResult":
+          let fight: Fight;
+          let fish1: Fish;
+          let fish2: Fish;
+          
+          if (mockFight) {
+            fight = JSON.parse(mockFight);
+          } else {
+            fish1 = mockFish1 ? JSON.parse(mockFish1) : createMockFish(1);
+            fish2 = mockFish2 ? JSON.parse(mockFish2) : createMockFish(2);
+            fight = createMockFight(fish1, fish2);
+          }
+          
+          if (!fish1) fish1 = mockFish1 ? JSON.parse(mockFish1) : createMockFish(1);
+          if (!fish2) fish2 = mockFish2 ? JSON.parse(mockFish2) : createMockFish(2);
+          
+          unityContext.sendFightResult(fight, fish1, fish2);
+          break;
+        case "sendTie":
+          unityContext.sendTie();
+          break;
+        case "fishCaught":
+          if (mockFish1) {
+            const fish = JSON.parse(mockFish1);
+            unityContext.fishCaught(fish);
+          } else {
+            const fish = createMockFish(1);
+            unityContext.fishCaught(fish);
+          }
+          break;
+        case "toggleUnityMounted":
+          unityContext.toggleIsUnityMounted();
+          break;
+        case "testFightSequence":
+          // Complete fight sequence test
+          const testFish1 = mockFish1 ? JSON.parse(mockFish1) : createMockFish(1);
+          const testFish2 = mockFish2 ? JSON.parse(mockFish2) : createMockFish(2);
+          const testFight = createMockFight(testFish1, testFish2);
+          
+          addLog("action", "Starting fight sequence test...");
+          addLog("action", `Fight rounds: R1=${testFight.round1.description}, R2=${testFight.round2.description}, R3=${testFight.round3.description}`);
+          addLog("action", "NOTE: Watch for Unity events: FishPoolFightRound1/2/3, FishPoolFightWinner/Tie");
+          
+          unityContext.showFightingLocation();
+          setTimeout(() => {
+            unityContext.showFightingUI();
+            addLog("action", "Fighting UI shown");
+            setTimeout(() => {
+              unityContext.addFishFight1(testFish1);
+              addLog("action", "Fish 1 added");
+              setTimeout(() => {
+                unityContext.addFishFight2(testFish2);
+                addLog("action", "Fish 2 added");
+                setTimeout(() => {
+                  // Send all round stats BEFORE starting the fight
+                  unityContext.sendRound(1, testFight.round1.value); // Round 1
+                  addLog("action", `Round 1 stat sent: ${testFight.round1.value} (${testFight.round1.description})`);
+                  setTimeout(() => {
+                    unityContext.sendRound(2, testFight.round2.value); // Round 2
+                    addLog("action", `Round 2 stat sent: ${testFight.round2.value} (${testFight.round2.description})`);
+                    setTimeout(() => {
+                      unityContext.sendRound(3, testFight.round3.value); // Round 3
+                      addLog("action", `Round 3 stat sent: ${testFight.round3.value} (${testFight.round3.description})`);
+                      setTimeout(() => {
+                        // Now start the fight animation
+                        unityContext.startFight();
+                        addLog("action", "Fight start command sent - Unity should animate rounds now");
+                        addLog("action", "Waiting for Unity callbacks: FishPoolFightRound1/2/3, then FishPoolFightWinner/Tie");
+                        // Wait for Unity to complete the fight animation via callbacks
+                        // In production, we'd listen for FishPoolFightWinner/Tie events
+                        setTimeout(() => {
+                          unityContext.sendFightResult(testFight, testFish1, testFish2);
+                          addLog("action", `Fight results sent - Winner: Fish ${testFight.winner}`);
+                          addLog("action", "Fight sequence test completed");
+                        }, 5000); // Give Unity time to animate all 3 rounds
+                      }, 500); // Give Unity time to process rounds before starting
+                    }, 300);
+                  }, 300);
+                }, 500);
+              }, 500);
+            }, 500);
+          }, 500);
+          break;
+        default:
+          addLog("error", `Unknown action: ${action}`);
+      }
+    } catch (error: any) {
+      addLog("error", `Error in ${action}: ${error.message}`);
+    }
+  };
 
-    // Step 4: Add fish 2
-    addLog('Step 4: Adding Fish 2...', 'info');
-    unityContext.addFishFight2(fish2);
-    await new Promise(resolve => setTimeout(resolve, 1000));
-
-    // Step 5: Send rounds
-    addLog('Step 5: Sending rounds...', 'info');
-    unityContext.sendRound(1, fight.round1.value);
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    unityContext.sendRound(2, fight.round2.value);
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    unityContext.sendRound(3, fight.round3.value);
-    await new Promise(resolve => setTimeout(resolve, 2000));
-
-    // Step 6: Send fight result
-    addLog('Step 6: Sending fight result...', 'info');
-    unityContext.sendFightResult(fight, fish1, fish2);
-    await new Promise(resolve => setTimeout(resolve, 1000));
-
-    addLog('=== Fighting Animation Sequence Complete ===', 'success');
+  const clearLogs = () => {
+    setLogs([]);
   };
 
   return (
     <Container>
-      <Header>
-        <Title>Unity Context Controller</Title>
-        <Subtitle>Debug and control Unity game context</Subtitle>
-      </Header>
+      <UnityWindowComponent>
+        {!unityContext.isLoaded && (
+          <LoadingText>
+            Approaching Genesis Landing {unityContext.progression * 100} ...
+          </LoadingText>
+        )}
+        <Fragment>
+          {unityContext.isUnityMounted === true && (
+            <Unity unityContent={unityContext.UnityInstance} />
+          )}
+        </Fragment>
+      </UnityWindowComponent>
+      <ControllerPanel>
+        <Header>Unity Controller</Header>
+        
+        <Section>
+          <SectionTitle>Unity State</SectionTitle>
+          <StateGrid>
+            <StateItem>
+              <Label>Loaded:</Label>
+              <Value className={unityContext.isLoaded ? "success" : "error"}>
+                {unityContext.isLoaded ? "Yes" : "No"}
+              </Value>
+            </StateItem>
+            <StateItem>
+              <Label>Fish Pool Ready:</Label>
+              <Value className={unityContext.isFishPoolReady ? "success" : "error"}>
+                {unityContext.isFishPoolReady ? "Yes" : "No"}
+              </Value>
+            </StateItem>
+            <StateItem>
+              <Label>Unity Mounted:</Label>
+              <Value className={unityContext.isUnityMounted ? "success" : "error"}>
+                {unityContext.isUnityMounted ? "Yes" : "No"}
+              </Value>
+            </StateItem>
+            <StateItem>
+              <Label>Progression:</Label>
+              <Value>{(unityContext.progression * 100).toFixed(1)}%</Value>
+            </StateItem>
+          </StateGrid>
+        </Section>
 
-      <Content>
-        <LeftPanel>
-          <Section>
-            <SectionTitle>Unity Status</SectionTitle>
-            <StatusGrid>
-              <StatusItem>
-                <Label>Loaded:</Label>
-                <Value status={unityContext.isLoaded}>{unityContext.isLoaded ? 'Yes' : 'No'}</Value>
-              </StatusItem>
-              <StatusItem>
-                <Label>Fish Pool Ready:</Label>
-                <Value status={unityContext.isFishPoolReady}>{unityContext.isFishPoolReady ? 'Yes' : 'No'}</Value>
-              </StatusItem>
-              <StatusItem>
-                <Label>Mounted:</Label>
-                <Value status={unityContext.isUnityMounted}>{unityContext.isUnityMounted ? 'Yes' : 'No'}</Value>
-              </StatusItem>
-              <StatusItem>
-                <Label>Progress:</Label>
-                <Value>{(unityContext.progression * 100).toFixed(1)}%</Value>
-              </StatusItem>
-            </StatusGrid>
-            <Button onClick={() => unityContext.toggleIsUnityMounted()}>
-              Toggle Unity Mount
+        <Section>
+          <SectionTitle>Location Controls</SectionTitle>
+          <ButtonGrid>
+            <Button onClick={() => handleAction("showFishingLocation")}>Show Fishing</Button>
+            <Button onClick={() => handleAction("showBreedingLocation")}>Show Breeding</Button>
+            <Button onClick={() => handleAction("showOceanLocation")}>Show Ocean</Button>
+            <Button onClick={() => handleAction("showFightingLocation")}>Show Fighting</Button>
+            <Button onClick={() => handleAction("showHome")}>Show Home</Button>
+            <Button onClick={() => handleAction("showTank")}>Show Tank</Button>
+          </ButtonGrid>
+        </Section>
+
+        <Section>
+          <SectionTitle>UI Controls</SectionTitle>
+          <ButtonGrid>
+            <Button onClick={() => handleAction("showFightingUI")}>Show Fighting UI</Button>
+            <Button onClick={() => handleAction("showBreedingUI")}>Show Breeding UI</Button>
+            <Button onClick={() => handleAction("showFishingUI")}>Show Fishing UI</Button>
+            <Button onClick={() => handleAction("showFishUI")}>Show Fish UI</Button>
+            <Button onClick={() => handleAction("hideUI")}>Hide UI</Button>
+            <Button onClick={() => handleAction("clearUIFish")}>Clear UI Fish</Button>
+          </ButtonGrid>
+        </Section>
+
+        <Section>
+          <SectionTitle>Fish Pool Controls</SectionTitle>
+          <ButtonGrid>
+            <Button onClick={() => handleAction("addFishOcean")}>Add Fish Ocean</Button>
+            <Button onClick={() => handleAction("addFishTank")}>Add Fish Tank</Button>
+            <Button onClick={() => handleAction("addFishFightingPool")}>Add Fish Fighting Pool</Button>
+            <Button onClick={() => handleAction("addFishBreedingPool")}>Add Fish Breeding Pool</Button>
+            <Button onClick={() => handleAction("clearFishPool", "Fighting")}>Clear Fighting Pool</Button>
+            <Button onClick={() => handleAction("clearFishPool", "Breeding")}>Clear Breeding Pool</Button>
+          </ButtonGrid>
+        </Section>
+
+        <Section>
+          <SectionTitle>Fight Controls</SectionTitle>
+          <ButtonGrid>
+            <Button onClick={() => handleAction("addFishFight1")}>Add Fish Fight 1</Button>
+            <Button onClick={() => handleAction("addFishFight2")}>Add Fish Fight 2</Button>
+            <Button onClick={() => handleAction("sendRound")}>Send Round ({roundNumber}, {roundStat})</Button>
+            <Button onClick={() => handleAction("startFight")}>Start Fight</Button>
+            <Button onClick={() => handleAction("sendFightResult")}>Send Fight Result</Button>
+            <Button onClick={() => handleAction("sendTie")}>Send Tie</Button>
+            <Button className="test-button" onClick={() => handleAction("testFightSequence")}>
+              Test Full Fight Sequence
             </Button>
-          </Section>
+          </ButtonGrid>
+          <InputGroup>
+            <Input
+              type="number"
+              placeholder="Round Number (1-3)"
+              value={roundNumber}
+              onChange={(e) => setRoundNumber(parseInt(e.target.value) || 1)}
+              min={1}
+              max={3}
+            />
+            <Input
+              type="number"
+              placeholder="Round Stat (0-2)"
+              value={roundStat}
+              onChange={(e) => setRoundStat(parseInt(e.target.value) || 0)}
+              min={0}
+              max={2}
+            />
+          </InputGroup>
+        </Section>
 
-          <Section>
-            <SectionTitle>Location Controls</SectionTitle>
-            <ButtonGrid>
-              {locationControls.map((control, idx) => (
-                <Button key={idx} onClick={() => handleAction(control.name, control.action)}>
-                  {control.name}
-                </Button>
-              ))}
-            </ButtonGrid>
-          </Section>
+        <Section>
+          <SectionTitle>Mock Data</SectionTitle>
+          <TextArea
+            placeholder="Mock Fish 1 JSON (optional)"
+            value={mockFish1}
+            onChange={(e) => setMockFish1(e.target.value)}
+            rows={3}
+          />
+          <TextArea
+            placeholder="Mock Fish 2 JSON (optional)"
+            value={mockFish2}
+            onChange={(e) => setMockFish2(e.target.value)}
+            rows={3}
+          />
+          <TextArea
+            placeholder="Mock Fight JSON (optional)"
+            value={mockFight}
+            onChange={(e) => setMockFight(e.target.value)}
+            rows={3}
+          />
+          <Button onClick={() => {
+            const fish = createMockFish(1);
+            setMockFish1(JSON.stringify(fish, null, 2));
+          }}>
+            Generate Mock Fish 1
+          </Button>
+          <Button onClick={() => {
+            const fish = createMockFish(2);
+            setMockFish2(JSON.stringify(fish, null, 2));
+          }}>
+            Generate Mock Fish 2
+          </Button>
+          <Button onClick={() => {
+            const fish1 = mockFish1 ? JSON.parse(mockFish1) : createMockFish(1);
+            const fish2 = mockFish2 ? JSON.parse(mockFish2) : createMockFish(2);
+            const fight = createMockFight(fish1, fish2);
+            setMockFight(JSON.stringify(fight, null, 2));
+          }}>
+            Generate Mock Fight
+          </Button>
+        </Section>
 
-          <Section>
-            <SectionTitle>UI Controls</SectionTitle>
-            <ButtonGrid>
-              {uiControls.map((control, idx) => (
-                <Button key={idx} onClick={() => handleAction(control.name, control.action)}>
-                  {control.name}
-                </Button>
-              ))}
-            </ButtonGrid>
-          </Section>
+        <Section>
+          <SectionTitle>Other Controls</SectionTitle>
+          <ButtonGrid>
+            <Button onClick={() => handleAction("fishCaught")}>Fish Caught</Button>
+            <Button onClick={() => handleAction("toggleUnityMounted")}>Toggle Unity Mounted</Button>
+          </ButtonGrid>
+        </Section>
 
-          <Section>
-            <SectionTitle>Pool Controls</SectionTitle>
-            <InputGroup>
-              <Label>Pool Name:</Label>
-              <Input
-                type="text"
-                value={poolName}
-                onChange={(e) => setPoolName(e.target.value)}
-                placeholder="Fighting, Breeding, etc."
-              />
-            </InputGroup>
-            <Button onClick={() => handleAction('Clear Fish Pool', handleClearFishPool)}>
-              Clear Fish Pool
-            </Button>
-          </Section>
-
-          <Section>
-            <SectionTitle>Quick Actions</SectionTitle>
-            <ButtonGrid>
-              {quickFishActions.map((action, idx) => (
-                <Button key={idx} onClick={action.action}>
-                  {action.name}
-                </Button>
-              ))}
-            </ButtonGrid>
-          </Section>
-        </LeftPanel>
-
-        <RightPanel>
-          <Section>
-            <SectionTitle>Fighting Animation Debug</SectionTitle>
-            <FightingSection>
-              <SubSection>
-                <SubSectionTitle>Fish 1 (JSON)</SubSectionTitle>
-                <TextArea
-                  value={fish1Json}
-                  onChange={(e) => setFish1Json(e.target.value)}
-                  placeholder="Paste Fish 1 JSON here..."
-                  rows={8}
-                />
-                <Button onClick={handleAddFishFight1}>Add Fish 1 to Fight</Button>
-              </SubSection>
-
-              <SubSection>
-                <SubSectionTitle>Fish 2 (JSON)</SubSectionTitle>
-                <TextArea
-                  value={fish2Json}
-                  onChange={(e) => setFish2Json(e.target.value)}
-                  placeholder="Paste Fish 2 JSON here..."
-                  rows={8}
-                />
-                <Button onClick={handleAddFishFight2}>Add Fish 2 to Fight</Button>
-              </SubSection>
-
-              <SubSection>
-                <SubSectionTitle>Fight Result (JSON)</SubSectionTitle>
-                <TextArea
-                  value={fightJson}
-                  onChange={(e) => setFightJson(e.target.value)}
-                  placeholder="Paste Fight JSON here..."
-                  rows={8}
-                />
-                <Button onClick={generateSampleFight}>Generate Sample Fight</Button>
-                <Button onClick={handleSendFightResult}>Send Fight Result</Button>
-              </SubSection>
-
-              <SubSection>
-                <SubSectionTitle>Round Controls</SubSectionTitle>
-                <InputGroup>
-                  <Label>Round Number (1-3):</Label>
-                  <Input
-                    type="number"
-                    min="1"
-                    max="3"
-                    value={roundNumber}
-                    onChange={(e) => setRoundNumber(parseInt(e.target.value) || 1)}
-                  />
-                </InputGroup>
-                <InputGroup>
-                  <Label>Round Stat (0=Strength, 1=Intelligence, 2=Agility):</Label>
-                  <Input
-                    type="number"
-                    min="0"
-                    max="2"
-                    value={roundStat}
-                    onChange={(e) => setRoundStat(parseInt(e.target.value) || 0)}
-                  />
-                </InputGroup>
-                <Button onClick={handleSendRound}>Send Round</Button>
-                <Button onClick={handleSendTie}>Send Tie</Button>
-              </SubSection>
-
-              <SubSection>
-                <SubSectionTitle>Complete Fighting Sequence</SubSectionTitle>
-                <Button primary onClick={runFightingSequence}>
-                  Run Complete Fighting Animation Sequence
-                </Button>
-                <HelpText>
-                  This will execute the full fighting animation sequence:
-                  1. Show fighting location
-                  2. Show fighting UI
-                  3. Add Fish 1
-                  4. Add Fish 2
-                  5. Send all 3 rounds
-                  6. Send fight result
-                </HelpText>
-              </SubSection>
-            </FightingSection>
-          </Section>
-
-          <Section>
-            <SectionTitle>Other Fish Actions</SectionTitle>
-            <ButtonGrid>
-              <Button onClick={handleAddFishOcean}>Add Fish to Ocean</Button>
-              <Button onClick={handleAddFishTank}>Add Fish to Tank</Button>
-              <Button onClick={handleAddFishFightingPool}>Add Fish to Fighting Pool</Button>
-              <Button onClick={handleAddFishBreedingPool}>Add Fish to Breeding Pool</Button>
-              <Button onClick={handleFishCaught}>Fish Caught</Button>
-              <Button onClick={handleShowFish}>Show Fish</Button>
-            </ButtonGrid>
-          </Section>
-
-          <Section>
-            <SectionTitle>Action Logs</SectionTitle>
-            <LogContainer>
-              {logs.map((log, idx) => (
-                <LogEntry key={idx} type={log.type}>
-                  <LogTime>[{log.time}]</LogTime>
-                  <LogMessage>{log.message}</LogMessage>
-                </LogEntry>
-              ))}
-              <div ref={logsEndRef} />
-            </LogContainer>
-            <Button onClick={() => setLogs([])}>Clear Logs</Button>
-          </Section>
-        </RightPanel>
-      </Content>
+        <Section>
+          <SectionTitle>
+            Event Logs
+            <ClearButton onClick={clearLogs}>Clear</ClearButton>
+          </SectionTitle>
+          <LogContainer>
+            {logs.map((log, index) => (
+              <LogEntry key={index} className={log.type}>
+                <LogTime>[{log.time}]</LogTime>
+                <LogMessage>{log.message}</LogMessage>
+              </LogEntry>
+            ))}
+            <div ref={logsEndRef} />
+          </LogContainer>
+        </Section>
+      </ControllerPanel>
     </Container>
   );
 };
 
 const Container = styled.div`
   display: flex;
-  flex-direction: column;
-  width: 100%;
+  width: 100vw;
   height: 100vh;
-  background: #1a1a1a;
-  color: #fff;
-  overflow: hidden;
+  position: relative;
 `;
 
-const Header = styled.div`
-  padding: 20px;
-  background: #2a2a2a;
-  border-bottom: 2px solid #444;
+const UnityWindowComponent = styled.div`
+  position: relative;
+  width: 100%;
+  height: 100%;
+  & > div {
+    background: none !important;
+  }
 `;
 
-const Title = styled.h1`
-  margin: 0;
+const LoadingText = styled.p`
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
   font-size: 24px;
-  color: #fff;
+  z-index: 10;
 `;
 
-const Subtitle = styled.p`
-  margin: 5px 0 0 0;
-  font-size: 14px;
-  color: #aaa;
-`;
-
-const Content = styled.div`
-  display: flex;
-  flex: 1;
-  overflow: hidden;
-  gap: 20px;
+const ControllerPanel = styled.div`
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 400px;
+  max-width: 100%;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.9);
+  color: white;
+  overflow-y: auto;
+  z-index: 1000;
   padding: 20px;
+  box-sizing: border-box;
 `;
 
-const LeftPanel = styled.div`
-  display: flex;
-  flex-direction: column;
-  width: 300px;
-  overflow-y: auto;
-  gap: 20px;
-`;
-
-const RightPanel = styled.div`
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  overflow-y: auto;
-  gap: 20px;
-`;
-
-const Section = styled.div`
-  background: #2a2a2a;
-  border-radius: 8px;
-  padding: 15px;
-  border: 1px solid #444;
-`;
-
-const SectionTitle = styled.h2`
-  margin: 0 0 15px 0;
-  font-size: 18px;
-  color: #fff;
-  border-bottom: 1px solid #444;
+const Header = styled.h1`
+  color: white;
+  margin: 0 0 20px 0;
+  font-size: 24px;
+  border-bottom: 2px solid #038ec5;
   padding-bottom: 10px;
 `;
 
-const SubSection = styled.div`
+const Section = styled.div`
   margin-bottom: 20px;
-  padding: 15px;
-  background: #1f1f1f;
-  border-radius: 6px;
-  border: 1px solid #333;
 `;
 
-const SubSectionTitle = styled.h3`
+const SectionTitle = styled.h2`
+  color: #038ec5;
+  font-size: 18px;
   margin: 0 0 10px 0;
-  font-size: 14px;
-  color: #ccc;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 `;
 
-const StatusGrid = styled.div`
+const StateGrid = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 10px;
-  margin-bottom: 15px;
 `;
 
-const StatusItem = styled.div`
+const StateItem = styled.div`
   display: flex;
   flex-direction: column;
 `;
 
-const Label = styled.label`
+const Label = styled.span`
   font-size: 12px;
   color: #aaa;
-  margin-bottom: 5px;
+  margin-bottom: 4px;
 `;
 
-const Value = styled.span<{ status?: boolean }>`
+const Value = styled.span`
   font-size: 14px;
   font-weight: bold;
-  color: ${props => {
-    if (props.status === undefined) return '#fff';
-    return props.status ? '#4caf50' : '#f44336';
-  }};
+  
+  &.success {
+    color: #4caf50;
+  }
+  
+  &.error {
+    color: #f44336;
+  }
 `;
 
 const ButtonGrid = styled.div`
   display: grid;
-  grid-template-columns: 1fr;
-  gap: 10px;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
 `;
 
-const Button = styled.button<{ primary?: boolean }>`
-  padding: 10px 15px;
-  background: ${props => props.primary ? '#4caf50' : '#444'};
-  color: #fff;
+const Button = styled.button`
+  padding: 8px 12px;
+  background: #038ec5;
+  color: white;
   border: none;
-  border-radius: 6px;
+  border-radius: 4px;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 12px;
   transition: background 0.2s;
-
+  
   &:hover {
-    background: ${props => props.primary ? '#45a049' : '#555'};
+    background: #0277a3;
   }
-
-  &:active {
-    background: ${props => props.primary ? '#3d8b40' : '#666'};
+  
+  &.test-button {
+    grid-column: 1 / -1;
+    background: #4caf50;
+    
+    &:hover {
+      background: #45a049;
+    }
   }
 `;
 
 const InputGroup = styled.div`
   display: flex;
-  flex-direction: column;
-  margin-bottom: 15px;
+  gap: 8px;
+  margin-top: 10px;
 `;
 
 const Input = styled.input`
+  flex: 1;
   padding: 8px;
-  background: #1a1a1a;
-  color: #fff;
-  border: 1px solid #444;
+  border: 1px solid #555;
   border-radius: 4px;
-  font-size: 14px;
-
-  &:focus {
-    outline: none;
-    border-color: #4caf50;
-  }
+  background: #222;
+  color: white;
+  font-size: 12px;
 `;
 
 const TextArea = styled.textarea`
-  padding: 8px;
-  background: #1a1a1a;
-  color: #fff;
-  border: 1px solid #444;
-  border-radius: 4px;
-  font-size: 12px;
-  font-family: 'Courier New', monospace;
   width: 100%;
+  padding: 8px;
+  border: 1px solid #555;
+  border-radius: 4px;
+  background: #222;
+  color: white;
+  font-size: 11px;
+  font-family: monospace;
+  margin-bottom: 8px;
   resize: vertical;
-  margin-bottom: 10px;
-
-  &:focus {
-    outline: none;
-    border-color: #4caf50;
-  }
-`;
-
-const FightingSection = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-`;
-
-const HelpText = styled.p`
-  margin: 10px 0 0 0;
-  font-size: 12px;
-  color: #aaa;
-  font-style: italic;
 `;
 
 const LogContainer = styled.div`
-  background: #1a1a1a;
-  border: 1px solid #444;
-  border-radius: 6px;
+  background: #111;
+  border: 1px solid #555;
+  border-radius: 4px;
   padding: 10px;
   max-height: 300px;
   overflow-y: auto;
-  margin-bottom: 10px;
-  font-family: 'Courier New', monospace;
-  font-size: 12px;
+  font-family: monospace;
+  font-size: 11px;
 `;
 
-const LogEntry = styled.div<{ type: 'info' | 'error' | 'success' }>`
+const LogEntry = styled.div`
+  margin-bottom: 4px;
   display: flex;
-  gap: 10px;
-  margin-bottom: 5px;
-  color: ${props => {
-    switch (props.type) {
-      case 'error': return '#f44336';
-      case 'success': return '#4caf50';
-      default: return '#fff';
-    }
-  }};
+  gap: 8px;
+  
+  &.action {
+    color: #4caf50;
+  }
+  
+  &.event {
+    color: #2196f3;
+  }
+  
+  &.error {
+    color: #f44336;
+  }
 `;
 
 const LogTime = styled.span`
   color: #888;
-  flex-shrink: 0;
+  min-width: 80px;
 `;
 
 const LogMessage = styled.span`
   flex: 1;
+  word-break: break-all;
+`;
+
+const ClearButton = styled.button`
+  padding: 4px 8px;
+  background: #f44336;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  
+  &:hover {
+    background: #d32f2f;
+  }
 `;
 
 export default UnityController;

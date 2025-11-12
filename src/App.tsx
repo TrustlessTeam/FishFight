@@ -66,7 +66,7 @@ const App = () => {
             <Route path="/server" element={<ServerMonitor />} />
             <Route path="/admin" element={<ServerMonitor />} />
             <Route path="/console" element={<ServerMonitor />} />
-            {/* Unity Controller - No Unity wrapper needed */}
+            {/* Unity Controller - Renders Unity directly */}
             <Route path="/unity-controller" element={<UnityController />} />
           </Routes>
 
