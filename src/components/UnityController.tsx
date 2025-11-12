@@ -375,6 +375,115 @@ const UnityController = () => {
             }, 500);
           }, 500);
           break;
+        case "step1_hideUI":
+          addLog("action", "Step 1: Hiding UI");
+          unityContext.hideUI();
+          break;
+        case "step2_showFightingLocation":
+          addLog("action", "Step 2: Showing Fighting Location");
+          unityContext.showFightingLocation();
+          break;
+        case "step3_showFightingUI":
+          addLog("action", "Step 3: Showing Fighting UI");
+          unityContext.showFightingUI();
+          break;
+        case "step4_addFish1":
+          addLog("action", "Step 4: Adding Fish 1");
+          const stepFish1 = mockFish1 ? JSON.parse(mockFish1) : createMockFish(1);
+          unityContext.addFishFight1(stepFish1);
+          break;
+        case "step5_addFish2":
+          addLog("action", "Step 5: Adding Fish 2");
+          const stepFish2 = mockFish2 ? JSON.parse(mockFish2) : createMockFish(2);
+          unityContext.addFishFight2(stepFish2);
+          break;
+        case "step6_sendFightResults":
+          addLog("action", "Step 6: Sending Fight Results");
+          const stepFight = mockFight ? JSON.parse(mockFight) : createMockFight(
+            mockFish1 ? JSON.parse(mockFish1) : createMockFish(1),
+            mockFish2 ? JSON.parse(mockFish2) : createMockFish(2)
+          );
+          if (unityContext.UnityInstance) {
+            unityContext.UnityInstance.send("FishPool", "SetFightResults", JSON.stringify(stepFight));
+          }
+          break;
+        case "step7_hideBeforeResults":
+          addLog("action", "Step 7: Hiding UI before showing results");
+          unityContext.hideUI();
+          break;
+        case "step8_showFightingResults":
+          addLog("action", "Step 8: Showing Fighting Results UI");
+          if (unityContext.UnityInstance) {
+            unityContext.UnityInstance.send("CanvasUserInterface", "SetAnimState", "ShowFightingResults");
+          }
+          break;
+        case "step9_setFishData":
+          addLog("action", "Step 9: Setting Fish Data in Results");
+          const finalFish1 = mockFish1 ? JSON.parse(mockFish1) : createMockFish(1);
+          const finalFish2 = mockFish2 ? JSON.parse(mockFish2) : createMockFish(2);
+          if (unityContext.UnityInstance) {
+            unityContext.UnityInstance.send("CanvasUserInterface", "FightingResultsUI_SetFish1", JSON.stringify(finalFish1));
+            unityContext.UnityInstance.send("CanvasUserInterface", "FightingResultsUI_SetFish2", JSON.stringify(finalFish2));
+          }
+          break;
+        case "stepThroughAll":
+          addLog("action", "Starting automatic step-through...");
+          const autoFish1 = mockFish1 ? JSON.parse(mockFish1) : createMockFish(1);
+          const autoFish2 = mockFish2 ? JSON.parse(mockFish2) : createMockFish(2);
+          const autoFight = createMockFight(autoFish1, autoFish2);
+          
+          // Step 1
+          addLog("action", "Step 1: Hide UI");
+          unityContext.hideUI();
+          setTimeout(() => {
+            // Step 2
+            addLog("action", "Step 2: Show Fighting Location");
+            unityContext.showFightingLocation();
+            setTimeout(() => {
+              // Step 3
+              addLog("action", "Step 3: Show Fighting UI");
+              unityContext.showFightingUI();
+              setTimeout(() => {
+                // Step 4
+                addLog("action", "Step 4: Add Fish 1");
+                unityContext.addFishFight1(autoFish1);
+                setTimeout(() => {
+                  // Step 5
+                  addLog("action", "Step 5: Add Fish 2");
+                  unityContext.addFishFight2(autoFish2);
+                  setTimeout(() => {
+                    // Step 6
+                    addLog("action", "Step 6: Send Fight Results");
+                    if (unityContext.UnityInstance) {
+                      unityContext.UnityInstance.send("FishPool", "SetFightResults", JSON.stringify(autoFight));
+                    }
+                    setTimeout(() => {
+                      // Step 7
+                      addLog("action", "Step 7: Hide UI before showing results");
+                      unityContext.hideUI();
+                      setTimeout(() => {
+                        // Step 8
+                        addLog("action", "Step 8: Show Fighting Results UI");
+                        if (unityContext.UnityInstance) {
+                          unityContext.UnityInstance.send("CanvasUserInterface", "SetAnimState", "ShowFightingResults");
+                        }
+                        setTimeout(() => {
+                          // Step 9
+                          addLog("action", "Step 9: Set Fish Data in Results");
+                          if (unityContext.UnityInstance) {
+                            unityContext.UnityInstance.send("CanvasUserInterface", "FightingResultsUI_SetFish1", JSON.stringify(autoFish1));
+                            unityContext.UnityInstance.send("CanvasUserInterface", "FightingResultsUI_SetFish2", JSON.stringify(autoFish2));
+                          }
+                          addLog("action", "Complete - Results UI should be visible");
+                        }, 300);
+                      }, 300);
+                    }, 500);
+                  }, 500);
+                }, 300);
+              }, 300);
+            }, 300);
+          }, 300);
+          break;
         default:
           addLog("error", `Unknown action: ${action}`);
       }
@@ -479,6 +588,24 @@ const UnityController = () => {
             <Button onClick={() => handleAction("sendTie")}>Send Tie</Button>
             <Button className="test-button" onClick={() => handleAction("testFightSequence")}>
               Test Full Fight Sequence
+            </Button>
+          </ButtonGrid>
+        </Section>
+
+        <Section>
+          <SectionTitle>Step Through Fighting UI (Debug)</SectionTitle>
+          <ButtonGrid>
+            <Button onClick={() => handleAction("step1_hideUI")}>Step 1: Hide UI</Button>
+            <Button onClick={() => handleAction("step2_showFightingLocation")}>Step 2: Show Fighting Location</Button>
+            <Button onClick={() => handleAction("step3_showFightingUI")}>Step 3: Show Fighting UI</Button>
+            <Button onClick={() => handleAction("step4_addFish1")}>Step 4: Add Fish 1</Button>
+            <Button onClick={() => handleAction("step5_addFish2")}>Step 5: Add Fish 2</Button>
+            <Button onClick={() => handleAction("step6_sendFightResults")}>Step 6: Send Fight Results</Button>
+            <Button onClick={() => handleAction("step7_hideBeforeResults")}>Step 7: Hide Before Results</Button>
+            <Button onClick={() => handleAction("step8_showFightingResults")}>Step 8: Show Fighting Results</Button>
+            <Button onClick={() => handleAction("step9_setFishData")}>Step 9: Set Fish Data</Button>
+            <Button className="test-button" onClick={() => handleAction("stepThroughAll")}>
+              Step Through All (Auto)
             </Button>
           </ButtonGrid>
           <InputGroup>
