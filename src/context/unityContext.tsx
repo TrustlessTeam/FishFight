@@ -353,36 +353,59 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
     UnityInstance.send("FishPool", "SetFightResults", JSON.stringify(fight));
     
     // Unity requires ShowFightingResults1, ShowFightingResults2, ShowFightingResults3 sequence
-    // before ShowFightingResults, or the animation will fail
-    // All are sent via SetAnimState method
+    // Each step shows a round UI, and we need to set fish data for each round
+    // before showing the final results UI
     setTimeout(() => {
-      console.log("Step 1: SetAnimState('ShowFightingResults1')");
+      // Step 1: Show Round 1 UI
+      console.log("Step 1: SetAnimState('ShowFightingResults1') - Shows Round 1 UI");
       UnityInstance.send("CanvasUserInterface", "SetAnimState", "ShowFightingResults1");
       
       setTimeout(() => {
-        console.log("Step 2: SetAnimState('ShowFightingResults2')");
-        UnityInstance.send("CanvasUserInterface", "SetAnimState", "ShowFightingResults2");
+        // Set fish data for Round 1 (this also calls SetupRound1())
+        console.log("Setting fish data for Round 1 UI");
+        UnityInstance.send("CanvasUserInterface", "FightingResultsRound1UI_SetFish1", JSON.stringify(fish1));
+        UnityInstance.send("CanvasUserInterface", "FightingResultsRound1UI_SetFish2", JSON.stringify(fish2));
         
         setTimeout(() => {
-          console.log("Step 3: SetAnimState('ShowFightingResults3')");
-          UnityInstance.send("CanvasUserInterface", "SetAnimState", "ShowFightingResults3");
+          // Step 2: Show Round 2 UI
+          console.log("Step 2: SetAnimState('ShowFightingResults2') - Shows Round 2 UI");
+          UnityInstance.send("CanvasUserInterface", "SetAnimState", "ShowFightingResults2");
           
           setTimeout(() => {
-            console.log("Step 4: SetAnimState('ShowFightingResults')");
-            UnityInstance.send("CanvasUserInterface", "SetAnimState", "ShowFightingResults");
+            // Set fish data for Round 2 (this also calls SetupRound2())
+            console.log("Setting fish data for Round 2 UI");
+            UnityInstance.send("CanvasUserInterface", "FightingResultsRound2UI_SetFish1", JSON.stringify(fish1));
+            UnityInstance.send("CanvasUserInterface", "FightingResultsRound2UI_SetFish2", JSON.stringify(fish2));
             
             setTimeout(() => {
-              console.log("Setting fish data in results UI");
-              UnityInstance.send("CanvasUserInterface", "FightingResultsUI_SetFish1", JSON.stringify(fish1));
-              UnityInstance.send("CanvasUserInterface", "FightingResultsUI_SetFish2", JSON.stringify(fish2));
+              // Step 3: Show Round 3 UI
+              console.log("Step 3: SetAnimState('ShowFightingResults3') - Shows Round 3 UI");
+              UnityInstance.send("CanvasUserInterface", "SetAnimState", "ShowFightingResults3");
               
-              // Also try setting winner directly
-              UnityInstance.send("CanvasUserInterface", "FightingResultsUI_SetWinner", fight.winner.toString());
-              
-              console.log("All results UI commands sent");
-            }, 300);
+              setTimeout(() => {
+                // Set fish data for Round 3 (this also calls SetupRound3())
+                console.log("Setting fish data for Round 3 UI");
+                UnityInstance.send("CanvasUserInterface", "FightingResultsRound3UI_SetFish1", JSON.stringify(fish1));
+                UnityInstance.send("CanvasUserInterface", "FightingResultsRound3UI_SetFish2", JSON.stringify(fish2));
+                
+                setTimeout(() => {
+                  // Step 4: Show Final Results UI
+                  console.log("Step 4: SetAnimState('ShowFightingResults') - Shows Final Results UI");
+                  UnityInstance.send("CanvasUserInterface", "SetAnimState", "ShowFightingResults");
+                  
+                  setTimeout(() => {
+                    // Set fish data for Final Results UI
+                    console.log("Setting fish data for Final Results UI");
+                    UnityInstance.send("CanvasUserInterface", "FightingResultsUI_SetFish1", JSON.stringify(fish1));
+                    UnityInstance.send("CanvasUserInterface", "FightingResultsUI_SetFish2", JSON.stringify(fish2));
+                    
+                    console.log("All results UI commands sent");
+                  }, 300);
+                }, 500); // Give Round 3 time to display
+              }, 300);
+            }, 500); // Give Round 2 time to display
           }, 300);
-        }, 300);
+        }, 500); // Give Round 1 time to display
       }, 300);
     }, 500);
   };
