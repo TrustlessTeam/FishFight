@@ -11,6 +11,10 @@ interface UnityProviderContext {
   isLoaded: boolean;
   progression: number;
   isFishPoolReady: boolean;
+  fish1: Fish | undefined;
+  fish2: Fish | undefined;
+  fish3: Fish | undefined;
+  currentLocation: number;
   toggleIsUnityMounted: () => void;
   fishCaught: (fish: Fish) => void;
   showFishingLocation: () => void;
@@ -526,6 +530,10 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
     isLoaded: isLoaded,
     progression: progression,
     isFishPoolReady: fishPoolReady,
+    fish1: fish1,
+    fish2: fish2,
+    fish3: fish3,
+    currentLocation: currentLocation,
     toggleIsUnityMounted: toggleIsUnityMounted,
     fishCaught: fishCaught,
     showFishingLocation: showFishingLocation,

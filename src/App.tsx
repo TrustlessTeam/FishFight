@@ -25,6 +25,7 @@ import FightingWatersWeak from "./components/FightingWatersWeak";
 import FightingWatersNonLethal from "./components/FightingWatersNonLethal";
 import { ServerMonitor } from "./components/ServerMonitor";
 import FishDetail from "./components/FishDetail";
+import UnityController from "./components/UnityController";
 
 type RenderProps = {
   hours: any;
@@ -60,6 +61,7 @@ const App = () => {
               <Route path="/fighting/non-lethal" element={<FightingWatersNonLethal/>} />
               <Route path="/breeding" element={<BreedingWaters />} />
               <Route path="/fish/:tokenId" element={<FishDetail />} />
+              <Route path="/unity-controller" element={<UnityController />} />
             </Route>
             {/* Server Console - No Unity wrapper needed */}
             <Route path="/server" element={<ServerMonitor />} />
