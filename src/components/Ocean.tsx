@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 import { PoolFish, PoolTypes, useFishPool } from "../context/fishPoolContext";
 import { useUnity } from "../context/unityContext";
@@ -104,17 +104,33 @@ const Ocean = () => {
     });
   }, [unityContext.isFishPoolReady, mySelectedFish, account]);
 
+  const initializationTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
   useEffect(() => {
     if (!unityContext.isFishPoolReady) return;
     
+    // Clear any existing timeout to prevent multiple initializations
+    if (initializationTimeoutRef.current) {
+      clearTimeout(initializationTimeoutRef.current);
+    }
+    
     console.log("CLEAR OCEAN");
     // Add a small delay to ensure Unity is fully ready after FishPoolStartConfirm
-    setTimeout(() => {
+    initializationTimeoutRef.current = setTimeout(() => {
       // unityContext.showFishUI();
       unityContext.clearUIFish();
       // unityContext.hideUI();
       unityContext.showOceanLocation();
+      initializationTimeoutRef.current = null;
     }, 200);
+
+    // Cleanup function to clear timeout if component unmounts or effect re-runs
+    return () => {
+      if (initializationTimeoutRef.current) {
+        clearTimeout(initializationTimeoutRef.current);
+        initializationTimeoutRef.current = null;
+      }
+    };
   }, [unityContext.isFishPoolReady]);
 
   useEffect(() => {

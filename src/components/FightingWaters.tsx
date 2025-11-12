@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import styled from "styled-components";
 import { toast } from "react-toastify";
 import { useWeb3React } from "@web3-react/core";
@@ -49,6 +49,8 @@ const FightingWaters = () => {
   const unityContext = useUnity();
   const { fightFish, pendingTransaction, isFighting, updateIsFighting } =
     useContractWrapper();
+  const initializationTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  
   const toggleModal = () => {
     setModalIsOpen(!modalIsOpen);
   };
@@ -104,18 +106,32 @@ const FightingWaters = () => {
   useEffect(() => {
     if (!unityContext.isFishPoolReady) return;
     
+    // Clear any existing timeout to prevent multiple initializations
+    if (initializationTimeoutRef.current) {
+      clearTimeout(initializationTimeoutRef.current);
+    }
+    
     // console.log("Show Fighting Location")
     // unityContext.clearFishPool("Fighting")
     // unityContext.clearFishPool("Breeding")
     // unityContext.clearFishPool('Fish');
     // Add a small delay to ensure Unity is fully ready after FishPoolStartConfirm
-    setTimeout(() => {
+    initializationTimeoutRef.current = setTimeout(() => {
       unityContext.clearUIFish();
       unityContext.hideUI();
       unityContext.showFightingLocation();
       unityContext.showFightingUI();
       updateIsFighting(false);
+      initializationTimeoutRef.current = null;
     }, 200);
+
+    // Cleanup function to clear timeout if component unmounts or effect re-runs
+    return () => {
+      if (initializationTimeoutRef.current) {
+        clearTimeout(initializationTimeoutRef.current);
+        initializationTimeoutRef.current = null;
+      }
+    };
   }, [unityContext.isFishPoolReady]);
 
   useEffect(() => {

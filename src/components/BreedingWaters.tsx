@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import styled from 'styled-components';
 import { toast } from 'react-toastify';
 import { useWeb3React } from '@web3-react/core';
@@ -37,6 +37,7 @@ const BreedingWaters = () => {
 	const { account } = useWeb3React();
 	const { userFish, breedingFish } = useFishPool()
 	const { breedFish, pendingTransaction } = useContractWrapper();
+	const initializationTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
 	const FishViewOptions: ToggleItem[] = [
 		{
@@ -54,14 +55,28 @@ const BreedingWaters = () => {
 	useEffect(() => {
 		if (!unityContext.isFishPoolReady) return;
 		
+		// Clear any existing timeout to prevent multiple initializations
+		if (initializationTimeoutRef.current) {
+			clearTimeout(initializationTimeoutRef.current);
+		}
+		
 		// console.log("Breeding Fish")
 		// Add a small delay to ensure Unity is fully ready after FishPoolStartConfirm
-		setTimeout(() => {
+		initializationTimeoutRef.current = setTimeout(() => {
 			unityContext.clearUIFish();
 			// unityContext.clearFishPool("ShowBreeding")
 			unityContext.hideUI();
 			unityContext.showBreedingLocation();
+			initializationTimeoutRef.current = null;
 		}, 200);
+
+		// Cleanup function to clear timeout if component unmounts or effect re-runs
+		return () => {
+			if (initializationTimeoutRef.current) {
+				clearTimeout(initializationTimeoutRef.current);
+				initializationTimeoutRef.current = null;
+			}
+		};
 	}, [unityContext.isFishPoolReady]);
 
 	useEffect(() => {
