@@ -42,7 +42,25 @@ interface FishList {
   note: string;
 }
 
-const SERVER_URL = process.env.REACT_APP_SERVER_URL || 'http://localhost:3001';
+// Use production server URL, fallback to localhost for development
+// In production, always use the production server
+const getServerUrl = () => {
+  // Check environment variables first
+  if (process.env.REACT_APP_SERVER_URL) {
+    return process.env.REACT_APP_SERVER_URL;
+  }
+  if (process.env.REACT_APP_METADATA_SERVER_URL) {
+    return process.env.REACT_APP_METADATA_SERVER_URL;
+  }
+  // In production build, use production server
+  if (process.env.NODE_ENV === 'production') {
+    return 'https://fishfight-server-production.up.railway.app';
+  }
+  // Development fallback
+  return 'http://localhost:3001';
+};
+
+const SERVER_URL = getServerUrl();
 
 export const ServerMonitor: React.FC = () => {
   const [health, setHealth] = useState<ServerHealth | null>(null);
