@@ -348,26 +348,36 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
     if (!isLoaded || !fishPoolReady) return;
     console.log(fight)
     
-    // Ensure fighting UI is visible before sending rounds/results
+    // Ensure fighting location and UI are visible
+    showFightingLocation();
     showFightingUI();
     
+    // Add fish to the fight scene first (Unity needs them before showing results)
+    addFishFight1(fish1);
+    
+    setTimeout(() => {
+      addFishFight2(fish2);
+    }, 300);
+    
     // Send round stats sequentially with delays to allow Unity to animate each round
-    // Unity needs time to process and display each round animation
-    if (fight.round1) {
-      UnityInstance.send("FishPool", "SetRound1Stat", fight.round1.value);
-    }
+    // Start rounds after fish are added (wait 800ms for both fish to be fully added)
+    setTimeout(() => {
+      if (fight.round1) {
+        UnityInstance.send("FishPool", "SetRound1Stat", fight.round1.value);
+      }
+    }, 800);
     
     setTimeout(() => {
       if (fight.round2) {
         UnityInstance.send("FishPool", "SetRound2Stat", fight.round2.value);
       }
-    }, 500);
+    }, 1300);
     
     setTimeout(() => {
       if (fight.round3) {
         UnityInstance.send("FishPool", "SetRound3Stat", fight.round3.value);
       }
-    }, 1000);
+    }, 1800);
     
     // Wait for all rounds to be processed before showing results
     setTimeout(() => {
@@ -379,7 +389,7 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
         UnityInstance.send("CanvasUserInterface", "FightingResultsUI_SetFish1", JSON.stringify(fish1) ); 
         UnityInstance.send("CanvasUserInterface", "FightingResultsUI_SetFish2", JSON.stringify(fish2) ); 
       }, 100);
-    }, 1500);
+    }, 2300); // Total delay: 800ms (fish) + 1500ms (rounds) = 2300ms
   };
 
   const addFishBreedingPool = (fish: Fish) => {
