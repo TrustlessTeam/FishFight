@@ -344,52 +344,36 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
   };
 
   const sendFightResult = (fight: Fight, fish1: Fish, fish2: Fish) => {
-    // console.log("SendFight Called");
     if (!isLoaded || !fishPoolReady) return;
-    console.log(fight)
+    console.log("sendFightResult called - Winner:", fight.winner);
+    console.log("Fish1:", fish1.tokenId, "Fish2:", fish2.tokenId);
     
-    // Ensure fighting location and UI are visible
+    // Simplified: Just show the results UI with winner info
+    // Step 1: Show fighting location and UI
     showFightingLocation();
     showFightingUI();
     
-    // Add fish to the fight scene first (Unity needs them before showing results)
+    // Step 2: Add fish to scene (needed for results display)
     addFishFight1(fish1);
-    
     setTimeout(() => {
       addFishFight2(fish2);
-    }, 300);
+    }, 200);
     
-    // Send round stats sequentially with delays to allow Unity to animate each round
-    // Start rounds after fish are added (wait 800ms for both fish to be fully added)
+    // Step 3: Wait for fish to be added, then show results
     setTimeout(() => {
-      if (fight.round1) {
-        UnityInstance.send("FishPool", "SetRound1Stat", fight.round1.value);
-      }
-    }, 800);
-    
-    setTimeout(() => {
-      if (fight.round2) {
-        UnityInstance.send("FishPool", "SetRound2Stat", fight.round2.value);
-      }
-    }, 1300);
-    
-    setTimeout(() => {
-      if (fight.round3) {
-        UnityInstance.send("FishPool", "SetRound3Stat", fight.round3.value);
-      }
-    }, 1800);
-    
-    // Wait for all rounds to be processed before showing results
-    setTimeout(() => {
+      // Send fight results to Unity
       UnityInstance.send("FishPool", "SetFightResults", JSON.stringify(fight));
-      // CRITICAL FIX: Unity expects "ShowFightingResults" not "ShowFightResultsSuccess"
+      
+      // Show the fighting results UI (CRITICAL: Use "ShowFightingResults" not "ShowFightResultsSuccess")
       UnityInstance.send("CanvasUserInterface", "SetAnimState", "ShowFightingResults");
       
+      // Set fish data in results UI
       setTimeout(() => {
-        UnityInstance.send("CanvasUserInterface", "FightingResultsUI_SetFish1", JSON.stringify(fish1) ); 
-        UnityInstance.send("CanvasUserInterface", "FightingResultsUI_SetFish2", JSON.stringify(fish2) ); 
-      }, 100);
-    }, 2300); // Total delay: 800ms (fish) + 1500ms (rounds) = 2300ms
+        UnityInstance.send("CanvasUserInterface", "FightingResultsUI_SetFish1", JSON.stringify(fish1));
+        UnityInstance.send("CanvasUserInterface", "FightingResultsUI_SetFish2", JSON.stringify(fish2));
+        console.log("Results UI should now be visible with winner:", fight.winner);
+      }, 200);
+    }, 500); // Wait 500ms for fish to be added
   };
 
   const addFishBreedingPool = (fish: Fish) => {
