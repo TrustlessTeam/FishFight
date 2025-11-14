@@ -20,7 +20,6 @@
     "noEmit": true,
     "jsx": "react-jsx",
     "downlevelIteration": true,
-    "suppressImplicitAnyIndexErrors": true,
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "skipDefaultLibCheck": true
