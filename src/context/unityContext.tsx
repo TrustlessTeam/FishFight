@@ -2,7 +2,6 @@ import { UnityContent } from "react-unity-webgl";
 import { Fish } from "../utils/fish";
 import { createContext, useContext, useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
-import { useLocation } from "react-router-dom";
 import { Fight } from "../utils/fight";
 
 interface UnityProviderContext {
@@ -61,16 +60,14 @@ const UnityContext = createContext<UnityProviderContext | undefined>(undefined);
 
 // Defining context provider
 export const UnityProvider = ({ children }: UnityProviderProps) => {
-  const pathsCount = useLocation().pathname.split("/").length;
-  let basePath = ".";
-  if (pathsCount == 3) {
-    basePath = "..";
-  }
+  // Use absolute paths for Unity files to ensure they load correctly regardless of route
+  // Unity files are in public/Unity, so they're served at /Unity/...
+  const basePath = "/";
   // FishFight instance initiates with default url provider upon visiting page
   const [UnityInstance, setUnityInstance] = useState<UnityContent>(
     new UnityContent(
-      `${basePath}/Unity/fishfight-one-frontend.json`,
-      `${basePath}/Unity/UnityLoader.js`
+      `${basePath}Unity/fishfight-one-frontend.json`,
+      `${basePath}Unity/UnityLoader.js`
     )
   );
   const [isUnityMounted, setIsUnityMounted] = useState(true);
