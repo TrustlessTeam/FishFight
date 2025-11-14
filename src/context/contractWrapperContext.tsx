@@ -802,7 +802,7 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 
 		// EXACT copy of deposit function pattern - but with 1 confirmation block like working approval function
 		return FishFight.fightingWaters?.methods.withdraw(fish.tokenId).estimateGas({from: currentAccount}).then(async (gas: any) => {
-			FishFight.fightingWaters?.methods.withdraw(fish.tokenId).send({
+			return FishFight.fightingWaters?.methods.withdraw(fish.tokenId).send({
 				from: currentAccount,
 			gasPrice: await getGasPrice(),
 			gasLimit: gas,
@@ -825,6 +825,19 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 				},
 			});
 			})
+		}).catch((error: any) => {
+			// Catch errors before web3.js processes them to prevent err.data.substring errors
+			console.error('Withdraw transaction error:', error);
+			setPendingTransaction(false);
+			const errorMessage = error?.message || error?.reason || 'Withdraw Failed';
+			toast.error(errorMessage);
+		})
+		}).catch((error: any) => {
+			// Catch errors from estimateGas or send promise chain
+			console.error('Withdraw error (estimateGas or send):', error);
+			setPendingTransaction(false);
+			const errorMessage = error?.message || error?.reason || 'Withdraw Failed';
+			toast.error(errorMessage);
 		})
 	}
 
@@ -1854,7 +1867,7 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 
 		// EXACT copy of deposit function pattern - but with 1 confirmation block like working approval function
 		return FishFight.fightingWatersWeak?.methods.withdraw(fish.tokenId).estimateGas({from: currentAccount}).then(async (gas: any) => {
-			FishFight.fightingWatersWeak?.methods.withdraw(fish.tokenId).send({
+			return FishFight.fightingWatersWeak?.methods.withdraw(fish.tokenId).send({
 				from: currentAccount,
 			gasPrice: await getGasPrice(),
 			gasLimit: gas,
@@ -1877,6 +1890,19 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 				},
 			});
 			})
+		}).catch((error: any) => {
+			// Catch errors before web3.js processes them to prevent err.data.substring errors
+			console.error('Withdraw transaction error:', error);
+			setPendingTransaction(false);
+			const errorMessage = error?.message || error?.reason || 'Withdraw Failed';
+			toast.error(errorMessage);
+		})
+		}).catch((error: any) => {
+			// Catch errors from estimateGas or send promise chain
+			console.error('Withdraw error (estimateGas or send):', error);
+			setPendingTransaction(false);
+			const errorMessage = error?.message || error?.reason || 'Withdraw Failed';
+			toast.error(errorMessage);
 		})
 	}
 
