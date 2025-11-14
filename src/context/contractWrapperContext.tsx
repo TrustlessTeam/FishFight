@@ -785,6 +785,21 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 			return;
 		}
 
+		// Set defaultAccount on provider and contract as fallback (like working approval function does)
+		if (FishFight.providerWallet && typeof FishFight.providerWallet === 'object' && 'eth' in FishFight.providerWallet) {
+			const web3Provider = FishFight.providerWallet as any;
+			if (web3Provider.eth) {
+				web3Provider.eth.defaultAccount = currentAccount;
+			}
+		}
+		
+		if (FishFight.fightingWaters) {
+			(FishFight.fightingWaters as any).defaultAccount = currentAccount;
+			if (FishFight.fightingWaters.options) {
+				FishFight.fightingWaters.options.from = currentAccount;
+			}
+		}
+
 		// EXACT copy of deposit function pattern - but with 1 confirmation block like working approval function
 		return FishFight.fightingWaters?.methods.withdraw(fish.tokenId).estimateGas({from: currentAccount}).then(async (gas: any) => {
 			FishFight.fightingWaters?.methods.withdraw(fish.tokenId).send({
@@ -1820,6 +1835,21 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 			const lockedFor = (Math.round(expireTime * 10) / 10).toFixed(1);
 			toast.error(`Fish Locked for ${lockedFor} minutes`)
 			return;
+		}
+
+		// Set defaultAccount on provider and contract as fallback (like working approval function does)
+		if (FishFight.providerWallet && typeof FishFight.providerWallet === 'object' && 'eth' in FishFight.providerWallet) {
+			const web3Provider = FishFight.providerWallet as any;
+			if (web3Provider.eth) {
+				web3Provider.eth.defaultAccount = currentAccount;
+			}
+		}
+		
+		if (FishFight.fightingWatersWeak) {
+			(FishFight.fightingWatersWeak as any).defaultAccount = currentAccount;
+			if (FishFight.fightingWatersWeak.options) {
+				FishFight.fightingWatersWeak.options.from = currentAccount;
+			}
 		}
 
 		// EXACT copy of deposit function pattern - but with 1 confirmation block like working approval function
