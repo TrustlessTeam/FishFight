@@ -832,13 +832,6 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 			const errorMessage = error?.message || error?.reason || 'Withdraw Failed';
 			toast.error(errorMessage);
 		});
-		}).catch((error: any) => {
-			// Catch errors from estimateGas or send promise chain
-			console.error('Withdraw error (estimateGas or send):', error);
-			setPendingTransaction(false);
-			const errorMessage = error?.message || error?.reason || 'Withdraw Failed';
-			toast.error(errorMessage);
-		});
 	}
 
 	const contractDeathFight = (myFish: Fish, opponentFish: Fish, contractIsFighterDeposited: boolean) => {
@@ -1893,13 +1886,6 @@ export const ContractWrapperProvider = ({ children }: ProviderProps) => {
 		}).catch((error: any) => {
 			// Catch errors before web3.js processes them to prevent err.data.substring errors
 			console.error('Withdraw transaction error:', error);
-			setPendingTransaction(false);
-			const errorMessage = error?.message || error?.reason || 'Withdraw Failed';
-			toast.error(errorMessage);
-		});
-		}).catch((error: any) => {
-			// Catch errors from estimateGas or send promise chain
-			console.error('Withdraw error (estimateGas or send):', error);
 			setPendingTransaction(false);
 			const errorMessage = error?.message || error?.reason || 'Withdraw Failed';
 			toast.error(errorMessage);
