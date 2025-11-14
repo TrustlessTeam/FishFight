@@ -55,6 +55,19 @@ enum Location {
 
 type UnityProviderProps = { children: React.ReactNode };
 
+// Helper function to safely send messages to Unity
+const safeUnitySend = (unityInstance: UnityContent, gameObject: string, method: string, message?: any) => {
+  try {
+    if (message !== undefined) {
+      unityInstance.send(gameObject, method, message);
+    } else {
+      unityInstance.send(gameObject, method);
+    }
+  } catch (error) {
+    console.warn("Unity send failed:", error, "Args:", [gameObject, method, message]);
+  }
+};
+
 // Initiating context as undefined
 const UnityContext = createContext<UnityProviderContext | undefined>(undefined);
 
@@ -169,7 +182,8 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
     // // console.log("FishCaught Called")
     if (!isLoaded || !fishPoolReady) return;
     // console.log(JSON.stringify(fish));
-    UnityInstance.send(
+    safeUnitySend(
+      UnityInstance,
       "CanvasUserInterface",
       "FishCaught",
       JSON.stringify(fish)
@@ -178,10 +192,10 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
   };
   const showFishingLocation = () => {
     // // console.log("showFishingLocation Called")
-    if (!isLoaded) return;
+    if (!isLoaded || !fishPoolReady) return;
     setTimeout(() => {
-      UnityInstance.send("Camera", "SetAnimState", "ShowFishing");
-      UnityInstance.send("CanvasUserInterface", "SetAnimState", "ShowFishing");
+      safeUnitySend(UnityInstance, "Camera", "SetAnimState", "ShowFishing");
+      safeUnitySend(UnityInstance, "CanvasUserInterface", "SetAnimState", "ShowFishing");
       setCurrentLocation(Location.Fishing)
       // // console.log("showFishingLocation Completed")
     }, 100);
@@ -189,15 +203,15 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
   const showFightingLocation = () => {
     // // console.log("showFightingLocation Called")
     if (!isLoaded || !fishPoolReady) return;
-    UnityInstance.send("Camera", "SetAnimState", "ShowFighting");
+    safeUnitySend(UnityInstance, "Camera", "SetAnimState", "ShowFighting");
     setCurrentLocation(Location.Fighting)
-    // UnityInstance.send("CanvasUserInterface", "SetAnimState", "ShowFighting");
+    // safeUnitySend(UnityInstance, "CanvasUserInterface", "SetAnimState", "ShowFighting");
     // // console.log("showFightingLocation Completed")
   };
   const showBreedingLocation = () => {
      // console.log("showBreedingLocation Called")
     if (!isLoaded || !fishPoolReady) return;
-    UnityInstance.send("Camera", "SetAnimState", "ShowBreeding");
+    safeUnitySend(UnityInstance, "Camera", "SetAnimState", "ShowBreeding");
     setCurrentLocation(Location.Breeding)
     // UnityInstance.send("CanvasUserInterface", "SetAnimState", "ShowBreeding");
     // // console.log("showFightingLocation Completed")
@@ -205,23 +219,23 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
   const showOceanLocation = () => {
     // // console.log("showOceanLocation Called")
     if (!isLoaded || !fishPoolReady) return;
-    UnityInstance.send("Camera", "SetAnimState", "ShowOcean");
-    UnityInstance.send("CanvasUserInterface", "SetAnimState", "ShowOcean");
+    safeUnitySend(UnityInstance,"Camera", "SetAnimState", "ShowOcean");
+    safeUnitySend(UnityInstance,"CanvasUserInterface", "SetAnimState", "ShowOcean");
     setCurrentLocation(Location.Ocean)
     // // console.log("showOceanLocation Completed")
   };
   const showHome = () => {
     // console.log("ShowHome Called");
     if (!isLoaded) return;
-    UnityInstance.send("Camera", "SetAnimState", "ShowHome");
-    UnityInstance.send("CanvasUserInterface", "SetAnimState", "ShowHome");
+    safeUnitySend(UnityInstance,"Camera", "SetAnimState", "ShowHome");
+    safeUnitySend(UnityInstance,"CanvasUserInterface", "SetAnimState", "ShowHome");
     // console.log("ShowHome Completed");
   };
   const showTank = () => {
     // console.log("ShowTank Called");
     if (!isLoaded) return;
-    UnityInstance.send("Camera", "SetAnimState", "ShowOcean");
-    UnityInstance.send("CanvasUserInterface", "SetAnimState", "ShowOcean");
+    safeUnitySend(UnityInstance,"Camera", "SetAnimState", "ShowOcean");
+    safeUnitySend(UnityInstance,"CanvasUserInterface", "SetAnimState", "ShowOcean");
     // console.log("ShowTank Completed");
   };
 
@@ -229,44 +243,44 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
     // console.log("Show Fish UI Called");
     if (!isLoaded) return;
     //UnityInstance.send('Camera', 'SetUIState', 'ShowOcean'); // ShowFish ?
-    UnityInstance.send("CanvasUserInterface", "SetAnimState", "ShowFish"); // ShowFish ?
+    safeUnitySend(UnityInstance,"CanvasUserInterface", "SetAnimState", "ShowFish"); // ShowFish ?
     // console.log("ShowFish Completed");
   };
 	const showFishingUI = () => {
     // console.log("Show Fishing UI Called");
     if (!isLoaded) return;
-    UnityInstance.send("CanvasUserInterface", "SetAnimState", "ShowFishing");
+    safeUnitySend(UnityInstance,"CanvasUserInterface", "SetAnimState", "ShowFishing");
     // console.log("ShowFishing Completed");
   };
   const showFightingUI = () => {
     // console.log("Show Fight UI Called");
     if (!isLoaded) return;
     //UnityInstance.send('Camera', 'SetUIState', 'ShowFighting');
-    UnityInstance.send("CanvasUserInterface", "SetAnimState", "ShowFighting");
+    safeUnitySend(UnityInstance,"CanvasUserInterface", "SetAnimState", "ShowFighting");
   };
   const showBreedingUI = () => {
     // console.log("Show Breed UI Called");
     if (!isLoaded) return;
-      UnityInstance.send("CanvasUserInterface", "SetAnimState", "ShowBreeding");
+      safeUnitySend(UnityInstance,"CanvasUserInterface", "SetAnimState", "ShowBreeding");
     };
 
 
 	const clearUIFish = () => {
     // // console.log("ClearFishPool Called " + pool)
     if (!isLoaded || !fishPoolReady) return;
-    UnityInstance.send("FishPool", "ClearUIFish");
+    safeUnitySend(UnityInstance,"FishPool", "ClearUIFish");
     // // console.log("ClearFishPool Called " + pool)
   };
 
 	const hideUI = () => {
 		if (!isLoaded || !fishPoolReady) return;
-		UnityInstance.send("CanvasUserInterface", "SetAnimState", "Hide");
+		safeUnitySend(UnityInstance, "CanvasUserInterface", "SetAnimState", "Hide");
 	}
 
   const clearFishPool = (pool: string) => {
     // // console.log("ClearFishPool Called " + pool)
     if (!isLoaded || !fishPoolReady) return;
-    UnityInstance.send("FishPool", "ClearPool", pool);
+    safeUnitySend(UnityInstance,"FishPool", "ClearPool", pool);
     // // console.log("ClearFishPool Called " + pool)
   };
   const addFishOcean = (fish: Fish) => {
@@ -274,7 +288,7 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
     if (!isLoaded || !fishPoolReady) return;
     // // console.log(fish)
     setTimeout(() => {
-      UnityInstance.send("FishPool", "AddFish_OceanView", JSON.stringify(fish));
+      safeUnitySend(UnityInstance,"FishPool", "AddFish_OceanView", JSON.stringify(fish));
       // // console.log("AddFish Completed")
     }, 100);
   };
@@ -283,7 +297,7 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
     if (!isLoaded || !fishPoolReady) return;
     // // console.log(fish)
     setTimeout(() => {
-      UnityInstance.send("FishPool", "AddFish_TankView", JSON.stringify(fish));
+      safeUnitySend(UnityInstance,"FishPool", "AddFish_TankView", JSON.stringify(fish));
       // // console.log("AddFish Completed")
     }, 100);
   };
@@ -292,7 +306,7 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
     if (!isLoaded || !fishPoolReady) return;
     // console.log(fish);
     setTimeout(() => {
-      UnityInstance.send(
+      safeUnitySend(UnityInstance,
         "FishPool",
         "AddFish_FightingView",
         JSON.stringify(fish)
@@ -305,12 +319,12 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
     if (!isLoaded || !fishPoolReady) return;
     console.log(fish);
     showFightingUI();
-    UnityInstance.send(
+    safeUnitySend(UnityInstance,
       "FishPool",
       "AddFish1_FightingView",
       JSON.stringify(fish)
     );
-    UnityInstance.send(
+    safeUnitySend(UnityInstance,
       "FishPool",
       "AddFish1_FishView",
       JSON.stringify(fish)
@@ -318,7 +332,7 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
 
     
     setTimeout(() => {
-      UnityInstance.send("CanvasUserInterface", "FightingUI_SetFish1", JSON.stringify(fish) ); // ShowFish ?
+      safeUnitySend(UnityInstance,"CanvasUserInterface", "FightingUI_SetFish1", JSON.stringify(fish) ); // ShowFish ?
     }, 100);
     setFish1(fish);
   };
@@ -328,12 +342,12 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
     if (!isLoaded || !fishPoolReady) return;
     console.log(fish);
     showFightingUI();
-    UnityInstance.send(
+    safeUnitySend(UnityInstance,
       "FishPool",
       "AddFish2_FightingView",
       JSON.stringify(fish)
     );
-    UnityInstance.send(
+    safeUnitySend(UnityInstance,
       "FishPool",
       "AddFish2_FishView",
       JSON.stringify(fish)
@@ -341,7 +355,7 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
 
     
     setTimeout(() => {
-      UnityInstance.send("CanvasUserInterface", "FightingUI_SetFish2", JSON.stringify(fish) ); // ShowFish ?
+      safeUnitySend(UnityInstance,"CanvasUserInterface", "FightingUI_SetFish2", JSON.stringify(fish) ); // ShowFish ?
     }, 100);
       
     setFish2(fish);
@@ -356,17 +370,17 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
     setCurrentFightRound(1);
     
     // Send fight results data to FishPool
-    UnityInstance.send("FishPool", "SetFightResults", JSON.stringify(fight));
+    safeUnitySend(UnityInstance,"FishPool", "SetFightResults", JSON.stringify(fight));
     
     // Show Round 1 UI - user will click button to progress
     setTimeout(() => {
       console.log("Showing Round 1 results UI");
-      UnityInstance.send("CanvasUserInterface", "SetAnimState", "ShowFightingResults1");
+      safeUnitySend(UnityInstance,"CanvasUserInterface", "SetAnimState", "ShowFightingResults1");
       
       // Set fish data for Round 1
       setTimeout(() => {
-        UnityInstance.send("CanvasUserInterface", "FightingResultsRound1UI_SetFish1", JSON.stringify(fish1));
-        UnityInstance.send("CanvasUserInterface", "FightingResultsRound1UI_SetFish2", JSON.stringify(fish2));
+        safeUnitySend(UnityInstance,"CanvasUserInterface", "FightingResultsRound1UI_SetFish1", JSON.stringify(fish1));
+        safeUnitySend(UnityInstance,"CanvasUserInterface", "FightingResultsRound1UI_SetFish2", JSON.stringify(fish2));
       }, 300);
     }, 300);
   };
@@ -380,31 +394,31 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
       // Progress to Round 2
       console.log("Progressing to Round 2");
       setCurrentFightRound(2);
-      UnityInstance.send("CanvasUserInterface", "SetAnimState", "ShowFightingResults2");
+      safeUnitySend(UnityInstance,"CanvasUserInterface", "SetAnimState", "ShowFightingResults2");
       
       setTimeout(() => {
-        UnityInstance.send("CanvasUserInterface", "FightingResultsRound2UI_SetFish1", JSON.stringify(fish1));
-        UnityInstance.send("CanvasUserInterface", "FightingResultsRound2UI_SetFish2", JSON.stringify(fish2));
+        safeUnitySend(UnityInstance,"CanvasUserInterface", "FightingResultsRound2UI_SetFish1", JSON.stringify(fish1));
+        safeUnitySend(UnityInstance,"CanvasUserInterface", "FightingResultsRound2UI_SetFish2", JSON.stringify(fish2));
       }, 300);
     } else if (currentFightRound === 2) {
       // Progress to Round 3
       console.log("Progressing to Round 3");
       setCurrentFightRound(3);
-      UnityInstance.send("CanvasUserInterface", "SetAnimState", "ShowFightingResults3");
+      safeUnitySend(UnityInstance,"CanvasUserInterface", "SetAnimState", "ShowFightingResults3");
       
       setTimeout(() => {
-        UnityInstance.send("CanvasUserInterface", "FightingResultsRound3UI_SetFish1", JSON.stringify(fish1));
-        UnityInstance.send("CanvasUserInterface", "FightingResultsRound3UI_SetFish2", JSON.stringify(fish2));
+        safeUnitySend(UnityInstance,"CanvasUserInterface", "FightingResultsRound3UI_SetFish1", JSON.stringify(fish1));
+        safeUnitySend(UnityInstance,"CanvasUserInterface", "FightingResultsRound3UI_SetFish2", JSON.stringify(fish2));
       }, 300);
     } else if (currentFightRound === 3) {
       // Progress to Final Results
       console.log("Progressing to Final Results");
       setCurrentFightRound("final");
-      UnityInstance.send("CanvasUserInterface", "SetAnimState", "ShowFightingResults");
+      safeUnitySend(UnityInstance,"CanvasUserInterface", "SetAnimState", "ShowFightingResults");
       
       setTimeout(() => {
-        UnityInstance.send("CanvasUserInterface", "FightingResultsUI_SetFish1", JSON.stringify(fish1));
-        UnityInstance.send("CanvasUserInterface", "FightingResultsUI_SetFish2", JSON.stringify(fish2));
+        safeUnitySend(UnityInstance,"CanvasUserInterface", "FightingResultsUI_SetFish1", JSON.stringify(fish1));
+        safeUnitySend(UnityInstance,"CanvasUserInterface", "FightingResultsUI_SetFish2", JSON.stringify(fish2));
       }, 300);
     } else if (currentFightRound === "final") {
       // Close/reset - this will be handled by Unity's fightresults_confirm event
@@ -422,7 +436,7 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
     if (!isLoaded || !fishPoolReady) return;
     console.log(fish);
     setTimeout(() => {
-      UnityInstance.send(
+      safeUnitySend(UnityInstance,
         "FishPool",
         "AddFish_BreedingView",
         JSON.stringify(fish)
@@ -440,14 +454,14 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
     //   "AddFish1_BreedingView",
     //   JSON.stringify(fish)
     // );
-    UnityInstance.send(
+    safeUnitySend(UnityInstance,
       "FishPool",
       "AddFish1_FishView",
       JSON.stringify(fish)
     );
     
     setTimeout(() => {
-      UnityInstance.send("CanvasUserInterface", "BreedingUI_SetFish1", JSON.stringify(fish) ); // ShowFish ?
+      safeUnitySend(UnityInstance,"CanvasUserInterface", "BreedingUI_SetFish1", JSON.stringify(fish) ); // ShowFish ?
     }, 100);
     setFish1(fish);
   };
@@ -462,29 +476,29 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
     //   "AddFish2_BreedingView",
     //   JSON.stringify(fish)
     // );
-    UnityInstance.send(
+    safeUnitySend(UnityInstance,
       "FishPool",
       "AddFish2_FishView",
       JSON.stringify(fish)
     );
     
     setTimeout(() => {
-      UnityInstance.send("CanvasUserInterface", "BreedingUI_SetFish2", JSON.stringify(fish) ); // ShowFish ?
+      safeUnitySend(UnityInstance,"CanvasUserInterface", "BreedingUI_SetFish2", JSON.stringify(fish) ); // ShowFish ?
     }, 100);
     setFish2(fish);
   };
 
   const addBreedOffspring = (fish: Fish) => {
-    UnityInstance.send("CanvasUserInterface", "SetAnimState", "ShowBreedingResultsSuccess");
+    safeUnitySend(UnityInstance,"CanvasUserInterface", "SetAnimState", "ShowBreedingResultsSuccess");
     setTimeout(() => {  
-      UnityInstance.send("CanvasUserInterface", "BreedingResultsUI_SetFish1", JSON.stringify(fish) );
+      safeUnitySend(UnityInstance,"CanvasUserInterface", "BreedingResultsUI_SetFish1", JSON.stringify(fish) );
     }, 100);
 
     if (fish.parentAFish && fish.parentBFish) {
-      UnityInstance.send("FishPool", "AddFish2_FishView", JSON.stringify(fish.parentAFish));
-      UnityInstance.send("FishPool", "AddFish3_FishView", JSON.stringify(fish.parentBFish));
+      safeUnitySend(UnityInstance,"FishPool", "AddFish2_FishView", JSON.stringify(fish.parentAFish));
+      safeUnitySend(UnityInstance,"FishPool", "AddFish3_FishView", JSON.stringify(fish.parentBFish));
     }
-    UnityInstance.send("FishPool", "AddFish1_FishView", JSON.stringify(fish));
+    safeUnitySend(UnityInstance,"FishPool", "AddFish1_FishView", JSON.stringify(fish));
     
     setFish1(fish);
   }
@@ -493,12 +507,12 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
     // console.log("AddFish Called");
     if (!isLoaded || !fishPoolReady) return;
     console.log(fish);
-    UnityInstance.send("FishPool", "AddFish_FishingView", JSON.stringify(fish));
-    UnityInstance.send("FishPool", "AddFish1_FishView", JSON.stringify(fish)); 
-    UnityInstance.send("CanvasUserInterface", "SetAnimState", "ShowFishingResultsSuccess"); // ShowFish ?
+    safeUnitySend(UnityInstance,"FishPool", "AddFish_FishingView", JSON.stringify(fish));
+    safeUnitySend(UnityInstance,"FishPool", "AddFish1_FishView", JSON.stringify(fish)); 
+    safeUnitySend(UnityInstance,"CanvasUserInterface", "SetAnimState", "ShowFishingResultsSuccess"); // ShowFish ?
 
     setTimeout(() => {  
-      UnityInstance.send("CanvasUserInterface", "FishingResultsUI_SetFish1", JSON.stringify(fish) ); // ShowFish ?
+      safeUnitySend(UnityInstance,"CanvasUserInterface", "FishingResultsUI_SetFish1", JSON.stringify(fish) ); // ShowFish ?
     }, 100);
 
     // console.log("AddFish Completed");
@@ -509,14 +523,14 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
     if (!fishPoolReady) return;
     showFishUI()
     setTimeout(() => {  
-      UnityInstance.send("CanvasUserInterface", "FishUI_SetFish1", JSON.stringify(fish));
+      safeUnitySend(UnityInstance,"CanvasUserInterface", "FishUI_SetFish1", JSON.stringify(fish));
     }, 100);
 
     if (fish.parentAFish && fish.parentBFish) {
-      UnityInstance.send("FishPool", "AddFish2_FishView", JSON.stringify(fish.parentAFish));
-      UnityInstance.send("FishPool", "AddFish3_FishView", JSON.stringify(fish.parentBFish));
+      safeUnitySend(UnityInstance,"FishPool", "AddFish2_FishView", JSON.stringify(fish.parentAFish));
+      safeUnitySend(UnityInstance,"FishPool", "AddFish3_FishView", JSON.stringify(fish.parentBFish));
     }
-    UnityInstance.send("FishPool", "AddFish1_FishView", JSON.stringify(fish));
+    safeUnitySend(UnityInstance,"FishPool", "AddFish1_FishView", JSON.stringify(fish));
     setFish1(fish);
   };
 
@@ -525,13 +539,13 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
     if (!isLoaded || !fishPoolReady) return;
     switch (round) {
       case 1:
-        UnityInstance.send("FishPool", "SetRound1Stat", roundStat);
+        safeUnitySend(UnityInstance,"FishPool", "SetRound1Stat", roundStat);
         break;
       case 2:
-        UnityInstance.send("FishPool", "SetRound2Stat", roundStat);
+        safeUnitySend(UnityInstance,"FishPool", "SetRound2Stat", roundStat);
         break;
       case 3:
-        UnityInstance.send("FishPool", "SetRound3Stat", roundStat);
+        safeUnitySend(UnityInstance,"FishPool", "SetRound3Stat", roundStat);
         break;
       default:
         break;
@@ -546,12 +560,12 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
     }
     // Based on Unity patterns, try these method names to start the fight animation
     // Unity might start automatically after rounds are set, or need explicit trigger
-    UnityInstance.send("FishPool", "StartFight");
-    UnityInstance.send("FishPool", "BeginFight");
-    UnityInstance.send("CanvasUserInterface", "FightingUI_StartFight");
-    UnityInstance.send("CanvasUserInterface", "StartFight");
+    safeUnitySend(UnityInstance,"FishPool", "StartFight");
+    safeUnitySend(UnityInstance,"FishPool", "BeginFight");
+    safeUnitySend(UnityInstance,"CanvasUserInterface", "FightingUI_StartFight");
+    safeUnitySend(UnityInstance,"CanvasUserInterface", "StartFight");
     // Also try setting fight state explicitly
-    UnityInstance.send("FishPool", "SetFightState", "Start");
+    safeUnitySend(UnityInstance,"FishPool", "SetFightState", "Start");
     console.log("StartFight Completed - sent multiple method calls");
   };
 
@@ -590,7 +604,7 @@ export const UnityProvider = ({ children }: UnityProviderProps) => {
 
   const sendTie = () => {
     // console.log("SetTie Called");
-    UnityInstance.send("FishPool", "SetTie");
+    safeUnitySend(UnityInstance,"FishPool", "SetTie");
     // console.log("SetTie Completed");
   };
 
